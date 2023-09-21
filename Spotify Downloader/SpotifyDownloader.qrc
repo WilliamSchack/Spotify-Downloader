@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/SpotifyDownloader">
+    <file>Icon.ico</file>
+    <file>Folder_Icon.png</file>
+    <file>Pause_Icon.png</file>
+    <file>PlayButton.png</file>
+    <file>SettingsCog.png</file>
+  </qresource>
+</RCC>
