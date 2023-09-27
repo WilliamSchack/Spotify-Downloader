@@ -5,14 +5,47 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
     _ui.setupUi(this);
 
+    setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+
     // Get thread ready to be started
-    SongDownloader* songDownloader = new SongDownloader();
+    SongDownloader *songDownloader = new SongDownloader();
     songDownloader->moveToThread(&workerThread);
     connect(&workerThread, &QThread::finished, songDownloader, &QObject::deleteLater);
     connect(this, &SpotifyDownloader::operate, songDownloader, &SongDownloader::DownloadSongs);
 
+    // Setup Tray Icon
+    QAction* progressAction = new QAction(tr("Current Progress"));
+    connect(progressAction, &QAction::triggered, this, [&] {
+        if (DownloadStarted) {
+            int completed = _songsCompleted;
+            int total = _totalSongs;
+            ShowMessage(QString("%1 Complete").arg(completed / total),
+                QString("Completed: %1/%2").arg(completed).arg(total));
+            return;
+        }
+
+        ShowMessage("Not Started Yet", "No progress to show...");
+    });
+
+    QAction* quitAction = new QAction(tr("Exit"));
+    connect(quitAction, &QAction::triggered, this, &QWidget::close);
+
+    QMenu* contextMenu = new QMenu();
+    contextMenu->addAction(progressAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(quitAction);
+
+    _trayIcon = new QSystemTrayIcon();
+    _trayIcon->setIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
+    _trayIcon->setContextMenu(contextMenu);
+    connect(_trayIcon, &QSystemTrayIcon::activated, this, [&] {
+        show();
+    });
+    _trayIcon->show();
+
     // Allow thread to access ui elements
     connect(songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    connect(songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
     connect(songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
     connect(songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
     connect(songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
@@ -142,6 +175,23 @@ void SpotifyDownloader::SetupProcessingScreen() {
     connect(_ui.SettingsButton_2, &QPushButton::clicked, [=] {
         _ui.Screens->setCurrentIndex(4); // Change to settings screen
     });
+}
+
+void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
+    if (DownloadStarted && !DownloadComplete) {
+        QMessageBox messageBox;
+        messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
+        messageBox.setWindowTitle("Are You Sure?");
+        messageBox.setText(QString("Only %1 more to go!").arg(_totalSongs - _songsCompleted));
+        messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        int reply = messageBox.exec();
+
+        if (reply == QMessageBox::Yes) closeEvent->accept();
+        else closeEvent->ignore();
+        return;
+    }
+
+    closeEvent->accept();
 }
 
 // Application Exit

@@ -37,6 +37,9 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(64, 64, 64);</string>
   </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
   <widget class="QStackedWidget" name="Screens">
    <property name="geometry">
     <rect>

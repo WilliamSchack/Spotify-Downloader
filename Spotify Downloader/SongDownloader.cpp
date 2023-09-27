@@ -2,7 +2,12 @@
 
 #pragma region Utilities On Main Thread
 void SpotifyDownloader::ChangeScreen(int screenIndex) {
+	if (screenIndex == 2 || screenIndex == 3) DownloadComplete = true;
 	_ui.Screens->setCurrentIndex(screenIndex);
+}
+void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
+	if (!Notifications) return;
+	_trayIcon->showMessage(title, message, QIcon(":/SpotifyDownloader/Icon.ico"), msecs);
 }
 void SpotifyDownloader::SetProgressLabel(QString text) {
 	_ui.ProgressLabel->setText(text);
@@ -11,6 +16,8 @@ void SpotifyDownloader::SetProgressBar(float percentage) {
 	_ui.ProgressBar_Front->resize(SongDownloader::Lerp(0, 334, percentage), 27);
 }
 void SpotifyDownloader::SetSongCount(int currentCount, int totalCount) {
+	_songsCompleted = currentCount - 1;
+	_totalSongs = totalCount;
 	_ui.SongCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
 	_ui.SongCount->adjustSize();
 }
@@ -45,6 +52,7 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	Main = main;
 
 	emit SetProgressLabel("Getting Playlist Data...");
+	emit ShowMessage("Starting Download!", "This may take a while...");
 
 	QString url = Main->PlaylistURLText;
 	QString spotifyId = url.split("/").last().split("?")[0];
@@ -74,10 +82,12 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	if (_tracksNotFound.count() == 0) {
 		emit ChangeScreen(2);
+		emit ShowMessage("Downloads Complete!", "No download errors!");
 		return;
 	}
 
 	emit ChangeScreen(3);
+	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
 	emit SetErrorItems(_tracksNotFound);
 }
 

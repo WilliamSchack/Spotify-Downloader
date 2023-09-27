@@ -9,17 +9,21 @@
 #include <QtWidgets/QSpinBox>
 
 #include <QtCore/QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+
+#include <QSystemTrayIcon>
+#include <QAction>
+#include <QMenu>
+#include <QStyle>
 
 #include <QtUiTools/QUiLoader>
 
-#include <QFileDialog>
-
-#include <QMessageBox>
-
+#include <QProcess>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrentRun>
 
-#include <QProcess>
+#include <QCloseEvent>
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
@@ -49,6 +53,7 @@ class SpotifyDownloader : public QDialog
         QString SaveLocationText;
 
         bool DownloadStarted = false;
+        bool DownloadComplete = false;
         bool Overwrite = false;
         bool Notifications = true;
 
@@ -57,9 +62,13 @@ class SpotifyDownloader : public QDialog
         bool NormalizeAudio = true;
         float NormalizeAudioVolume = 0.0f;
 
+        int TotalSongs;
+        int CompletedSongs;
+
         bool Paused = false;
     public slots:
         void ChangeScreen(int screenIndex);
+        void ShowMessage(QString title, QString message, int msecs = 5000);
         void SetProgressLabel(QString text);
         void SetProgressBar(float percentage);
         void SetSongCount(int currentCount, int totalCount);
@@ -72,9 +81,16 @@ class SpotifyDownloader : public QDialog
     private:
         Ui::SpotifyDownloader _ui;
 
+        QSystemTrayIcon* _trayIcon;
+
+        int _totalSongs;
+        int _songsCompleted;
+
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
+
+        void closeEvent(QCloseEvent* closeEvent);
 };
 
 class SongDownloader : public QObject {
@@ -105,6 +121,7 @@ class SongDownloader : public QObject {
         int _totalSongCount = 0;
     signals:
         void ChangeScreen(int screenIndex);
+        void ShowMessage(QString title, QString message, int msecs = 5000);
         void SetProgressLabel(QString text);
         void SetProgressBar(float percentage);
         void SetSongCount(int currentCount, int totalCount);
