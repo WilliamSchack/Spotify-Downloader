@@ -1,55 +1,20 @@
 #include "SpotifyDownloader.h"
 
-#pragma region Utilities On Main Thread
-void SpotifyDownloader::ChangeScreen(int screenIndex) {
-	if (screenIndex == 2 || screenIndex == 3) DownloadComplete = true;
-	_ui.Screens->setCurrentIndex(screenIndex);
-}
-void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
-	if (!Notifications) return;
-	_trayIcon->showMessage(title, message, QIcon(":/SpotifyDownloader/Icon.ico"), msecs);
-}
-void SpotifyDownloader::SetProgressLabel(QString text) {
-	_ui.ProgressLabel->setText(text);
-}
-void SpotifyDownloader::SetProgressBar(float percentage) {
-	_ui.ProgressBar_Front->resize(SongDownloader::Lerp(0, 334, percentage), 27);
-}
-void SpotifyDownloader::SetSongCount(int currentCount, int totalCount) {
-	_songsCompleted = currentCount - 1;
-	_totalSongs = totalCount;
-	_ui.SongCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
-	_ui.SongCount->adjustSize();
-}
-void SpotifyDownloader::SetSongImage(QPixmap image) {
-	image = image.scaled(_ui.SongImage->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	_ui.SongImage->setPixmap(image);
-}
-void SpotifyDownloader::SetSongDetails(QString title, QString artists) {
-	_ui.SongTitle->setText(title);
-	_ui.SongArtists->setText(artists);
-}
-void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
-	foreach(QJsonValue val, tracks) {
-		QJsonObject track = val.toObject();
+#include "SpotifyAPI.h"
+#include "Network.h"
+#include "difflib.h"
 
-		SongErrorItem *errorItem = new SongErrorItem();
-		errorItem->Title->setText(track["title"].toString());
-		errorItem->Album->setText(track["album"].toString());
-		errorItem->Artists->setText(track["artists"].toString());
-		errorItem->Image->setPixmap(JSONUtils::PixmapFromJSON(track["image"]).scaled(errorItem->Image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-
-		_ui.ScrollLayout->insertWidget(_ui.ScrollLayout->count() - 1, errorItem);
-	}
-}
-void SpotifyDownloader::HidePauseWarning() {
-	_ui.PauseWarning->hide();
-	_ui.ProgressLabel->setText("Paused...");
-}
-#pragma endregion
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/id3v2frame.h>
+#include <taglib/commentsframe.h>
+#include <taglib/attachedpictureframe.h>
+#include <taglib/textidentificationframe.h>
 
 void SongDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	Main = main;
+
+	QThread* thread = QThread::currentThread();
 
 	emit SetProgressLabel("Getting Playlist Data...");
 	emit ShowMessage("Starting Download!", "This may take a while...");
@@ -77,7 +42,13 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		QJsonObject track = tracks[i].toObject();
 		if (url.contains("playlist")) track = track["track"].toObject();
 
+		_currentTrack = track;
 		DownloadSong(track, i, album);
+
+		if (_quitting) {
+			this->thread()->quit();
+			return;
+		}
 	}
 
 	if (_tracksNotFound.count() == 0) {
@@ -97,7 +68,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	QString trackTitle = track["name"].toString();
 	QString albumName = album["name"].toString();
-	QString artistName = track["artists"][0]["name"].toString();
+	QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 	QJsonArray songArtistsList = track["artists"].toArray();
 	QJsonArray albumArtistsList = album["artists"].toArray();
 	float songTime = track["duration_ms"].toDouble() / 1000;
@@ -124,7 +95,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (!Main->Overwrite && QFile::exists(fullPath)) return;
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Download Cover Art
 	emit SetProgressLabel("Downloading Cover Art...");
@@ -140,7 +112,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	image.load(imageFileDir);
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Assign Data To GUI
 	emit SetSongImage(QPixmap::fromImage(image));
@@ -148,7 +121,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetSongCount(count + 1, _totalSongCount);
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Search For Song
 	emit SetProgressLabel("Searching...");
@@ -286,49 +260,53 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	finalResult = finalResult["result"].toObject();
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Download Track
 	emit SetProgressLabel("Downloading Track...");
 	emit SetProgressBar(0);
 
 	if (Main->Overwrite && QFile::exists(fullPath)) QFile::remove(fullPath);
+	while(QFile::exists(fullPath))
+		QCoreApplication::processEvents();
 
-	QProcess* downloadProcess = new QProcess();
-	connect(downloadProcess, &QProcess::finished, downloadProcess, &QProcess::deleteLater);
-	connect(downloadProcess, &QProcess::readyRead, downloadProcess, [&]() {
-		QString output = downloadProcess->readAll();
+	_currentProcess = new QProcess();
+	connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
+	connect(_currentProcess, &QProcess::readyRead, _currentProcess, [&]() {
+		QString output = _currentProcess->readAll();
 		if (output.contains("%")) {
 			QString progress = output.split("]")[1].split("%")[0];
 			emit SetProgressBar(progress.toFloat() / 100);
 		}
 	});
-	downloadProcess->startCommand(QString(R"("%1" -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
+	_currentProcess->startCommand(QString(R"("%1" -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
 						.arg(QDir::currentPath() + "/" + YTDLP_PATH)
 						.arg(fullPath)
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 						.arg(CODEC)
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
-	downloadProcess->waitForFinished();
+	_currentProcess->waitForFinished();
 
 	emit SetProgressBar(1);
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Normalize Audio
 	if (Main->NormalizeAudio) {
 		emit SetProgressLabel("Normalizing Audio...");
 
-		QProcess* audioProcess = new QProcess();
-		connect(audioProcess, &QProcess::finished, audioProcess, &QProcess::deleteLater);
-		audioProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
+		_currentProcess = new QProcess();
+		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
+		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 						.arg(fullPath));
-		audioProcess->waitForFinished();
+		_currentProcess->waitForFinished();
 
 		// For some reason ffmpeg outputs to StandardError. idk why
-		QString audioOutput = audioProcess->readAllStandardError();
+		QString audioOutput = _currentProcess->readAllStandardError();
 		if (audioOutput.contains("mean_volume:")) {
 			QString normalizedFullPath = QString("%1/%2.%3").arg(Main->SaveLocationText).arg(filename + "_N").arg(CODEC);
 			
@@ -337,23 +315,26 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			if (meanVolume != Main->NormalizeAudioVolume) {
 				float volumeApply = (Main->NormalizeAudioVolume - meanVolume) + 0.4; // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why (ffmpeg all over the place)
 
-				QProcess* normalizeProcess = new QProcess();
-				connect(normalizeProcess, &QProcess::finished, normalizeProcess, &QProcess::deleteLater);
-				normalizeProcess->startCommand(QString(R"("%1" -i "%2" -af "volume=%3" "%4")")
+				_currentProcess = new QProcess();
+				connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
+				_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volume=%3" "%4")")
 					.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 					.arg(fullPath)
 					.arg(QString("%1dB").arg(volumeApply))
 					.arg(normalizedFullPath));
-				normalizeProcess->waitForFinished();
+				_currentProcess->waitForFinished();
 
 				QFile::remove(fullPath);
+				while (QFile::exists(fullPath))
+					QCoreApplication::processEvents();
 				QFile::rename(normalizedFullPath, fullPath);
 			}
 		}
 	}
 	#pragma endregion
 
-	CheckIfPaused();
+	CheckForStop();
+	if (_quitting) return;
 
 	#pragma region Assign Metadata
 	emit SetProgressLabel("Assigning Metadata...");
@@ -389,7 +370,14 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	#pragma endregion
 }
 
-void SongDownloader::CheckIfPaused() {
+void SongDownloader::CheckForStop() {
+	// Exiting
+	if (this->thread()->isInterruptionRequested()) {
+		_quitting = true;
+		return;
+	}
+
+	// Paused
 	if (!Main->Paused) return;
 
 	emit HidePauseWarning();
@@ -426,4 +414,39 @@ double SongDownloader::LerpInList(std::vector<double> list, int index) {
 	}
 	
 	return list[0] / maxVal;
+}
+
+// Cleanup currently downloading songs
+SongDownloader::~SongDownloader() {
+	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning) {
+		_currentProcess->kill();
+	}
+
+	QString trackTitle = _currentTrack["name"].toString();
+	QString artistName = _currentTrack["artists"].toArray()[0].toObject()["name"].toString();
+
+	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
+	filename = ValidateString(filename);
+	QString path = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
+
+	QString downloadingPath = QString("%1.m4a").arg(path);
+	if (QFile::exists(downloadingPath)) {
+		QFile::remove(downloadingPath);
+		while(QFile::exists(downloadingPath))
+			QCoreApplication::processEvents();
+	}
+
+	QString normalizePath = QString("%1_N.%2").arg(path).arg(CODEC);
+	if (QFile::exists(normalizePath)) {
+		QFile::remove(normalizePath);
+		while (QFile::exists(normalizePath))
+			QCoreApplication::processEvents();
+	}
+
+	QString fullPath = QString("%1.%2").arg(path).arg(CODEC);
+	if (QFile::exists(fullPath)) {
+		QFile::remove(fullPath);
+		while (QFile::exists(fullPath))
+			QCoreApplication::processEvents();
+	}
 }

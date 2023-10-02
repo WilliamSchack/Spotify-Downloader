@@ -25,20 +25,10 @@
 
 #include <QCloseEvent>
 
-#include <taglib/mpegfile.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/id3v2frame.h>
-#include <taglib/commentsframe.h>
-#include <taglib/attachedpictureframe.h>
-#include <taglib/textidentificationframe.h>
-
 #include "ui_SpotifyDownloader.h"
-#include "CustomWidgets.h"
-
-#include "SpotifyAPI.h"
 #include "YTMusicAPI.h"
-#include "Network.h"
-#include "difflib.h"
+
+class SongDownloader; // Forward Declaration
 
 class SpotifyDownloader : public QDialog
 {
@@ -80,6 +70,7 @@ class SpotifyDownloader : public QDialog
         void operate(const SpotifyDownloader* main);
     private:
         Ui::SpotifyDownloader _ui;
+        SongDownloader* _songDownloader;
 
         QSystemTrayIcon* _trayIcon;
 
@@ -97,14 +88,15 @@ class SongDownloader : public QObject {
     Q_OBJECT
 
     public:
+        ~SongDownloader();
+
+        void Exit();
         static float Lerp(float a, float b, float t);
     public slots:
         void DownloadSongs(const SpotifyDownloader* maiin);
     private:
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
-        void CheckIfPaused();
-
-        const SpotifyDownloader* Main;
+        void CheckForStop();
 
         QString ValidateString(QString string);
         void DownloadImage(QString url, QString path, QSize resize = QSize());
@@ -114,10 +106,14 @@ class SongDownloader : public QObject {
         const QString YTDLP_PATH = "yt-dlp.exe";
         const QString FFMPEG_PATH = "ffmpeg.exe";
 
+        const SpotifyDownloader* Main;
         YTMusicAPI _yt;
 
-        QJsonArray _tracksNotFound;
+        QProcess* _currentProcess;
+        bool _quitting = false;
 
+        QJsonArray _tracksNotFound;
+        QJsonObject _currentTrack;
         int _totalSongCount = 0;
     signals:
         void ChangeScreen(int screenIndex);

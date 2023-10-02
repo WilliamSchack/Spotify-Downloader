@@ -21,7 +21,9 @@ QByteArray Network::Get(QNetworkRequest request) {
 	QObject::connect(manager, &QNetworkAccessManager::finished, manager, &QNetworkAccessManager::deleteLater);
 	QObject::connect(manager, &QNetworkAccessManager::finished, rep, &QNetworkReply::deleteLater);
 
-	while (!complete) { QCoreApplication::processEvents(); }
+	while (!complete)
+		QCoreApplication::processEvents();
+
 	return response;
 }
 
@@ -46,6 +48,8 @@ QByteArray Network::Post(QNetworkRequest request, QByteArray postData) {
 	QObject::connect(manager, &QNetworkAccessManager::finished, manager, &QNetworkAccessManager::deleteLater);
 	QObject::connect(manager, &QNetworkAccessManager::finished, rep, &QNetworkReply::deleteLater);
 
-	while (!complete) { QCoreApplication::processEvents(); }
+	while (!complete)
+		QCoreApplication::processEvents();
+
 	return response;
 }

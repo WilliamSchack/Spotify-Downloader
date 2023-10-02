@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include "CustomWidgets.h"
+
 // Ui Setup
 SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
@@ -8,10 +10,10 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
     // Get thread ready to be started
-    SongDownloader *songDownloader = new SongDownloader();
-    songDownloader->moveToThread(&workerThread);
-    connect(&workerThread, &QThread::finished, songDownloader, &QObject::deleteLater);
-    connect(this, &SpotifyDownloader::operate, songDownloader, &SongDownloader::DownloadSongs);
+    _songDownloader = new SongDownloader();
+    _songDownloader->moveToThread(&workerThread);
+    connect(&workerThread, &QThread::finished, _songDownloader, &QObject::deleteLater);
+    connect(this, &SpotifyDownloader::operate, _songDownloader, &SongDownloader::DownloadSongs);
 
     // Setup Tray Icon
     QAction* progressAction = new QAction(tr("Current Progress"));
@@ -19,7 +21,7 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
         if (DownloadStarted) {
             int completed = _songsCompleted;
             int total = _totalSongs;
-            ShowMessage(QString("%1 Complete").arg(completed / total),
+            ShowMessage(QString("%1% Complete").arg(std::round(((completed * 1.0) / (total * 1.0)) / 0.001) * 0.001),
                 QString("Completed: %1/%2").arg(completed).arg(total));
             return;
         }
@@ -44,15 +46,15 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     _trayIcon->show();
 
     // Allow thread to access ui elements
-    connect(songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
-    connect(songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
-    connect(songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
-    connect(songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
-    connect(songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
-    connect(songDownloader, &SongDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
-    connect(songDownloader, &SongDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
-    connect(songDownloader, &SongDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
-    connect(songDownloader, &SongDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
+    connect(_songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    connect(_songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
+    connect(_songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
+    connect(_songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
+    connect(_songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
+    connect(_songDownloader, &SongDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
+    connect(_songDownloader, &SongDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
+    connect(_songDownloader, &SongDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_songDownloader, &SongDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
     
     // Setup UI Elements
     SetupSetupScreen();
@@ -177,6 +179,54 @@ void SpotifyDownloader::SetupProcessingScreen() {
     });
 }
 
+#pragma region Utilities
+void SpotifyDownloader::ChangeScreen(int screenIndex) {
+    if (screenIndex == 2 || screenIndex == 3) DownloadComplete = true;
+    _ui.Screens->setCurrentIndex(screenIndex);
+}
+void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
+    if (!Notifications) return;
+    _trayIcon->showMessage(title, message, QIcon(":/SpotifyDownloader/Icon.ico"), msecs);
+}
+void SpotifyDownloader::SetProgressLabel(QString text) {
+    _ui.ProgressLabel->setText(text);
+}
+void SpotifyDownloader::SetProgressBar(float percentage) {
+    _ui.ProgressBar_Front->resize(SongDownloader::Lerp(0, 334, percentage), 27);
+}
+void SpotifyDownloader::SetSongCount(int currentCount, int totalCount) {
+    _songsCompleted = currentCount - 1;
+    _totalSongs = totalCount;
+    _ui.SongCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
+    _ui.SongCount->adjustSize();
+}
+void SpotifyDownloader::SetSongImage(QPixmap image) {
+    image = image.scaled(_ui.SongImage->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    _ui.SongImage->setPixmap(image);
+}
+void SpotifyDownloader::SetSongDetails(QString title, QString artists) {
+    _ui.SongTitle->setText(title);
+    _ui.SongArtists->setText(artists);
+}
+void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
+    foreach(QJsonValue val, tracks) {
+        QJsonObject track = val.toObject();
+
+        SongErrorItem* errorItem = new SongErrorItem();
+        errorItem->Title->setText(track["title"].toString());
+        errorItem->Album->setText(track["album"].toString());
+        errorItem->Artists->setText(track["artists"].toString());
+        errorItem->Image->setPixmap(JSONUtils::PixmapFromJSON(track["image"]).scaled(errorItem->Image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+        _ui.ScrollLayout->insertWidget(_ui.ScrollLayout->count() - 1, errorItem);
+    }
+}
+void SpotifyDownloader::HidePauseWarning() {
+    _ui.PauseWarning->hide();
+    _ui.ProgressLabel->setText("Paused...");
+}
+#pragma endregion
+
 void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
     if (DownloadStarted && !DownloadComplete) {
         QMessageBox messageBox;
@@ -186,7 +236,9 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
         messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         int reply = messageBox.exec();
 
-        if (reply == QMessageBox::Yes) closeEvent->accept();
+        if (reply == QMessageBox::Yes) {
+            closeEvent->accept();
+        }
         else closeEvent->ignore();
         return;
     }
@@ -197,6 +249,8 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
 // Application Exit
 SpotifyDownloader::~SpotifyDownloader()
 {
-    workerThread.quit();
+    _trayIcon->hide();
+    
+    workerThread.requestInterruption();
     workerThread.wait();
 }
