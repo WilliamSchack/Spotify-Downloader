@@ -1,8 +1,8 @@
 #include "SpotifyDownloader.h"
 
-#include "SpotifyAPI.h"
 #include "Network.h"
-#include "difflib.h"
+
+#include <difflib.h>
 
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
@@ -100,14 +100,16 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	#pragma region Download Cover Art
 	emit SetProgressLabel("Downloading Cover Art...");
+
 	QString coverFilename = QString("%1(%2)_Cover").arg(albumName).arg(albumArtistNames);
 	coverFilename = ValidateString(coverFilename);
 	QString tempPath = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
 	QString imageFileDir = QString("%1/%2.png").arg(tempPath).arg(coverFilename);
+
 	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
-	if (!QFile::exists("imageFileDir")) {
+	if (!QFile::exists("imageFileDir"))
 		DownloadImage(albumImageURL, imageFileDir, QSize(640, 640));
-	}
+
 	QImage image;
 	image.load(imageFileDir);
 	#pragma endregion
@@ -126,6 +128,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	#pragma region Search For Song
 	emit SetProgressLabel("Searching...");
+
 	QString searchQuery = QString(R"(%1 - "%2" - %3)").arg(artistName).arg(trackTitle).arg(albumName);
 	QJsonArray searchResults = _yt.Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, _yt.Search(searchQuery, "videos", 6));
@@ -267,9 +270,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel("Downloading Track...");
 	emit SetProgressBar(0);
 
-	if (Main->Overwrite && QFile::exists(fullPath)) QFile::remove(fullPath);
-	while(QFile::exists(fullPath))
-		QCoreApplication::processEvents();
+	if (Main->Overwrite && QFile::exists(fullPath))
+		QFile::remove(fullPath);
 
 	_currentProcess = new QProcess();
 	connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
@@ -286,7 +288,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 						.arg(CODEC)
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
-	_currentProcess->waitForFinished();
+	_currentProcess->waitForFinished(-1);
 
 	emit SetProgressBar(1);
 	#pragma endregion
@@ -303,7 +305,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 						.arg(fullPath));
-		_currentProcess->waitForFinished();
+		_currentProcess->waitForFinished(-1);
 
 		// For some reason ffmpeg outputs to StandardError. idk why
 		QString audioOutput = _currentProcess->readAllStandardError();
@@ -322,11 +324,9 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 					.arg(fullPath)
 					.arg(QString("%1dB").arg(volumeApply))
 					.arg(normalizedFullPath));
-				_currentProcess->waitForFinished();
+				_currentProcess->waitForFinished(-1);
 
 				QFile::remove(fullPath);
-				while (QFile::exists(fullPath))
-					QCoreApplication::processEvents();
 				QFile::rename(normalizedFullPath, fullPath);
 			}
 		}
@@ -340,6 +340,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel("Assigning Metadata...");
 
 	TagLib::MPEG::File file(reinterpret_cast<const wchar_t*>(fullPath.constData()));
+
 	TagLib::ID3v2::Tag* tag = file.ID3v2Tag(true);
 	tag->setTitle(reinterpret_cast<const wchar_t*>(trackTitle.constData()));
 	tag->setArtist(reinterpret_cast<const wchar_t*>(songArtistNames.constData()));
@@ -432,7 +433,14 @@ SongDownloader::~SongDownloader() {
 	QString downloadingPath = QString("%1.m4a").arg(path);
 	if (QFile::exists(downloadingPath)) {
 		QFile::remove(downloadingPath);
-		while(QFile::exists(downloadingPath))
+		while (QFile::exists(downloadingPath))
+			QCoreApplication::processEvents();
+	}
+
+	QString downloadingPathPart = QString("%1.m4a.part").arg(path);
+	if (QFile::exists(downloadingPathPart)) {
+		QFile::remove(downloadingPathPart);
+		while (QFile::exists(downloadingPathPart))
 			QCoreApplication::processEvents();
 	}
 

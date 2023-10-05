@@ -27,7 +27,8 @@ class YTMusicAPI {
 		int TimeToSeconds(QString time);
 
 		QNetworkRequest _request;
-		QJsonObject _context;
+
+		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one
 };
 
 #endif

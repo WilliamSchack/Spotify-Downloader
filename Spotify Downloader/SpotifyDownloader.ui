@@ -442,32 +442,6 @@ color: rgb(255, 255, 255);</string>
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="ETALabel">
-     <property name="geometry">
-      <rect>
-       <x>590</x>
-       <y>260</y>
-       <width>171</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>12</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>Song ETA: (0)</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
     <widget class="QLabel" name="SongTitle">
      <property name="geometry">
       <rect>
@@ -584,7 +558,6 @@ color: rgb(255, 255, 255);</string>
     <zorder>ProgressBar_Back</zorder>
     <zorder>ProgressLabel</zorder>
     <zorder>SongImage</zorder>
-    <zorder>ETALabel</zorder>
     <zorder>ProgressBar_Front</zorder>
     <zorder>SongArtists</zorder>
     <zorder>PlayButton</zorder>
@@ -889,7 +862,7 @@ color: rgb(0, 0, 0);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>dBFS</string>
+      <string>dB</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

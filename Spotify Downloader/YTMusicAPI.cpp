@@ -1,23 +1,6 @@
 #include "YTMusicAPI.h"
 
 YTMusicAPI::YTMusicAPI() {
-	// Context
-	std::time_t rawTime;
-	struct tm* timeInfo;
-	char buffer[80];
-	std::time(&rawTime);
-	timeInfo = std::localtime(&rawTime);
-	std::strftime(buffer, sizeof(buffer), "%Y%m%d", timeInfo);
-	QString clientVersion = QString("1.%1.01.00").arg(buffer);
-
-	_context = QJsonObject {
-		{"client", QJsonObject{
-			{"clientName", "WEB_REMIX"},
-			{"clientVersion", clientVersion}
-		}},
-		{"user", QJsonObject{}}
-	};
-
 	// Network Request
 	QUrl url = QUrl("https://music.youtube.com/youtubei/v1/search/?alt=json");
 	_request = QNetworkRequest(url);
@@ -27,6 +10,24 @@ YTMusicAPI::YTMusicAPI() {
 	_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	_request.setRawHeader("content-encoding", "gzip");
 	_request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
+}
+
+QJsonObject YTMusicAPI::GetContext() {
+	std::time_t rawTime;
+	struct tm* timeInfo;
+	char buffer[80];
+	std::time(&rawTime);
+	timeInfo = std::localtime(&rawTime);
+	std::strftime(buffer, sizeof(buffer), "%Y%m%d", timeInfo);
+	QString clientVersion = QString("1.%1.01.00").arg(buffer);
+
+	return QJsonObject{
+		{"client", QJsonObject{
+			{"clientName", "WEB_REMIX"},
+			{"clientVersion", clientVersion}
+		}},
+		{"user", QJsonObject{}}
+	};
 }
 
 QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
@@ -39,7 +40,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 	QJsonObject body {
 		{"query", query},
 		{"params", searchParams},
-		{"context", _context}
+		{"context", GetContext()}
 	};
 
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
