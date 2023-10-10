@@ -59,7 +59,7 @@
     <enum>QFrame::Raised</enum>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="SetupScreen">
     <widget class="QPlainTextEdit" name="PlaylistURLInput">
@@ -566,6 +566,9 @@ color: rgb(255, 255, 255);</string>
    </widget>
    <widget class="QWidget" name="NewProcessing">
     <widget class="QLabel" name="PauseWarning_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>60</x>
@@ -586,7 +589,7 @@ color: rgb(255, 255, 255);</string>
 background-color: rgb(30, 30, 30);</string>
      </property>
      <property name="text">
-      <string>FINISHING CURRENT TASK</string>
+      <string>FINISHING CURRENT TASKS</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -770,175 +773,81 @@ color: rgb(255, 255, 255);</string>
       <enum>QFrame::Raised</enum>
      </property>
     </widget>
-    <widget class="DownloaderThread" name="SongBacking" native="true">
+    <widget class="QScrollArea" name="DownloadingScrollArea">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>4</x>
-       <y>15</y>
-       <width>779</width>
-       <height>115</height>
+       <x>2</x>
+       <y>2</y>
+       <width>785</width>
+       <height>309</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(30, 30, 30);</string>
+      <string notr="true">background-color: rgb(64, 64, 64);
+color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
      </property>
-     <widget class="QLabel" name="SongTitle_2">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <widget class="QWidget" name="downloadingScrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>118</x>
-        <y>5</y>
-        <width>651</width>
-        <height>41</height>
+        <x>0</x>
+        <y>0</y>
+        <width>783</width>
+        <height>307</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>20</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(30, 30, 30);</string>
-      </property>
-      <property name="text">
-       <string>Song Title</string>
-      </property>
+      <layout class="QVBoxLayout" name="ScrollLayout_2">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="DownloadingSpaceFillerLayout">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QFrame" name="DownloadingSpaceFillerFrame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
-     <widget class="QLabel" name="SongImage_2">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>5</y>
-        <width>105</width>
-        <height>105</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(64, 64, 64);</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="scaledContents">
-       <bool>false</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="SongCount_3">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>78</y>
-        <width>41</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Impact</family>
-        <pointsize>12</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(64, 64, 64);
-background-color: rgb(54, 54, 54);
-color: rgb(255, 255, 255);</string>
-      </property>
-      <property name="text">
-       <string>0/0</string>
-      </property>
-      <property name="margin">
-       <number>5</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="ProgressLabel_2">
-      <property name="geometry">
-       <rect>
-        <x>555</x>
-        <y>76</y>
-        <width>211</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>12</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(30, 30, 30);</string>
-      </property>
-      <property name="text">
-       <string>Progress...</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-     <widget class="QWidget" name="ProgressBar_Back_2" native="true">
-      <property name="geometry">
-       <rect>
-        <x>118</x>
-        <y>78</y>
-        <width>431</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(182, 182, 182);</string>
-      </property>
-     </widget>
-     <widget class="QWidget" name="ProgressBar_Front_2" native="true">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>80</y>
-        <width>427</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 100, 0);</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="SongArtists_2">
-      <property name="geometry">
-       <rect>
-        <x>118</x>
-        <y>42</y>
-        <width>651</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Segoe UI</family>
-        <pointsize>15</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(30, 30, 30);</string>
-      </property>
-      <property name="text">
-       <string>Song Artists</string>
-      </property>
-     </widget>
-     <zorder>SongImage_2</zorder>
-     <zorder>SongCount_3</zorder>
-     <zorder>ProgressLabel_2</zorder>
-     <zorder>ProgressBar_Back_2</zorder>
-     <zorder>ProgressBar_Front_2</zorder>
-     <zorder>SongArtists_2</zorder>
-     <zorder>SongTitle_2</zorder>
     </widget>
-    <zorder>SongBacking</zorder>
+    <zorder>DownloadingScrollArea</zorder>
     <zorder>BottomBacking</zorder>
     <zorder>PauseWarning_2</zorder>
     <zorder>PlayButton_2</zorder>
@@ -1068,7 +977,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
+     <widget class="QWidget" name="errorScrollAreaWidgetContents">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -1082,9 +991,9 @@ selection-background-color: rgb(0, 120, 215);</string>
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="SpaceFillerLayout">
+        <layout class="QVBoxLayout" name="ErrorSpaceFillerLayout">
          <item>
-          <widget class="QFrame" name="SpaceFillerFrame">
+          <widget class="QFrame" name="ErrorSpaceFillerFrame">
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
            </property>
@@ -1501,7 +1410,7 @@ color: rgb(0, 0, 0);</string>
       <enum>Qt::StrongFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can download at once.&lt;/p&gt;&lt;p&gt;Can effect overall computer performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Can effect overall computer performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);
@@ -1519,12 +1428,6 @@ selection-background-color: rgb(0, 120, 215);</string>
    <class>CheckBox</class>
    <extends>QPushButton</extends>
    <header>CustomWidgets.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DownloaderThread</class>
-   <extends>QWidget</extends>
-   <header>CustomWidgets.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

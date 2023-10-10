@@ -11,14 +11,25 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
 
-void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album) {
+void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
+	qDebug() << "THREAD STARTED";
+
 	Main = main;
 	_yt = yt;
+	qDebug() << "threadindex";
+	_threadIndex = threadIndex;
+
+	qDebug() << "HI";
+	_totalSongCount = tracks.count();
 
 	QThread* thread = QThread::currentThread();
 
-	emit SetProgressLabel("Getting Playlist Data...");
+	qDebug() << "starting";
+	emit SetProgressLabel(_threadIndex, "Getting Playlist Data...");
+	qDebug() << "its that";
 	emit ShowMessage("Starting Download!", "This may take a while...");
+
+	qDebug() << "not that";
 
 	//QString url = Main->PlaylistURLText;
 	//QString spotifyId = url.split("/").last().split("?")[0];
@@ -36,7 +47,7 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 	//_totalSongCount = tracks.count();
 	//emit SetSongCount(0, _totalSongCount);
 
-	QThread::sleep(1);
+	//QThread::sleep(1);
 	_tracksNotFound = QJsonArray();
 	qDebug() << "starting: " + tracks.count();
 	for (int i = 0; i < tracks.count(); i++) {
@@ -55,12 +66,12 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 	}
 
 	if (_tracksNotFound.count() == 0) {
-		emit ChangeScreen(2);
+		emit ChangeScreen(3);
 		emit ShowMessage("Downloads Complete!", "No download errors!");
 		return;
 	}
 
-	emit ChangeScreen(3);
+	emit ChangeScreen(4);
 	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
 	emit SetErrorItems(_tracksNotFound);
 }
@@ -104,7 +115,9 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	#pragma region Download Cover Art
-	emit SetProgressLabel("Downloading Cover Art...");
+	qDebug() << "its this";
+
+	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 
 	QString coverFilename = QString("%1(%2)_Cover").arg(albumName).arg(albumArtistNames);
 	coverFilename = ValidateString(coverFilename);
@@ -123,16 +136,16 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	#pragma region Assign Data To GUI
-	emit SetSongImage(QPixmap::fromImage(image));
-	emit SetSongDetails(trackTitle, songArtistNames.replace(";", ","));
-	emit SetSongCount(count + 1, _totalSongCount);
+	emit SetSongImage(_threadIndex, QPixmap::fromImage(image));
+	emit SetSongDetails(_threadIndex, trackTitle, songArtistNames.replace(";", ","));
+	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
 	#pragma endregion
 
 	CheckForStop();
 	if (_quitting) return;
 
 	#pragma region Search For Song
-	emit SetProgressLabel("Searching...");
+	emit SetProgressLabel(_threadIndex, "Searching...");
 
 	QString searchQuery = QString(R"(%1 - "%2" - %3)").arg(artistName).arg(trackTitle).arg(albumName);
 	QJsonArray searchResults = _yt->Search(searchQuery, "songs", 6);
@@ -253,7 +266,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		}
 
 	} else {
-		emit SetProgressLabel("SONG NOT FOUND");
+		emit SetProgressLabel(_threadIndex, "SONG NOT FOUND");
 		_tracksNotFound.append(QJsonObject{
 			{"title", trackTitle},
 			{"album", albumName},
@@ -272,8 +285,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	#pragma region Download Track
-	emit SetProgressLabel("Downloading Track...");
-	emit SetProgressBar(0);
+	emit SetProgressLabel(_threadIndex, "Downloading Track...");
+	emit SetProgressBar(_threadIndex, 0);
 
 	if (Main->Overwrite && QFile::exists(fullPath))
 		QFile::remove(fullPath);
@@ -284,7 +297,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		QString output = _currentProcess->readAll();
 		if (output.contains("%")) {
 			QString progress = output.split("]")[1].split("%")[0];
-			emit SetProgressBar(progress.toFloat() / 100);
+			emit SetProgressBar(_threadIndex, progress.toFloat() / 100);
 		}
 	});
 	_currentProcess->startCommand(QString(R"("%1" -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
@@ -295,7 +308,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
 	_currentProcess->waitForFinished(-1);
 
-	emit SetProgressBar(1);
+	while (!QFile::exists(fullPath))
+		QCoreApplication::processEvents();
+
+	emit SetProgressBar(_threadIndex, 1);
 	#pragma endregion
 
 	CheckForStop();
@@ -303,7 +319,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	#pragma region Normalize Audio
 	if (Main->NormalizeAudio) {
-		emit SetProgressLabel("Normalizing Audio...");
+		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 
 		_currentProcess = new QProcess();
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
@@ -332,7 +348,12 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 				_currentProcess->waitForFinished(-1);
 
 				QFile::remove(fullPath);
+				//while (QFile::exists(fullPath))
+				//	QCoreApplication::processEvents();
+
 				QFile::rename(normalizedFullPath, fullPath);
+				//while (!QFile::exists(fullPath))
+				//	QCoreApplication::processEvents();
 			}
 		}
 	}
@@ -342,7 +363,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	#pragma region Assign Metadata
-	emit SetProgressLabel("Assigning Metadata...");
+	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 
 	TagLib::MPEG::File file(reinterpret_cast<const wchar_t*>(fullPath.constData()));
 
@@ -386,7 +407,7 @@ void SongDownloader::CheckForStop() {
 	// Paused
 	if (!Main->Paused) return;
 
-	emit HidePauseWarning();
+	emit HidePauseWarning(_threadIndex);
 	while (Main->Paused) {
 		QCoreApplication::processEvents();
 	}

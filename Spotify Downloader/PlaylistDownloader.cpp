@@ -8,7 +8,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QThread* thread = QThread::currentThread();
 	//_threads = QList<Worker*>();
 
-	emit SetProgressLabel("Getting Playlist Data...");
+	//emit SetProgressLabel("Getting Playlist Data...");
 	emit ShowMessage("Starting Download!", "This may take a while...");
 
 	QString url = Main->PlaylistURLText;
@@ -27,17 +27,19 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	else tracks = QJsonArray{ _sp->GetTrack(spotifyId) };
 
 	_totalSongCount = tracks.count();
-	emit SetSongCount(0, _totalSongCount);
+	emit SetSongCount(-1, 0, _totalSongCount);
 
 	_tracksNotFound = QJsonArray();
 
-	float threadSongCount = (_totalSongCount * 1.0) / 3;
-	float firstsecond = std::ceil(threadSongCount);
-	float third = std::floor(threadSongCount);
+	int targetThreadCount = Main->ThreadCount;
 
-	int threadCount = _totalSongCount < THREAD_COUNT ? _totalSongCount : THREAD_COUNT;
+	int threadCount = _totalSongCount < targetThreadCount ? _totalSongCount : targetThreadCount;
 	int baseCount = _totalSongCount / threadCount;
 	int lastCount = _totalSongCount % threadCount;
+
+	qDebug() << threadCount;
+
+	qDebug() << "downloading";
 
 	QList<QJsonArray> trackList = QList<QJsonArray>();
 	for (int i = 0; i < threadCount; i++) {
@@ -104,34 +106,54 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 }
 
 void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject album) {
+	
+	qDebug() << "setting up";
+	emit SetupUI(tracks.count());
+	
+	qDebug() << "waiting";
+	//QThread::sleep(5);
+	qDebug() << "starting back up again";
+
 	for (int i = 0; i < tracks.count(); i++) {
-		Worker* thread = new Worker;
+		qDebug() << "next";
+		Worker* worker = new Worker();
+
+		//SongDownloader* downloader = new SongDownloader();
+		//QThread thread;
 
 		// Get thread ready to be started
-		thread->Downloader = new SongDownloader();
-		thread->Downloader->moveToThread(&thread->Thread);
-		connect(&thread->Thread, &QThread::finished, thread->Downloader, &QObject::deleteLater);
-		connect(this, &PlaylistDownloader::DownloadOnThread, thread->Downloader, &SongDownloader::DownloadSongs);
+		worker->Downloader = new SongDownloader();
+		worker->Downloader->moveToThread(&worker->Thread);
+		connect(&worker->Thread, &QThread::finished, worker->Downloader, &QObject::deleteLater);
+		connect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
 
 		// Allow thread to access ui elements
-		connect(thread->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
-		connect(thread->Downloader, &SongDownloader::ShowMessage, Main, &SpotifyDownloader::ShowMessage);
-		connect(thread->Downloader, &SongDownloader::SetProgressLabel, Main, &SpotifyDownloader::SetProgressLabel);
-		connect(thread->Downloader, &SongDownloader::SetProgressBar, Main, &SpotifyDownloader::SetProgressBar);
-		connect(thread->Downloader, &SongDownloader::SetSongCount, Main, &SpotifyDownloader::SetSongCount);
-		connect(thread->Downloader, &SongDownloader::SetSongImage, Main, &SpotifyDownloader::SetSongImage);
-		connect(thread->Downloader, &SongDownloader::SetSongDetails, Main, &SpotifyDownloader::SetSongDetails);
-		connect(thread->Downloader, &SongDownloader::SetErrorItems, Main, &SpotifyDownloader::SetErrorItems);
-		connect(thread->Downloader, &SongDownloader::HidePauseWarning, Main, &SpotifyDownloader::HidePauseWarning);
+		connect(worker->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
+		connect(worker->Downloader, &SongDownloader::ShowMessage, Main, &SpotifyDownloader::ShowMessage);
+		connect(worker->Downloader, &SongDownloader::SetProgressLabel, Main, &SpotifyDownloader::SetProgressLabel);
+		connect(worker->Downloader, &SongDownloader::SetProgressBar, Main, &SpotifyDownloader::SetProgressBar);
+		connect(worker->Downloader, &SongDownloader::SetSongCount, Main, &SpotifyDownloader::SetSongCount);
+		connect(worker->Downloader, &SongDownloader::SetSongImage, Main, &SpotifyDownloader::SetSongImage);
+		connect(worker->Downloader, &SongDownloader::SetSongDetails, Main, &SpotifyDownloader::SetSongDetails);
+		connect(worker->Downloader, &SongDownloader::SetErrorItems, Main, &SpotifyDownloader::SetErrorItems);
+		connect(worker->Downloader, &SongDownloader::HidePauseWarning, Main, &SpotifyDownloader::HidePauseWarning);
 
-		thread->Thread.start();
+		qDebug() << "downloading";
 
-		emit DownloadOnThread(Main, _yt, tracks[i], album);
+		worker->Thread.start();
 
-		disconnect(this, &PlaylistDownloader::DownloadOnThread, thread->Downloader, &SongDownloader::DownloadSongs);
+		qDebug() << "emit";
+		emit DownloadOnThread(Main, _yt, tracks[i], album, i);
+
+		qDebug() << "disconnect";
+		disconnect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
 
 		//connect(this, &PlaylistDownloader::StartDownloading, thread, &Worker::Start);
 
 		//_threads << thread;
+
+		qDebug() << "done with this one";
 	}
+
+	qDebug() << "done";
 }

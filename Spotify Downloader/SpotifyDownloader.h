@@ -50,6 +50,7 @@ class SpotifyDownloader : public QDialog
         bool Overwrite = false;
         bool Notifications = true;
 
+        int ThreadCount = 3;
         int DownloadSpeed = 0;
 
         bool NormalizeAudio = true;
@@ -60,23 +61,26 @@ class SpotifyDownloader : public QDialog
 
         bool Paused = false;
     public slots:
+        void SetupUI(int count);
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
-        void SetProgressLabel(QString text);
-        void SetProgressBar(float percentage);
-        void SetSongCount(int currentCount, int totalCount);
-        void SetSongImage(QPixmap image);
-        void SetSongDetails(QString title, QString artists);
+        void SetProgressLabel(int threadIndex, QString text);
+        void SetProgressBar(int threadIndex, float percentage);
+        void SetSongCount(int threadIndex, int currentCount, int totalCount);
+        void SetSongImage(int threadIndex, QPixmap image);
+        void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
-        void HidePauseWarning();
+        void HidePauseWarning(int threadIndex);
     signals:
         void operate(const SpotifyDownloader* main);
     private:
         Ui::SpotifyDownloader _ui;
         //SongDownloader* _songDownloader;
-        PlaylistDownloader* _songDownloader;
+        PlaylistDownloader* _playlistDownloader;
 
         QSystemTrayIcon* _trayIcon;
+
+        QList<DownloaderThread*> _downloaderUI;
 
         int _totalSongs = 0;
         int _songsCompleted = 0;
@@ -105,12 +109,11 @@ class PlaylistDownloader : public QObject {
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
     signals:
-        void DownloadOnThread(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album);
+        void SetupUI(int count);
+        void DownloadOnThread(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
     private:
         //QList<Worker*> _threads;
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
-
-        const int THREAD_COUNT = 3;
 
         const QString CODEC = "mp3";
         const QString YTDLP_PATH = "yt-dlp.exe";
@@ -127,15 +130,15 @@ class PlaylistDownloader : public QObject {
     signals:
         //void StartDownloading(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album);
 
-        void ChangeScreen(int screenIndex);
+        //void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
-        void SetProgressLabel(QString text);
-        void SetProgressBar(float percentage);
-        void SetSongCount(int currentCount, int totalCount);
-        void SetSongImage(QPixmap image);
-        void SetSongDetails(QString title, QString artists);
-        void SetErrorItems(QJsonArray tracks);
-        void HidePauseWarning();
+        //void SetProgressLabel(int threadIndex, QString text);
+        //void SetProgressBar(int threadIndex, float percentage);
+        void SetSongCount(int threadIndex, int currentCount, int totalCount);
+        //void SetSongImage(int threadIndex, QPixmap image);
+        //void SetSongDetails(int threadIndex, QString title, QString artists);
+        //void SetErrorItems(int threadIndex, QJsonArray tracks);
+        //void HidePauseWarning(int threadIndex);
 };
 
 class SongDownloader : public QObject {
@@ -147,7 +150,7 @@ class SongDownloader : public QObject {
         static float Lerp(float a, float b, float t);
     public slots:
         //void DownloadSongs(const SpotifyDownloader* main);
-        void DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album);
+        void DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
     private:
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
         void CheckForStop();
@@ -163,6 +166,8 @@ class SongDownloader : public QObject {
         const SpotifyDownloader* Main;
         YTMusicAPI* _yt;
 
+        int _threadIndex;
+
         QProcess* _currentProcess;
         bool _quitting = false;
 
@@ -172,13 +177,13 @@ class SongDownloader : public QObject {
     signals:
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
-        void SetProgressLabel(QString text);
-        void SetProgressBar(float percentage);
-        void SetSongCount(int currentCount, int totalCount);
-        void SetSongImage(QPixmap image);
-        void SetSongDetails(QString title, QString artists);
+        void SetProgressLabel(int threadIndex, QString text);
+        void SetProgressBar(int threadIndex, float percentage);
+        void SetSongCount(int threadIndex, int currentCount, int totalCount);
+        void SetSongImage(int threadIndex, QPixmap image);
+        void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
-        void HidePauseWarning();
+        void HidePauseWarning(int threadIndex);
 };
 
 #endif
