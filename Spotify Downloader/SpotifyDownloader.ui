@@ -59,7 +59,7 @@
     <enum>QFrame::Raised</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="SetupScreen">
     <widget class="QPlainTextEdit" name="PlaylistURLInput">
@@ -564,6 +564,388 @@ color: rgb(255, 255, 255);</string>
     <zorder>SongTitle</zorder>
     <zorder>SongCount</zorder>
    </widget>
+   <widget class="QWidget" name="NewProcessing">
+    <widget class="QLabel" name="PauseWarning_2">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>320</y>
+       <width>641</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(200, 0, 0);
+background-color: rgb(30, 30, 30);</string>
+     </property>
+     <property name="text">
+      <string>FINISHING CURRENT TASK</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="PlayButton_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>710</x>
+       <y>320</y>
+       <width>32</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/SpotifyDownloader/PlayButton.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>25</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="SettingsButton_3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>320</y>
+       <width>32</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/SpotifyDownloader/SettingsCog.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>25</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="SongCount_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>320</y>
+       <width>41</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Impact</family>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(30, 30, 30);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>0/0</string>
+     </property>
+     <property name="margin">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="PauseButton_2">
+     <property name="geometry">
+      <rect>
+       <x>710</x>
+       <y>320</y>
+       <width>32</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/SpotifyDownloader/Pause_Icon.png</normalon>
+      </iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>25</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QFrame" name="BottomBacking">
+     <property name="geometry">
+      <rect>
+       <x>2</x>
+       <y>314</y>
+       <width>785</width>
+       <height>42</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(30, 30, 30);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+    <widget class="DownloaderThread" name="SongBacking" native="true">
+     <property name="geometry">
+      <rect>
+       <x>4</x>
+       <y>15</y>
+       <width>779</width>
+       <height>115</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(30, 30, 30);</string>
+     </property>
+     <widget class="QLabel" name="SongTitle_2">
+      <property name="geometry">
+       <rect>
+        <x>118</x>
+        <y>5</y>
+        <width>651</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>20</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(30, 30, 30);</string>
+      </property>
+      <property name="text">
+       <string>Song Title</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="SongImage_2">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>5</y>
+        <width>105</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(64, 64, 64);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="SongCount_3">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>78</y>
+        <width>41</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Impact</family>
+        <pointsize>12</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(64, 64, 64);
+background-color: rgb(54, 54, 54);
+color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>0/0</string>
+      </property>
+      <property name="margin">
+       <number>5</number>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ProgressLabel_2">
+      <property name="geometry">
+       <rect>
+        <x>555</x>
+        <y>76</y>
+        <width>211</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>12</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(30, 30, 30);</string>
+      </property>
+      <property name="text">
+       <string>Progress...</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="ProgressBar_Back_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>118</x>
+        <y>78</y>
+        <width>431</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(182, 182, 182);</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="ProgressBar_Front_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>80</y>
+        <width>427</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(0, 100, 0);</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="SongArtists_2">
+      <property name="geometry">
+       <rect>
+        <x>118</x>
+        <y>42</y>
+        <width>651</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI</family>
+        <pointsize>15</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(30, 30, 30);</string>
+      </property>
+      <property name="text">
+       <string>Song Artists</string>
+      </property>
+     </widget>
+     <zorder>SongImage_2</zorder>
+     <zorder>SongCount_3</zorder>
+     <zorder>ProgressLabel_2</zorder>
+     <zorder>ProgressBar_Back_2</zorder>
+     <zorder>ProgressBar_Front_2</zorder>
+     <zorder>SongArtists_2</zorder>
+     <zorder>SongTitle_2</zorder>
+    </widget>
+    <zorder>SongBacking</zorder>
+    <zorder>BottomBacking</zorder>
+    <zorder>PauseWarning_2</zorder>
+    <zorder>PlayButton_2</zorder>
+    <zorder>SettingsButton_3</zorder>
+    <zorder>PauseButton_2</zorder>
+    <zorder>SongCount_2</zorder>
+   </widget>
    <widget class="QWidget" name="CompletedScreen">
     <widget class="QLabel" name="CompletedLabel_2">
      <property name="geometry">
@@ -718,14 +1100,14 @@ selection-background-color: rgb(0, 120, 215);</string>
     </widget>
    </widget>
    <widget class="QWidget" name="SettingsScreen">
-    <widget class="QSpinBox" name="DownloadSpeedSettingInput">
+    <widget class="QDoubleSpinBox" name="DownloadSpeedSettingInput">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
        <x>520</x>
-       <y>160</y>
+       <y>185</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -753,18 +1135,12 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
      </property>
-     <property name="maximum">
-      <number>2147483647</number>
-     </property>
-     <property name="value">
-      <number>0</number>
-     </property>
     </widget>
     <widget class="QLabel" name="NormalizeVolumeSettingLabel">
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>210</y>
+       <y>235</y>
        <width>301</width>
        <height>41</height>
       </rect>
@@ -793,7 +1169,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>110</y>
+       <y>85</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -815,7 +1191,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>260</y>
+       <y>285</y>
        <width>451</width>
        <height>41</height>
       </rect>
@@ -846,7 +1222,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>625</x>
-       <y>210</y>
+       <y>235</y>
        <width>71</width>
        <height>41</height>
       </rect>
@@ -875,7 +1251,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>60</y>
+       <y>35</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -897,7 +1273,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>110</y>
+       <y>85</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -923,7 +1299,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>625</x>
-       <y>160</y>
+       <y>185</y>
        <width>71</width>
        <height>41</height>
       </rect>
@@ -952,7 +1328,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>520</x>
-       <y>210</y>
+       <y>235</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -974,7 +1350,7 @@ color: rgb(0, 0, 0);</string>
       <enum>Qt::StrongFocus</enum>
      </property>
      <property name="toolTip">
-      <string>Can Use Negative Values Aswell</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);
@@ -1000,7 +1376,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>470</x>
-       <y>210</y>
+       <y>235</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -1022,7 +1398,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>60</y>
+       <y>35</y>
        <width>401</width>
        <height>41</height>
       </rect>
@@ -1048,7 +1424,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>160</y>
+       <y>185</y>
        <width>301</width>
        <height>41</height>
       </rect>
@@ -1070,6 +1446,71 @@ color: rgb(0, 0, 0);</string>
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
     </widget>
+    <widget class="QLabel" name="DownloaderThreadsLabel">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>135</y>
+       <width>301</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>20</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Downloader Threads</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="DownloaderThreadsInput">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>135</y>
+       <width>101</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>14</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
+     </property>
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can download at once.&lt;/p&gt;&lt;p&gt;Can effect overall computer performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="value">
+      <number>3</number>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
@@ -1078,6 +1519,12 @@ color: rgb(0, 0, 0);</string>
    <class>CheckBox</class>
    <extends>QPushButton</extends>
    <header>CustomWidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DownloaderThread</class>
+   <extends>QWidget</extends>
+   <header>CustomWidgets.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

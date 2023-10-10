@@ -35,7 +35,7 @@ void SpotifyDownloader::SetupTrayIcon() {
         }
 
         ShowMessage("Not Started Yet", "No progress to show...");
-        });
+    });
 
     QAction* quitAction = new QAction(tr("Exit"));
     connect(quitAction, &QAction::triggered, this, &QWidget::close);
@@ -192,22 +192,39 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
 
 void SpotifyDownloader::SetupDownloaderThread() {
 
+    //// Get thread ready to be started
+    //_songDownloader = new SongDownloader();
+    //_songDownloader->moveToThread(&workerThread);
+    //connect(&workerThread, &QThread::finished, _songDownloader, &QObject::deleteLater);
+    //connect(this, &SpotifyDownloader::operate, _songDownloader, &SongDownloader::DownloadSongs);
+    //
+    //// Allow thread to access ui elements
+    //connect(_songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    //connect(_songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
+    //connect(_songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
+    //connect(_songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
+    //connect(_songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
+    //connect(_songDownloader, &SongDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
+    //connect(_songDownloader, &SongDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
+    //connect(_songDownloader, &SongDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    //connect(_songDownloader, &SongDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
+
     // Get thread ready to be started
-    _songDownloader = new SongDownloader();
+    _songDownloader = new PlaylistDownloader();
     _songDownloader->moveToThread(&workerThread);
     connect(&workerThread, &QThread::finished, _songDownloader, &QObject::deleteLater);
-    connect(this, &SpotifyDownloader::operate, _songDownloader, &SongDownloader::DownloadSongs);
+    connect(this, &SpotifyDownloader::operate, _songDownloader, &PlaylistDownloader::DownloadSongs);
 
     // Allow thread to access ui elements
-    connect(_songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
-    connect(_songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
-    connect(_songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
-    connect(_songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
-    connect(_songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
-    connect(_songDownloader, &SongDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
-    connect(_songDownloader, &SongDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
-    connect(_songDownloader, &SongDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
-    connect(_songDownloader, &SongDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
+    connect(_songDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    connect(_songDownloader, &PlaylistDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
+    connect(_songDownloader, &PlaylistDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
+    connect(_songDownloader, &PlaylistDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
+    connect(_songDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
+    connect(_songDownloader, &PlaylistDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
+    connect(_songDownloader, &PlaylistDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
+    connect(_songDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_songDownloader, &PlaylistDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
 }
 
 // Application Exit

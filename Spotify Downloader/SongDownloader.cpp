@@ -11,36 +11,39 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
 
-void SongDownloader::DownloadSongs(const SpotifyDownloader* main) {
+void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album) {
 	Main = main;
+	_yt = yt;
 
 	QThread* thread = QThread::currentThread();
 
 	emit SetProgressLabel("Getting Playlist Data...");
 	emit ShowMessage("Starting Download!", "This may take a while...");
 
-	QString url = Main->PlaylistURLText;
-	QString spotifyId = url.split("/").last().split("?")[0];
-	QJsonArray tracks = QJsonArray();
-	QJsonObject album = QJsonObject();
+	//QString url = Main->PlaylistURLText;
+	//QString spotifyId = url.split("/").last().split("?")[0];
+	//QJsonArray tracks = QJsonArray();
+	//QJsonObject album = QJsonObject();
+	//
+	//SpotifyAPI sp = SpotifyAPI();
+	//if (url.contains("playlist")) tracks = sp.GetPlaylistTracks(spotifyId);
+	//else if (url.contains("album")) {
+	//	album = sp.GetAlbum(spotifyId);
+	//	tracks = sp.GetAlbumTracks(album);
+	//}
+	//else tracks = QJsonArray{ sp.GetTrack(spotifyId) };
+	//
+	//_totalSongCount = tracks.count();
+	//emit SetSongCount(0, _totalSongCount);
 
-	_yt = YTMusicAPI();
-
-	SpotifyAPI sp = SpotifyAPI();
-	if (url.contains("playlist")) tracks = sp.GetPlaylistTracks(spotifyId);
-	else if (url.contains("album")) {
-		album = sp.GetAlbum(spotifyId);
-		tracks = sp.GetAlbumTracks(album);
-	}
-	else tracks = QJsonArray{ sp.GetTrack(spotifyId) };
-
-	_totalSongCount = tracks.count();
-	emit SetSongCount(0, _totalSongCount);
-
+	QThread::sleep(1);
 	_tracksNotFound = QJsonArray();
-	for (int i = 0; i < _totalSongCount; i++) {
+	qDebug() << "starting: " + tracks.count();
+	for (int i = 0; i < tracks.count(); i++) {
 		QJsonObject track = tracks[i].toObject();
-		if (url.contains("playlist")) track = track["track"].toObject();
+		//if (url.contains("playlist")) track = track["track"].toObject();
+
+		qDebug() << track;
 
 		_currentTrack = track;
 		DownloadSong(track, i, album);
@@ -74,6 +77,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	float songTime = track["duration_ms"].toDouble() / 1000;
 	QString songId = track["id"].toString();
 	QString albumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
+
+	qDebug() << "DOWNLOADING: " + trackTitle;
 
 	QStringList songArtistNamesList = QStringList();
 	foreach(QJsonValue artist, songArtistsList) {
@@ -130,8 +135,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel("Searching...");
 
 	QString searchQuery = QString(R"(%1 - "%2" - %3)").arg(artistName).arg(trackTitle).arg(albumName);
-	QJsonArray searchResults = _yt.Search(searchQuery, "songs", 6);
-	searchResults = JSONUtils::Extend(searchResults, _yt.Search(searchQuery, "videos", 6));
+	QJsonArray searchResults = _yt->Search(searchQuery, "songs", 6);
+	searchResults = JSONUtils::Extend(searchResults, _yt->Search(searchQuery, "videos", 6));
 	
 	QJsonArray finalResults = QJsonArray();
 	foreach(QJsonValue val, searchResults) {
