@@ -30,7 +30,6 @@ class DownloaderThread : public QWidget {
 		QLabel* SongImage;
 		QLabel* SongCount;
 		QLabel* ProgressLabel;
-		QLabel* FinishedLabel;
 
 		QWidget* ProgressBar_Front;
 	private:

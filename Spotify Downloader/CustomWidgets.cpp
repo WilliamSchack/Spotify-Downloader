@@ -35,23 +35,10 @@ DownloaderThread::DownloaderThread(QWidget* parent) :QWidget(parent) {
 	font3.setPointSize(12);
 	font3.setBold(true);
 
-	QFont font4 = QFont();
-	font4.setFamily("Segoe UI");
-	font4.setPointSize(26);
-	font4.setBold(true);
-
 	this->setObjectName("DownloaderThread");
 	this->setGeometry(QRect(14, 15, 759, 115));
 	this->setMinimumSize(0, 115);
 	this->setMaximumSize(16777215, 115);
-
-	FinishedLabel = new QLabel(this);
-	FinishedLabel->setObjectName("FinishedLabel");
-	FinishedLabel->setGeometry(rect());
-	FinishedLabel->setFont(font4);
-	FinishedLabel->setText("Thread Finished");
-	FinishedLabel->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
-	FinishedLabel->setAlignment(Qt::AlignCenter);
 
 	Background = new QWidget(this);
 	Background->setGeometry(QRect(0, 0, 1000, 115));
