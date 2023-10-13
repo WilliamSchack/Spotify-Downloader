@@ -1,14 +1,10 @@
 #include "SpotifyDownloader.h"
 
 void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
-	qDebug() << "downloading";
-
 	Main = main;
 
 	QThread* thread = QThread::currentThread();
-	//_threads = QList<Worker*>();
 
-	//emit SetProgressLabel("Getting Playlist Data...");
 	emit ShowMessage("Starting Download!", "This may take a while...");
 
 	QString url = Main->PlaylistURLText;
@@ -30,21 +26,18 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	emit SetSongCount(-1, 0, _totalSongCount);
 
 	_tracksNotFound = QJsonArray();
+	_songsDownloaded = 0;
+	_threadsFinished = 0;
 
 	int targetThreadCount = Main->ThreadCount;
-
-	int threadCount = _totalSongCount < targetThreadCount ? _totalSongCount : targetThreadCount;
-	int baseCount = _totalSongCount / threadCount;
-	int lastCount = _totalSongCount % threadCount;
-
-	qDebug() << threadCount;
-
-	qDebug() << "downloading";
+	_threadCount = _totalSongCount < targetThreadCount ? _totalSongCount : targetThreadCount;
+	int baseCount = _totalSongCount / _threadCount;
+	int lastCount = _totalSongCount % _threadCount;
 
 	QList<QJsonArray> trackList = QList<QJsonArray>();
-	for (int i = 0; i < threadCount; i++) {
+	for (int i = 0; i < _threadCount; i++) {
 		int currentStart = i * baseCount;
-		int currentCount = i < threadCount - 1 ? baseCount : baseCount + lastCount;
+		int currentCount = i < _threadCount - 1 ? baseCount : baseCount + lastCount;
 
 		QJsonArray currentArray = QJsonArray();
 		for (int x = 0; x < currentCount; x++) {
@@ -59,73 +52,21 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		trackList.append(currentArray);
 	}
 
+	emit SetupUI(trackList.count());
 	SetupThreads(trackList, album);
-	
-	//for (int i = 0; i < threadCount; i++) {
-	//	//Worker* worker = _threads[i];
-	//
-	//	//qDebug() << i;
-	//	//qDebug() << worker->Downloader;
-	//	//
-	//	//qDebug() << "starting";
-	//	//
-	//	//worker->Thread.start();
-	//	//worker->Start(Main, _yt, trackList[i], album);
-	//
-	//	//qDebug() << "ended";
-	//}
-
-	//_threads[0]->Thread.start();
-	//_threads[0]->Start(Main);
-
-	//for (int i = 0; i < _totalSongCount; i++) {
-	//	QJsonObject track = tracks[i].toObject();
-	//	if (url.contains("playlist")) track = track["track"].toObject();
-	//
-	//	_currentTrack = track;
-	//	DownloadSong(track, i, album);
-	//
-	//	if (_quitting) {
-	//		this->thread()->quit();
-	//		return;
-	//	}
-	//}
-
-	//delete _yt;
-	//delete _sp;
-	//
-	//if (_tracksNotFound.count() == 0) {
-	//	emit ChangeScreen(2);
-	//	emit ShowMessage("Downloads Complete!", "No download errors!");
-	//	return;
-	//}
-	//
-	//emit ChangeScreen(3);
-	//emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
-	//emit SetErrorItems(_tracksNotFound);
 }
 
 void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject album) {
-	
-	qDebug() << "setting up";
-	emit SetupUI(tracks.count());
-	
-	qDebug() << "waiting";
-	//QThread::sleep(5);
-	qDebug() << "starting back up again";
-
 	for (int i = 0; i < tracks.count(); i++) {
-		qDebug() << "next";
 		Worker* worker = new Worker();
-
-		//SongDownloader* downloader = new SongDownloader();
-		//QThread thread;
 
 		// Get thread ready to be started
 		worker->Downloader = new SongDownloader();
 		worker->Downloader->moveToThread(&worker->Thread);
 		connect(&worker->Thread, &QThread::finished, worker->Downloader, &QObject::deleteLater);
 		connect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
+		connect(worker->Downloader, &SongDownloader::SongDownloaded, this, &PlaylistDownloader::SongDownloaded);
+		connect(worker->Downloader, &SongDownloader::Finish, this, &PlaylistDownloader::FinishThread);
 
 		// Allow thread to access ui elements
 		connect(worker->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
@@ -138,22 +79,39 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		connect(worker->Downloader, &SongDownloader::SetErrorItems, Main, &SpotifyDownloader::SetErrorItems);
 		connect(worker->Downloader, &SongDownloader::HidePauseWarning, Main, &SpotifyDownloader::HidePauseWarning);
 
-		qDebug() << "downloading";
-
 		worker->Thread.start();
 
-		qDebug() << "emit";
 		emit DownloadOnThread(Main, _yt, tracks[i], album, i);
-
-		qDebug() << "disconnect";
 		disconnect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
+	}
+}
 
-		//connect(this, &PlaylistDownloader::StartDownloading, thread, &Worker::Start);
+void PlaylistDownloader::SongDownloaded() {
+	_songsDownloaded++;
+	emit SetSongCount(-1, _songsDownloaded, _totalSongCount);
+}
 
-		//_threads << thread;
+void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound) {
+	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
+	_threadsFinished++;
 
-		qDebug() << "done with this one";
+	emit SetThreadFinished(threadIndex);
+
+
+	if (_threadsFinished != _threadCount) {
+		return;
 	}
 
-	qDebug() << "done";
+	delete _yt;
+	delete _sp;
+
+	if (_tracksNotFound.count() == 0) {
+		emit ChangeScreen(2);
+		emit ShowMessage("Downloads Complete!", "No download errors!");
+		return;
+	}
+
+	emit ChangeScreen(3);
+	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
+	emit SetErrorItems(_tracksNotFound);
 }

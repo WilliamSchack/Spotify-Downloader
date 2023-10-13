@@ -242,330 +242,8 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="ProcessingScreen">
-    <widget class="QLabel" name="SongCount">
-     <property name="geometry">
-      <rect>
-       <x>35</x>
-       <y>295</y>
-       <width>41</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Impact</family>
-       <pointsize>12</pointsize>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(64, 64, 64);
-background-color: rgb(54, 54, 54);
-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>0/0</string>
-     </property>
-     <property name="margin">
-      <number>5</number>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="SettingsButton_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>730</x>
-       <y>299</y>
-       <width>32</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>16</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/SettingsCog.png</normalon>
-      </iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>25</width>
-       <height>25</height>
-      </size>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
+   <widget class="QWidget" name="Processing">
     <widget class="QLabel" name="PauseWarning">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>330</y>
-       <width>411</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>12</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(200, 0, 0);</string>
-     </property>
-     <property name="text">
-      <string>FINISHING CURRENT TASK</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="PauseButton">
-     <property name="geometry">
-      <rect>
-       <x>693</x>
-       <y>299</y>
-       <width>32</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>16</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/Pause_Icon.png</normalon>
-      </iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>25</width>
-       <height>25</height>
-      </size>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QWidget" name="ProgressBar_Back" native="true">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>299</y>
-       <width>338</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(182, 182, 182);</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="ProgressLabel">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>260</y>
-       <width>241</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>12</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>Progress...</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QLabel" name="SongImage">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>30</y>
-       <width>300</width>
-       <height>300</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(64, 64, 64);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="SongTitle">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>30</y>
-       <width>431</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>27</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>Song Title</string>
-     </property>
-    </widget>
-    <widget class="QWidget" name="ProgressBar_Front" native="true">
-     <property name="geometry">
-      <rect>
-       <x>352</x>
-       <y>301</y>
-       <width>334</width>
-       <height>27</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(0, 100, 0);</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="SongArtists">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>70</y>
-       <width>431</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>15</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="text">
-      <string>Song Artists</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="PlayButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>693</x>
-       <y>299</y>
-       <width>32</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>16</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/PlayButton.png</normalon>
-      </iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>25</width>
-       <height>25</height>
-      </size>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <zorder>SettingsButton_2</zorder>
-    <zorder>PauseWarning</zorder>
-    <zorder>PauseButton</zorder>
-    <zorder>ProgressBar_Back</zorder>
-    <zorder>ProgressLabel</zorder>
-    <zorder>SongImage</zorder>
-    <zorder>ProgressBar_Front</zorder>
-    <zorder>SongArtists</zorder>
-    <zorder>PlayButton</zorder>
-    <zorder>SongTitle</zorder>
-    <zorder>SongCount</zorder>
-   </widget>
-   <widget class="QWidget" name="NewProcessing">
-    <widget class="QLabel" name="PauseWarning_2">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -595,7 +273,7 @@ background-color: rgb(30, 30, 30);</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="PlayButton_2">
+    <widget class="QPushButton" name="PlayButton">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -640,7 +318,7 @@ background-color: rgb(30, 30, 30);</string>
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="SettingsButton_3">
+    <widget class="QPushButton" name="SettingsButton_2">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -685,7 +363,7 @@ background-color: rgb(30, 30, 30);</string>
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="SongCount_2">
+    <widget class="QLabel" name="SongCount">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -712,7 +390,7 @@ color: rgb(255, 255, 255);</string>
       <number>5</number>
      </property>
     </widget>
-    <widget class="QPushButton" name="PauseButton_2">
+    <widget class="QPushButton" name="PauseButton">
      <property name="geometry">
       <rect>
        <x>710</x>
@@ -849,11 +527,11 @@ selection-background-color: rgb(0, 120, 215);</string>
     </widget>
     <zorder>DownloadingScrollArea</zorder>
     <zorder>BottomBacking</zorder>
-    <zorder>PauseWarning_2</zorder>
-    <zorder>PlayButton_2</zorder>
-    <zorder>SettingsButton_3</zorder>
-    <zorder>PauseButton_2</zorder>
-    <zorder>SongCount_2</zorder>
+    <zorder>PauseWarning</zorder>
+    <zorder>PlayButton</zorder>
+    <zorder>SettingsButton_2</zorder>
+    <zorder>PauseButton</zorder>
+    <zorder>SongCount</zorder>
    </widget>
    <widget class="QWidget" name="CompletedScreen">
     <widget class="QLabel" name="CompletedLabel_2">

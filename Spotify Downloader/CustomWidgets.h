@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CUSTOMWIDGETS_H
+#define CUSTOMWIDGETS_H
 
 #include <QWidget>
 #include <QtWidgets/QFrame>
@@ -29,6 +30,7 @@ class DownloaderThread : public QWidget {
 		QLabel* SongImage;
 		QLabel* SongCount;
 		QLabel* ProgressLabel;
+		QLabel* FinishedLabel;
 
 		QWidget* ProgressBar_Front;
 	private:
@@ -51,3 +53,5 @@ class SongErrorItem : public QWidget {
 	private:
 		QWidget* Background;
 };
+
+#endif

@@ -56,7 +56,7 @@ void SpotifyDownloader::SetupTrayIcon() {
 
 void SpotifyDownloader::SetupSetupScreen() {
     connect(_ui.SettingsButton, &QPushButton::clicked, [=] {
-        _ui.Screens->setCurrentIndex(5); // Change to settings screen
+        _ui.Screens->setCurrentIndex(4);
     });
 
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
@@ -101,7 +101,8 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             DownloadStarted = true;
 
-            _ui.Screens->setCurrentIndex(2);
+            _ui.Screens->setCurrentIndex(1);
+            _ui.DownloaderThreadsInput->setEnabled(false);
 
             // Start thread
             workerThread.start();
@@ -148,7 +149,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
         _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
     });
     connect(_ui.BackButton, &QPushButton::clicked, [=] {
-        if(DownloadStarted) _ui.Screens->setCurrentIndex(2); // Change to processing screen
+        if(DownloadStarted) _ui.Screens->setCurrentIndex(1); // Change to processing screen
         else _ui.Screens->setCurrentIndex(0); // Change to setup screen
     });
 }
@@ -160,20 +161,21 @@ void SpotifyDownloader::SetupProcessingScreen() {
     // Buttons
     connect(_ui.PauseButton, &QPushButton::clicked, [=] {
         Paused = true;
+        _threadsPaused = 0;
 
         _ui.PauseButton->hide();
         _ui.PlayButton->show();
-        //_ui.PauseWarning->show();
+        _ui.PauseWarning->show();
     });
     connect(_ui.PlayButton, &QPushButton::clicked, [=] {
         Paused = false;
 
         _ui.PlayButton->hide();
         _ui.PauseButton->show();
-        //_ui.PauseWarning->hide();
+        _ui.PauseWarning->hide();
     });
     connect(_ui.SettingsButton_2, &QPushButton::clicked, [=] {
-        _ui.Screens->setCurrentIndex(5); // Change to settings screen
+        _ui.Screens->setCurrentIndex(4); // Change to settings screen
     });
 }
 
@@ -197,24 +199,6 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {
-
-    //// Get thread ready to be started
-    //_songDownloader = new SongDownloader();
-    //_songDownloader->moveToThread(&workerThread);
-    //connect(&workerThread, &QThread::finished, _songDownloader, &QObject::deleteLater);
-    //connect(this, &SpotifyDownloader::operate, _songDownloader, &SongDownloader::DownloadSongs);
-    //
-    //// Allow thread to access ui elements
-    //connect(_songDownloader, &SongDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
-    //connect(_songDownloader, &SongDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
-    //connect(_songDownloader, &SongDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
-    //connect(_songDownloader, &SongDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
-    //connect(_songDownloader, &SongDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
-    //connect(_songDownloader, &SongDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
-    //connect(_songDownloader, &SongDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
-    //connect(_songDownloader, &SongDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
-    //connect(_songDownloader, &SongDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
-
     // Get thread ready to be started
     _playlistDownloader = new PlaylistDownloader();
     _playlistDownloader->moveToThread(&workerThread);
@@ -223,15 +207,11 @@ void SpotifyDownloader::SetupDownloaderThread() {
 
     // Allow thread to access ui elements
     connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);
-    //connect(_playlistDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    connect(_playlistDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
     connect(_playlistDownloader, &PlaylistDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
-    //connect(_playlistDownloader, &PlaylistDownloader::SetProgressLabel, this, &SpotifyDownloader::SetProgressLabel);
-    //connect(_playlistDownloader, &PlaylistDownloader::SetProgressBar, this, &SpotifyDownloader::SetProgressBar);
     connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
-    //connect(_playlistDownloader, &PlaylistDownloader::SetSongImage, this, &SpotifyDownloader::SetSongImage);
-    //connect(_playlistDownloader, &PlaylistDownloader::SetSongDetails, this, &SpotifyDownloader::SetSongDetails);
-    //connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
-    //connect(_playlistDownloader, &PlaylistDownloader::HidePauseWarning, this, &SpotifyDownloader::HidePauseWarning);
+    connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
 }
 
 // Application Exit

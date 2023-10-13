@@ -12,24 +12,15 @@
 #include <taglib/textidentificationframe.h>
 
 void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
-	qDebug() << "THREAD STARTED";
-
 	Main = main;
 	_yt = yt;
-	qDebug() << "threadindex";
 	_threadIndex = threadIndex;
-
-	qDebug() << "HI";
 	_totalSongCount = tracks.count();
 
 	QThread* thread = QThread::currentThread();
 
-	qDebug() << "starting";
 	emit SetProgressLabel(_threadIndex, "Getting Playlist Data...");
-	qDebug() << "its that";
 	emit ShowMessage("Starting Download!", "This may take a while...");
-
-	qDebug() << "not that";
 
 	//QString url = Main->PlaylistURLText;
 	//QString spotifyId = url.split("/").last().split("?")[0];
@@ -49,7 +40,6 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 
 	//QThread::sleep(1);
 	_tracksNotFound = QJsonArray();
-	qDebug() << "starting: " + tracks.count();
 	for (int i = 0; i < tracks.count(); i++) {
 		QJsonObject track = tracks[i].toObject();
 		//if (url.contains("playlist")) track = track["track"].toObject();
@@ -59,21 +49,25 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 		_currentTrack = track;
 		DownloadSong(track, i, album);
 
+		emit SongDownloaded();
+
 		if (_quitting) {
 			this->thread()->quit();
 			return;
 		}
 	}
 
-	if (_tracksNotFound.count() == 0) {
-		emit ChangeScreen(3);
-		emit ShowMessage("Downloads Complete!", "No download errors!");
-		return;
-	}
+	emit Finish(_threadIndex, _tracksNotFound);
 
-	emit ChangeScreen(4);
-	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
-	emit SetErrorItems(_tracksNotFound);
+	//if (_tracksNotFound.count() == 0) {
+	//	emit ChangeScreen(3);
+	//	emit ShowMessage("Downloads Complete!", "No download errors!");
+	//	return;
+	//}
+	//
+	//emit ChangeScreen(4);
+	//emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
+	//emit SetErrorItems(_tracksNotFound);
 }
 
 void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject album) {
