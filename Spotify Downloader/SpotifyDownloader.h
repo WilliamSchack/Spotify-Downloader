@@ -56,9 +56,6 @@ class SpotifyDownloader : public QDialog
         bool NormalizeAudio = true;
         float NormalizeAudioVolume = 0.0f;
 
-        int TotalSongs;
-        int CompletedSongs;
-
         bool Paused = false;
     public slots:
         void SetupUI(int count);
@@ -74,6 +71,7 @@ class SpotifyDownloader : public QDialog
         void SetThreadFinished(int threadIndex);
     signals:
         void operate(const SpotifyDownloader* main);
+        void RequestQuit();
     private:
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;
@@ -106,12 +104,18 @@ class Worker {
 class PlaylistDownloader : public QObject {
     Q_OBJECT
 
+    public:
+        ~PlaylistDownloader();
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
         void FinishThread(int threadIndex, QJsonArray tracksNotFound);
+        void Quit();
+        void CleanedUp();
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
+
+        QList<Worker*> _threads;
 
         const QString CODEC = "mp3";
         const QString YTDLP_PATH = "yt-dlp.exe";
@@ -129,9 +133,11 @@ class PlaylistDownloader : public QObject {
         int _threadCount = 0;
         int _songsDownloaded = 0;
         int _threadsFinished = 0;
+        int _threadsCleaned = 0;
     signals:
         void SetupUI(int count);
-        void DownloadOnThread(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
+        void DownloadOnThread(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
+        void QuitThreads();
 
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
@@ -148,7 +154,8 @@ class SongDownloader : public QObject {
 
         static float Lerp(float a, float b, float t);
     public slots:
-        void DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
+        void DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
+        void Quit();
     private:
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
         void CheckForStop();
@@ -162,6 +169,7 @@ class SongDownloader : public QObject {
         const QString FFMPEG_PATH = "ffmpeg.exe";
 
         const SpotifyDownloader* Main;
+        const PlaylistDownloader* Manager;
         YTMusicAPI* _yt;
 
         int _threadIndex;
@@ -184,6 +192,8 @@ class SongDownloader : public QObject {
         void HidePauseWarning(int threadIndex);
         void SongDownloaded();
         void Finish(int threadIndex, QJsonArray tracksNotFound);
+        void RequestQuit();
+        void CleanedUp();
 };
 
 #endif

@@ -3,16 +3,12 @@
 void SpotifyDownloader::SetupUI(int threadIndex) {
     _downloaderUI.clear();
 
-    qDebug() << _ui.DownloadingSpaceFillerLayout->count();
-
     for (int i = 0; i < threadIndex; i++) {
         DownloaderThread* currentUI = new DownloaderThread();
         _ui.DownloadingSpaceFillerLayout->insertWidget(_ui.DownloadingSpaceFillerLayout->count() - 1, currentUI);
 
         _downloaderUI.append(currentUI);
     }
-
-    qDebug() << _downloaderUI.count();
 }
 
 void SpotifyDownloader::ChangeScreen(int screenIndex) {
@@ -34,15 +30,20 @@ void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage) {
 }
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {
-    _songsCompleted = currentCount - 1;
+    if (threadIndex >= 0) {
+        QLabel* songCount = _downloaderUI[threadIndex]->SongCount;
+        songCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
+        songCount->adjustSize();
+        return;
+    }
+
+    _totalSongs = totalCount;
+    _songsCompleted = currentCount;
     if (_songsCompleted < 0)
         _songsCompleted = 0;
 
-    _totalSongs = totalCount;
-
-    QLabel* songCount = threadIndex >= 0 ? _downloaderUI[threadIndex]->SongCount : _ui.SongCount;
-    songCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
-    songCount->adjustSize();
+    _ui.SongCount->setText(QString("%1/%2").arg(QString::number(_songsCompleted)).arg(QString::number(_totalSongs)));
+    _ui.SongCount->adjustSize();
 }
 
 void SpotifyDownloader::SetSongImage(int threadIndex, QPixmap image) {

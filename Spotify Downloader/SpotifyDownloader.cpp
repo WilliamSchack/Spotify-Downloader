@@ -26,9 +26,18 @@ void SpotifyDownloader::SetupTrayIcon() {
 
             QString message;
             if (completed == 0 || total == 0)
-                message = "0.000% Complete";
-            else
-                message = QString("%1% Complete").arg(std::round(((completed * 1.0) / (total * 1.0)) / 0.001) * 0.001);
+                message = "0.00% Complete";
+            else {
+                // Percent complete rounded to two decimals
+                float percentComplete = std::round(((completed * 1.0) / (total * 1.0) * 100.0) / 0.01) * 0.01;
+                QString percentString = QString::number(percentComplete);
+                
+                // Add .0 at the end if it does not contain to make it consistent
+                if (!percentString.contains("."))
+                    percentString.append(".00");
+
+                message = QString("%1% Complete").arg(percentString);
+            }
 
             ShowMessage(message, QString("Completed: %1/%2").arg(completed).arg(total));
             return;
@@ -50,7 +59,7 @@ void SpotifyDownloader::SetupTrayIcon() {
     _trayIcon->setContextMenu(contextMenu);
     connect(_trayIcon, &QSystemTrayIcon::activated, this, [&] {
         show();
-        });
+    });
     _trayIcon->show();
 }
 
@@ -204,6 +213,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     _playlistDownloader->moveToThread(&workerThread);
     connect(&workerThread, &QThread::finished, _playlistDownloader, &QObject::deleteLater);
     connect(this, &SpotifyDownloader::operate, _playlistDownloader, &PlaylistDownloader::DownloadSongs);
+    connect(this, &SpotifyDownloader::RequestQuit, _playlistDownloader, &PlaylistDownloader::Quit);
 
     // Allow thread to access ui elements
     connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);
@@ -219,6 +229,6 @@ SpotifyDownloader::~SpotifyDownloader()
 {
     _trayIcon->hide();
     
-    workerThread.requestInterruption();
+    emit RequestQuit();
     workerThread.wait();
 }

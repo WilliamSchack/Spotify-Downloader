@@ -11,8 +11,9 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
 
-void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
+void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
 	Main = main;
+	Manager = manager;
 	_yt = yt;
 	_threadIndex = threadIndex;
 	_totalSongCount = tracks.count();
@@ -22,29 +23,9 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 	emit SetProgressLabel(_threadIndex, "Getting Playlist Data...");
 	emit ShowMessage("Starting Download!", "This may take a while...");
 
-	//QString url = Main->PlaylistURLText;
-	//QString spotifyId = url.split("/").last().split("?")[0];
-	//QJsonArray tracks = QJsonArray();
-	//QJsonObject album = QJsonObject();
-	//
-	//SpotifyAPI sp = SpotifyAPI();
-	//if (url.contains("playlist")) tracks = sp.GetPlaylistTracks(spotifyId);
-	//else if (url.contains("album")) {
-	//	album = sp.GetAlbum(spotifyId);
-	//	tracks = sp.GetAlbumTracks(album);
-	//}
-	//else tracks = QJsonArray{ sp.GetTrack(spotifyId) };
-	//
-	//_totalSongCount = tracks.count();
-	//emit SetSongCount(0, _totalSongCount);
-
-	//QThread::sleep(1);
 	_tracksNotFound = QJsonArray();
 	for (int i = 0; i < tracks.count(); i++) {
 		QJsonObject track = tracks[i].toObject();
-		//if (url.contains("playlist")) track = track["track"].toObject();
-
-		qDebug() << track;
 
 		_currentTrack = track;
 		DownloadSong(track, i, album);
@@ -58,16 +39,6 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, YTMusicAPI* yt
 	}
 
 	emit Finish(_threadIndex, _tracksNotFound);
-
-	//if (_tracksNotFound.count() == 0) {
-	//	emit ChangeScreen(3);
-	//	emit ShowMessage("Downloads Complete!", "No download errors!");
-	//	return;
-	//}
-	//
-	//emit ChangeScreen(4);
-	//emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
-	//emit SetErrorItems(_tracksNotFound);
 }
 
 void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject album) {
@@ -82,8 +53,6 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	float songTime = track["duration_ms"].toDouble() / 1000;
 	QString songId = track["id"].toString();
 	QString albumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
-
-	qDebug() << "DOWNLOADING: " + trackTitle;
 
 	QStringList songArtistNamesList = QStringList();
 	foreach(QJsonValue artist, songArtistsList) {
@@ -105,12 +74,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (!Main->Overwrite && QFile::exists(fullPath)) return;
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Download Cover Art
-	qDebug() << "its this";
-
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 
 	QString coverFilename = QString("%1(%2)_Cover").arg(albumName).arg(albumArtistNames);
@@ -126,8 +93,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	image.load(imageFileDir);
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Assign Data To GUI
 	emit SetSongImage(_threadIndex, QPixmap::fromImage(image));
@@ -135,8 +102,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Search For Song
 	emit SetProgressLabel(_threadIndex, "Searching...");
@@ -275,8 +242,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	finalResult = finalResult["result"].toObject();
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Download Track
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
@@ -302,14 +269,11 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
 	_currentProcess->waitForFinished(-1);
 
-	while (!QFile::exists(fullPath))
-		QCoreApplication::processEvents();
-
 	emit SetProgressBar(_threadIndex, 1);
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Normalize Audio
 	if (Main->NormalizeAudio) {
@@ -341,20 +305,17 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 					.arg(normalizedFullPath));
 				_currentProcess->waitForFinished(-1);
 
-				QFile::remove(fullPath);
-				//while (QFile::exists(fullPath))
-				//	QCoreApplication::processEvents();
+				if (_quitting) return;
 
+				QFile::remove(fullPath);
 				QFile::rename(normalizedFullPath, fullPath);
-				//while (!QFile::exists(fullPath))
-				//	QCoreApplication::processEvents();
 			}
 		}
 	}
 	#pragma endregion
 
-	CheckForStop();
 	if (_quitting) return;
+	CheckForStop();
 
 	#pragma region Assign Metadata
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
@@ -392,12 +353,6 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 }
 
 void SongDownloader::CheckForStop() {
-	// Exiting
-	if (this->thread()->isInterruptionRequested()) {
-		_quitting = true;
-		return;
-	}
-
 	// Paused
 	if (!Main->Paused) return;
 
@@ -437,11 +392,21 @@ double SongDownloader::LerpInList(std::vector<double> list, int index) {
 	return list[0] / maxVal;
 }
 
-// Cleanup currently downloading songs
-SongDownloader::~SongDownloader() {
+void SongDownloader::Quit() {
+	qDebug() << "request recieved on:" << _threadIndex;
+
 	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning) {
 		_currentProcess->kill();
 	}
+
+	_quitting = true;
+}
+
+// Cleanup currently downloading songs
+SongDownloader::~SongDownloader() {
+	qDebug() << "Quitting:" << _threadIndex;
+
+	_currentProcess->waitForFinished();
 
 	QString trackTitle = _currentTrack["name"].toString();
 	QString artistName = _currentTrack["artists"].toArray()[0].toObject()["name"].toString();
@@ -477,4 +442,6 @@ SongDownloader::~SongDownloader() {
 		while (QFile::exists(fullPath))
 			QCoreApplication::processEvents();
 	}
+
+	emit CleanedUp();
 }

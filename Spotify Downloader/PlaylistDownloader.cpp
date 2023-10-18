@@ -57,6 +57,8 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 }
 
 void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject album) {
+	_threads = QList<Worker*>();
+
 	for (int i = 0; i < tracks.count(); i++) {
 		Worker* worker = new Worker();
 
@@ -65,8 +67,10 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		worker->Downloader->moveToThread(&worker->Thread);
 		connect(&worker->Thread, &QThread::finished, worker->Downloader, &QObject::deleteLater);
 		connect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
+
 		connect(worker->Downloader, &SongDownloader::SongDownloaded, this, &PlaylistDownloader::SongDownloaded);
 		connect(worker->Downloader, &SongDownloader::Finish, this, &PlaylistDownloader::FinishThread);
+		connect(worker->Downloader, &SongDownloader::CleanedUp, this, &PlaylistDownloader::CleanedUp);
 
 		// Allow thread to access ui elements
 		connect(worker->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
@@ -81,8 +85,10 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 
 		worker->Thread.start();
 
-		emit DownloadOnThread(Main, _yt, tracks[i], album, i);
+		emit DownloadOnThread(Main, this, _yt, tracks[i], album, i);
 		disconnect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
+
+		_threads << worker;
 	}
 }
 
@@ -96,7 +102,6 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	_threadsFinished++;
 
 	emit SetThreadFinished(threadIndex);
-
 
 	if (_threadsFinished != _threadCount) {
 		return;
@@ -114,4 +119,24 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	emit ChangeScreen(3);
 	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
 	emit SetErrorItems(_tracksNotFound);
+}
+
+void PlaylistDownloader::Quit() {
+	qDebug() << "Request recieved";
+
+	_quitting = true;
+	this->thread()->quit();
+}
+
+void PlaylistDownloader::CleanedUp() {
+	_threadsCleaned++;
+}
+
+PlaylistDownloader::~PlaylistDownloader() {
+	foreach(Worker* worker, _threads) {
+		worker->Downloader->Quit();
+	}
+
+	while (_threadsCleaned < _threadCount)
+		QCoreApplication::processEvents();
 }
