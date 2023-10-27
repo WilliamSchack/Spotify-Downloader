@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include <QFileSystemWatcher>
+
 void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	Main = main;
 
@@ -122,8 +124,6 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 }
 
 void PlaylistDownloader::Quit() {
-	qDebug() << "Request recieved";
-
 	_quitting = true;
 	this->thread()->quit();
 }
@@ -139,4 +139,49 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	while (_threadsCleaned < _threadCount)
 		QCoreApplication::processEvents();
+
+	// Remove all files in downloading folder
+	QString downloadingFolder = QString("%1/Downloading").arg(QDir::currentPath());
+	RemoveDir(downloadingFolder);
+	while (QDir(downloadingFolder).exists())
+		QCoreApplication::processEvents();
+}
+
+void PlaylistDownloader::RemoveDir(const QString& path)
+{
+	QStringList failedDirs = QStringList();
+
+	QFileInfo fileInfo(path);
+	QDir dir(path);
+	QStringList fileList = dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+	for (int i = 0; i < fileList.count(); ++i) {
+		QString curPath = QString("%1/%2").arg(path).arg(fileList[i]);
+		QFile curFile(curPath);
+		curFile.setPermissions(QFile::WriteOther);
+		if (!curFile.remove())
+			failedDirs.append(curPath);
+	}
+
+	// Sometimes stopping download in between will still keep files being used
+	// Wait for those in use files to stop being used then delete
+	if (failedDirs.count() > 0) {
+		QFileSystemWatcher* watcher = new QFileSystemWatcher(failedDirs);
+		foreach(QString string, failedDirs) {
+			QFile file(string);
+		}
+
+		int completedDeletes = fileList.count() - failedDirs.count();
+		QObject::connect(watcher, &QFileSystemWatcher::fileChanged, [&completedDeletes](const QString& path) {
+			QFile file(path);
+			file.remove();
+			completedDeletes++;
+		});
+
+		while (completedDeletes < fileList.count())
+			QCoreApplication::processEvents();
+
+		delete watcher;
+	}
+
+	dir.rmdir(path);
 }

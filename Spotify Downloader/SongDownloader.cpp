@@ -68,10 +68,18 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
 	filename = ValidateString(filename);
-	QString path = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
-	QString fullPath = QString("%1.%2").arg(path).arg(CODEC);
 
-	if (!Main->Overwrite && QFile::exists(fullPath)) return;
+	QString downloadingFolder = QString("%1/Downloading").arg(QDir::currentPath());
+	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(filename);
+	QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
+
+	QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
+	QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
+
+	if (!QDir(downloadingFolder).exists())
+		QDir().mkdir(downloadingFolder);
+
+	if (!Main->Overwrite && QFile::exists(fullTargetPath)) return;
 	#pragma endregion
 
 	if (_quitting) return;
@@ -249,8 +257,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
 	emit SetProgressBar(_threadIndex, 0);
 
-	if (Main->Overwrite && QFile::exists(fullPath))
-		QFile::remove(fullPath);
+	if (Main->Overwrite && QFile::exists(fullDownloadingPath))
+		QFile::remove(fullDownloadingPath);
 
 	_currentProcess = new QProcess();
 	connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
@@ -261,9 +269,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			emit SetProgressBar(_threadIndex, progress.toFloat() / 100);
 		}
 	});
-	_currentProcess->startCommand(QString(R"("%1" -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
+	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
+	_currentProcess->startCommand(QString(R"("%1" --no-part -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
 						.arg(QDir::currentPath() + "/" + YTDLP_PATH)
-						.arg(fullPath)
+						.arg(fullDownloadingPath)
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
 						.arg(CODEC)
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
@@ -283,13 +292,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
 						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
-						.arg(fullPath));
+						.arg(fullDownloadingPath));
 		_currentProcess->waitForFinished(-1);
 
 		// For some reason ffmpeg outputs to StandardError. idk why
 		QString audioOutput = _currentProcess->readAllStandardError();
 		if (audioOutput.contains("mean_volume:")) {
-			QString normalizedFullPath = QString("%1/%2.%3").arg(Main->SaveLocationText).arg(filename + "_N").arg(CODEC);
+			QString normalizedFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(filename + "_N").arg(CODEC);
 			
 			float meanVolume = audioOutput.split("mean_volume:")[1].split("dB")[0].toFloat();
 
@@ -300,15 +309,15 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 				connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 				_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volume=%3" "%4")")
 					.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
-					.arg(fullPath)
+					.arg(fullDownloadingPath)
 					.arg(QString("%1dB").arg(volumeApply))
 					.arg(normalizedFullPath));
 				_currentProcess->waitForFinished(-1);
 
 				if (_quitting) return;
 
-				QFile::remove(fullPath);
-				QFile::rename(normalizedFullPath, fullPath);
+				QFile::remove(fullDownloadingPath);
+				QFile::rename(normalizedFullPath, fullDownloadingPath);
 			}
 		}
 	}
@@ -317,10 +326,14 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 	CheckForStop();
 
+	// Move from downloading path to target path
+	// Before metadata because modifying file afterwards doesn't work
+	QFile::rename(fullDownloadingPath, fullTargetPath);
+
 	#pragma region Assign Metadata
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 
-	TagLib::MPEG::File file(reinterpret_cast<const wchar_t*>(fullPath.constData()));
+	TagLib::MPEG::File file(reinterpret_cast<const wchar_t*>(fullTargetPath.constData()));
 
 	TagLib::ID3v2::Tag* tag = file.ID3v2Tag(true);
 	tag->setTitle(reinterpret_cast<const wchar_t*>(trackTitle.constData()));
@@ -393,8 +406,6 @@ double SongDownloader::LerpInList(std::vector<double> list, int index) {
 }
 
 void SongDownloader::Quit() {
-	qDebug() << "request recieved on:" << _threadIndex;
-
 	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning) {
 		_currentProcess->kill();
 	}
@@ -404,44 +415,6 @@ void SongDownloader::Quit() {
 
 // Cleanup currently downloading songs
 SongDownloader::~SongDownloader() {
-	qDebug() << "Quitting:" << _threadIndex;
-
 	_currentProcess->waitForFinished();
-
-	QString trackTitle = _currentTrack["name"].toString();
-	QString artistName = _currentTrack["artists"].toArray()[0].toObject()["name"].toString();
-
-	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
-	filename = ValidateString(filename);
-	QString path = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
-
-	QString downloadingPath = QString("%1.m4a").arg(path);
-	if (QFile::exists(downloadingPath)) {
-		QFile::remove(downloadingPath);
-		while (QFile::exists(downloadingPath))
-			QCoreApplication::processEvents();
-	}
-
-	QString downloadingPathPart = QString("%1.m4a.part").arg(path);
-	if (QFile::exists(downloadingPathPart)) {
-		QFile::remove(downloadingPathPart);
-		while (QFile::exists(downloadingPathPart))
-			QCoreApplication::processEvents();
-	}
-
-	QString normalizePath = QString("%1_N.%2").arg(path).arg(CODEC);
-	if (QFile::exists(normalizePath)) {
-		QFile::remove(normalizePath);
-		while (QFile::exists(normalizePath))
-			QCoreApplication::processEvents();
-	}
-
-	QString fullPath = QString("%1.%2").arg(path).arg(CODEC);
-	if (QFile::exists(fullPath)) {
-		QFile::remove(fullPath);
-		while (QFile::exists(fullPath))
-			QCoreApplication::processEvents();
-	}
-
 	emit CleanedUp();
 }
