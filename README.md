@@ -7,7 +7,7 @@
 [![Open Issues](https://img.shields.io/github/issues/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
 
-Spotify Downloader is an application that can download songs from spotify with ease and for free unlike spotify requiring spotify requiring a subscription for the same services.
+Spotify Downloader is an application that can download songs from spotify with ease and for free unlike spotify requiring a subscription for the same services.
 
 The program has an easy to navigate GUI that will make downloading songs easier than ever!
 
