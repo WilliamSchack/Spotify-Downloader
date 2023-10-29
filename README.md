@@ -198,7 +198,6 @@ Shows all of the songs that failed to download due to various reasons including:
 
 - **GUI**
     - Much easier to navigate and more user friendly than a command line
-    - Streamlines the process and eliminates the need for unessesary steps that may have to be taken otherwise
 - **Easy Downloading**
     - Downloading starts with only two inputs and a button click making it easy to start
     - While downloading the program shows exactly what is happening
@@ -208,8 +207,7 @@ Shows all of the songs that failed to download due to various reasons including:
 - **Automatic Metadata**
     - All downloads include metadata to keep all the details and easily differentiate songs from one another
 - **Many Settings**
-    - Allows you to have full control over how the application downloads songs
-    - Makes sure that the programs works as expected to every user
+    - Allows you to have full control over how the application works
 - **Automatic Cleanup**
     - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
 
