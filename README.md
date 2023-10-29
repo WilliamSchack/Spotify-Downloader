@@ -3,7 +3,7 @@
 # Spotify Downloader
 [![Latest Release](https://img.shields.io/github/v/release/ChazzBurger/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Downloads](https://img.shields.io/github/downloads/ChazzBurger/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
-[![Stars](https://img.shields.io/github/stars/ChazzBurger/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/)
+[![Stars](https://img.shields.io/github/stars/ChazzBurger/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 [![Open Issues](https://img.shields.io/github/issues/ChazzBurger/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/ChazzBurger/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
 
