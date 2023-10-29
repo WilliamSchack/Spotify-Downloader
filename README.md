@@ -224,5 +224,3 @@ Thanks to sigma67 for his [Python YT Music API](https://github.com/sigma67/ytmus
 - [Difflib C++](https://github.com/duckie/difflib)
 
 Thanks to you for using my program :)
-
----
