@@ -11,18 +11,47 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	QString url = Main->PlaylistURLText;
 	QString spotifyId = url.split("/").last().split("?")[0];
-	QJsonArray tracks = QJsonArray();
 	QJsonObject album = QJsonObject();
 
 	_yt = new YTMusicAPI();
 	_sp = new SpotifyAPI();
 
-	if (url.contains("playlist")) tracks = _sp->GetPlaylistTracks(spotifyId);
+	QJsonArray searchTracks = QJsonArray();
+	if (url.contains("playlist")) searchTracks = _sp->GetPlaylistTracks(spotifyId);
 	else if (url.contains("album")) {
 		album = _sp->GetAlbum(spotifyId);
-		tracks = _sp->GetAlbumTracks(album);
+		searchTracks = _sp->GetAlbumTracks(album);
 	}
-	else tracks = QJsonArray{ _sp->GetTrack(spotifyId) };
+	else searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
+
+	// Remove tracks that already exist if not overwriting
+	QJsonArray tracks = QJsonArray();
+	if (!Main->Overwrite) {
+		QString invalidChars = R"(<>:"/\|?*)";
+		foreach(QJsonValue trackVal, searchTracks) {
+			QJsonObject track = trackVal.toObject();
+			if (url.contains("playlist")) {
+				track = track["track"].toObject();
+			}
+
+			qDebug() << track;
+			QString trackTitle = track["name"].toString();
+			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
+
+			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
+			foreach(QChar c, invalidChars) {
+				filename.remove(c);
+			}
+
+			QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
+			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
+
+			if (!QFile::exists(fullTargetPath))
+				tracks.append(trackVal);
+		}
+	} else {
+		tracks = searchTracks;
+	}
 
 	_totalSongCount = tracks.count();
 	emit SetSongCount(-1, 0, _totalSongCount);
@@ -102,6 +131,7 @@ void PlaylistDownloader::SongDownloaded() {
 void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound) {
 	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
 	_threadsFinished++;
+	_threadsCleaned++;
 
 	emit SetThreadFinished(threadIndex);
 
