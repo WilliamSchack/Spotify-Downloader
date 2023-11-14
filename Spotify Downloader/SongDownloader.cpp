@@ -415,6 +415,7 @@ void SongDownloader::Quit() {
 
 // Cleanup currently downloading songs
 SongDownloader::~SongDownloader() {
-	_currentProcess->waitForFinished();
+	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning)
+		_currentProcess->waitForFinished();
 	emit CleanedUp();
 }

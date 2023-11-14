@@ -34,7 +34,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 				track = track["track"].toObject();
 			}
 
-			qDebug() << track;
 			QString trackTitle = track["name"].toString();
 			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 
