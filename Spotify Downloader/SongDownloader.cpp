@@ -69,7 +69,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
 	filename = ValidateString(filename);
 
-	QString downloadingFolder = QString("%1/Downloading").arg(QDir::currentPath());
+	QString downloadingFolder = QString("%1/Downloading").arg(QCoreApplication::applicationDirPath());
 	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(filename);
 	QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
 
@@ -94,7 +94,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString imageFileDir = QString("%1/%2.png").arg(tempPath).arg(coverFilename);
 
 	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
-	if (!QFile::exists("imageFileDir"))
+	if (!QFile::exists(imageFileDir))
 		DownloadImage(albumImageURL, imageFileDir, QSize(640, 640));
 
 	QImage image;
@@ -271,9 +271,9 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	});
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	_currentProcess->startCommand(QString(R"("%1" --no-part -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
-						.arg(QDir::currentPath() + "/" + YTDLP_PATH)
+						.arg(QCoreApplication::applicationDirPath() + "/" + YTDLP_PATH)
 						.arg(fullDownloadingPath)
-						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
+						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
 						.arg(CODEC)
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
 	_currentProcess->waitForFinished(-1);
@@ -291,7 +291,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		_currentProcess = new QProcess();
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
-						.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
+						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
 						.arg(fullDownloadingPath));
 		_currentProcess->waitForFinished(-1);
 
@@ -308,7 +308,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 				_currentProcess = new QProcess();
 				connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 				_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volume=%3" "%4")")
-					.arg(QDir::currentPath() + "/" + FFMPEG_PATH)
+					.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
 					.arg(fullDownloadingPath)
 					.arg(QString("%1dB").arg(volumeApply))
 					.arg(normalizedFullPath));

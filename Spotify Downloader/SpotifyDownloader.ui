@@ -125,9 +125,8 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/SettingsCog.png</normalon>
-      </iconset>
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/SettingsCog_B.png</normaloff>:/SpotifyDownloader/Icons/SettingsCog_B.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -152,9 +151,8 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/Folder_Icon.png</normalon>
-      </iconset>
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/Folder_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Folder_Icon_B.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -298,9 +296,8 @@ background-color: rgb(30, 30, 30);</string>
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/PlayButton.png</normalon>
-      </iconset>
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/PlayButton_B.png</normaloff>:/SpotifyDownloader/Icons/PlayButton_B.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -343,9 +340,8 @@ background-color: rgb(30, 30, 30);</string>
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/SettingsCog.png</normalon>
-      </iconset>
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/SettingsCog_B.png</normaloff>:/SpotifyDownloader/Icons/SettingsCog_B.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -412,9 +408,8 @@ color: rgb(255, 255, 255);</string>
       <string/>
      </property>
      <property name="icon">
-      <iconset>
-       <normalon>:/SpotifyDownloader/Pause_Icon.png</normalon>
-      </iconset>
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/Pause_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Pause_Icon_B.png</iconset>
      </property>
      <property name="iconSize">
       <size>

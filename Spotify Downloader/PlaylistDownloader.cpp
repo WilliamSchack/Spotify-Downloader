@@ -170,7 +170,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 		QCoreApplication::processEvents();
 
 	// Remove all files in downloading folder
-	QString downloadingFolder = QString("%1/Downloading").arg(QDir::currentPath());
+	QString downloadingFolder = QString("%1/Downloading").arg(QCoreApplication::applicationDirPath());
 	RemoveDir(downloadingFolder);
 	while (QDir(downloadingFolder).exists())
 		QCoreApplication::processEvents();
