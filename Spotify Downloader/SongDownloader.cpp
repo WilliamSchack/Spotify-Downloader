@@ -69,15 +69,17 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
 	filename = ValidateString(filename);
 
-	QString downloadingFolder = QString("%1/Downloading").arg(QCoreApplication::applicationDirPath());
+	QString tempPath = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
+	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
+
+	QString downloadingFolder = QString("%1/Downloading").arg(tempPath);
 	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(filename);
 	QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
 
 	QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
 	QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
 
-	if (!QDir(downloadingFolder).exists())
-		QDir().mkdir(downloadingFolder);
+	if (!QDir(downloadingFolder).exists()) QDir().mkdir(downloadingFolder);
 
 	if (!Main->Overwrite && QFile::exists(fullTargetPath)) return;
 	#pragma endregion
@@ -90,10 +92,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	QString coverFilename = QString("%1(%2)_Cover").arg(albumName).arg(albumArtistNames);
 	coverFilename = ValidateString(coverFilename);
-	QString tempPath = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
-	QString imageFileDir = QString("%1/%2.png").arg(tempPath).arg(coverFilename);
+	QString imageTempPath = QString("%1/Cover Art").arg(tempPath);
+	QString imageFileDir = QString("%1/%2.png").arg(imageTempPath).arg(coverFilename);
 
-	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
+	if (!QDir(imageTempPath).exists()) QDir().mkdir(imageTempPath);
 	if (!QFile::exists(imageFileDir))
 		DownloadImage(albumImageURL, imageFileDir, QSize(640, 640));
 

@@ -114,7 +114,7 @@ class PlaylistDownloader : public QObject {
         void CleanedUp();
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
-        void RemoveDir(const QString& path);
+        void ClearDirFiles(const QString& path);
 
         QList<Worker*> _threads;
 
