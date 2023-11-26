@@ -1,6 +1,7 @@
 #include "SpotifyDownloader.h"
 
 #include <QFileSystemWatcher>
+#include <QElapsedTimer>
 
 void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	Main = main;
@@ -8,6 +9,11 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QThread* thread = QThread::currentThread();
 
 	emit ShowMessage("Starting Download!", "This may take a while...");
+
+	// Remove downloading folder if it exists, cleaning up at end may not clear everything
+	QString downloadingFolder = QString("%1/Downloading").arg(QCoreApplication::applicationDirPath());
+	if (QDir(downloadingFolder).exists())
+		RemoveDir(downloadingFolder);
 
 	QString url = Main->PlaylistURLText;
 	QString spotifyId = url.split("/").last().split("?")[0];
@@ -172,8 +178,6 @@ PlaylistDownloader::~PlaylistDownloader() {
 	// Remove all files in downloading folder
 	QString downloadingFolder = QString("%1/Downloading").arg(QCoreApplication::applicationDirPath());
 	RemoveDir(downloadingFolder);
-	while (QDir(downloadingFolder).exists())
-		QCoreApplication::processEvents();
 }
 
 void PlaylistDownloader::RemoveDir(const QString& path)
@@ -203,13 +207,17 @@ void PlaylistDownloader::RemoveDir(const QString& path)
 		QObject::connect(watcher, &QFileSystemWatcher::fileChanged, [&completedDeletes](const QString& path) {
 			QFile file(path);
 			file.remove();
-			completedDeletes++;
+			if(!file.exists())
+				completedDeletes++;
 		});
 
-		while (completedDeletes < fileList.count())
+		QElapsedTimer *timer = new QElapsedTimer();
+		timer->start(); // Wait 10 secs, if exceeded, cancel waiting for files
+		while (completedDeletes < fileList.count() && timer->elapsed() <= 10000)
 			QCoreApplication::processEvents();
 
 		delete watcher;
+		delete timer;
 	}
 
 	dir.rmdir(path);
