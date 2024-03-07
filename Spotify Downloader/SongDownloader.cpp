@@ -125,12 +125,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QJsonArray finalResults = QJsonArray();
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
-		
+
 		int seconds = result["durationSeconds"].toInt();
 
 		if (seconds != 0 && seconds > songTime - 15 && seconds < songTime + 15) {
 			// Title score
 			float totalScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), trackTitle.toStdString()).ratio();
+			
 			// Time score
 			float timeScore = Lerp(0, 1, (15 - abs(seconds - songTime)) / 15);
 			totalScore += timeScore;
@@ -138,8 +139,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			// Artists score
 			if (result.contains("artists")) {
 				foreach(QJsonValue artist, result["artists"].toArray()) {
-					if (songArtistNamesList.contains(artist.toString())) {
-						totalScore += 0.4;
+					if (songArtistNamesList.contains(artist.toObject()["name"].toString())) {
+						totalScore += 1.0;
 						break;
 					}
 				}
@@ -164,16 +165,22 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 				}
 
 				QStringList bannedKeywords = {
-					" reverse ", "(reverse", "reverse)", "(reverse)",
-					" reversed ", "(reversed", "reversed)", "(reversed)",
-					" instrumental ", "(instrumental", "instrumental)", "(instrumental)"
+					"reverse", "reversed", "instrumental"
 				};
+				QStringList bannedKeywordsAdditions = {
+					" %1 ", "(%1", "%1)", "%1"
+				};
+
 				bool banned = false;
 				foreach(QString keyword, bannedKeywords) {
-					if (title.toLower().contains(keyword)) {
-						banned = true;
-						break;
+					foreach(QString addition, bannedKeywordsAdditions) {
+						QString word = addition.arg(keyword);
+						if (title.toLower().contains(word)) {
+							banned = true;
+							break;
+						}
 					}
+					if (banned) break;
 				}
 				if (banned) continue;
 

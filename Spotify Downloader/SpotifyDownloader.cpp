@@ -227,8 +227,10 @@ void SpotifyDownloader::SetupDownloaderThread() {
 // Application Exit
 SpotifyDownloader::~SpotifyDownloader()
 {
+    Paused = false;
+
     _trayIcon->hide();
-    
+
     emit RequestQuit();
     workerThread.wait();
 }
