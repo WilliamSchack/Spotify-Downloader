@@ -153,11 +153,18 @@ class SongDownloader : public QObject {
     public:
         ~SongDownloader();
 
+        int SongsDownloaded = 0;
+        int TotalSongCount() const { return _totalSongCount; }
+
+        QJsonArray RemoveTracks(int targetSongCount);
+        void AddTracks(QJsonArray tracks);
+
         static float Lerp(float a, float b, float t);
     public slots:
         void DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
         void Quit();
     private:
+        void StartDownload(int startIndex);
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
         void CheckForStop();
 
@@ -178,6 +185,9 @@ class SongDownloader : public QObject {
         QProcess* _currentProcess;
         bool _quitting = false;
 
+        QJsonObject _album;
+
+        QJsonArray _downloadingTracks;
         QJsonArray _tracksNotFound;
         QJsonObject _currentTrack;
         int _totalSongCount = 0;

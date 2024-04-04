@@ -135,6 +135,83 @@ void PlaylistDownloader::SongDownloaded() {
 
 void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound) {
 	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
+
+	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished - 1); // songs left except currently downloading songs
+	
+	if (songsLeft > _threadCount) {
+		qDebug() << QString("REASSIGNING SONGS STARTING ON THREAD (%1)").arg(threadIndex);
+		qDebug() << QString("(%1) songs left").arg(songsLeft);
+
+		QJsonArray songsRemoved = QJsonArray();
+		QList<int> threadsUsed = QList<int>();
+
+		// Remove songs from threads that are over limit
+		for (int i = 0; i < _threadCount; i++) {
+			if (i == threadIndex) continue;
+
+			int threadTotalSongCount = _threads[i]->Downloader->TotalSongCount();
+			int threadSongsLeft = threadTotalSongCount - (_threads[i]->Downloader->SongsDownloaded + 1);
+
+			int songCountTarget = songsLeft / _threadCount;
+
+			qDebug() << QString("STARTING THREAD %1").arg(i)
+				<< QString("totalcount: %1").arg(threadTotalSongCount)
+				<< QString("songsleft: %1").arg(threadSongsLeft)
+				<< QString("songtarget: %1").arg(songCountTarget)
+				<< QString("songsleft<=songtarget: %1").arg((threadSongsLeft <= songCountTarget) ? "true || NOT USING THREAD" : "false || USING THREAD");
+
+			if (threadSongsLeft <= songCountTarget) continue;
+
+			//int songCountTarget = songsLeft / _threadCount + (i == threadIndex ? songsLeft % _threadCount : 0)
+
+			QJsonArray currentRemovedSongs = _threads[i]->Downloader->RemoveTracks(songCountTarget);
+			songsRemoved = JSONUtils::Extend(songsRemoved, currentRemovedSongs);
+
+			threadsUsed.append(i);
+
+			qDebug() << QString("(%1) Songs removed from thread (%2):").arg(currentRemovedSongs.count()).arg(i);
+			qDebug() << currentRemovedSongs;
+		}
+
+		qDebug() << QString("(%1) Songs Adding:").arg(songsRemoved.count());
+		qDebug() << songsRemoved;
+
+		// Add songs to threads that need it
+		for (int i = 0; i < _threadCount; i++) {
+			// skip threads that had songs removed
+			if (threadsUsed.contains(i)) continue;
+			
+			// -------------------------------------- JUST CHANGED HERE -------------------------------------- //
+			// --- EITHER SONGS NOT ADDING TO ALL THREADS, OR AMOUNT OF SONGS REMOVED OR ADDED NOT CORRECT --- //
+
+			int threadTotalSongCount = _threads[i]->Downloader->TotalSongCount();
+			int threadSongsLeft = threadTotalSongCount - (_threads[i]->Downloader->SongsDownloaded + 1);
+
+			int songCountTarget = songsLeft / _threadCount;
+
+			if (threadSongsLeft >= songCountTarget) continue;
+			
+			qDebug() << QString("Adding songs to thread (%1) || songsremoved: (%2), iterationcondition: (x > %3)").arg(i).arg(songsRemoved.count() - 1).arg(songCountTarget - threadSongsLeft);
+
+			QJsonArray songsToAdd = QJsonArray();
+			for (int x = songsRemoved.count() - 1; x > songCountTarget - threadSongsLeft; x--) {
+				songsToAdd.append(songsRemoved[i].toObject());
+				qDebug() << "Adding and removing track:" << songsRemoved[i].toObject();
+				songsRemoved.removeAt(i);
+			}
+
+			_threads[i]->Downloader->AddTracks(songsToAdd);
+
+			qDebug() << QString("Thread (%1) added (%2) songs to add").arg(i).arg(songsToAdd.count());
+		}
+
+		qDebug() << QString("REASSIGNING SONGS DONE ON THREAD (%1)").arg(threadIndex);
+
+		return;
+	}
+
+	//------------------------------------------------------------------------------------------------------------------------------//
+
 	_threadsFinished++;
 	_threadsCleaned++;
 
