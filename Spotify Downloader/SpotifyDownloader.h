@@ -106,6 +106,8 @@ class PlaylistDownloader : public QObject {
 
     public:
         ~PlaylistDownloader();
+
+        bool PauseNewDownloads = false;
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
@@ -114,6 +116,7 @@ class PlaylistDownloader : public QObject {
         void CleanedUp();
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
+        void DistributeTracks();
         void ClearDirFiles(const QString& path);
 
         QList<Worker*> _threads;
@@ -156,8 +159,10 @@ class SongDownloader : public QObject {
         int SongsDownloaded = 0;
         int TotalSongCount() const { return _totalSongCount; }
 
-        QJsonArray RemoveTracks(int targetSongCount);
         void AddTracks(QJsonArray tracks);
+        QJsonArray RemoveTracks(int numTracksToRemove);
+        int SongsRemaining();
+        void FinishedDownloading(bool finished);
 
         static float Lerp(float a, float b, float t);
     public slots:
@@ -181,6 +186,10 @@ class SongDownloader : public QObject {
         YTMusicAPI* _yt;
 
         int _threadIndex;
+
+        bool _pausingNewDownloads = false;
+        bool _waitingForFinishedResponse = false;
+        bool _finishedDownloading = false;
 
         QProcess* _currentProcess;
         bool _quitting = false;

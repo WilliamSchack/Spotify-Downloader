@@ -28,6 +28,8 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const Playlist
 }
 
 void SongDownloader::StartDownload(int startIndex) {
+	int startingTotalSongCount = _totalSongCount;
+
 	_tracksNotFound = QJsonArray();
 	for (int i = startIndex; i < _totalSongCount; i++) {
 		QJsonObject track = _downloadingTracks[i].toObject();
@@ -39,17 +41,26 @@ void SongDownloader::StartDownload(int startIndex) {
 		emit SongDownloaded();
 
 		if (_quitting) {
-			qDebug() << QString("Thread (%1) Quitting").arg(_threadIndex);
 			this->thread()->quit();
 			return;
 		}
 
-		qDebug() << QString("Next song on thread (%1), current index (%2), total songs (%3)").arg(_threadIndex).arg(i).arg(_totalSongCount);
+		while (Manager->PauseNewDownloads) {
+			QCoreApplication::processEvents();
+		}
 	}
 
-	qDebug() << QString("Thread (%1) finished, songs downloaded (%2), total songs (%3)").arg(_threadIndex).arg(SongsDownloaded).arg(_totalSongCount);
-
+	_waitingForFinishedResponse = true;
 	emit Finish(_threadIndex, _tracksNotFound);
+	while (_waitingForFinishedResponse) {
+		QCoreApplication::processEvents();
+	}
+
+	// If no songs are added and done downloading on thread finish up
+	if (_finishedDownloading) return;
+
+	// If songs are added restart the downloading from the new index
+	StartDownload(startingTotalSongCount);
 }
 
 void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject album) {
@@ -385,40 +396,40 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	#pragma endregion
 }
 
-QJsonArray SongDownloader::RemoveTracks(int totalSongCount) {
-	qDebug() << QString("FROM REMOVED ON THREAD (%1)").arg(_threadIndex);
-
-	qDebug() << QString("Start Index (%1), Total Songs (%2), Target Count (%3)").arg(_totalSongCount - 1).arg(_totalSongCount).arg(totalSongCount);
-
-	QJsonArray removedTracks = QJsonArray();
-	for (int i = _totalSongCount - 1; i >= totalSongCount; i--) {
-		QJsonObject track = _downloadingTracks[i].toObject();
-		removedTracks.append(track);
-		_downloadingTracks.removeAt(i);
-
-		qDebug() << QString("Removing at index (%1): ").arg(i) << track;
-	}
-
-	qDebug() << removedTracks;
-
-	_totalSongCount = totalSongCount;
-
-	emit SetSongCount(_threadIndex, SongsDownloaded + 1, _totalSongCount);
-
-	qDebug() << QString("ENDING REMOVED ON THREAD (%1)").arg(_threadIndex);
-
-	return removedTracks;
+int SongDownloader::SongsRemaining() {
+	// Account for currently downloading song
+	int remaining = _totalSongCount - 1 - SongsDownloaded;
+	return std::max(remaining, 0);
 }
 
 void SongDownloader::AddTracks(QJsonArray tracks) {
 	_downloadingTracks = JSONUtils::Extend(_downloadingTracks, tracks);
-	
+
 	int prevTotalSongCount = _totalSongCount;
 	_totalSongCount = _downloadingTracks.count();
-	
+
+	emit SetSongCount(_threadIndex, SongsDownloaded + 1, _totalSongCount);
+}
+
+QJsonArray SongDownloader::RemoveTracks(int numTracksToRemove) {
+
+	QJsonArray removedTracks = QJsonArray();
+	int targetSongCount = _totalSongCount - numTracksToRemove;
+	for (int i = _totalSongCount - 1; i >= targetSongCount; i--) {
+		QJsonObject track = _downloadingTracks[i].toObject();
+		removedTracks.append(track);
+		_downloadingTracks.removeAt(i);
+	}
+
+	_totalSongCount = targetSongCount;
 	emit SetSongCount(_threadIndex, SongsDownloaded + 1, _totalSongCount);
 
-	StartDownload(prevTotalSongCount);
+	return removedTracks;
+}
+
+void SongDownloader::FinishedDownloading(bool finished) {
+	_waitingForFinishedResponse = false;
+	_finishedDownloading = finished;
 }
 
 void SongDownloader::CheckForStop() {

@@ -3,18 +3,18 @@
 # Spotify Downloader
 [![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Downloads](https://img.shields.io/github/downloads/WilliamSchack/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
-[![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 [![Open Issues](https://img.shields.io/github/issues/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
+[![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 
-Spotify Downloader is an application that can download songs from spotify with ease and for free unlike spotify requiring a subscription for the same services.
-
-The program has an easy to navigate GUI that will make downloading songs easier than ever!
+Spotify Downloader is an application that can download songs from spotify with ease and for free unlike spotify premium requiring a subscription
 
 ## Contents
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
+- [License](#license)
+- [FAQ](#faq)
 - [Credits](#credits)
 
 ## Installation
@@ -39,8 +39,7 @@ Follow the instructions below depending on your chosen install type.
 <summary><b> Reasoning Behind This </b></summary>
 
 This popup generally comes up when windows defender does not know much about a program being installed without a publisher. Since my program is not verified by microsoft, this will show up on first launch for almost everyone.
-
-If we want this popup to go away, the only thing we can really do here is just to wait and hope it eventually stops.
+There is not really anything that I can do about this.
 
 </details>
 
@@ -186,7 +185,7 @@ The **Settings Button** will open the settings menu allowing you to change most 
 
 <img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/764b6460-fa02-47d6-96b3-ee259f23b4af" width="50%" height="50%">
 
-Shows all of the songs that failed to download due to various reasons including:
+Shows all of the songs that failed to download due to various reasons that can include:
 - Song not available on youtube
 - Song on youtube not close enough to spotify version
 
@@ -197,28 +196,89 @@ Shows all of the songs that failed to download due to various reasons including:
 ## Features
 
 - **GUI**
-    - Much easier to navigate and more user friendly than a command line
+    - Makes it easy to navigate the program
+    - Multiple screens for easier understanding of what is currently happening
+    - Clear communication of what is currently happening in each download
 - **Easy Downloading**
     - Downloading starts with only two inputs and a button click making it easy to start
-    - While downloading the program shows exactly what is happening
 - **Multithreading**
-    - Can download multiple songs at once
+    - Can download multiple songs at once by using multiple threads
     - Splits playlist into multiple smaller lists that download seperately to speed up the download time significantly
+    - Automatically distributes songs after each thread is finished downloading to not waste any resources
 - **Automatic Metadata**
-    - All downloads include metadata to keep all the details and easily differentiate songs from one another
-- **Many Settings**
-    - Allows you to have full control over how the application works
+    - Downloads automatically include metadata into each file containing:
+    - Song Title
+    - Artists
+    - Album Name & Cover
+    - Spotify & Youtube ID used to download the song
+- **Customisable**
+    - Allows you to have control over the main parts of the downloading including:
+    - Overwriting
+    - Thread Count
+    - Download Speed
+    - Volume Normalization
 - **Automatic Cleanup**
     - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
+    - If cleanup fails due to any reason, unused files are kept in the temp directory and will be cleaned on later use of the program or by windows automatically
+
+## License
+***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
+
+
+Spotify Downloader is a program that downloads songs from Spotify.
+Copyright (C) 2024  William Schack
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+## FAQ
+<details>
+<summary><b>Where are songs downloaded from?</b></summary>
+Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 129 at the time of writing this.
+</details>
+
+<details>
+<summary><b>How accurate are the downloads?</b></summary>
+The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 129 at the time of writing this.
+</details>
+
+<details>
+<summary><b>What can I download from spotify?</b></summary>
+You can download a playlist, album, or individual songs. Episodes are also unsupported if in a playlist/album (cannot be inputted manully), but there may also be other types of media that I have not found yet. You also cannot download all songs from a given artist but if you need to get around this the only suggestion I have is to compile all of their songs into a playlist and input that into the program but I may have a look into supporting this in the future. If you need any help finding the link for your music, there is a guide <a href="https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage">Here</a> under Setup > How To Find Your URL.
+</details>
+
+<details>
+<summary><b>What is the quality of the downloaded songs?</b></summary>
+The audio quality of each song is the same as the highest on youtube. But this varies from song to song. Without audio normalization, I have seen bitrates ranging from 100-150kbps with no real pattern for it, really just depending on the channel that posted the song. With audio normalization turned on, all songs are then processed and outputted with a bitrate of 124kbps. This is an issue that I do need to look into and will in the future to hopefully allow for higher bitrates with settings to change the quality of the audio but for now, it is not a major issue and will be kept as is. To my ears it sounds pretty much the same as on spotify but I can see why this is a deal breaker for some and will definitely have a look into it.
+</details>
+
+<details>
+<summary><b>Can I change the file extension of output files?</b></summary>
+No. Not yet at least. For now they will always be outputed as an mp3 file, but this is planned to change in the future and more file extensions will come in later updates. Currently there are some things in the code that are created specially regarding mp3 files and would not work with other file extensions (taglib with the metadata assigning as an example) and would need more work put into it to accommodate for more. For now I have other updates planned before regarding this, but it will definitely be a feature soon.
+</details>
+
+<details>
+<summary><b>Why have there been months between updates?</b></summary>
+When I first created this project I has a lot of free time on my hands and was able to work on it for as long as I wanted, but now I have other responsibilities that are taking up a good chunk of my time and there are other projects that I work on outside of this one so I just do not have the time to work on this constantly. This project is being made out of passion and I do work on it often enough to now release updates hopefully monthly and if not bi-monthly, but do not let that put you off as I enjoy working on this project and no matter the breaks that I have taken, this will continue to be developed. If anything does happen where I am unable to work on the project anymore, I will update the readme to reflect that.
+</details>
 
 ## Credits
-Thanks to sigma67 for his [Python YT Music API](https://github.com/sigma67/ytmusicapi) that has been translated to C++ for this project
-
 **Packages Used**
-- [Qt5](https://www.qt.io/)
-- [ffmpeg](https://www.ffmpeg.org/)
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
-- [Taglib](https://github.com/taglib/taglib)
-- [Difflib C++](https://github.com/duckie/difflib)
+- [Qt5](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6.5/lgpl.html)
+- [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT License](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
+- [ffmpeg](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
+- [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
+- [Difflib C++](https://github.com/duckie/difflib) - [MIT License](https://github.com/duckie/difflib/blob/master/LICENSE)
 
 Thanks to you for using my program :)

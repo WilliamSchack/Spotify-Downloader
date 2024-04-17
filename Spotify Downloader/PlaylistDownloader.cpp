@@ -30,17 +30,20 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	}
 	else searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
 
-	// Remove tracks that already exist if not overwriting
+	// Dont add tracks that shouldnt be added
 	QJsonArray tracks = QJsonArray();
-	if (!Main->Overwrite) {
-		QString invalidChars = R"(<>:"/\|?*)";
-		foreach(QJsonValue trackVal, searchTracks) {
-			QJsonObject track = trackVal.toObject();
-			if (url.contains("playlist")) {
-				track = track["track"].toObject();
-			}
+	QString invalidChars = R"(<>:"/\|?*)";
+	foreach(QJsonValue trackVal, searchTracks) {
+		QJsonObject track = trackVal.toObject();
+		if (url.contains("playlist")) track = track["track"].toObject();
 
-			QString trackTitle = track["name"].toString();
+		QString trackTitle = track["name"].toString();
+
+		// If track is null dont add to tracks
+		if (trackTitle == "") continue;
+
+		// If not overwriting and track already downloaded, dont download
+		if (!Main->Overwrite) {
 			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 
 			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
@@ -53,9 +56,9 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 			if (!QFile::exists(fullTargetPath))
 				tracks.append(trackVal);
+		} else {
+			tracks.append(trackVal);
 		}
-	} else {
-		tracks = searchTracks;
 	}
 
 	_totalSongCount = tracks.count();
@@ -136,81 +139,15 @@ void PlaylistDownloader::SongDownloaded() {
 void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound) {
 	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
 
+	// If there are still songs remaining across all threads, distribute tracks between them
 	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished - 1); // songs left except currently downloading songs
-	
-	if (songsLeft > _threadCount) {
-		qDebug() << QString("REASSIGNING SONGS STARTING ON THREAD (%1)").arg(threadIndex);
-		qDebug() << QString("(%1) songs left").arg(songsLeft);
-
-		QJsonArray songsRemoved = QJsonArray();
-		QList<int> threadsUsed = QList<int>();
-
-		// Remove songs from threads that are over limit
-		for (int i = 0; i < _threadCount; i++) {
-			if (i == threadIndex) continue;
-
-			int threadTotalSongCount = _threads[i]->Downloader->TotalSongCount();
-			int threadSongsLeft = threadTotalSongCount - (_threads[i]->Downloader->SongsDownloaded + 1);
-
-			int songCountTarget = songsLeft / _threadCount;
-
-			qDebug() << QString("STARTING THREAD %1").arg(i)
-				<< QString("totalcount: %1").arg(threadTotalSongCount)
-				<< QString("songsleft: %1").arg(threadSongsLeft)
-				<< QString("songtarget: %1").arg(songCountTarget)
-				<< QString("songsleft<=songtarget: %1").arg((threadSongsLeft <= songCountTarget) ? "true || NOT USING THREAD" : "false || USING THREAD");
-
-			if (threadSongsLeft <= songCountTarget) continue;
-
-			//int songCountTarget = songsLeft / _threadCount + (i == threadIndex ? songsLeft % _threadCount : 0)
-
-			QJsonArray currentRemovedSongs = _threads[i]->Downloader->RemoveTracks(songCountTarget);
-			songsRemoved = JSONUtils::Extend(songsRemoved, currentRemovedSongs);
-
-			threadsUsed.append(i);
-
-			qDebug() << QString("(%1) Songs removed from thread (%2):").arg(currentRemovedSongs.count()).arg(i);
-			qDebug() << currentRemovedSongs;
-		}
-
-		qDebug() << QString("(%1) Songs Adding:").arg(songsRemoved.count());
-		qDebug() << songsRemoved;
-
-		// Add songs to threads that need it
-		for (int i = 0; i < _threadCount; i++) {
-			// skip threads that had songs removed
-			if (threadsUsed.contains(i)) continue;
-			
-			// -------------------------------------- JUST CHANGED HERE -------------------------------------- //
-			// --- EITHER SONGS NOT ADDING TO ALL THREADS, OR AMOUNT OF SONGS REMOVED OR ADDED NOT CORRECT --- //
-
-			int threadTotalSongCount = _threads[i]->Downloader->TotalSongCount();
-			int threadSongsLeft = threadTotalSongCount - (_threads[i]->Downloader->SongsDownloaded + 1);
-
-			int songCountTarget = songsLeft / _threadCount;
-
-			if (threadSongsLeft >= songCountTarget) continue;
-			
-			qDebug() << QString("Adding songs to thread (%1) || songsremoved: (%2), iterationcondition: (x > %3)").arg(i).arg(songsRemoved.count() - 1).arg(songCountTarget - threadSongsLeft);
-
-			QJsonArray songsToAdd = QJsonArray();
-			for (int x = songsRemoved.count() - 1; x > songCountTarget - threadSongsLeft; x--) {
-				songsToAdd.append(songsRemoved[i].toObject());
-				qDebug() << "Adding and removing track:" << songsRemoved[i].toObject();
-				songsRemoved.removeAt(i);
-			}
-
-			_threads[i]->Downloader->AddTracks(songsToAdd);
-
-			qDebug() << QString("Thread (%1) added (%2) songs to add").arg(i).arg(songsToAdd.count());
-		}
-
-		qDebug() << QString("REASSIGNING SONGS DONE ON THREAD (%1)").arg(threadIndex);
-
+	if (songsLeft > _threadCount - _threadsFinished) {
+		DistributeTracks();
+		_threads[threadIndex]->Downloader->FinishedDownloading(false);
 		return;
 	}
 
-	//------------------------------------------------------------------------------------------------------------------------------//
+	_threads[threadIndex]->Downloader->FinishedDownloading(true);
 
 	_threadsFinished++;
 	_threadsCleaned++;
@@ -233,6 +170,67 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	emit ChangeScreen(3);
 	emit ShowMessage("Downloads Complete!", QString("%1 download error(s)...").arg(_tracksNotFound.count()));
 	emit SetErrorItems(_tracksNotFound);
+}
+
+
+// Distribute songs evenly between threads based on the remaining songs on each
+void PlaylistDownloader::DistributeTracks() {
+	PauseNewDownloads = true;
+
+	// Get the amount of songs that each thread should have after reassigning //
+	
+	// Get sum of total songs remaining
+	int totalTracksRemaining = 0;
+	foreach (Worker* currentThread, _threads) {
+		SongDownloader* downloader = currentThread->Downloader;
+		totalTracksRemaining += downloader->SongsRemaining();
+	}
+	int tracksRemainingPerThread = totalTracksRemaining / _threadCount;
+	int tracksRemainingRemainder = totalTracksRemaining % _threadCount;
+
+	// Get differences between current total and target total
+	QList<int> differenceInTracksPerThread = QList<int>(_threadCount);
+
+	for (int i = 0; i < _threadCount; i++) {
+		SongDownloader* downloader = _threads[i]->Downloader;
+
+		int tracksRemaining = downloader->SongsRemaining();
+		int targetTrackCount = tracksRemainingPerThread + (i < tracksRemainingRemainder ? 1 : 0);
+
+		int difference = targetTrackCount - tracksRemaining;
+		differenceInTracksPerThread[i] = difference;
+	}
+
+	// Remove songs from threads that require it //
+
+	QJsonArray removedTracks = QJsonArray();
+	for (int i = 0; i < _threadCount; i++) {
+		// Difference must be negative
+		if (differenceInTracksPerThread[i] >= 0) continue;
+
+		QJsonArray threadRemovedTracks = _threads[i]->Downloader->RemoveTracks(-differenceInTracksPerThread[i]);
+		removedTracks = JSONUtils::Extend(removedTracks, threadRemovedTracks);
+	}
+
+	// Add songs to threads that require them //
+
+	int currentRemovedIndex = 0;
+	for (int i = 0; i < _threadCount; i++) {
+		// Difference must be positive
+		if (differenceInTracksPerThread[i] <= 0) continue;
+
+		QJsonArray tracksToAdd = QJsonArray();
+		int targetIndex = removedTracks.count() - differenceInTracksPerThread[i];
+		for (int x = removedTracks.count() - 1; x >= targetIndex; x--) {
+			tracksToAdd.append(removedTracks[x]);
+			removedTracks.removeAt(x);
+		}
+		currentRemovedIndex += differenceInTracksPerThread[i];
+
+		_threads[i]->Downloader->AddTracks(tracksToAdd);
+	}
+	
+	PauseNewDownloads = false;
 }
 
 void PlaylistDownloader::Quit() {
