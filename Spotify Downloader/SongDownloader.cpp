@@ -301,7 +301,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		}
 	});
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
-	_currentProcess->startCommand(QString(R"("%1" --no-part -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-format %4 "%5")")
+	_currentProcess->startCommand(QString(R"("%1" --no-part -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 --audio-format %4 "%5")")
 						.arg(QCoreApplication::applicationDirPath() + "/" + YTDLP_PATH)
 						.arg(fullDownloadingPath)
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
@@ -315,10 +315,39 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 	CheckForStop();
 
+	#pragma region Set Audio Quality
+	// Audio quality will be somewhere around 256kb/s (not exactly) so change it to desired quality ranging from 33 - 256 in this case (33 is minimum, from there 64, 96, 128, ...)
+	// If quality is not a multiple of 32 ffmpeg will change it to the closest multiple
+	// Don't set quality if normalizing, has to be set there regardless
+
+	if (!Main->NormalizeAudio) {
+		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
+
+		_currentProcess = new QProcess();
+		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
+
+		QString newQualityFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(filename + "_A").arg(CODEC);
+		_currentProcess->startCommand(QString(R"("%1" -i "%2"  -b:a %3k "%4")")
+						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
+						.arg(fullDownloadingPath)
+						.arg(Main->AudioBitrate)
+						.arg(newQualityFullPath));
+		_currentProcess->waitForFinished(-1);
+
+		QFile::remove(fullDownloadingPath);
+		QFile::rename(newQualityFullPath, fullDownloadingPath);
+	}
+
+	#pragma endregion
+
+	if (_quitting) return;
+	CheckForStop();
+
 	#pragma region Normalize Audio
 	if (Main->NormalizeAudio) {
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 
+		// Get Audio Data
 		_currentProcess = new QProcess();
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
@@ -338,11 +367,12 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 				_currentProcess = new QProcess();
 				connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
-				_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volume=%3" "%4")")
-					.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
-					.arg(fullDownloadingPath)
-					.arg(QString("%1dB").arg(volumeApply))
-					.arg(normalizedFullPath));
+				_currentProcess->startCommand(QString(R"("%1" -i "%2" -b:a %3k -af "volume=%4dB" "%5")")
+								.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
+								.arg(fullDownloadingPath)
+								.arg(Main->AudioBitrate)
+								.arg(volumeApply)
+								.arg(normalizedFullPath));
 				_currentProcess->waitForFinished(-1);
 
 				if (_quitting) return;

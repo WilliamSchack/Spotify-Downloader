@@ -3,6 +3,8 @@
 
 #include <QThread>
 
+#include <QSettings>
+
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QPushButton>
@@ -56,6 +58,8 @@ class SpotifyDownloader : public QDialog
         bool NormalizeAudio = true;
         float NormalizeAudioVolume = 0.0f;
 
+        int AudioBitrate = 0;
+
         bool Paused = false;
     public slots:
         void SetupUI(int count);
@@ -73,6 +77,9 @@ class SpotifyDownloader : public QDialog
         void operate(const SpotifyDownloader* main);
         void RequestQuit();
     private:
+        const QString ORGANIZATION_NAME = "WilliamSchack";
+        const QString APPLICATION_NAME = "Spotify Downloader";
+
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;
 
@@ -91,6 +98,9 @@ class SpotifyDownloader : public QDialog
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
+
+        void SaveSettings();
+        void LoadSettings();
 
         void closeEvent(QCloseEvent* closeEvent);
 };

@@ -227,7 +227,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Continue</string>
+      <string>Download</string>
      </property>
      <property name="autoDefault">
       <bool>false</bool>
@@ -237,6 +237,32 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="flat">
       <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="CopyrightLabel">
+     <property name="geometry">
+      <rect>
+       <x>4</x>
+       <y>330</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>© 2024 William Schack</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
    </widget>
@@ -688,16 +714,16 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>520</x>
-       <y>185</y>
-       <width>101</width>
+       <x>660</x>
+       <y>160</y>
+       <width>61</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>14</pointsize>
+       <pointsize>12</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -721,16 +747,16 @@ selection-background-color: rgb(0, 120, 215);</string>
     <widget class="QLabel" name="NormalizeVolumeSettingLabel">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>235</y>
-       <width>301</width>
+       <x>20</x>
+       <y>110</y>
+       <width>181</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>20</pointsize>
+       <pointsize>15</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -741,7 +767,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string>Normalize Volume</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="CheckBox" name="NotificationSettingButton">
@@ -750,8 +776,8 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>580</x>
-       <y>85</y>
+       <x>680</x>
+       <y>60</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -766,14 +792,14 @@ selection-background-color: rgb(0, 120, 215);</string>
 color: rgb(0, 0, 0);</string>
      </property>
      <property name="text">
-      <string>✔</string>
+      <string/>
      </property>
     </widget>
     <widget class="QPushButton" name="BackButton">
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>285</y>
+       <y>305</y>
        <width>451</width>
        <height>41</height>
       </rect>
@@ -788,7 +814,7 @@ color: rgb(0, 0, 0);</string>
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Back</string>
+      <string>Save &amp;&amp; Return</string>
      </property>
      <property name="autoDefault">
       <bool>false</bool>
@@ -803,16 +829,16 @@ color: rgb(0, 0, 0);</string>
     <widget class="QLabel" name="NormalizeVolumeSettingLabel_dBFS">
      <property name="geometry">
       <rect>
-       <x>625</x>
-       <y>235</y>
-       <width>71</width>
+       <x>325</x>
+       <y>110</y>
+       <width>41</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>18</pointsize>
+       <pointsize>10</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -832,8 +858,8 @@ color: rgb(0, 0, 0);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>580</x>
-       <y>35</y>
+       <x>280</x>
+       <y>60</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -854,16 +880,16 @@ color: rgb(0, 0, 0);</string>
     <widget class="QLabel" name="NotificationSettingLabel">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>85</y>
-       <width>401</width>
+       <x>390</x>
+       <y>60</y>
+       <width>261</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>20</pointsize>
+       <pointsize>15</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -874,22 +900,22 @@ color: rgb(0, 0, 0);</string>
       <string>Show Status Notifications</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="DownloadSpeedSettingLabel_MBs">
      <property name="geometry">
       <rect>
-       <x>625</x>
-       <y>185</y>
-       <width>71</width>
+       <x>725</x>
+       <y>160</y>
+       <width>41</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>18</pointsize>
+       <pointsize>10</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -909,16 +935,16 @@ color: rgb(0, 0, 0);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>520</x>
-       <y>235</y>
-       <width>101</width>
+       <x>260</x>
+       <y>110</y>
+       <width>61</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>14</pointsize>
+       <pointsize>12</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -932,7 +958,7 @@ color: rgb(0, 0, 0);</string>
       <enum>Qt::StrongFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);
@@ -957,8 +983,8 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>235</y>
+       <x>210</x>
+       <y>110</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -973,22 +999,22 @@ selection-background-color: rgb(0, 120, 215);</string>
 color: rgb(0, 0, 0);</string>
      </property>
      <property name="text">
-      <string>✔</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="OverwriteSettingLabel">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>35</y>
-       <width>401</width>
+       <x>20</x>
+       <y>60</y>
+       <width>231</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>20</pointsize>
+       <pointsize>15</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -999,22 +1025,22 @@ color: rgb(0, 0, 0);</string>
       <string>Overwrite Existing Files</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="DownloadSpeedSettingLabel">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>185</y>
-       <width>301</width>
+       <x>390</x>
+       <y>160</y>
+       <width>231</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>20</pointsize>
+       <pointsize>15</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -1025,22 +1051,22 @@ color: rgb(0, 0, 0);</string>
       <string>Download Speed Limit</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="DownloaderThreadsLabel">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>135</y>
-       <width>301</width>
+       <x>390</x>
+       <y>110</y>
+       <width>261</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>20</pointsize>
+       <pointsize>15</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -1051,7 +1077,7 @@ color: rgb(0, 0, 0);</string>
       <string>Downloader Threads</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QSpinBox" name="DownloaderThreadsInput">
@@ -1060,16 +1086,16 @@ color: rgb(0, 0, 0);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>520</x>
-       <y>135</y>
-       <width>101</width>
+       <x>660</x>
+       <y>110</y>
+       <width>61</width>
        <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>14</pointsize>
+       <pointsize>12</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -1083,7 +1109,7 @@ color: rgb(0, 0, 0);</string>
       <enum>Qt::StrongFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Can effect overall computer performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Can effect CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);
@@ -1091,6 +1117,224 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="value">
       <number>3</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="AudioBitrateInput">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>160</y>
+       <width>61</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>ArrowCursor</cursorShape>
+     </property>
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;High Quality: &lt;/span&gt;256&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Good Quality: &lt;/span&gt;192&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Low Quality: &lt;/span&gt;128&lt;/p&gt;&lt;p&gt;Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="suffix">
+      <string/>
+     </property>
+     <property name="minimum">
+      <number>33</number>
+     </property>
+     <property name="maximum">
+      <number>256</number>
+     </property>
+     <property name="singleStep">
+      <number>32</number>
+     </property>
+     <property name="value">
+      <number>192</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="AudioBitrateSettingLabel_kbs">
+     <property name="geometry">
+      <rect>
+       <x>325</x>
+       <y>160</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>10</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>kb/s</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="AudioBitrateSettingLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>160</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>15</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Audio Bitrate</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="AudioBitrateFileSizeLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>210</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>15</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Average File Size:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="AudioBitrateFileSizeLabel_Value">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>210</y>
+       <width>151</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>13</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File size calculated from bitrate average&lt;/p&gt;&lt;p&gt;File Size (MBs) = (bitrate(kbs) * duration(seconds)) / 8) / 1024&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;* This is not taking into account metadata, an extra ~0.9MB is added&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="toolTipDuration">
+      <number>-1</number>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QToolButton{background-color:black; color:white;} QWidget{color: rgb(255, 255, 255);}</string>
+     </property>
+     <property name="text">
+      <string>1.41MB/min</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="OverwriteSettingLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>341</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>18</pointsize>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Output</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="OverwriteSettingLabel_3">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>10</y>
+       <width>351</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>18</pointsize>
+       <bold>true</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Downloading</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </widget>

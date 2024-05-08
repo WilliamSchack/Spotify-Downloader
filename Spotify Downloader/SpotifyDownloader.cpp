@@ -7,12 +7,17 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
     setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
+    QCoreApplication::setOrganizationName(ORGANIZATION_NAME);
+    QCoreApplication::setApplicationName(APPLICATION_NAME);
+
     _ui.setupUi(this);
 
     SetupTrayIcon();
     SetupSetupScreen();
     SetupSettingsScreen();
     SetupProcessingScreen();
+
+    LoadSettings();
 
     SetupDownloaderThread();
 }
@@ -70,7 +75,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
         QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"),"",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if(directory != "") _ui.SaveLocationInput->setPlainText(directory);
+        if (directory != "") _ui.SaveLocationInput->setPlainText(directory);
     });
 
     connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
@@ -108,6 +113,12 @@ void SpotifyDownloader::SetupSetupScreen() {
                 return;
             }
 
+            // Save directory to QSettings
+            QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+            settings.beginGroup("Output");
+            settings.setValue("saveLocation", SaveLocationText);
+            settings.endGroup();
+
             DownloadStarted = true;
 
             _ui.Screens->setCurrentIndex(1);
@@ -126,38 +137,60 @@ void SpotifyDownloader::SetupSetupScreen() {
     });
 }
 void SpotifyDownloader::SetupSettingsScreen() {
-    // Check Boxes
-    _ui.NotificationSettingButton->isChecked = true;
-    _ui.NormalizeVolumeSettingButton->isChecked = true;
-
-    ThreadCount = (_ui.DownloaderThreadsInput->text()).toInt();
-    NormalizeAudioVolume = (_ui.NormalizeVolumeSettingInput->text()).toFloat();
+    // Set default variables
+    ThreadCount = _ui.DownloaderThreadsInput->value();
+    NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
 
     // Number Inputs
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
         if (_ui.DownloaderThreadsInput->text() != "") {
-            ThreadCount = (_ui.DownloaderThreadsInput->text()).toInt();
+            ThreadCount = _ui.DownloaderThreadsInput->value();
         }
     });
     connect(_ui.DownloadSpeedSettingInput, &QDoubleSpinBox::textChanged, [=] {
         if (_ui.DownloadSpeedSettingInput->text() != "") {
-            DownloadSpeed = (_ui.DownloadSpeedSettingInput->text()).toFloat();
+            DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
         }
     });
     connect(_ui.NormalizeVolumeSettingInput, &QDoubleSpinBox::textChanged, [=] {
         if (_ui.NormalizeVolumeSettingInput->text() != "") {
-            NormalizeAudioVolume = (_ui.NormalizeVolumeSettingInput->text()).toFloat();
+            NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
+        }
+    });
+    connect(_ui.AudioBitrateInput, &QSpinBox::textChanged, [=] {
+        if (_ui.AudioBitrateInput->text() != "") {
+            int audioBitrate = _ui.AudioBitrateInput->value();
+
+            // Snap value to closest multiple of 32
+            if (audioBitrate % 32 != 0) {
+                int remainder = audioBitrate % 32;
+                if (remainder < 16)
+                    audioBitrate -= remainder;
+                else
+                    audioBitrate += 32 - remainder;
+
+                _ui.AudioBitrateInput->setValue(audioBitrate);
+            }
+
+            AudioBitrate = audioBitrate;
+
+            float estimatedFileSize = (((float)AudioBitrate * 60) / 8) / 1024;
+            QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
+
+            _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
         }
     });
 
-    // Button Clicks
-    connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = !Overwrite; });
-    connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Notifications = !Notifications; });
+    // Button Clicks (Using isChecked to help with loading settings)
+    connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = _ui.OverwriteSettingButton->isChecked; });
+    connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Notifications = _ui.NotificationSettingButton->isChecked; });
     connect(_ui.NormalizeVolumeSettingButton, &CheckBox::clicked, [=] {
-        NormalizeAudio = !NormalizeAudio;
+        NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
         _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
     });
     connect(_ui.BackButton, &QPushButton::clicked, [=] {
+        SaveSettings();
+        
         if(DownloadStarted) _ui.Screens->setCurrentIndex(1); // Change to processing screen
         else _ui.Screens->setCurrentIndex(0); // Change to setup screen
     });
@@ -205,6 +238,75 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
     }
 
     closeEvent->accept();
+}
+
+void SpotifyDownloader::SaveSettings() {
+    // Get values from UI
+    bool overwriteEnabled = _ui.OverwriteSettingButton->isChecked;
+    bool normalizeEnabled = _ui.NormalizeVolumeSettingButton->isChecked;
+    float normalizeVolume = _ui.NormalizeVolumeSettingInput->value();
+    int audioBitrate = _ui.AudioBitrateInput->value();
+    bool statusNotificationsEnabled = _ui.NotificationSettingButton->isChecked;
+    int downloaderThreads = _ui.DownloaderThreadsInput->value();
+    float downloadSpeedLimit = _ui.DownloadSpeedSettingInput->value();
+
+    // Save values to settings
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+
+    settings.beginGroup("Output");
+    settings.setValue("overwriteEnabled", overwriteEnabled);
+    settings.setValue("normalizeEnabled", normalizeEnabled);
+    settings.setValue("normalizeVolume", normalizeVolume);
+    settings.setValue("audioBitrate", audioBitrate);
+    settings.endGroup();
+
+    settings.beginGroup("Downloading");
+    settings.setValue("statusNotificationsEnabled", statusNotificationsEnabled);
+    settings.setValue("downloaderThreads", downloaderThreads);
+    settings.setValue("downloadSpeedLimit", downloadSpeedLimit);
+    settings.endGroup();
+}
+
+void SpotifyDownloader::LoadSettings() {
+    // Clicking buttons to call their callbacks for settings variables etc.
+    // Using default values instead of existence checking
+
+    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+
+    settings.beginGroup("Output");
+
+    bool overwriteEnabled = settings.value("overwriteEnabled", false).toBool();
+    if(_ui.OverwriteSettingButton->isChecked != overwriteEnabled)
+        _ui.OverwriteSettingButton->click();
+
+    bool normalizeEnabled = settings.value("normalizeEnabled", true).toBool();
+    if (_ui.NormalizeVolumeSettingButton->isChecked != normalizeEnabled)
+        _ui.NormalizeVolumeSettingButton->click();
+
+    float normalizeVolume = settings.value("normalizeVolume", 14.0).toFloat();
+    _ui.NormalizeVolumeSettingInput->setValue(normalizeVolume);
+
+    int audioBitrate = settings.value("audioBitrate", 192).toInt();
+    _ui.AudioBitrateInput->setValue(audioBitrate);
+
+    QString saveLocation = settings.value("saveLocation").toString();
+    _ui.SaveLocationInput->setPlainText(saveLocation);
+
+    settings.endGroup();
+
+    settings.beginGroup("Downloading");
+
+    bool statusNotificationsEnabled = settings.value("statusNotificationsEnabled", true).toBool();
+    if (_ui.NotificationSettingButton->isChecked != statusNotificationsEnabled)
+        _ui.NotificationSettingButton->click();
+
+    int downloaderThreads = settings.value("downloaderThreads", 3).toInt();
+    _ui.DownloaderThreadsInput->setValue(downloaderThreads);
+
+    float downloadSpeedLimit = settings.value("downloadSpeedLimit", 0.0).toFloat();
+    _ui.DownloadSpeedSettingInput->setValue(downloadSpeedLimit);
+
+    settings.endGroup();
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {

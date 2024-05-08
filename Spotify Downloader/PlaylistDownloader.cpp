@@ -64,6 +64,17 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	_totalSongCount = tracks.count();
 	emit SetSongCount(-1, 0, _totalSongCount);
 
+	// In the case that the single track inputted was removed, go to finished screen
+	if (_totalSongCount == 0) {
+		delete _yt;
+		delete _sp;
+
+		emit ChangeScreen(2);
+		emit ShowMessage("Downloads Complete!", "No download errors!");
+
+		return;
+	}
+
 	_tracksNotFound = QJsonArray();
 	_songsDownloaded = 0;
 	_threadsFinished = 0;
