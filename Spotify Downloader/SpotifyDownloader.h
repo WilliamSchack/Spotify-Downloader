@@ -47,20 +47,22 @@ class SpotifyDownloader : public QDialog
         QString PlaylistURLText;
         QString SaveLocationText;
 
+        bool Paused = false;
+
         bool DownloadStarted = false;
         bool DownloadComplete = false;
+
+        // Below variables will be loaded in LoadSettings()
         bool Overwrite = false;
         bool Notifications = true;
 
         int ThreadCount = 3;
-        int DownloadSpeed = 0;
+        float DownloadSpeed = 0;
 
         bool NormalizeAudio = true;
-        float NormalizeAudioVolume = 0.0f;
+        float NormalizeAudioVolume = -14.0;
 
-        int AudioBitrate = 0;
-
-        bool Paused = false;
+        int AudioBitrate = 192;
     public slots:
         void SetupUI(int count);
         void ChangeScreen(int screenIndex);

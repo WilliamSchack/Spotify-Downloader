@@ -1115,6 +1115,9 @@ color: rgb(0, 0, 0);</string>
       <string notr="true">background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
      </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
      <property name="value">
       <number>3</number>
      </property>
@@ -1277,7 +1280,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">QToolButton{background-color:black; color:white;} QWidget{color: rgb(255, 255, 255);}</string>
      </property>
      <property name="text">
-      <string>1.41MB/min</string>
+      <string>0MB/min</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

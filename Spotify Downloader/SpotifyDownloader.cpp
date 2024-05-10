@@ -137,10 +137,6 @@ void SpotifyDownloader::SetupSetupScreen() {
     });
 }
 void SpotifyDownloader::SetupSettingsScreen() {
-    // Set default variables
-    ThreadCount = _ui.DownloaderThreadsInput->value();
-    NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
-
     // Number Inputs
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
         if (_ui.DownloaderThreadsInput->text() != "") {
@@ -268,8 +264,8 @@ void SpotifyDownloader::SaveSettings() {
 }
 
 void SpotifyDownloader::LoadSettings() {
-    // Clicking buttons to call their callbacks for settings variables etc.
-    // Using default values instead of existence checking
+    // Clicking buttons to call their callbacks
+    // Default settings are defined here
 
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
 
@@ -278,18 +274,22 @@ void SpotifyDownloader::LoadSettings() {
     bool overwriteEnabled = settings.value("overwriteEnabled", false).toBool();
     if(_ui.OverwriteSettingButton->isChecked != overwriteEnabled)
         _ui.OverwriteSettingButton->click();
+    Overwrite = overwriteEnabled;
 
     bool normalizeEnabled = settings.value("normalizeEnabled", true).toBool();
     if (_ui.NormalizeVolumeSettingButton->isChecked != normalizeEnabled)
         _ui.NormalizeVolumeSettingButton->click();
+    NormalizeAudio = normalizeEnabled;
 
     float normalizeVolume = settings.value("normalizeVolume", 14.0).toFloat();
     _ui.NormalizeVolumeSettingInput->setValue(normalizeVolume);
+    NormalizeAudioVolume = normalizeVolume;
 
     int audioBitrate = settings.value("audioBitrate", 192).toInt();
     _ui.AudioBitrateInput->setValue(audioBitrate);
+    AudioBitrate = audioBitrate;
 
-    QString saveLocation = settings.value("saveLocation").toString();
+    QString saveLocation = settings.value("saveLocation", "").toString();
     _ui.SaveLocationInput->setPlainText(saveLocation);
 
     settings.endGroup();
@@ -299,12 +299,15 @@ void SpotifyDownloader::LoadSettings() {
     bool statusNotificationsEnabled = settings.value("statusNotificationsEnabled", true).toBool();
     if (_ui.NotificationSettingButton->isChecked != statusNotificationsEnabled)
         _ui.NotificationSettingButton->click();
+    Notifications = statusNotificationsEnabled;
 
     int downloaderThreads = settings.value("downloaderThreads", 3).toInt();
     _ui.DownloaderThreadsInput->setValue(downloaderThreads);
+    ThreadCount = downloaderThreads;
 
     float downloadSpeedLimit = settings.value("downloadSpeedLimit", 0.0).toFloat();
     _ui.DownloadSpeedSettingInput->setValue(downloadSpeedLimit);
+    DownloadSpeed = downloadSpeedLimit;
 
     settings.endGroup();
 }

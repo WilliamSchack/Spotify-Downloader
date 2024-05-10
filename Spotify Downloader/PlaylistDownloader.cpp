@@ -261,8 +261,12 @@ PlaylistDownloader::~PlaylistDownloader() {
 	while (_threadsCleaned < _threadCount)
 		QCoreApplication::processEvents();
 
-	// Remove all files in downloading folder
-	QString downloadingFolder = QString("%1/SpotifyDownloader/Downloading").arg(QDir::temp().path());
+	// Remove all temp files
+	QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
+	QString coverArtFolder = QString("%1/Cover Art").arg(tempFolder);
+	QString downloadingFolder = QString("%1/Downloading").arg(tempFolder);
+
+	ClearDirFiles(coverArtFolder);
 	ClearDirFiles(downloadingFolder);
 }
 

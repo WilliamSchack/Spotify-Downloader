@@ -300,8 +300,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			emit SetProgressBar(_threadIndex, progress.toFloat() / 100);
 		}
 	});
-	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
-	_currentProcess->startCommand(QString(R"("%1" --no-part -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 --audio-format %4 "%5")")
+	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
+	_currentProcess->startCommand(QString(R"("%1" --no-part --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 --audio-format %4 "%5")")
 						.arg(QCoreApplication::applicationDirPath() + "/" + YTDLP_PATH)
 						.arg(fullDownloadingPath)
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
