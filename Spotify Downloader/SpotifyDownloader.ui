@@ -62,53 +62,6 @@
     <number>0</number>
    </property>
    <widget class="QWidget" name="SetupScreen">
-    <widget class="QPlainTextEdit" name="PlaylistURLInput">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>110</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="cursor" stdset="0">
-      <cursorShape>IBeamCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);
-selection-background-color: rgb(0, 120, 215);</string>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="tabChangesFocus">
-      <bool>false</bool>
-     </property>
-     <property name="lineWrapMode">
-      <enum>QPlainTextEdit::NoWrap</enum>
-     </property>
-     <property name="cursorWidth">
-      <number>1</number>
-     </property>
-     <property name="maximumBlockCount">
-      <number>0</number>
-     </property>
-     <property name="backgroundVisible">
-      <bool>false</bool>
-     </property>
-     <property name="placeholderText">
-      <string>Enter Song/Playlist URL...</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="SettingsButton">
      <property name="geometry">
       <rect>
@@ -161,53 +114,6 @@ selection-background-color: rgb(0, 120, 215);</string>
       </size>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="SaveLocationInput">
-     <property name="geometry">
-      <rect>
-       <x>170</x>
-       <y>160</y>
-       <width>401</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="cursor" stdset="0">
-      <cursorShape>IBeamCursor</cursorShape>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);
-selection-background-color: rgb(0, 120, 215);</string>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="tabChangesFocus">
-      <bool>false</bool>
-     </property>
-     <property name="lineWrapMode">
-      <enum>QPlainTextEdit::NoWrap</enum>
-     </property>
-     <property name="cursorWidth">
-      <number>1</number>
-     </property>
-     <property name="maximumBlockCount">
-      <number>0</number>
-     </property>
-     <property name="backgroundVisible">
-      <bool>false</bool>
-     </property>
-     <property name="placeholderText">
-      <string>Select A Save Location...</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="ContinueButton">
      <property name="geometry">
       <rect>
@@ -227,7 +133,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Download</string>
+      <string>Start Download</string>
      </property>
      <property name="autoDefault">
       <bool>false</bool>
@@ -263,6 +169,65 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="PlaylistURLInput">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>110</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Enter Song/Playlist URL...</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="SaveLocationInput">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>160</y>
+       <width>401</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Select A Save Location...</string>
      </property>
     </widget>
    </widget>

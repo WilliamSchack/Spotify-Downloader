@@ -75,12 +75,12 @@ void SpotifyDownloader::SetupSetupScreen() {
 
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
         QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"),"",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if (directory != "") _ui.SaveLocationInput->setPlainText(directory);
+        if (directory != "") _ui.SaveLocationInput->setText(directory); 
     });
 
     connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
-        PlaylistURLText = _ui.PlaylistURLInput->toPlainText();
-        SaveLocationText = _ui.SaveLocationInput->toPlainText();
+        PlaylistURLText = _ui.PlaylistURLInput->text();
+        SaveLocationText = _ui.SaveLocationInput->text();
 
         if (PlaylistURLText != "" && SaveLocationText != "") {
             // Check if both URL and Directory are valid
@@ -271,11 +271,13 @@ void SpotifyDownloader::LoadSettings() {
 
     settings.beginGroup("Output");
 
+    // Overwrite
     bool overwriteEnabled = settings.value("overwriteEnabled", false).toBool();
     if(_ui.OverwriteSettingButton->isChecked != overwriteEnabled)
         _ui.OverwriteSettingButton->click();
     Overwrite = overwriteEnabled;
 
+    // Normalize Volume
     bool normalizeEnabled = settings.value("normalizeEnabled", true).toBool();
     if (_ui.NormalizeVolumeSettingButton->isChecked != normalizeEnabled)
         _ui.NormalizeVolumeSettingButton->click();
@@ -285,26 +287,35 @@ void SpotifyDownloader::LoadSettings() {
     _ui.NormalizeVolumeSettingInput->setValue(normalizeVolume);
     NormalizeAudioVolume = normalizeVolume;
 
+    // Audio Bitrate
     int audioBitrate = settings.value("audioBitrate", 192).toInt();
     _ui.AudioBitrateInput->setValue(audioBitrate);
     AudioBitrate = audioBitrate;
 
+    float estimatedFileSize = (((float)AudioBitrate * 60) / 8) / 1024;
+    QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
+    _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+
+    // Save Location
     QString saveLocation = settings.value("saveLocation", "").toString();
-    _ui.SaveLocationInput->setPlainText(saveLocation);
+    _ui.SaveLocationInput->setText(saveLocation);
 
     settings.endGroup();
 
     settings.beginGroup("Downloading");
 
+    // Status Notifications
     bool statusNotificationsEnabled = settings.value("statusNotificationsEnabled", true).toBool();
     if (_ui.NotificationSettingButton->isChecked != statusNotificationsEnabled)
         _ui.NotificationSettingButton->click();
     Notifications = statusNotificationsEnabled;
 
+    // Downloader Threads
     int downloaderThreads = settings.value("downloaderThreads", 3).toInt();
     _ui.DownloaderThreadsInput->setValue(downloaderThreads);
     ThreadCount = downloaderThreads;
 
+    // Download Speed Limit
     float downloadSpeedLimit = settings.value("downloadSpeedLimit", 0.0).toFloat();
     _ui.DownloadSpeedSettingInput->setValue(downloadSpeedLimit);
     DownloadSpeed = downloadSpeedLimit;
