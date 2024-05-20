@@ -4,6 +4,7 @@
 
 #include <difflib.h>
 
+#include <taglib/fileref.h>
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2frame.h>
@@ -288,6 +289,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
 	emit SetProgressBar(_threadIndex, 0);
 
+	// Remove from temp folder if exists
 	if (Main->Overwrite && QFile::exists(fullDownloadingPath))
 		QFile::remove(fullDownloadingPath);
 
@@ -387,43 +389,54 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 	CheckForStop();
 
-	// Move from downloading path to target path
-	// Before metadata because modifying file afterwards doesn't work
-	QFile::rename(fullDownloadingPath, fullTargetPath);
-
 	#pragma region Assign Metadata
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 
-	TagLib::MPEG::File file(reinterpret_cast<const wchar_t*>(fullTargetPath.constData()));
+	TagLib::FileName fileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
+	TagLib::FileRef fileRef(fileName, true, TagLib::AudioProperties::Accurate);
+	if (!fileRef.isNull()) {
+		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(fileRef.file());
 
-	TagLib::ID3v2::Tag* tag = file.ID3v2Tag(true);
-	tag->setTitle(reinterpret_cast<const wchar_t*>(trackTitle.constData()));
-	tag->setArtist(reinterpret_cast<const wchar_t*>(songArtistNames.constData()));
-	tag->setAlbum(reinterpret_cast<const wchar_t*>(albumName.constData()));
+		TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
+		tag->setTitle(reinterpret_cast<const wchar_t*>(trackTitle.constData()));
+		tag->setArtist(reinterpret_cast<const wchar_t*>(songArtistNames.constData()));
+		tag->setAlbum(reinterpret_cast<const wchar_t*>(albumName.constData()));
 
-	TagLib::ID3v2::TextIdentificationFrame *pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
-	TagLib::ID3v2::TextIdentificationFrame *copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
-	TagLib::ID3v2::CommentsFrame *comFrame = new TagLib::ID3v2::CommentsFrame();
-	pubFrame->setText("William S - Spotify Downloader");
-	copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(songId).arg(finalResult["videoId"].toString()).toStdString().data());
-	comFrame->setText("Thanks for using my program! :)\n- William S");
-	tag->addFrame(pubFrame);
-	tag->addFrame(copFrame);
-	tag->addFrame(comFrame);
+		TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
+		TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
+		TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
+		pubFrame->setText("William S - Spotify Downloader");
+		copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(songId).arg(finalResult["videoId"].toString()).toStdString().data());
+		comFrame->setText("Thanks for using my program! :)\n- William S");
+		tag->addFrame(pubFrame);
+		tag->addFrame(copFrame);
+		tag->addFrame(comFrame);
 
-	QByteArray imageBytes;
-	QBuffer buffer(&imageBytes);
-	buffer.open(QIODevice::WriteOnly);
-	image.save(&buffer, "PNG");
+		QByteArray imageBytes;
+		QBuffer buffer(&imageBytes);
+		buffer.open(QIODevice::WriteOnly);
+		image.save(&buffer, "PNG");
+		buffer.close();
 
-	TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
-	picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
-	picFrame->setMimeType("image/png");
-	picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
-	tag->addFrame(picFrame);
+		TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
+		picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
+		picFrame->setMimeType("image/png");
+		picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
+		tag->addFrame(picFrame);
 
-	file.save();
+		fileRef.save();
+
+		// Destroy reference, allows for file use later
+		fileRef.~FileRef();
+	}
 	#pragma endregion
+
+	// Remove from target folder if file exists
+	if (Main->Overwrite && QFile::exists(fullTargetPath))
+		QFile::remove(fullTargetPath);
+
+	// Move from downloading path to target path
+	QFile::rename(fullDownloadingPath, fullTargetPath);
 }
 
 int SongDownloader::SongsRemaining() {

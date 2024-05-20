@@ -90,7 +90,7 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/84a4debe-4565-4154-84a7-413186f477c7" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/284c65a6-2993-4d43-9742-ab3d80c0b352" width="50%" height="50%">
 
 **Enter Song/Playlist URL**
 - The URL to your songs you would like to download
@@ -119,6 +119,7 @@ You can open the program through the start menu or from the installed location t
 
 **Select A Save Location**
 - The path to your download location. You can click the file icon directly to the right of the input box to browse to a location.
+- ***Saved between sessions***
 
 ---
     
@@ -129,10 +130,33 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/bc4ce06c-898e-4b23-b9ef-4e4f60b82e01" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/94406841-b639-4cdb-9173-a0b4586bd0e4" width="50%" height="50%">
+
+***Note: All settings are saved between sessions***
+
+### Output
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
+
+**Normalize Volume - Recommended: ON, -14dB**
+- If enabled, changes the value of all songs to the same depending on its average volume.  
+    - Quite: -17dB
+    - Normal: -14dB
+    - Loud: -11dB
+
+**Audio Bitrate - Recommended: 192kb/s**
+- Sets the output quality of each song downloaded
+    - High Quality: 256kb/s
+    - Good Quality: 192kb/s
+    - Low Quality 128kb/s
+
+**Average File Size**
+- Displays a estimated file size based on the chosen bitrate
+- File Size (MB) = (bitrate(kbs) * duration(seconds)) / 8) / 1024
+- ***Does not take into account metadata, an extra ~0.9MB is added***
+
+### Downloading
 
 **Show Status Notifications - Recommended: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -142,12 +166,6 @@ You can open the program through the start menu or from the installed location t
 
 **Download Speed Limit - Recommended: 0MB/s**
 - The speed limit to downloading songs in MB/s. A value of 0 is uncapped
-
-**Normalize Volume - Recommended: ON, -14dB**
-- If enabled, changes the value of all songs to the same depending on its average volume.
-    - Quite: -17dB
-    - Normal: -14dB
-    - Loud: -11dB
 
 ---
     
@@ -212,11 +230,12 @@ Shows all of the songs that failed to download due to various reasons that can i
     - Album Name & Cover
     - Spotify & Youtube ID used to download the song
 - **Customisable**
-    - Allows you to have control over the main parts of the downloading including:
+    - Allows you to have control over the downloading with settings saving between sessions, including:
     - Overwriting
+    - Volume Normalization
+    - Audio Bitrate
     - Thread Count
     - Download Speed
-    - Volume Normalization
 - **Automatic Cleanup**
     - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
     - If cleanup fails due to any reason, unused files are kept in the temp directory and will be cleaned on later use of the program or by windows automatically
@@ -244,12 +263,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## FAQ
 <details>
 <summary><b>Where are songs downloaded from?</b></summary>
-Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 129 at the time of writing this.
+Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 141 at the time of writing this.
 </details>
 
 <details>
 <summary><b>How accurate are the downloads?</b></summary>
-The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 129 at the time of writing this.
+The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 141 at the time of writing this.
 </details>
 
 <details>
@@ -259,7 +278,7 @@ You can download a playlist, album, or individual songs. Episodes are also unsup
 
 <details>
 <summary><b>What is the quality of the downloaded songs?</b></summary>
-The audio quality of each song is the same as the highest on youtube. But this varies from song to song. Without audio normalization, I have seen bitrates ranging from 100-150kbps with no real pattern for it, really just depending on the channel that posted the song. With audio normalization turned on, all songs are then processed and outputted with a bitrate of 124kbps. This is an issue that I do need to look into and will in the future to hopefully allow for higher bitrates with settings to change the quality of the audio but for now, it is not a major issue and will be kept as is. To my ears it sounds pretty much the same as on spotify but I can see why this is a deal breaker for some and will definitely have a look into it.
+The audio quality of each song can be configured in the settings ranging from 33-256kb/s in steps of 32 (excluding 33). The program downloads the highest quality stream from youtube usually being from 230-260kb/s and converts it to the desired quality.
 </details>
 
 <details>
