@@ -105,6 +105,8 @@ class SpotifyDownloader : public QDialog
         void LoadSettings();
 
         void closeEvent(QCloseEvent* closeEvent);
+
+        bool IsElevated();
 };
 
 class Worker {

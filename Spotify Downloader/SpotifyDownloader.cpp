@@ -2,6 +2,9 @@
 
 #include "CustomWidgets.h"
 
+#include <QTemporaryFile>
+#include <qt_windows.h>
+
 // Ui Setup
 SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
@@ -75,7 +78,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
         QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"),"",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if (directory != "") _ui.SaveLocationInput->setText(directory); 
+        if (directory != "") _ui.SaveLocationInput->setText(directory);
     });
 
     connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
@@ -111,6 +114,54 @@ void SpotifyDownloader::SetupSetupScreen() {
                 msg.setIcon(QMessageBox::Warning);
                 msg.exec();
                 return;
+            }
+
+            // Check permissions of folder, try to create temp file in location, if error occurs, folder is not writable
+            QTemporaryFile tempFile;
+            if (tempFile.open()) {
+                QString tempFilePath = QString("%1/folderChecker.temp").arg(SaveLocationText);
+
+                // If rename failed, and error == "Access is denied.", directory requires admin perms
+                bool renameSuccessfull = tempFile.rename(tempFilePath);
+                QString errorString = tempFile.errorString();
+                tempFile.close();
+
+                if (!renameSuccessfull) {
+                    bool isElevated = IsElevated();
+
+                    if (isElevated) {
+                        QMessageBox msg = QMessageBox();
+                        msg.setWindowTitle("Directory Error");
+                        msg.setText(QString("DIR ERROR: %1\nPlease try another folder.").arg(errorString));
+                        msg.setIcon(QMessageBox::Critical);
+                        msg.setStandardButtons(QMessageBox::Ok);
+                        msg.exec();
+
+                        return;
+                    } else {
+                        QMessageBox msg = QMessageBox();
+                        msg.setWindowTitle("Directory Error");
+                        msg.setText(QString("DIR ERROR: %1\nWould you like to restart with admin permissions?").arg(errorString));
+                        msg.setIcon(QMessageBox::Critical);
+                        msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                        int adminInput = msg.exec();
+
+                        if (adminInput == QMessageBox::Yes) {
+                            // Restart with admin perms
+                            QString exePath = QCoreApplication::applicationFilePath();
+                            QStringList args = QStringList({ "-Command", QString("Start-Process '%1' -Verb runAs").arg(exePath) });
+                            QProcess* elevatedApplication = new QProcess(this);
+                            elevatedApplication->start("powershell", args);
+
+                            // Wait for elevated process to open, then close this one
+                            elevatedApplication->waitForFinished();
+                            QCoreApplication::quit();
+                        }
+                        else if (adminInput == QMessageBox::No) {
+                            return;
+                        }
+                    }
+                }
             }
 
             // Save directory to QSettings
@@ -234,6 +285,24 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
     }
 
     closeEvent->accept();
+}
+
+bool SpotifyDownloader::IsElevated() {
+    BOOL fRet = false;
+    HANDLE hToken = NULL;
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION elevation;
+        DWORD cbSize = sizeof(TOKEN_ELEVATION);
+        if (GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &cbSize)) {
+            fRet = elevation.TokenIsElevated;
+        }
+    }
+
+    if (hToken) {
+        CloseHandle(hToken);
+    }
+
+    return fRet;
 }
 
 void SpotifyDownloader::SaveSettings() {
