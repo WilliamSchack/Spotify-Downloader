@@ -516,16 +516,13 @@ double SongDownloader::LerpInList(std::vector<double> list, int index) {
 }
 
 void SongDownloader::Quit() {
-	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning) {
+	// Kill the current process, no need to wait
+	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning)
 		_currentProcess->kill();
-	}
 
 	_quitting = true;
 }
 
-// Cleanup currently downloading songs
 SongDownloader::~SongDownloader() {
-	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning)
-		_currentProcess->waitForFinished();
 	emit CleanedUp();
 }

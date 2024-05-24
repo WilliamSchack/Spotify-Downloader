@@ -19,6 +19,7 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     SetupSetupScreen();
     SetupSettingsScreen();
     SetupProcessingScreen();
+    SetupErrorScreen();
 
     LoadSettings();
 
@@ -73,7 +74,7 @@ void SpotifyDownloader::SetupTrayIcon() {
 
 void SpotifyDownloader::SetupSetupScreen() {
     connect(_ui.SettingsButton, &QPushButton::clicked, [=] {
-        _ui.Screens->setCurrentIndex(4);
+        ChangeScreen(SETTINGS_SCREEN_INDEX);
     });
 
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
@@ -172,7 +173,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             DownloadStarted = true;
 
-            _ui.Screens->setCurrentIndex(1);
+            ChangeScreen(PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
 
             // Start thread
@@ -187,6 +188,7 @@ void SpotifyDownloader::SetupSetupScreen() {
         }
     });
 }
+
 void SpotifyDownloader::SetupSettingsScreen() {
     // Number Inputs
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
@@ -235,13 +237,14 @@ void SpotifyDownloader::SetupSettingsScreen() {
         NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
         _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
     });
-    connect(_ui.BackButton, &QPushButton::clicked, [=] {
+    connect(_ui.SettingsBackButton, &QPushButton::clicked, [=] {
         SaveSettings();
         
-        if(DownloadStarted) _ui.Screens->setCurrentIndex(1); // Change to processing screen
-        else _ui.Screens->setCurrentIndex(0); // Change to setup screen
+        if(DownloadStarted) ChangeScreen(PROCESSING_SCREEN_INDEX);
+        else ChangeScreen(SETUP_SCREEN_INDEX);
     });
 }
+
 void SpotifyDownloader::SetupProcessingScreen() {
     // Hide currently uneeded elements
     _ui.PlayButton->hide();
@@ -264,45 +267,34 @@ void SpotifyDownloader::SetupProcessingScreen() {
         _ui.PauseWarning->hide();
     });
     connect(_ui.SettingsButton_2, &QPushButton::clicked, [=] {
-        _ui.Screens->setCurrentIndex(4); // Change to settings screen
+        ChangeScreen(SETTINGS_SCREEN_INDEX);
     });
 }
 
-void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
-    if (DownloadStarted && !DownloadComplete) {
-        QMessageBox messageBox;
-        messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
-        messageBox.setWindowTitle("Are You Sure?");
-        messageBox.setText(QString("Only %1 more to go!").arg(_totalSongs - _songsCompleted));
-        messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        int reply = messageBox.exec();
-
-        if (reply == QMessageBox::Yes) {
-            closeEvent->accept();
-        }
-        else closeEvent->ignore();
-        return;
-    }
-
-    closeEvent->accept();
+void SpotifyDownloader::SetupErrorScreen() {
+    connect(_ui.ErrorBackButton, &QPushButton::clicked, [=] {
+        ChangeScreen(SETUP_SCREEN_INDEX);
+    });
 }
 
-bool SpotifyDownloader::IsElevated() {
-    BOOL fRet = false;
-    HANDLE hToken = NULL;
-    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
-        TOKEN_ELEVATION elevation;
-        DWORD cbSize = sizeof(TOKEN_ELEVATION);
-        if (GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &cbSize)) {
-            fRet = elevation.TokenIsElevated;
-        }
-    }
+void SpotifyDownloader::SetupDownloaderThread() {
+    // Get thread ready to be started
+    _playlistDownloader = new PlaylistDownloader();
+    _playlistDownloader->moveToThread(&workerThread);
+    connect(&workerThread, &QThread::finished, &workerThread, &QThread::quit);
+    connect(&workerThread, &QThread::finished, _playlistDownloader, &PlaylistDownloader::deleteLater);
 
-    if (hToken) {
-        CloseHandle(hToken);
-    }
+    connect(this, &SpotifyDownloader::operate, _playlistDownloader, &PlaylistDownloader::DownloadSongs);
+    connect(this, &SpotifyDownloader::RequestQuit, _playlistDownloader, &PlaylistDownloader::Quit);
 
-    return fRet;
+    // Allow thread to access ui elements
+    connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);
+    connect(_playlistDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
+    connect(_playlistDownloader, &PlaylistDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
+    connect(_playlistDownloader, &PlaylistDownloader::SetDownloadStatus, this, &SpotifyDownloader::SetDownloadStatus);
+    connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
+    connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
 }
 
 void SpotifyDownloader::SaveSettings() {
@@ -392,21 +384,81 @@ void SpotifyDownloader::LoadSettings() {
     settings.endGroup();
 }
 
-void SpotifyDownloader::SetupDownloaderThread() {
-    // Get thread ready to be started
-    _playlistDownloader = new PlaylistDownloader();
-    _playlistDownloader->moveToThread(&workerThread);
-    connect(&workerThread, &QThread::finished, _playlistDownloader, &QObject::deleteLater);
-    connect(this, &SpotifyDownloader::operate, _playlistDownloader, &PlaylistDownloader::DownloadSongs);
-    connect(this, &SpotifyDownloader::RequestQuit, _playlistDownloader, &PlaylistDownloader::Quit);
+void SpotifyDownloader::ResetDownloadingVariables() {
+    // Set Downloading Status
+    if (_songsCompleted > 0) {
+        int tracksNotFound = _playlistDownloader->TracksNotFound();
+        int tracksDownloaded = _songsCompleted - tracksNotFound;
+        SetDownloadStatus(QString("Successfully Downloaded %1 Song%2 With %3 Error%4")
+            .arg(_songsCompleted - tracksNotFound).arg(tracksDownloaded != 1 ? "s" : "")
+            .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
+    }
+    else {
+        SetDownloadStatus("");
+    }
 
-    // Allow thread to access ui elements
-    connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);
-    connect(_playlistDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
-    connect(_playlistDownloader, &PlaylistDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
-    connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
-    connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
-    connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
+    // Reset Variables
+    DownloadStarted = false;
+    DownloadComplete = false;
+
+    _totalSongs = 0;
+    _songsCompleted = 0;
+
+    _playlistDownloader->Quit();
+
+    // Reset UI
+    _ui.DownloaderThreadsInput->setEnabled(true);
+    _ui.SongCount->setText("0/0");
+    _ui.SongCount->adjustSize();
+
+    _downloaderUI.clear(); // Downloader UI is already deleted, just clear list
+
+    if (_errorUI.count() > 0) {
+        foreach(SongErrorItem * errorItemUI, _errorUI) {
+            if(errorItemUI != nullptr) delete errorItemUI;
+        }
+        _errorUI.clear();
+    }
+
+    // Setup Threads
+    SetupDownloaderThread();
+}
+
+void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
+    if (DownloadStarted && !DownloadComplete) {
+        QMessageBox messageBox;
+        messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
+        messageBox.setWindowTitle("Are You Sure?");
+        messageBox.setText(QString("Only %1 more to go!").arg(_totalSongs - _songsCompleted));
+        messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        int reply = messageBox.exec();
+
+        if (reply == QMessageBox::Yes) {
+            closeEvent->accept();
+        }
+        else closeEvent->ignore();
+        return;
+    }
+
+    closeEvent->accept();
+}
+
+bool SpotifyDownloader::IsElevated() {
+    BOOL fRet = false;
+    HANDLE hToken = NULL;
+    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION elevation;
+        DWORD cbSize = sizeof(TOKEN_ELEVATION);
+        if (GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &cbSize)) {
+            fRet = elevation.TokenIsElevated;
+        }
+    }
+
+    if (hToken) {
+        CloseHandle(hToken);
+    }
+
+    return fRet;
 }
 
 // Application Exit

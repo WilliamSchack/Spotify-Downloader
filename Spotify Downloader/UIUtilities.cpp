@@ -12,13 +12,23 @@ void SpotifyDownloader::SetupUI(int threadIndex) {
 }
 
 void SpotifyDownloader::ChangeScreen(int screenIndex) {
-    if (screenIndex == 2 || screenIndex == 3) DownloadComplete = true;
+    if (screenIndex == ERROR_SCREEN_INDEX) DownloadComplete = true;
+    
+    // Downloading/Error screen -> Setup, reset variables for next download
+    int currentScreen = _ui.Screens->currentIndex();
+    if ((currentScreen == PROCESSING_SCREEN_INDEX || currentScreen == ERROR_SCREEN_INDEX) && screenIndex == SETUP_SCREEN_INDEX)
+        ResetDownloadingVariables();
+
     _ui.Screens->setCurrentIndex(screenIndex);
 }
 
 void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
     if (!Notifications) return;
     _trayIcon->showMessage(title, message, QIcon(":/SpotifyDownloader/Icon.ico"), msecs);
+}
+
+void SpotifyDownloader::SetDownloadStatus(QString text) {
+    _ui.DownloadedStatusLabel->setText(text);
 }
 
 void SpotifyDownloader::SetProgressLabel(int threadIndex, QString text) {
@@ -57,6 +67,8 @@ void SpotifyDownloader::SetSongDetails(int threadIndex, QString title, QString a
 }
 
 void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
+    _errorUI.clear();
+
     foreach(QJsonValue val, tracks) {
         QJsonObject track = val.toObject();
 
@@ -67,6 +79,8 @@ void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
         errorItem->Image->setPixmap(JSONUtils::PixmapFromJSON(track["image"]).scaled(errorItem->Image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
         _ui.ScrollLayout->insertWidget(_ui.ScrollLayout->count() - 1, errorItem);
+
+        _errorUI.append(errorItem);
     }
 }
 

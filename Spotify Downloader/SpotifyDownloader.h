@@ -44,6 +44,11 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
+        static const int SETUP_SCREEN_INDEX = 0;
+        static const int SETTINGS_SCREEN_INDEX = 1;
+        static const int PROCESSING_SCREEN_INDEX = 2;
+        static const int ERROR_SCREEN_INDEX = 3;
+
         QString PlaylistURLText;
         QString SaveLocationText;
 
@@ -67,6 +72,7 @@ class SpotifyDownloader : public QDialog
         void SetupUI(int count);
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
+        void SetDownloadStatus(QString text);
         void SetProgressLabel(int threadIndex, QString text);
         void SetProgressBar(int threadIndex, float percentage);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
@@ -88,6 +94,7 @@ class SpotifyDownloader : public QDialog
         QSystemTrayIcon* _trayIcon;
 
         QList<DownloaderThread*> _downloaderUI;
+        QList<SongErrorItem*> _errorUI;
 
         int _totalSongs = 0;
         int _songsCompleted = 0;
@@ -100,9 +107,12 @@ class SpotifyDownloader : public QDialog
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
+        void SetupErrorScreen();
 
         void SaveSettings();
         void LoadSettings();
+
+        void ResetDownloadingVariables();
 
         void closeEvent(QCloseEvent* closeEvent);
 
@@ -122,6 +132,8 @@ class PlaylistDownloader : public QObject {
         ~PlaylistDownloader();
 
         bool PauseNewDownloads = false;
+
+        int TracksNotFound();
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
@@ -159,6 +171,7 @@ class PlaylistDownloader : public QObject {
 
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
+        void SetDownloadStatus(QString text);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
         void SetThreadFinished(int threadIndex);
