@@ -238,8 +238,41 @@ void SpotifyDownloader::SetupSettingsScreen() {
         _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
     });
     connect(_ui.SettingsBackButton, &QPushButton::clicked, [=] {
+        // Check if audio naming is valid
+        SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
+        SongOutputFormat = _ui.SongOutputFormatInput->text();
+
+        QStringList namingTags = Q_NAMING_TAGS();
+        std::tuple<QString, NamingError> formattedOutputName = FormatOutputNameWithTags([&namingTags](QString tag) -> QString {
+            if (!namingTags.contains(tag.toLower())) {
+                return nullptr;
+            } else
+                return QString("");
+        });
+
+        QString formattedOutputNameString = std::get<0>(formattedOutputName);
+        NamingError namingError = std::get<1>(formattedOutputName);
+
+        if (namingError == NamingError::EnclosingTagsInvalid) {
+            QMessageBox msg = QMessageBox();
+            msg.setWindowTitle("Invalid Naming Format Tag");
+            msg.setText(QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString));
+            msg.setIcon(QMessageBox::Warning);
+            msg.exec();
+            return;
+        } else if (namingError == NamingError::TagInvalid) {
+            QMessageBox msg = QMessageBox();
+            msg.setWindowTitle("Invalid Naming Format");
+            msg.setText(QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString));
+            msg.setIcon(QMessageBox::Warning);
+            msg.exec();
+            return;
+        }
+
+        // Save Settings
         SaveSettings();
         
+        // Return to previous screen
         if(DownloadStarted) ChangeScreen(PROCESSING_SCREEN_INDEX);
         else ChangeScreen(SETUP_SCREEN_INDEX);
     });
@@ -303,6 +336,8 @@ void SpotifyDownloader::SaveSettings() {
     bool normalizeEnabled = _ui.NormalizeVolumeSettingButton->isChecked;
     float normalizeVolume = _ui.NormalizeVolumeSettingInput->value();
     int audioBitrate = _ui.AudioBitrateInput->value();
+    QString songOutputFormatTag = _ui.SongOutputFormatTagInput->text();
+    QString songOutputFormat = _ui.SongOutputFormatInput->text();
     bool statusNotificationsEnabled = _ui.NotificationSettingButton->isChecked;
     int downloaderThreads = _ui.DownloaderThreadsInput->value();
     float downloadSpeedLimit = _ui.DownloadSpeedSettingInput->value();
@@ -315,6 +350,8 @@ void SpotifyDownloader::SaveSettings() {
     settings.setValue("normalizeEnabled", normalizeEnabled);
     settings.setValue("normalizeVolume", normalizeVolume);
     settings.setValue("audioBitrate", audioBitrate);
+    settings.setValue("songOutputFormatTag", songOutputFormatTag);
+    settings.setValue("songOutputFormat", songOutputFormat);
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -360,6 +397,13 @@ void SpotifyDownloader::LoadSettings() {
     // Save Location
     QString saveLocation = settings.value("saveLocation", "").toString();
     _ui.SaveLocationInput->setText(saveLocation);
+
+    // Song Output Format
+    QString songOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
+    _ui.SongOutputFormatTagInput->setText(songOutputFormatTag);
+
+    QString songOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
+    _ui.SongOutputFormatInput->setText(songOutputFormat);
 
     settings.endGroup();
 
@@ -422,6 +466,68 @@ void SpotifyDownloader::ResetDownloadingVariables() {
 
     // Setup Threads
     SetupDownloaderThread();
+}
+
+// Convert naming tags to QStringList, cannot have 
+// const QStringList
+QStringList SpotifyDownloader::Q_NAMING_TAGS_CACHE;
+QStringList SpotifyDownloader::Q_NAMING_TAGS() {
+    if (!Q_NAMING_TAGS_CACHE.isEmpty())
+        return Q_NAMING_TAGS_CACHE;
+
+    QStringList tags = QStringList();
+    int numTags = std::extent<decltype(NAMING_TAGS)>::value;
+    for (int i = 0; i < numTags; i++) {
+        QString tag = QString::fromStdString(NAMING_TAGS[i]);
+        tags.append(tag);
+    }
+
+    Q_NAMING_TAGS_CACHE = tags;
+    return tags;
+}
+
+std::tuple<QString, SpotifyDownloader::NamingError> SpotifyDownloader::FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const {
+    QString songOutputFormatTag = SongOutputFormatTag;
+    QString songOutputFormat = SongOutputFormat;
+
+    if (songOutputFormatTag.length() != 2) {
+        return std::make_tuple(songOutputFormatTag, NamingError::EnclosingTagsInvalid);
+    }
+
+    QChar leftTag = songOutputFormatTag[0];
+    QChar rightTag = songOutputFormatTag[1];
+
+    QStringList namingTags = Q_NAMING_TAGS();
+
+    QString newString;
+    int currentCharIndex = 0;
+    while (currentCharIndex <= songOutputFormat.length()) {
+        int nextLeftIndex = songOutputFormat.indexOf(leftTag, currentCharIndex);
+        int nextRightIndex = songOutputFormat.indexOf(rightTag, currentCharIndex);
+        int tagLength = nextRightIndex - nextLeftIndex - 1;
+        QString tag = songOutputFormat.mid(nextLeftIndex + 1, tagLength);
+
+        if (nextLeftIndex == -1 || nextRightIndex == -1) {
+            QString afterTagString = songOutputFormat.mid(currentCharIndex, songOutputFormat.length() - currentCharIndex);
+            newString.append(afterTagString);
+
+            break;
+        }
+
+        QString beforeTagString = songOutputFormat.mid(currentCharIndex, nextLeftIndex - currentCharIndex);
+        newString.append(beforeTagString);
+
+        QString tagReplacement = tagHandlerFunc(tag);
+        if (tagReplacement.isNull()) {
+            return std::make_tuple(tag, NamingError::TagInvalid);
+        }
+
+        newString.append(tagReplacement);
+
+        currentCharIndex = nextRightIndex + 1;
+    }
+
+    return std::make_tuple(newString, NamingError::None);
 }
 
 void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {

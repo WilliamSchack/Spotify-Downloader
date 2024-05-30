@@ -89,17 +89,69 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	}
 	QString albumArtistNames = albumArtistNamesList.join("; ");
 
-	QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
-	filename = ValidateString(filename);
+	// Generate file name, replacing tags for values
+	std::tuple<QString, SpotifyDownloader::NamingError> filenameData = Main->FormatOutputNameWithTags([=](QString tag) -> QString {
+		QStringList namingTags = Main->Q_NAMING_TAGS();
+
+		QString tagReplacement = QString();
+		int indexOfTag = namingTags.indexOf(tag.toLower());
+		switch (indexOfTag) {
+			case 0: // Song Name
+				tagReplacement = trackTitle;
+				break;
+			case 1: // Album Name
+				tagReplacement = albumName;
+				break;
+			case 2: // Song Artist
+				tagReplacement = artistName;
+				break;
+			case 3: // Song Artists
+				for (int i = 0; i < songArtistNamesList.count(); i++) {
+					QString artistName = songArtistNamesList[i];
+					tagReplacement.append(artistName);
+					if (i < songArtistNamesList.count() - 1)
+						tagReplacement.append(", ");
+				}
+				break;
+			case 4: // Album Artist
+				tagReplacement = albumArtistNamesList[0];
+				break;
+			case 5: // Album Artists
+				for (int i = 0; i < albumArtistNamesList.count(); i++) {
+					QString artistName = albumArtistNamesList[i];
+					tagReplacement.append(artistName);
+					if (i < albumArtistNamesList.count() - 1)
+						tagReplacement.append(", ");
+				}
+				break;
+			case 6: // Song Time Seconds
+				tagReplacement = QString::number((int)songTime);
+				break;
+			case 7: // Song Time Minutes
+				tagReplacement = QDateTime::fromSecsSinceEpoch(songTime, Qt::UTC).toString("mm:ss");
+				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+				break;
+			case 8: // Song Time Hours
+				tagReplacement = QDateTime::fromSecsSinceEpoch(songTime, Qt::UTC).toString("hh:mm:ss");
+				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+				break;
+		}
+
+		return tagReplacement;
+	});
+
+	// No need to check error, was already checked in setup
+	QString fileName = std::get<0>(filenameData);
+	fileName = ValidateString(fileName);
 
 	QString tempPath = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
 	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
 
 	QString downloadingFolder = QString("%1/Downloading").arg(tempPath);
-	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(filename);
+	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(fileName);
 	QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
 
-	QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
+	QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(fileName);
 	QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
 
 	if (!QDir(downloadingFolder).exists()) QDir().mkdir(downloadingFolder);
@@ -328,7 +380,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		_currentProcess = new QProcess();
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 
-		QString newQualityFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(filename + "_A").arg(CODEC);
+		QString newQualityFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(fileName + "_A").arg(CODEC);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2"  -b:a %3k "%4")")
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
 						.arg(fullDownloadingPath)
@@ -360,7 +412,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		// For some reason ffmpeg outputs to StandardError. idk why
 		QString audioOutput = _currentProcess->readAllStandardError();
 		if (audioOutput.contains("mean_volume:")) {
-			QString normalizedFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(filename + "_N").arg(CODEC);
+			QString normalizedFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(fileName + "_N").arg(CODEC);
 			
 			float meanVolume = audioOutput.split("mean_volume:")[1].split("dB")[0].toFloat();
 
@@ -392,10 +444,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	#pragma region Assign Metadata
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 
-	TagLib::FileName fileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
-	TagLib::FileRef fileRef(fileName, true, TagLib::AudioProperties::Accurate);
-	if (!fileRef.isNull()) {
-		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(fileRef.file());
+	TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
+	TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
+	if (!tagFileRef.isNull()) {
+		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
 
 		TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
 		tag->setTitle(reinterpret_cast<const wchar_t*>(trackTitle.constData()));
@@ -424,10 +476,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
 		tag->addFrame(picFrame);
 
-		fileRef.save();
+		tagFileRef.save();
 
 		// Destroy reference, allows for file use later
-		fileRef.~FileRef();
+		tagFileRef.~FileRef();
 	}
 	#pragma endregion
 

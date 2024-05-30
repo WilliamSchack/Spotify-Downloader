@@ -265,7 +265,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>660</x>
-       <y>160</y>
+       <y>150</y>
        <width>61</width>
        <height>41</height>
       </rect>
@@ -298,7 +298,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>110</y>
+       <y>100</y>
        <width>181</width>
        <height>41</height>
       </rect>
@@ -327,7 +327,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>60</y>
+       <y>50</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -380,7 +380,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>325</x>
-       <y>110</y>
+       <y>100</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -409,7 +409,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>280</x>
-       <y>60</y>
+       <y>50</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -431,7 +431,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>390</x>
-       <y>60</y>
+       <y>50</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -457,7 +457,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>725</x>
-       <y>160</y>
+       <y>150</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -486,7 +486,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>260</x>
-       <y>110</y>
+       <y>100</y>
        <width>61</width>
        <height>41</height>
       </rect>
@@ -534,7 +534,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>210</x>
-       <y>110</y>
+       <y>100</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -556,7 +556,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>60</y>
+       <y>50</y>
        <width>231</width>
        <height>41</height>
       </rect>
@@ -582,7 +582,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>390</x>
-       <y>160</y>
+       <y>150</y>
        <width>231</width>
        <height>41</height>
       </rect>
@@ -608,7 +608,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>390</x>
-       <y>110</y>
+       <y>100</y>
        <width>261</width>
        <height>41</height>
       </rect>
@@ -637,7 +637,7 @@ color: rgb(0, 0, 0);</string>
      <property name="geometry">
       <rect>
        <x>660</x>
-       <y>110</y>
+       <y>100</y>
        <width>61</width>
        <height>41</height>
       </rect>
@@ -679,7 +679,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>260</x>
-       <y>160</y>
+       <y>150</y>
        <width>61</width>
        <height>41</height>
       </rect>
@@ -727,7 +727,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>325</x>
-       <y>160</y>
+       <y>150</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -753,7 +753,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>160</y>
+       <y>150</y>
        <width>181</width>
        <height>41</height>
       </rect>
@@ -779,7 +779,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>210</y>
+       <y>200</y>
        <width>171</width>
        <height>41</height>
       </rect>
@@ -805,7 +805,7 @@ selection-background-color: rgb(0, 120, 215);</string>
      <property name="geometry">
       <rect>
        <x>200</x>
-       <y>210</y>
+       <y>200</y>
        <width>151</width>
        <height>41</height>
       </rect>
@@ -842,7 +842,7 @@ selection-background-color: rgb(0, 120, 215);</string>
        <x>20</x>
        <y>10</y>
        <width>341</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -869,7 +869,7 @@ selection-background-color: rgb(0, 120, 215);</string>
        <x>390</x>
        <y>10</y>
        <width>351</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="font">
@@ -888,6 +888,109 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="SongOutputFormatInput">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>250</y>
+       <width>511</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Naming: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Naming: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes (01.23)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours (00.01.23)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="text">
+      <string>&lt;Song Name&gt; - &lt;Song Artist&gt;</string>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Enter Song Naming Format</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="SongOutputFormatLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>171</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>15</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Naming Format:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="SongOutputFormatTagInput">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>250</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="mouseTracking">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Tag Start/End&lt;br/&gt;&lt;/span&gt;Specify the start and end characters of a tag&lt;/p&gt;&lt;p&gt;eg. &amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;br/&gt;&amp;lt; to enter the tag,&lt;br/&gt;&amp;gt; to exit the tag &lt;/p&gt;&lt;p&gt;Tag examples:&lt;br/&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt;, &amp;lt;Artist Name&amp;gt;&amp;quot;&lt;br/&gt;&amp;quot;##&amp;quot; : &amp;quot;#Song Name#, #Artist Name#&amp;quot;&lt;br/&gt;&amp;quot;!$&amp;quot;: &amp;quot;!Song Name$&amp;quot;, !Artist Name$&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+     </property>
+     <property name="text">
+      <string>&lt;&gt;</string>
+     </property>
+     <property name="maxLength">
+      <number>2</number>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Enter Song Naming Format</string>
      </property>
     </widget>
    </widget>

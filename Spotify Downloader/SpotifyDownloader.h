@@ -49,6 +49,24 @@ class SpotifyDownloader : public QDialog
         static const int PROCESSING_SCREEN_INDEX = 2;
         static const int ERROR_SCREEN_INDEX = 3;
 
+        static constexpr const char * NAMING_TAGS[] = {
+            "song name",
+            "album name",
+            "song artist",
+            "song artists",
+            "album artist",
+            "album artists",
+            "song time seconds",
+            "song time sinutes",
+            "song time hours"
+        };
+
+        enum class NamingError {
+            None,
+            EnclosingTagsInvalid,
+            TagInvalid
+        };
+
         QString PlaylistURLText;
         QString SaveLocationText;
 
@@ -68,6 +86,12 @@ class SpotifyDownloader : public QDialog
         float NormalizeAudioVolume = -14.0;
 
         int AudioBitrate = 192;
+
+        QString SongOutputFormatTag = "<>";
+        QString SongOutputFormat = "<Song Name> - <Song Artist>";
+
+        static QStringList Q_NAMING_TAGS();
+        std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const; // Output, Error
     public slots:
         void SetupUI(int count);
         void ChangeScreen(int screenIndex);
@@ -87,6 +111,8 @@ class SpotifyDownloader : public QDialog
     private:
         const QString ORGANIZATION_NAME = "WilliamSchack";
         const QString APPLICATION_NAME = "Spotify Downloader";
+
+        static QStringList Q_NAMING_TAGS_CACHE;
 
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;
