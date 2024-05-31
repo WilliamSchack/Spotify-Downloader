@@ -256,6 +256,58 @@ selection-background-color: rgb(0, 120, 215);</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="HelpButton">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>310</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/Help_Icon_B_Filled.png</normaloff>:/SpotifyDownloader/Icons/Help_Icon_B_Filled.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="SubmitBugButton">
+     <property name="geometry">
+      <rect>
+       <x>690</x>
+       <y>310</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/Bug_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Bug_Icon_B.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="SettingsScreen">
     <widget class="QDoubleSpinBox" name="DownloadSpeedSettingInput">
@@ -908,7 +960,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <bool>false</bool>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Naming: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Naming: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes (01.23)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours (00.01.23)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes (01.23)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours (00.01.23)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);

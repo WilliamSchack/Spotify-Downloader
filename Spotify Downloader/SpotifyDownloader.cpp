@@ -3,6 +3,8 @@
 #include "CustomWidgets.h"
 
 #include <QTemporaryFile>
+#include <QDesktopServices>
+
 #include <qt_windows.h>
 
 // Ui Setup
@@ -80,6 +82,14 @@ void SpotifyDownloader::SetupSetupScreen() {
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
         QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"),"",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (directory != "") _ui.SaveLocationInput->setText(directory);
+    });
+
+    connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader/issues/new"), "Submit Bug", "Would you like to submit a bug?");
+    });
+
+    connect(_ui.HelpButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Access Help", "Would you like to access the help documentation?");
     });
 
     connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
@@ -528,6 +538,19 @@ std::tuple<QString, SpotifyDownloader::NamingError> SpotifyDownloader::FormatOut
     }
 
     return std::make_tuple(newString, NamingError::None);
+}
+
+void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {
+
+    QMessageBox msg = QMessageBox();
+    msg.setWindowTitle(windowTitle);
+    msg.setText(QString("%1\nThis will open in your browser").arg(windowMessage));
+    msg.setIcon(QMessageBox::Question);
+    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    int reply = msg.exec();
+
+    if(reply == QMessageBox::Yes)
+        QDesktopServices::openUrl(address);
 }
 
 void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {

@@ -140,6 +140,8 @@ class SpotifyDownloader : public QDialog
 
         void ResetDownloadingVariables();
 
+        void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
+
         void closeEvent(QCloseEvent* closeEvent);
 
         bool IsElevated();
