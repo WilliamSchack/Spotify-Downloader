@@ -18,6 +18,7 @@ class YTMusicAPI {
 	public:
 		YTMusicAPI();
 
+		bool CheckConnection();
 		QJsonArray Search(QString query, QString filter, int limit);
 	private:
 		QJsonObject ParseSongRuns(QJsonArray runs, int offset = 0);

@@ -16,7 +16,8 @@
 class SpotifyAPI {
 	public:
 		SpotifyAPI();
-		
+
+		bool CheckConnection();
 		QJsonArray GetPlaylistTracks(QString id);
 		QJsonObject GetAlbum(QString id);
 		QJsonArray GetAlbumTracks(QJsonObject album);

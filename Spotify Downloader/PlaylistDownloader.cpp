@@ -20,6 +20,29 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	_yt = new YTMusicAPI();
 	_sp = new SpotifyAPI();
 
+	// Check connection to servers
+	bool ytConnected = _yt->CheckConnection();
+	bool spConnected = _sp->CheckConnection();
+	if (!ytConnected || !spConnected) {
+		QString errorMessage = "Connection To ";
+		if (!spConnected) {
+			errorMessage.append("Spotify");
+			if (!ytConnected)
+				errorMessage.append(" & Youtube");
+		} else {
+			errorMessage.append("Youtube");
+		}
+		errorMessage.append(" Failed");
+
+		emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
+		emit ShowMessage("Network Error", errorMessage);
+		emit SetDownloadStatus(errorMessage);
+
+		Quit();
+		return;
+	}
+
+	// Get tracks from spotify
 	QJsonArray searchTracks = QJsonArray();
 	if (url.contains("playlist")) searchTracks = _sp->GetPlaylistTracks(spotifyId);
 	else if (url.contains("album")) {

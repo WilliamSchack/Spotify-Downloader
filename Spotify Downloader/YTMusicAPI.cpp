@@ -12,6 +12,11 @@ YTMusicAPI::YTMusicAPI() {
 	_request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
 }
 
+bool YTMusicAPI::CheckConnection() {
+	QUrl url = QUrl("https://music.youtube.com/youtubei/v1/");
+	return Network::Ping(url);
+}
+
 QJsonObject YTMusicAPI::GetContext() {
 	std::time_t rawTime;
 	struct tm* timeInfo;

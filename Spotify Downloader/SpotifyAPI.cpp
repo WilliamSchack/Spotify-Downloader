@@ -22,6 +22,13 @@ SpotifyAPI::SpotifyAPI() {
 	_auth = json["access_token"].toString().toLatin1();
 }
 
+bool SpotifyAPI::CheckConnection() {
+	if (_auth.isNull()) return false;
+
+	QUrl url = QUrl("https://api.spotify.com/v1");
+	return Network::Ping(url);
+}
+
 QJsonArray SpotifyAPI::GetPlaylistTracks(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id + "/tracks");
