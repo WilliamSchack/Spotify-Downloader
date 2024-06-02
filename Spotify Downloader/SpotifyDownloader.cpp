@@ -320,6 +320,7 @@ void SpotifyDownloader::SetupProcessingScreen() {
 
             if (reply == QMessageBox::Yes) {
                 emit ChangeScreen(SETUP_SCREEN_INDEX);
+                emit DisplayFinalMessage();
 
                 emit RequestQuit();
             }
@@ -346,6 +347,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
 
     connect(this, &SpotifyDownloader::operate, _playlistDownloader, &PlaylistDownloader::DownloadSongs);
     connect(this, &SpotifyDownloader::RequestQuit, _playlistDownloader, &PlaylistDownloader::Quit);
+    connect(this, &SpotifyDownloader::DisplayFinalMessage, _playlistDownloader, &PlaylistDownloader::DisplayFinalMessage);
 
     // Allow thread to access ui elements
     connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);

@@ -108,6 +108,7 @@ class SpotifyDownloader : public QDialog
     signals:
         void operate(const SpotifyDownloader* main);
         void RequestQuit();
+        void DisplayFinalMessage();
     private:
         const QString ORGANIZATION_NAME = "WilliamSchack";
         const QString APPLICATION_NAME = "Spotify Downloader";
@@ -168,6 +169,7 @@ class PlaylistDownloader : public QObject {
         void FinishThread(int threadIndex, QJsonArray tracksNotFound);
         void Quit();
         void CleanedUp(int threadIndex);
+        void DisplayFinalMessage();
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
         void DistributeTracks();

@@ -197,6 +197,10 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 		return;
 	}
 
+	DisplayFinalMessage();
+}
+
+void PlaylistDownloader::DisplayFinalMessage() {
 	if (_tracksNotFound.count() == 0) {
 		emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
 		emit ShowMessage("Downloads Complete!", "No download errors!");
@@ -210,7 +214,6 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(tracksNotFoundCount).arg(tracksNotFoundCount != 1 ? "s" : ""));
 	emit SetErrorItems(_tracksNotFound);
 }
-
 
 // Distribute songs evenly between threads based on the remaining songs on each
 void PlaylistDownloader::DistributeTracks() {
