@@ -469,7 +469,7 @@ void SpotifyDownloader::ResetDownloadingVariables() {
             .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
     }
     else {
-        SetDownloadStatus("");
+        SetDownloadStatus("Downloading Complete");
     }
 
     // Reset Variables

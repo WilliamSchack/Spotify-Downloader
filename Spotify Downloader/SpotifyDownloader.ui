@@ -847,7 +847,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Average File Size:</string>
+      <string>Average File Size</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -960,7 +960,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <bool>false</bool>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album (Artist1, Artist2, Artist3, ...)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes (01.23)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours (00.01.23)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);
@@ -999,7 +999,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Naming Format:</string>
+      <string>Naming Format</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1327,6 +1327,9 @@ selection-background-color: rgb(0, 120, 215);</string>
      </widget>
     </widget>
     <widget class="QPushButton" name="CancelButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>710</x>

@@ -90,7 +90,10 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/284c65a6-2993-4d43-9742-ab3d80c0b352" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/f9ad2e55-ad93-46d5-8bbf-3fb88b81c4e5" width="50%" height="50%">
+
+**Download Status**
+- Shows the result of the last download
 
 **Enter Song/Playlist URL**
 - The URL to your songs you would like to download
@@ -119,7 +122,15 @@ You can open the program through the start menu or from the installed location t
 
 **Select A Save Location**
 - The path to your download location. You can click the file icon directly to the right of the input box to browse to a location.
-- ***Saved between sessions***
+- ***Note: Saved between sessions***
+
+**Submit Bug Button**
+- Click to submit an issue to the github repo
+- ***Note: Opens in browser***
+
+**Help Button**
+- Click to access the help documentation (What you are reading now)
+- ***Note: Opens in browser***
 
 ---
     
@@ -130,7 +141,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/94406841-b639-4cdb-9173-a0b4586bd0e4" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/1ac8d8ea-57c9-4cd0-ac09-2242b6c68fa0" width="50%" height="50%">
 
 ***Note: All settings are saved between sessions***
 
@@ -156,6 +167,23 @@ You can open the program through the start menu or from the installed location t
 - File Size (MB) = (bitrate(kbs) * duration(seconds)) / 8) / 1024
 - ***Does not take into account metadata, an extra ~0.9MB is added***
 
+**Naming Format**
+- Enclosing tag input sets the characters to open and close a tag
+    - Left character sets the opening input
+    - Right character sets the closing input
+- Format Input sets the output name of each song.
+    - Each tag must be enclosed with the characters set in the left input field
+- Naming format can only include these currently implemented tags:
+    - **Song Name** - Name of the song
+    - **Album Name** - Name of the album
+    - **Song Artist** - Name of the first artist of a song
+    - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
+    - **Album Artist** - Name of the first artist of the songs album
+    - **Album Artists** - Names of each artist of a songs album "Artist1, Artist2, Artist3, ..."
+    - **Song Time Seconds** - Time of the song in seconds
+    - **Song Time Minutes** - Time of the song in minutes "01.23"
+    - **Song Time Hours** - Time of the song in hours "00.01.23"
+
 ### Downloading
 
 **Show Status Notifications - Recommended: ON**
@@ -176,7 +204,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/0b2a885f-09a7-4f37-8da9-1dd68b73345f" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/824aa97d-e661-4409-9ee9-ec7e251eef31" width="50%" height="50%">
 
 Each track downloading will show its:
 - Cover image
@@ -188,9 +216,18 @@ Each track downloading will show its:
 
 You can see your total download progress on the counter at the bottom left.
 
-The **Pause Button** will pause all current downloads
+**Download Progress**
+- Shows your total download progress
+    - Located in the bottom left corner
 
-The **Settings Button** will open the settings menu allowing you to change most of the settings
+**Pause Button**
+- Pauses all current downloads
+
+**Cancel Button**
+- Cancels the current download and returns to the setup screen
+
+**Settings Button**
+- Opens the settings menu, download continues in the background while open
 
 ---
     
@@ -201,11 +238,14 @@ The **Settings Button** will open the settings menu allowing you to change most 
     
 ---
 
-<img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/764b6460-fa02-47d6-96b3-ee259f23b4af" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/88e79624-378d-48ed-a5ee-df99f58c81e7" width="50%" height="50%">
 
 Shows all of the songs that failed to download due to various reasons that can include:
 - Song not available on youtube
 - Song on youtube not close enough to spotify version
+
+**Return To Setup Screen Button**
+- Returns to the setup screen
 
 ---
     
@@ -236,6 +276,7 @@ Shows all of the songs that failed to download due to various reasons that can i
     - Audio Bitrate
     - Thread Count
     - Download Speed
+    - Output Naming Format
 - **Automatic Cleanup**
     - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
     - If cleanup fails due to any reason, unused files are kept in the temp directory and will be cleaned on later use of the program or by windows automatically
@@ -263,12 +304,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## FAQ
 <details>
 <summary><b>Where are songs downloaded from?</b></summary>
-Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 141 at the time of writing this.
+Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 193 at the time of writing this.
 </details>
 
 <details>
 <summary><b>How accurate are the downloads?</b></summary>
-The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 141 at the time of writing this.
+The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 193 at the time of writing this.
 </details>
 
 <details>
