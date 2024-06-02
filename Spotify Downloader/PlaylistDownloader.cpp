@@ -277,7 +277,9 @@ void PlaylistDownloader::Quit() {
 	this->thread()->quit();
 }
 
-void PlaylistDownloader::CleanedUp() {
+void PlaylistDownloader::CleanedUp(int threadIndex) {
+	emit SetThreadFinished(threadIndex);
+
 	_threadsCleaned++;
 }
 

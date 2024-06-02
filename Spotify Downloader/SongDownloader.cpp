@@ -444,9 +444,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	#pragma region Assign Metadata
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 
-	TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
-	TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
-	if (!tagFileRef.isNull()) {
+	// FileRef destroys when leaving scope, give it a scope to do its thing
+	{
+		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
+		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
 		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
 
 		TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
@@ -477,9 +478,6 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		tag->addFrame(picFrame);
 
 		tagFileRef.save();
-
-		// Destroy reference, allows for file use later
-		tagFileRef.~FileRef();
 	}
 	#pragma endregion
 
@@ -576,5 +574,5 @@ void SongDownloader::Quit() {
 }
 
 SongDownloader::~SongDownloader() {
-	emit CleanedUp();
+	emit CleanedUp(_threadIndex);
 }

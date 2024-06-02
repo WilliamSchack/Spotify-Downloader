@@ -309,6 +309,23 @@ void SpotifyDownloader::SetupProcessingScreen() {
         _ui.PauseButton->show();
         _ui.PauseWarning->hide();
     });
+    connect(_ui.CancelButton, &QPushButton::clicked, [=] {
+        if (DownloadStarted && !DownloadComplete) {
+            QMessageBox messageBox;
+            messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
+            messageBox.setWindowTitle("Are You Sure?");
+            messageBox.setText(QString("Only %1 more to go!").arg(_totalSongs - _songsCompleted));
+            messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            int reply = messageBox.exec();
+
+            if (reply == QMessageBox::Yes) {
+                emit ChangeScreen(SETUP_SCREEN_INDEX);
+
+                emit RequestQuit();
+            }
+        }
+    });
+
     connect(_ui.SettingsButton_2, &QPushButton::clicked, [=] {
         ChangeScreen(SETTINGS_SCREEN_INDEX);
     });
@@ -411,9 +428,11 @@ void SpotifyDownloader::LoadSettings() {
     // Song Output Format
     QString songOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
     _ui.SongOutputFormatTagInput->setText(songOutputFormatTag);
+    SongOutputFormatTag = songOutputFormatTag;
 
     QString songOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
     _ui.SongOutputFormatInput->setText(songOutputFormat);
+    SongOutputFormat = songOutputFormat;
 
     settings.endGroup();
 
@@ -464,8 +483,6 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     _ui.DownloaderThreadsInput->setEnabled(true);
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
-
-    _downloaderUI.clear(); // Downloader UI is already deleted, just clear list
 
     if (_errorUI.count() > 0) {
         foreach(SongErrorItem * errorItemUI, _errorUI) {

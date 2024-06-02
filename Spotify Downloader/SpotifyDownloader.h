@@ -167,7 +167,7 @@ class PlaylistDownloader : public QObject {
         void SongDownloaded();
         void FinishThread(int threadIndex, QJsonArray tracksNotFound);
         void Quit();
-        void CleanedUp();
+        void CleanedUp(int threadIndex);
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
         void DistributeTracks();
@@ -268,7 +268,7 @@ class SongDownloader : public QObject {
         void SongDownloaded();
         void Finish(int threadIndex, QJsonArray tracksNotFound);
         void RequestQuit();
-        void CleanedUp();
+        void CleanedUp(int threadIndex);
 };
 
 #endif
