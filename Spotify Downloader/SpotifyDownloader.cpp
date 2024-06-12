@@ -2,7 +2,6 @@
 
 #include "CustomWidgets.h"
 
-#include <QTemporaryFile>
 #include <QDesktopServices>
 
 #include <qt_windows.h>
@@ -17,7 +16,10 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 
     _ui.setupUi(this);
 
+    _buttonHoverWatcher = new QButtonHoverWatcher(this);
+
     SetupTrayIcon();
+    SetupSideBar();
     SetupSetupScreen();
     SetupSettingsScreen();
     SetupProcessingScreen();
@@ -26,316 +28,6 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     LoadSettings();
 
     SetupDownloaderThread();
-}
-
-void SpotifyDownloader::SetupTrayIcon() {
-    QAction* progressAction = new QAction(tr("Current Progress"));
-    connect(progressAction, &QAction::triggered, this, [&] {
-        if (DownloadStarted) {
-            int completed = _songsCompleted;
-            int total = _totalSongs;
-
-            QString message;
-            if (completed == 0 || total == 0)
-                message = "0.00% Complete";
-            else {
-                // Percent complete rounded to two decimals
-                float percentComplete = std::round(((completed * 1.0) / (total * 1.0) * 100.0) / 0.01) * 0.01;
-                QString percentString = QString::number(percentComplete);
-                
-                // Add .0 at the end if it does not contain to make it consistent
-                if (!percentString.contains("."))
-                    percentString.append(".00");
-
-                message = QString("%1% Complete").arg(percentString);
-            }
-
-            ShowMessage(message, QString("Completed: %1/%2").arg(completed).arg(total));
-            return;
-        }
-
-        ShowMessage("Not Started Yet", "No progress to show...");
-    });
-
-    QAction* quitAction = new QAction(tr("Exit"));
-    connect(quitAction, &QAction::triggered, this, &QWidget::close);
-
-    QMenu* contextMenu = new QMenu();
-    contextMenu->addAction(progressAction);
-    contextMenu->addSeparator();
-    contextMenu->addAction(quitAction);
-
-    _trayIcon = new QSystemTrayIcon();
-    _trayIcon->setIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
-    _trayIcon->setContextMenu(contextMenu);
-    connect(_trayIcon, &QSystemTrayIcon::activated, this, [&] {
-        show();
-    });
-    _trayIcon->show();
-}
-
-void SpotifyDownloader::SetupSetupScreen() {
-    connect(_ui.SettingsButton, &QPushButton::clicked, [=] {
-        ChangeScreen(SETTINGS_SCREEN_INDEX);
-    });
-
-    connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
-        QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"),"",QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        if (directory != "") _ui.SaveLocationInput->setText(directory);
-    });
-
-    connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader/issues/new"), "Submit Bug", "Would you like to submit a bug?");
-    });
-
-    connect(_ui.HelpButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Access Help", "Would you like to access the help documentation?");
-    });
-
-    connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
-        PlaylistURLText = _ui.PlaylistURLInput->text();
-        SaveLocationText = _ui.SaveLocationInput->text();
-
-        if (PlaylistURLText != "" && SaveLocationText != "") {
-            // Check if both URL and Directory are valid
-            if ((!PlaylistURLText.contains("open.spotify.com/playlist/") && !PlaylistURLText.contains("open.spotify.com/track/") && !PlaylistURLText.contains("open.spotify.com/album/")) && !std::filesystem::exists(SaveLocationText.toStdString())) {
-                QMessageBox msg = QMessageBox();
-                msg.setWindowTitle("Invalid Fields");
-                msg.setText("Please Enter Valid Inputs Into Both Fields");
-                msg.setIcon(QMessageBox::Warning);
-                msg.exec();
-                return;
-            }
-
-            // Check if URL is valid
-            if (!PlaylistURLText.contains("open.spotify.com/playlist/") && !PlaylistURLText.contains("open.spotify.com/track/") && !PlaylistURLText.contains("open.spotify.com/album/")) {
-                QMessageBox msg = QMessageBox();
-                msg.setWindowTitle("Invalid URL");
-                msg.setText("Please Input A Valid URL");
-                msg.setIcon(QMessageBox::Warning);
-                msg.exec();
-                return;
-            }
-
-            // Check if Directory is valid
-            if (!std::filesystem::exists(SaveLocationText.toStdString())) {
-                QMessageBox msg = QMessageBox();
-                msg.setWindowTitle("Invalid Directory");
-                msg.setText("Please Input A Valid Directory");
-                msg.setIcon(QMessageBox::Warning);
-                msg.exec();
-                return;
-            }
-
-            // Check permissions of folder, try to create temp file in location, if error occurs, folder is not writable
-            QTemporaryFile tempFile;
-            if (tempFile.open()) {
-                QString tempFilePath = QString("%1/folderChecker.temp").arg(SaveLocationText);
-
-                // If rename failed, and error == "Access is denied.", directory requires admin perms
-                bool renameSuccessfull = tempFile.rename(tempFilePath);
-                QString errorString = tempFile.errorString();
-                tempFile.close();
-
-                if (!renameSuccessfull) {
-                    bool isElevated = IsElevated();
-
-                    if (isElevated) {
-                        QMessageBox msg = QMessageBox();
-                        msg.setWindowTitle("Directory Error");
-                        msg.setText(QString("DIR ERROR: %1\nPlease try another folder.").arg(errorString));
-                        msg.setIcon(QMessageBox::Critical);
-                        msg.setStandardButtons(QMessageBox::Ok);
-                        msg.exec();
-
-                        return;
-                    } else {
-                        QMessageBox msg = QMessageBox();
-                        msg.setWindowTitle("Directory Error");
-                        msg.setText(QString("DIR ERROR: %1\nWould you like to restart with admin permissions?").arg(errorString));
-                        msg.setIcon(QMessageBox::Critical);
-                        msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                        int adminInput = msg.exec();
-
-                        if (adminInput == QMessageBox::Yes) {
-                            // Restart with admin perms
-                            QString exePath = QCoreApplication::applicationFilePath();
-                            QStringList args = QStringList({ "-Command", QString("Start-Process '%1' -Verb runAs").arg(exePath) });
-                            QProcess* elevatedApplication = new QProcess(this);
-                            elevatedApplication->start("powershell", args);
-
-                            // Wait for elevated process to open, then close this one
-                            elevatedApplication->waitForFinished();
-                            QCoreApplication::quit();
-                        }
-                        else if (adminInput == QMessageBox::No) {
-                            return;
-                        }
-                    }
-                }
-            }
-
-            // Save directory to QSettings
-            QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-            settings.beginGroup("Output");
-            settings.setValue("saveLocation", SaveLocationText);
-            settings.endGroup();
-
-            DownloadStarted = true;
-
-            ChangeScreen(PROCESSING_SCREEN_INDEX);
-            _ui.DownloaderThreadsInput->setEnabled(false);
-
-            // Start thread
-            workerThread.start();
-            emit operate(this);
-        } else {
-            QMessageBox msg = QMessageBox();
-            msg.setWindowTitle("Fields Incorrect");
-            msg.setText("Please Input Both Fields");
-            msg.setIcon(QMessageBox::Warning);
-            msg.exec();
-        }
-    });
-}
-
-void SpotifyDownloader::SetupSettingsScreen() {
-    // Number Inputs
-    connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
-        if (_ui.DownloaderThreadsInput->text() != "") {
-            ThreadCount = _ui.DownloaderThreadsInput->value();
-        }
-    });
-    connect(_ui.DownloadSpeedSettingInput, &QDoubleSpinBox::textChanged, [=] {
-        if (_ui.DownloadSpeedSettingInput->text() != "") {
-            DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
-        }
-    });
-    connect(_ui.NormalizeVolumeSettingInput, &QDoubleSpinBox::textChanged, [=] {
-        if (_ui.NormalizeVolumeSettingInput->text() != "") {
-            NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
-        }
-    });
-    connect(_ui.AudioBitrateInput, &QSpinBox::textChanged, [=] {
-        if (_ui.AudioBitrateInput->text() != "") {
-            int audioBitrate = _ui.AudioBitrateInput->value();
-
-            // Snap value to closest multiple of 32
-            if (audioBitrate % 32 != 0) {
-                int remainder = audioBitrate % 32;
-                if (remainder < 16)
-                    audioBitrate -= remainder;
-                else
-                    audioBitrate += 32 - remainder;
-
-                _ui.AudioBitrateInput->setValue(audioBitrate);
-            }
-
-            AudioBitrate = audioBitrate;
-
-            float estimatedFileSize = (((float)AudioBitrate * 60) / 8) / 1024;
-            QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
-
-            _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
-        }
-    });
-
-    // Button Clicks (Using isChecked to help with loading settings)
-    connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = _ui.OverwriteSettingButton->isChecked; });
-    connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Notifications = _ui.NotificationSettingButton->isChecked; });
-    connect(_ui.NormalizeVolumeSettingButton, &CheckBox::clicked, [=] {
-        NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
-        _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
-    });
-    connect(_ui.SettingsBackButton, &QPushButton::clicked, [=] {
-        // Check if audio naming is valid
-        SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
-        SongOutputFormat = _ui.SongOutputFormatInput->text();
-
-        QStringList namingTags = Q_NAMING_TAGS();
-        std::tuple<QString, NamingError> formattedOutputName = FormatOutputNameWithTags([&namingTags](QString tag) -> QString {
-            if (!namingTags.contains(tag.toLower())) {
-                return nullptr;
-            } else
-                return QString("");
-        });
-
-        QString formattedOutputNameString = std::get<0>(formattedOutputName);
-        NamingError namingError = std::get<1>(formattedOutputName);
-
-        if (namingError == NamingError::EnclosingTagsInvalid) {
-            QMessageBox msg = QMessageBox();
-            msg.setWindowTitle("Invalid Naming Format Tag");
-            msg.setText(QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString));
-            msg.setIcon(QMessageBox::Warning);
-            msg.exec();
-            return;
-        } else if (namingError == NamingError::TagInvalid) {
-            QMessageBox msg = QMessageBox();
-            msg.setWindowTitle("Invalid Naming Format");
-            msg.setText(QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString));
-            msg.setIcon(QMessageBox::Warning);
-            msg.exec();
-            return;
-        }
-
-        // Save Settings
-        SaveSettings();
-        
-        // Return to previous screen
-        if(DownloadStarted) ChangeScreen(PROCESSING_SCREEN_INDEX);
-        else ChangeScreen(SETUP_SCREEN_INDEX);
-    });
-}
-
-void SpotifyDownloader::SetupProcessingScreen() {
-    // Hide currently uneeded elements
-    _ui.PlayButton->hide();
-    _ui.PauseWarning->hide();
-
-    // Buttons
-    connect(_ui.PauseButton, &QPushButton::clicked, [=] {
-        Paused = true;
-        _threadsPaused = 0;
-
-        _ui.PauseButton->hide();
-        _ui.PlayButton->show();
-        _ui.PauseWarning->show();
-    });
-    connect(_ui.PlayButton, &QPushButton::clicked, [=] {
-        Paused = false;
-
-        _ui.PlayButton->hide();
-        _ui.PauseButton->show();
-        _ui.PauseWarning->hide();
-    });
-    connect(_ui.CancelButton, &QPushButton::clicked, [=] {
-        if (DownloadStarted && !DownloadComplete) {
-            QMessageBox messageBox;
-            messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
-            messageBox.setWindowTitle("Are You Sure?");
-            messageBox.setText(QString("Only %1 more to go!").arg(_totalSongs - _songsCompleted));
-            messageBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            int reply = messageBox.exec();
-
-            if (reply == QMessageBox::Yes) {
-                emit ChangeScreen(SETUP_SCREEN_INDEX);
-                emit DisplayFinalMessage();
-
-                emit RequestQuit();
-            }
-        }
-    });
-
-    connect(_ui.SettingsButton_2, &QPushButton::clicked, [=] {
-        ChangeScreen(SETTINGS_SCREEN_INDEX);
-    });
-}
-
-void SpotifyDownloader::SetupErrorScreen() {
-    connect(_ui.ErrorBackButton, &QPushButton::clicked, [=] {
-        ChangeScreen(SETUP_SCREEN_INDEX);
-    });
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {
@@ -482,6 +174,7 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     _playlistDownloader->Quit();
 
     // Reset UI
+    _ui.PlaylistURLInput->setText("");
     _ui.DownloaderThreadsInput->setEnabled(true);
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
@@ -615,6 +308,8 @@ SpotifyDownloader::~SpotifyDownloader()
     Paused = false;
 
     _trayIcon->hide();
+
+    delete _buttonHoverWatcher;
 
     emit RequestQuit();
     workerThread.wait();

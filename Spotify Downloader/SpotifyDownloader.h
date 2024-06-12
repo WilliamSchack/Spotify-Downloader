@@ -28,6 +28,8 @@
 #include <QCloseEvent>
 
 #include "ui_SpotifyDownloader.h"
+#include "QButtonHoverWatcher.h"
+
 #include "YTMusicAPI.h"
 #include "SpotifyAPI.h"
 
@@ -123,6 +125,10 @@ class SpotifyDownloader : public QDialog
         QList<DownloaderThread*> _downloaderUI;
         QList<SongErrorItem*> _errorUI;
 
+        QButtonHoverWatcher* _buttonHoverWatcher;
+
+        int _previousScreenIndex = -1;
+
         int _totalSongs = 0;
         int _songsCompleted = 0;
 
@@ -131,15 +137,23 @@ class SpotifyDownloader : public QDialog
         void SetupDownloaderThread();
 
         void SetupTrayIcon();
+        void SetupSideBar();
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
         void SetupErrorScreen();
 
+        bool ValidateSettings();
+        bool ValidateInputs();
+        bool ValidateURL();
+        bool ValidateDirectory();
+
         void SaveSettings();
         void LoadSettings();
 
         void ResetDownloadingVariables();
+
+        int CurrentScreen();
 
         void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
 

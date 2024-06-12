@@ -11,11 +11,19 @@ void SpotifyDownloader::SetupUI(int threadIndex) {
     }
 }
 
+int SpotifyDownloader::CurrentScreen() {
+    return _ui.Screens->currentIndex();
+}
+
 void SpotifyDownloader::ChangeScreen(int screenIndex) {
     if (screenIndex == ERROR_SCREEN_INDEX) DownloadComplete = true;
     
+    int currentScreen = CurrentScreen();
+
+    if (screenIndex != currentScreen)
+        _previousScreenIndex = currentScreen;
+
     // Downloading/Error screen -> Setup, reset variables for next download
-    int currentScreen = _ui.Screens->currentIndex();
     if ((currentScreen == PROCESSING_SCREEN_INDEX || currentScreen == ERROR_SCREEN_INDEX) && screenIndex == SETUP_SCREEN_INDEX)
         ResetDownloadingVariables();
 
