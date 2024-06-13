@@ -61,13 +61,13 @@
     <ClCompile Include="PlaylistDownloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UISetup.cpp">
+    <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QButtonHoverWatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
+    <ClCompile Include="UISetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

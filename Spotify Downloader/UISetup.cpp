@@ -56,7 +56,8 @@ void SpotifyDownloader::SetupSideBar() {
         button->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
     }, [=](QPushButton* button) {
         // If not in a downloading screen, reset icon
-        if(CurrentScreen() == SETTINGS_SCREEN_INDEX)
+        int currentScreen = CurrentScreen();
+        if (currentScreen != SETUP_SCREEN_INDEX && currentScreen != PROCESSING_SCREEN_INDEX)
             button->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
     });
 
@@ -66,6 +67,15 @@ void SpotifyDownloader::SetupSideBar() {
         // If not in settings screen, reset icon
         if(CurrentScreen() != SETTINGS_SCREEN_INDEX)
             button->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+    });
+
+    _buttonHoverWatcher->AddButtonFunctions(_ui.ErrorScreenButton, [=](QPushButton* button) {
+        if(_errorUI.count() > 0)
+            button->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
+    }, [=](QPushButton* button) {
+        // If not in error screen, reset icon
+        if(_errorUI.count() > 0 && CurrentScreen() != ERROR_SCREEN_INDEX)
+            button->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
     });
 
     _buttonHoverWatcher->AddButtonFunctions(_ui.SubmitBugButton, [](QPushButton* button) {
@@ -92,24 +102,23 @@ void SpotifyDownloader::SetupSideBar() {
         if (!ValidateSettings())
             return;
 
-        // Setup Icons
-        _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
-        _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
-        Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, 6), 500);
-
         // Save Settings
         SaveSettings();
 
-        // Return to previous screen
-        ChangeScreen(_previousScreenIndex);
+        // Return to downloading screen
+        int downloadingScreen = DownloadStarted ? PROCESSING_SCREEN_INDEX : SETUP_SCREEN_INDEX;
+        ChangeScreen(downloadingScreen);
+    });
+
+    connect(_ui.ErrorScreenButton, &QPushButton::clicked, [=] {
+        if (_errorUI.count() <= 0)
+            return;
+
+        // Change screen
+        ChangeScreen(ERROR_SCREEN_INDEX);
     });
 
     connect(_ui.SettingsScreenButton, &QPushButton::clicked, [=] {
-        // Setup Icons
-        _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
-        _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
-        Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, 53), 500);
-
         // Change screen
         ChangeScreen(SETTINGS_SCREEN_INDEX);
     });
@@ -148,6 +157,8 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             ChangeScreen(PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
+
+            SetDownloadStatus("");
 
             // Start thread
             workerThread.start();
@@ -285,12 +296,6 @@ void SpotifyDownloader::SetupProcessingScreen() {
                 emit RequestQuit();
             }
         }
-    });
-}
-
-void SpotifyDownloader::SetupErrorScreen() {
-    connect(_ui.ErrorBackButton, &QPushButton::clicked, [=] {
-        ChangeScreen(SETUP_SCREEN_INDEX);
     });
 }
 

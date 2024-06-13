@@ -198,6 +198,8 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	}
 
 	DisplayFinalMessage();
+
+	Quit();
 }
 
 void PlaylistDownloader::DisplayFinalMessage() {
@@ -297,6 +299,12 @@ PlaylistDownloader::~PlaylistDownloader() {
 	}
 
 	// Cleanup variables
+	emit ResetDownloadingVariables();
+	while (!Main->VariablesResetting) // Wait for reset to start
+		QCoreApplication::processEvents();
+	while(Main->VariablesResetting) // Wait for reset to finish
+		QCoreApplication::processEvents();
+
 	delete _yt;
 	delete _sp;
 

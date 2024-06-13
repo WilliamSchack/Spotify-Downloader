@@ -123,8 +123,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="JSONUtils.cpp" />
     <ClCompile Include="PlaylistDownloader.cpp" />
+    <ClCompile Include="QButtonHoverWatcher.cpp" />
+    <ClCompile Include="UISetup.cpp" />
     <ClCompile Include="UIUtilities.cpp" />
     <ClCompile Include="YTMusicAPI.cpp" />
     <QtUic Include="SpotifyDownloader.ui" />
@@ -140,8 +143,10 @@
     <QtMoc Include="CustomWidgets.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="JSONUtils.h" />
     <ClInclude Include="Network.h" />
+    <QtMoc Include="QButtonHoverWatcher.h" />
     <ClInclude Include="SpotifyAPI.h" />
     <ClInclude Include="YTMusicAPI.h" />
   </ItemGroup>

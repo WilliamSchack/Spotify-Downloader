@@ -23,7 +23,6 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     SetupSetupScreen();
     SetupSettingsScreen();
     SetupProcessingScreen();
-    SetupErrorScreen();
 
     LoadSettings();
 
@@ -49,6 +48,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
     connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
+    connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
 }
 
 void SpotifyDownloader::SaveSettings() {
@@ -152,16 +152,19 @@ void SpotifyDownloader::LoadSettings() {
 }
 
 void SpotifyDownloader::ResetDownloadingVariables() {
+    VariablesResetting = true;
+
     // Set Downloading Status
-    if (_songsCompleted > 0) {
-        int tracksNotFound = _playlistDownloader->TracksNotFound();
-        int tracksDownloaded = _songsCompleted - tracksNotFound;
-        SetDownloadStatus(QString("Successfully Downloaded %1 Song%2 With %3 Error%4")
-            .arg(_songsCompleted - tracksNotFound).arg(tracksDownloaded != 1 ? "s" : "")
-            .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
-    }
-    else {
-        SetDownloadStatus("Downloading Complete");
+    if (_ui.DownloadedStatusLabel->text() == "") {
+        if (_songsCompleted > 0) {
+            int tracksNotFound = _playlistDownloader->TracksNotFound();
+            int tracksDownloaded = _songsCompleted - tracksNotFound;
+            SetDownloadStatus(QString("Successfully Downloaded %1 Song%2 With %3 Error%4")
+                .arg(_songsCompleted - tracksNotFound).arg(tracksDownloaded != 1 ? "s" : "")
+                .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
+        } else {
+            SetDownloadStatus("Downloading Complete");
+        }
     }
 
     // Reset Variables
@@ -171,27 +174,19 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     _totalSongs = 0;
     _songsCompleted = 0;
 
-    _playlistDownloader->Quit();
-
     // Reset UI
     _ui.PlaylistURLInput->setText("");
     _ui.DownloaderThreadsInput->setEnabled(true);
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
 
-    if (_errorUI.count() > 0) {
-        foreach(SongErrorItem * errorItemUI, _errorUI) {
-            if(errorItemUI != nullptr) delete errorItemUI;
-        }
-        _errorUI.clear();
-    }
-
     // Setup Threads
     SetupDownloaderThread();
+
+    VariablesResetting = false;
 }
 
-// Convert naming tags to QStringList, cannot have 
-// const QStringList
+// Convert naming tags to QStringList, cannot have const QStringList
 QStringList SpotifyDownloader::Q_NAMING_TAGS_CACHE;
 QStringList SpotifyDownloader::Q_NAMING_TAGS() {
     if (!Q_NAMING_TAGS_CACHE.isEmpty())

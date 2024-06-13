@@ -77,6 +77,8 @@ class SpotifyDownloader : public QDialog
         bool DownloadStarted = false;
         bool DownloadComplete = false;
 
+        bool VariablesResetting = false;
+
         // Below variables will be loaded in LoadSettings()
         bool Overwrite = false;
         bool Notifications = true;
@@ -127,8 +129,6 @@ class SpotifyDownloader : public QDialog
 
         QButtonHoverWatcher* _buttonHoverWatcher;
 
-        int _previousScreenIndex = -1;
-
         int _totalSongs = 0;
         int _songsCompleted = 0;
 
@@ -141,7 +141,6 @@ class SpotifyDownloader : public QDialog
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
-        void SetupErrorScreen();
 
         bool ValidateSettings();
         bool ValidateInputs();
@@ -219,6 +218,7 @@ class PlaylistDownloader : public QObject {
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
         void SetThreadFinished(int threadIndex);
+        void ResetDownloadingVariables();
 };
 
 class SongDownloader : public QObject {

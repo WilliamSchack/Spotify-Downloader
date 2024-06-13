@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include "Animation.h"
+
 void SpotifyDownloader::SetupUI(int threadIndex) {
     _downloaderUI.clear();
 
@@ -20,13 +22,30 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
     
     int currentScreen = CurrentScreen();
 
-    if (screenIndex != currentScreen)
-        _previousScreenIndex = currentScreen;
+    // Animate Side Panel
+    switch (screenIndex) {
+        case SETUP_SCREEN_INDEX:
+        case PROCESSING_SCREEN_INDEX:
+            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
+            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
+            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.DownloadingScreenButton->y() - 2), 500);
+            break;
+        case ERROR_SCREEN_INDEX:
+            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
+            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
+            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.ErrorScreenButton->y() - 2), 500);
+            break;
+        case SETTINGS_SCREEN_INDEX:
+            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
+            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
+            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
+            Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.SettingsScreenButton->y() - 2), 500);
+            break;
+    }
 
-    // Downloading/Error screen -> Setup, reset variables for next download
-    if ((currentScreen == PROCESSING_SCREEN_INDEX || currentScreen == ERROR_SCREEN_INDEX) && screenIndex == SETUP_SCREEN_INDEX)
-        ResetDownloadingVariables();
-
+    // Set Screen
     _ui.Screens->setCurrentIndex(screenIndex);
 }
 
@@ -83,7 +102,13 @@ void SpotifyDownloader::SetSongDetails(int threadIndex, QString title, QString a
 }
 
 void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
-    _errorUI.clear();
+    // Clear UI
+    if (_errorUI.count() > 0) {
+        foreach(SongErrorItem * errorItemUI, _errorUI) {
+            if(errorItemUI != nullptr) delete errorItemUI;
+        }
+        _errorUI.clear();
+    }
 
     foreach(QJsonValue val, tracks) {
         QJsonObject track = val.toObject();
