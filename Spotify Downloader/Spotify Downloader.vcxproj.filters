@@ -64,7 +64,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QButtonHoverWatcher.cpp">
+    <ClCompile Include="ObjectHoverWatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UISetup.cpp">
@@ -75,7 +75,7 @@
     <QtMoc Include="CustomWidgets.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="QButtonHoverWatcher.h">
+    <QtMoc Include="ObjectHoverWatcher.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

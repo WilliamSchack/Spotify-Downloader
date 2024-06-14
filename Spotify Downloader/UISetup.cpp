@@ -52,42 +52,42 @@ void SpotifyDownloader::SetupTrayIcon() {
 
 void SpotifyDownloader::SetupSideBar() {
     // Hover
-    _buttonHoverWatcher->AddButtonFunctions(_ui.DownloadingScreenButton, [](QPushButton* button) {
-        button->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
-    }, [=](QPushButton* button) {
+    _objectHoverWatcher->AddObjectFunctions(_ui.DownloadingScreenButton, [=](QObject* object) {
+        _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
+    }, [=](QObject* object) {
         // If not in a downloading screen, reset icon
         int currentScreen = CurrentScreen();
         if (currentScreen != SETUP_SCREEN_INDEX && currentScreen != PROCESSING_SCREEN_INDEX)
-            button->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
+            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
     });
 
-    _buttonHoverWatcher->AddButtonFunctions(_ui.SettingsScreenButton, [](QPushButton* button) {
-        button->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
-    }, [=](QPushButton* button) {
+    _objectHoverWatcher->AddObjectFunctions(_ui.SettingsScreenButton, [=](QObject* object) {
+        _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
+    }, [=](QObject* object) {
         // If not in settings screen, reset icon
         if(CurrentScreen() != SETTINGS_SCREEN_INDEX)
-            button->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
     });
 
-    _buttonHoverWatcher->AddButtonFunctions(_ui.ErrorScreenButton, [=](QPushButton* button) {
+    _objectHoverWatcher->AddObjectFunctions(_ui.ErrorScreenButton, [=](QObject* object) {
         if(_errorUI.count() > 0)
-            button->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
-    }, [=](QPushButton* button) {
+            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
+    }, [=](QObject* object) {
         // If not in error screen, reset icon
         if(_errorUI.count() > 0 && CurrentScreen() != ERROR_SCREEN_INDEX)
-            button->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
+            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
     });
 
-    _buttonHoverWatcher->AddButtonFunctions(_ui.SubmitBugButton, [](QPushButton* button) {
-        Animation::AnimateBackgroundColour(button, QColor(80, 80, 80), 500);
-    }, [=](QPushButton* button) {
-        Animation::AnimateBackgroundColour(button, QColor(44, 44, 44), 500);
+    _objectHoverWatcher->AddObjectFunctions(_ui.SubmitBugButton, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.SubmitBugButton, QColor(80, 80, 80), 500);
+    }, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.SubmitBugButton, QColor(44, 44, 44), 500);
     });
 
-    _buttonHoverWatcher->AddButtonFunctions(_ui.HelpButton, [](QPushButton* button) {
-        Animation::AnimateBackgroundColour(button, QColor(80, 80, 80), 500);
-    }, [=](QPushButton* button) {
-        Animation::AnimateBackgroundColour(button, QColor(44, 44, 44), 500);
+    _objectHoverWatcher->AddObjectFunctions(_ui.HelpButton, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.HelpButton, QColor(80, 80, 80), 500);
+    }, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.HelpButton, QColor(44, 44, 44), 500);
     });
 
     // Buttons
@@ -176,20 +176,20 @@ void SpotifyDownloader::SetupSetupScreen() {
 
 void SpotifyDownloader::SetupSettingsScreen() {
     // Top Buttons
-    _buttonHoverWatcher->AddButtonFunctions(_ui.OutputSettingsButton, [=] (QPushButton* button) {
+    _objectHoverWatcher->AddObjectFunctions(_ui.OutputSettingsButton, [=] (QObject* object) {
         if (_ui.SettingsScreens->currentIndex() != 0)
-            Animation::AnimatePosition(button, QPoint(8, 12), 200);
-    }, [=](QPushButton* button) {
+            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 12), 200);
+    }, [=](QObject* object) {
         if (_ui.SettingsScreens->currentIndex() != 0)
-            Animation::AnimatePosition(button, QPoint(8, 14), 200);
+            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 14), 200);
     });
 
-    _buttonHoverWatcher->AddButtonFunctions(_ui.DownloadingSettingsButton, [=](QPushButton* button) {
+    _objectHoverWatcher->AddObjectFunctions(_ui.DownloadingSettingsButton, [=](QObject* object) {
         if (_ui.SettingsScreens->currentIndex() != 1)
-            Animation::AnimatePosition(button, QPoint(371, 12), 200);
-    }, [=](QPushButton* button) {
+            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 12), 200);
+    }, [=](QObject* object) {
         if(_ui.SettingsScreens->currentIndex() != 1)
-            Animation::AnimatePosition(button, QPoint(371, 14), 200);
+            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 14), 200);
     });
 
     connect(_ui.OutputSettingsButton, &QPushButton::clicked, [=] {
@@ -424,4 +424,57 @@ bool SpotifyDownloader::ValidateDirectory() {
     }
 
     return true;
+}
+
+bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
+    // Handle line indicators
+    if (event->type() == QEvent::MouseMove) {        
+        if (CurrentScreen() != SETTINGS_SCREEN_INDEX)
+            return false;
+
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+
+        // Transform mouse pos to settings screen
+        QPoint mousePos = _ui.SettingsScreens->mapFromGlobal(QCursor::pos());
+        int mouseY = mousePos.y() - 25; // Offset by indicator height / 2
+
+        // Round y to closest setting
+        int newY = ((mouseY + 50 / 2) / 50) * 50; // Round y to closest 50
+        newY += 5; // Offset by 5
+
+        switch (_ui.SettingsScreens->currentIndex()) {
+            case 0: // Output Settings
+            {
+                // Clamp y to settings in menu
+                newY = std::clamp(newY, 5, OUTPUT_SETTINGS_LINE_MAX_HEIGHT);
+
+                // Dont animate if already in position
+                QPoint lineIndicatorPos = _ui.OutputSettings_LineIndicator->pos();
+                if (lineIndicatorPos.y() == newY)
+                    break;
+
+                // Animate to new position
+                QPoint newPos(lineIndicatorPos.x(), newY);
+                Animation::AnimatePosition(_ui.OutputSettings_LineIndicator, newPos, 300);
+                break;
+            }
+            case 1: // Downloading Settings
+            {
+                // Clamp y to settings in menu
+                newY = std::clamp(newY, 5, DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT);
+
+                // Dont animate if already in position
+                QPoint lineIndicatorPos = _ui.DownloadingSettings_LineIndicator->pos();
+                if (lineIndicatorPos.y() == newY)
+                    break;
+
+                // Animate to new position
+                QPoint newPos(lineIndicatorPos.x(), newY);
+                Animation::AnimatePosition(_ui.DownloadingSettings_LineIndicator, newPos, 300);
+                break;
+            }
+        }
+    }
+
+    return false;
 }

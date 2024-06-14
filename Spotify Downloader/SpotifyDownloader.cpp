@@ -14,9 +14,10 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     QCoreApplication::setOrganizationName(ORGANIZATION_NAME);
     QCoreApplication::setApplicationName(APPLICATION_NAME);
 
+    qApp->installEventFilter(this);
     _ui.setupUi(this);
 
-    _buttonHoverWatcher = new QButtonHoverWatcher(this);
+    _objectHoverWatcher = new ObjectHoverWatcher(this);
 
     SetupTrayIcon();
     SetupSideBar();
@@ -47,6 +48,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetDownloadStatus, this, &SpotifyDownloader::SetDownloadStatus);
     connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
     connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_playlistDownloader, &PlaylistDownloader::HideGettingDataLabel, this, &SpotifyDownloader::HideGettingDataLabel);
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
 }
@@ -175,6 +177,7 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     _songsCompleted = 0;
 
     // Reset UI
+    _ui.GettingPlaylistDataLabel->show();
     _ui.PlaylistURLInput->setText("");
     _ui.DownloaderThreadsInput->setEnabled(true);
     _ui.SongCount->setText("0/0");
@@ -304,7 +307,7 @@ SpotifyDownloader::~SpotifyDownloader()
 
     _trayIcon->hide();
 
-    delete _buttonHoverWatcher;
+    delete _objectHoverWatcher;
 
     emit RequestQuit();
     workerThread.wait();

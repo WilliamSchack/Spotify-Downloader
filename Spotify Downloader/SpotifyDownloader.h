@@ -25,10 +25,11 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrentRun>
 
+#include <QEvent>
 #include <QCloseEvent>
 
 #include "ui_SpotifyDownloader.h"
-#include "QButtonHoverWatcher.h"
+#include "ObjectHoverWatcher.h"
 
 #include "YTMusicAPI.h"
 #include "SpotifyAPI.h"
@@ -96,6 +97,8 @@ class SpotifyDownloader : public QDialog
 
         static QStringList Q_NAMING_TAGS();
         std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const; // Output, Error
+
+        virtual bool eventFilter(QObject* obj, QEvent* event) Q_DECL_OVERRIDE;
     public slots:
         void SetupUI(int count);
         void ChangeScreen(int screenIndex);
@@ -107,6 +110,7 @@ class SpotifyDownloader : public QDialog
         void SetSongImage(int threadIndex, QPixmap image);
         void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
+        void HideGettingDataLabel();
         void HidePauseWarning(int threadIndex);
         void SetThreadFinished(int threadIndex);
     signals:
@@ -116,6 +120,9 @@ class SpotifyDownloader : public QDialog
     private:
         const QString ORGANIZATION_NAME = "WilliamSchack";
         const QString APPLICATION_NAME = "Spotify Downloader";
+
+        const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 255;
+        const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
 
         static QStringList Q_NAMING_TAGS_CACHE;
 
@@ -127,7 +134,7 @@ class SpotifyDownloader : public QDialog
         QList<DownloaderThread*> _downloaderUI;
         QList<SongErrorItem*> _errorUI;
 
-        QButtonHoverWatcher* _buttonHoverWatcher;
+        ObjectHoverWatcher* _objectHoverWatcher;
 
         int _totalSongs = 0;
         int _songsCompleted = 0;
@@ -217,6 +224,7 @@ class PlaylistDownloader : public QObject {
         void SetDownloadStatus(QString text);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
+        void HideGettingDataLabel();
         void SetThreadFinished(int threadIndex);
         void ResetDownloadingVariables();
 };

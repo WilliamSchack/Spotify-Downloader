@@ -125,8 +125,7 @@ void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
     }
 }
 
-void
-SpotifyDownloader::HidePauseWarning(int threadIndex) {
+void SpotifyDownloader::HidePauseWarning(int threadIndex) {
     if (_downloaderUI.count() == 0) return;
 
     _downloaderUI[threadIndex]->ProgressLabel->setText("Paused...");
@@ -136,6 +135,10 @@ SpotifyDownloader::HidePauseWarning(int threadIndex) {
         return;
 
     _ui.PauseWarning->hide();
+}
+
+void SpotifyDownloader::HideGettingDataLabel() {
+    _ui.GettingPlaylistDataLabel->hide();
 }
 
 void SpotifyDownloader::SetThreadFinished(int threadIndex) {

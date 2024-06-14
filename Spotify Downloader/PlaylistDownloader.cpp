@@ -125,6 +125,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		trackList.append(currentArray);
 	}
 
+	emit HideGettingDataLabel();
 	emit SetupUI(trackList.count());
 
 	QString startingDownloadMessage = "Shouldn't take too long!";

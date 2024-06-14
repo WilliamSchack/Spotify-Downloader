@@ -390,7 +390,8 @@ selection-background-color: rgb(0, 120, 215);</string>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0);
+color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>kb/s</string>
@@ -636,7 +637,8 @@ selection-background-color: rgb(0, 120, 215);</string>
         <number>-1</number>
        </property>
        <property name="styleSheet">
-        <string notr="true">QToolButton{background-color:black; color:white;} QWidget{color: rgb(255, 255, 255);}</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0);
+color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>0MB/min</string>
@@ -662,7 +664,8 @@ selection-background-color: rgb(0, 120, 215);</string>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0);
+color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>dB</string>
@@ -784,6 +787,24 @@ background-color: rgba(0, 0, 0, 0);</string>
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
+      <widget class="QPushButton" name="OutputSettingsHoverTest">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>729</width>
+         <height>311</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgba(0, 0, 0, 0);
+border: none;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <zorder>OutputSettingsHoverTest</zorder>
       <zorder>OutputSettings_LineIndicator</zorder>
       <zorder>SongOutputFormatTagInput</zorder>
       <zorder>SongOutputFormatInput</zorder>
@@ -883,7 +904,8 @@ selection-background-color: rgb(0, 120, 215);</string>
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">background-color: rgba(0, 0, 0, 0);
+color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>MB/s</string>
@@ -1370,6 +1392,33 @@ selection-background-color: rgb(0, 120, 215);</string>
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="GettingPlaylistDataLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>130</y>
+       <width>695</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>18</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(64, 64, 64);
+color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Getting Playlist Data...</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
     <zorder>DownloadingScrollArea</zorder>
     <zorder>BottomBacking</zorder>
     <zorder>PauseWarning</zorder>
@@ -1377,6 +1426,7 @@ selection-background-color: rgb(0, 120, 215);</string>
     <zorder>PauseButton</zorder>
     <zorder>SongCount</zorder>
     <zorder>CancelButton</zorder>
+    <zorder>GettingPlaylistDataLabel</zorder>
    </widget>
    <widget class="QWidget" name="ErrorScreen">
     <widget class="QLabel" name="ErrorScreenTitle">
