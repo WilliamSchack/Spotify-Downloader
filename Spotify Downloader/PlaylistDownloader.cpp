@@ -34,7 +34,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		}
 		errorMessage.append(" Failed");
 
-		emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
 		emit ShowMessage("Network Error", errorMessage);
 		emit SetDownloadStatus(errorMessage);
 
@@ -93,7 +92,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	// In the case that tracks inputted were removed, return to setup screen
 	if (_totalSongCount == 0) {
-		emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
 		emit ShowMessage("Unable To Pass Initial Check", "Songs are probably already downloaded...");
 		emit SetDownloadStatus("Unable To Pass Initial Check, Songs Are Probably Already Downloaded");
 
@@ -205,13 +203,9 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 
 void PlaylistDownloader::DisplayFinalMessage() {
 	if (_tracksNotFound.count() == 0) {
-		emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
 		emit ShowMessage("Downloads Complete!", "No download errors!");
-
 		return;
 	}
-
-	emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
 
 	int tracksNotFoundCount = _tracksNotFound.count();
 	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(tracksNotFoundCount).arg(tracksNotFoundCount != 1 ? "s" : ""));
@@ -300,11 +294,13 @@ PlaylistDownloader::~PlaylistDownloader() {
 	}
 
 	// Cleanup variables
-	emit ResetDownloadingVariables();
-	while (!Main->VariablesResetting) // Wait for reset to start
-		QCoreApplication::processEvents();
-	while(Main->VariablesResetting) // Wait for reset to finish
-		QCoreApplication::processEvents();
+	if (!Main->ExitingApplication) {
+		emit ResetDownloadingVariables();
+		while (!Main->VariablesResetting) // Wait for reset to start
+			QCoreApplication::processEvents();
+		while (Main->VariablesResetting) // Wait for reset to finish
+			QCoreApplication::processEvents();
+	}
 
 	delete _yt;
 	delete _sp;
@@ -316,6 +312,18 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	ClearDirFiles(coverArtFolder);
 	ClearDirFiles(downloadingFolder);
+
+	// Change Screen
+	if (!Main->ExitingApplication) {
+		if (_tracksNotFound.count() == 0) {
+			emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
+			emit ShowMessage("Downloads Complete!", "No download errors!");
+
+			return;
+		} else {
+			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
+		}
+	}
 }
 
 void PlaylistDownloader::ClearDirFiles(const QString& path)

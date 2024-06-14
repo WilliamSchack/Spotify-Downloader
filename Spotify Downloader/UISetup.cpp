@@ -128,7 +128,7 @@ void SpotifyDownloader::SetupSideBar() {
     });
 
     connect(_ui.HelpButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Access Help", "Would you like to access the help documentation?");
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "Would you like to access the help documentation?");
     });
 }
 
@@ -250,6 +250,13 @@ void SpotifyDownloader::SetupSettingsScreen() {
         }
     });
 
+    // Set folder organisation dropdown items font size to 12, cannot do in stylesheet
+    QFont folderSortingItemFont = _ui.FolderSortingInput->font();
+    folderSortingItemFont.setPointSizeF(12);
+    for (int i = 0; i < _ui.FolderSortingInput->count(); i++) {
+        _ui.FolderSortingInput->setItemData(i, QVariant(folderSortingItemFont), Qt::FontRole);
+    }
+
     // Button Clicks (Using isChecked to help with loading settings)
     connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = _ui.OverwriteSettingButton->isChecked; });
     connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Notifications = _ui.NotificationSettingButton->isChecked; });
@@ -290,9 +297,7 @@ void SpotifyDownloader::SetupProcessingScreen() {
             int reply = messageBox.exec();
 
             if (reply == QMessageBox::Yes) {
-                emit ChangeScreen(SETUP_SCREEN_INDEX);
                 emit DisplayFinalMessage();
-
                 emit RequestQuit();
             }
         }
@@ -437,6 +442,11 @@ bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
         // Transform mouse pos to settings screen
         QPoint mousePos = _ui.SettingsScreens->mapFromGlobal(QCursor::pos());
         int mouseY = mousePos.y() - 25; // Offset by indicator height / 2
+
+        // Only continue if mouse within settings screen
+        QRect settingsScreensGeometry = _ui.SettingsScreens->geometry();
+        if (mousePos.x() < settingsScreensGeometry.x() || mousePos.x() > settingsScreensGeometry.x() + settingsScreensGeometry.width())
+            return false;
 
         // Round y to closest setting
         int newY = ((mouseY + 50 / 2) / 50) * 50; // Round y to closest 50

@@ -67,7 +67,7 @@ void SpotifyDownloader::SetProgressLabel(int threadIndex, QString text) {
 void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage) {
     if (_downloaderUI.count() == 0) return;
 
-    _downloaderUI[threadIndex]->ProgressBar_Front->resize(SongDownloader::Lerp(0, 427, percentage), 27);
+    _downloaderUI[threadIndex]->ProgressBar_Front->resize(SongDownloader::Lerp(0, 373, percentage), 27);
 }
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {

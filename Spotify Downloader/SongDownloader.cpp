@@ -38,13 +38,14 @@ void SongDownloader::StartDownload(int startIndex) {
 		_currentTrack = track;
 		DownloadSong(track, i, _album);
 
-		SongsDownloaded++;
-		emit SongDownloaded();
-
 		if (_quitting) {
 			this->thread()->quit();
 			return;
 		}
+
+		SongsDownloaded++;
+		emit SongDownloaded();
+
 
 		while (Manager->PauseNewDownloads) {
 			QCoreApplication::processEvents();
@@ -144,19 +145,54 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString fileName = std::get<0>(filenameData);
 	fileName = ValidateString(fileName);
 
+	// Set downloading path
 	QString tempPath = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
-	if (!QDir(tempPath).exists()) QDir().mkdir(tempPath);
+	if (!QDir(tempPath).exists())
+		QDir().mkdir(tempPath);
 
 	QString downloadingFolder = QString("%1/Downloading").arg(tempPath);
-	QString downloadingPath = QString("%1/%2").arg(downloadingFolder).arg(fileName);
-	QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
+	QString downloadingPath = QString("%1/%2.%3").arg(downloadingFolder).arg(fileName).arg(CODEC);
+	//QString fullDownloadingPath = QString("%1.%2").arg(downloadingPath).arg(CODEC);
 
-	QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(fileName);
-	QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
+	// Set downloading folder
+	QString downloadingFolderName = "";
+	switch (Main->FolderSortingIndex) {
+		case 1: // Album name
+			downloadingFolderName = albumName;
+			break;
+		case 2: // Song Artist
+			downloadingFolderName = artistName;
+			break;
+		case 3: // Song Artists
+			for (int i = 0; i < songArtistNamesList.count(); i++) {
+				QString artistName = songArtistNamesList[i];
+				downloadingFolderName.append(artistName);
+				if (i < songArtistNamesList.count() - 1)
+					downloadingFolderName.append(", ");
+			}
+			break;
+		case 4: // Album Artist
+			downloadingFolderName = albumArtistNamesList[0];
+			break;
+		case 5: // Album Artists
+			for (int i = 0; i < albumArtistNamesList.count(); i++) {
+				QString artistName = albumArtistNamesList[i];
+				downloadingFolderName.append(artistName);
+				if (i < albumArtistNamesList.count() - 1)
+					downloadingFolderName.append(", ");
+			}
+			break;
+	}
 
-	if (!QDir(downloadingFolder).exists()) QDir().mkdir(downloadingFolder);
+	// Set target path
+	QString targetFolder = QString("%1/%2").arg(Main->SaveLocationText).arg(downloadingFolderName);
+	//QString targetPath = QString("%1/%2%3").arg(Main->SaveLocationText).arg(downloadingFolderName).arg(fileName);
+	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(fileName).arg(CODEC);
 
-	if (!Main->Overwrite && QFile::exists(fullTargetPath)) return;
+	if (!QDir(downloadingFolder).exists())
+		QDir().mkdir(downloadingFolder);
+
+	if (!Main->Overwrite && QFile::exists(targetPath)) return;
 	#pragma endregion
 
 	if (_quitting) return;
@@ -342,8 +378,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressBar(_threadIndex, 0);
 
 	// Remove from temp folder if exists
-	if (Main->Overwrite && QFile::exists(fullDownloadingPath))
-		QFile::remove(fullDownloadingPath);
+	if (Main->Overwrite && QFile::exists(downloadingPath))
+		QFile::remove(downloadingPath);
 
 	_currentProcess = new QProcess();
 	connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
@@ -357,7 +393,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
 	_currentProcess->startCommand(QString(R"("%1" --no-part --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 --audio-format %4 "%5")")
 						.arg(QCoreApplication::applicationDirPath() + "/" + YTDLP_PATH)
-						.arg(fullDownloadingPath)
+						.arg(downloadingPath)
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
 						.arg(CODEC)
 						.arg(QString("https://www.youtube.com/watch?v=%1").arg(finalResult["videoId"].toString())));
@@ -383,13 +419,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		QString newQualityFullPath = QString("%1/%2.%3").arg(downloadingFolder).arg(fileName + "_A").arg(CODEC);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2"  -b:a %3k "%4")")
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
-						.arg(fullDownloadingPath)
+						.arg(downloadingPath)
 						.arg(Main->AudioBitrate)
 						.arg(newQualityFullPath));
 		_currentProcess->waitForFinished(-1);
 
-		QFile::remove(fullDownloadingPath);
-		QFile::rename(newQualityFullPath, fullDownloadingPath);
+		QFile::remove(downloadingPath);
+		QFile::rename(newQualityFullPath, downloadingPath);
 	}
 
 	#pragma endregion
@@ -406,7 +442,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 		_currentProcess->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
 						.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
-						.arg(fullDownloadingPath));
+						.arg(downloadingPath));
 		_currentProcess->waitForFinished(-1);
 
 		// For some reason ffmpeg outputs to StandardError. idk why
@@ -423,7 +459,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 				connect(_currentProcess, &QProcess::finished, _currentProcess, &QProcess::deleteLater);
 				_currentProcess->startCommand(QString(R"("%1" -i "%2" -b:a %3k -af "volume=%4dB" "%5")")
 								.arg(QCoreApplication::applicationDirPath() + "/" + FFMPEG_PATH)
-								.arg(fullDownloadingPath)
+								.arg(downloadingPath)
 								.arg(Main->AudioBitrate)
 								.arg(volumeApply)
 								.arg(normalizedFullPath));
@@ -431,8 +467,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 				if (_quitting) return;
 
-				QFile::remove(fullDownloadingPath);
-				QFile::rename(normalizedFullPath, fullDownloadingPath);
+				QFile::remove(downloadingPath);
+				QFile::rename(normalizedFullPath, downloadingPath);
 			}
 		}
 	}
@@ -446,7 +482,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
-		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(fullDownloadingPath.constData()));
+		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(downloadingPath.constData()));
 		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
 		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
 
@@ -482,11 +518,15 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	#pragma endregion
 
 	// Remove from target folder if file exists
-	if (Main->Overwrite && QFile::exists(fullTargetPath))
-		QFile::remove(fullTargetPath);
+	if (Main->Overwrite && QFile::exists(targetPath))
+		QFile::remove(targetPath);
+
+	// Create target folder if it doesnt exist
+	if (!QDir(targetFolder).exists())
+		QDir().mkdir(targetFolder);
 
 	// Move from downloading path to target path
-	QFile::rename(fullDownloadingPath, fullTargetPath);
+	QFile::rename(downloadingPath, targetPath);
 }
 
 int SongDownloader::SongsRemaining() {

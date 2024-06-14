@@ -73,6 +73,7 @@ class SpotifyDownloader : public QDialog
         QString PlaylistURLText;
         QString SaveLocationText;
 
+        bool ExitingApplication = false;
         bool Paused = false;
 
         bool DownloadStarted = false;
@@ -94,6 +95,8 @@ class SpotifyDownloader : public QDialog
 
         QString SongOutputFormatTag = "<>";
         QString SongOutputFormat = "<Song Name> - <Song Artist>";
+
+        int FolderSortingIndex = 0;
 
         static QStringList Q_NAMING_TAGS();
         std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const; // Output, Error

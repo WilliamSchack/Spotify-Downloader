@@ -61,6 +61,7 @@ void SpotifyDownloader::SaveSettings() {
     int audioBitrate = _ui.AudioBitrateInput->value();
     QString songOutputFormatTag = _ui.SongOutputFormatTagInput->text();
     QString songOutputFormat = _ui.SongOutputFormatInput->text();
+    int folderSortingIndex = _ui.FolderSortingInput->currentIndex();
     bool statusNotificationsEnabled = _ui.NotificationSettingButton->isChecked;
     int downloaderThreads = _ui.DownloaderThreadsInput->value();
     float downloadSpeedLimit = _ui.DownloadSpeedSettingInput->value();
@@ -75,6 +76,7 @@ void SpotifyDownloader::SaveSettings() {
     settings.setValue("audioBitrate", audioBitrate);
     settings.setValue("songOutputFormatTag", songOutputFormatTag);
     settings.setValue("songOutputFormat", songOutputFormat);
+    settings.setValue("folderSortingIndex", folderSortingIndex);
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -130,6 +132,10 @@ void SpotifyDownloader::LoadSettings() {
     _ui.SongOutputFormatInput->setText(songOutputFormat);
     SongOutputFormat = songOutputFormat;
 
+    int folderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
+    _ui.FolderSortingInput->setCurrentIndex(folderSortingIndex);
+    FolderSortingIndex = folderSortingIndex;
+
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -162,7 +168,7 @@ void SpotifyDownloader::ResetDownloadingVariables() {
             int tracksNotFound = _playlistDownloader->TracksNotFound();
             int tracksDownloaded = _songsCompleted - tracksNotFound;
             SetDownloadStatus(QString("Successfully Downloaded %1 Song%2 With %3 Error%4")
-                .arg(_songsCompleted - tracksNotFound).arg(tracksDownloaded != 1 ? "s" : "")
+                .arg(tracksDownloaded).arg(tracksDownloaded != 1 ? "s" : "")
                 .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
         } else {
             SetDownloadStatus("Downloading Complete");
@@ -303,6 +309,10 @@ bool SpotifyDownloader::IsElevated() {
 // Application Exit
 SpotifyDownloader::~SpotifyDownloader()
 {
+    if (CurrentScreen() == SETTINGS_SCREEN_INDEX)
+        SaveSettings();
+
+    ExitingApplication = true;
     Paused = false;
 
     _trayIcon->hide();

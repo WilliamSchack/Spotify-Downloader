@@ -251,7 +251,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <widget class="QLineEdit" name="SongOutputFormatTagInput">
        <property name="geometry">
         <rect>
-         <x>240</x>
+         <x>250</x>
          <y>210</y>
          <width>41</width>
          <height>41</height>
@@ -291,9 +291,9 @@ selection-background-color: rgb(0, 120, 215);</string>
       <widget class="QLineEdit" name="SongOutputFormatInput">
        <property name="geometry">
         <rect>
-         <x>290</x>
+         <x>300</x>
          <y>210</y>
-         <width>431</width>
+         <width>421</width>
          <height>41</height>
         </rect>
        </property>
@@ -405,7 +405,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>10</x>
          <y>60</y>
-         <width>221</width>
+         <width>231</width>
          <height>41</height>
         </rect>
        </property>
@@ -459,7 +459,7 @@ background-color: rgba(0, 0, 0, 0);</string>
         <rect>
          <x>10</x>
          <y>110</y>
-         <width>221</width>
+         <width>231</width>
          <height>41</height>
         </rect>
        </property>
@@ -486,7 +486,7 @@ background-color: rgba(0, 0, 0, 0);</string>
         <rect>
          <x>10</x>
          <y>210</y>
-         <width>221</width>
+         <width>231</width>
          <height>41</height>
         </rect>
        </property>
@@ -538,7 +538,7 @@ color: rgb(0, 0, 0);</string>
         <rect>
          <x>10</x>
          <y>160</y>
-         <width>221</width>
+         <width>231</width>
          <height>41</height>
         </rect>
        </property>
@@ -712,12 +712,12 @@ color: rgb(0, 0, 0);</string>
         <string/>
        </property>
       </widget>
-      <widget class="QComboBox" name="FolderOrganisationInput">
+      <widget class="QComboBox" name="FolderSortingInput">
        <property name="geometry">
         <rect>
-         <x>240</x>
+         <x>250</x>
          <y>260</y>
-         <width>481</width>
+         <width>471</width>
          <height>41</height>
         </rect>
        </property>
@@ -725,6 +725,9 @@ color: rgb(0, 0, 0);</string>
         <font>
          <pointsize>14</pointsize>
         </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Creates folders within your chosen download path with the title chosen here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 255, 255);</string>
@@ -760,12 +763,12 @@ color: rgb(0, 0, 0);</string>
         </property>
        </item>
       </widget>
-      <widget class="QLabel" name="FolderOrganisationLabel">
+      <widget class="QLabel" name="FolderSortingLabel">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>260</y>
-         <width>221</width>
+         <width>231</width>
          <height>41</height>
         </rect>
        </property>
@@ -781,7 +784,7 @@ color: rgb(0, 0, 0);</string>
 background-color: rgba(0, 0, 0, 0);</string>
        </property>
        <property name="text">
-        <string>Folder Organisation</string>
+        <string>Folder Sorting</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -820,8 +823,8 @@ border: none;</string>
       <zorder>AudioBitrateFileSizeLabel_Value</zorder>
       <zorder>NormalizeVolumeSettingLabel_dBFS</zorder>
       <zorder>OverwriteSettingButton</zorder>
-      <zorder>FolderOrganisationInput</zorder>
-      <zorder>FolderOrganisationLabel</zorder>
+      <zorder>FolderSortingInput</zorder>
+      <zorder>FolderSortingLabel</zorder>
      </widget>
      <widget class="QWidget" name="DownloadingSettings">
       <widget class="QLabel" name="DownloadSpeedSettingLabel">
@@ -1112,7 +1115,7 @@ text-align: top;</string>
     <zorder>OutputSettingsButton</zorder>
     <zorder>SettingsScreens</zorder>
    </widget>
-   <widget class="QWidget" name="Processing">
+   <widget class="QWidget" name="ProcessingScreen">
     <widget class="QLabel" name="PauseWarning">
      <property name="enabled">
       <bool>true</bool>

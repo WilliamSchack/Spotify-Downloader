@@ -2,7 +2,6 @@
 
 CheckBox::CheckBox(QWidget* parent) : QPushButton(parent) {
 	this->setObjectName("CheckBox");
-	//this->setGeometry(QRect(110, 100, 41, 41));
 	this->setFont(QFont("Arial", 16));
 	this->setStyleSheet("background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);");
 	this->isChecked = false;
@@ -47,7 +46,7 @@ DownloaderThread::DownloaderThread(QWidget* parent) :QWidget(parent) {
 
 	SongTitle = new QLabel(this);
 	SongTitle->setObjectName("SongTitle");
-	SongTitle->setGeometry(QRect(118, 5, 641, 41));
+	SongTitle->setGeometry(QRect(118, 5, 587, 41));
 	SongTitle->setFont(font1);
 	SongTitle->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
 	SongTitle->raise();
@@ -69,7 +68,7 @@ DownloaderThread::DownloaderThread(QWidget* parent) :QWidget(parent) {
 
 	ProgressLabel = new QLabel(this);
 	ProgressLabel->setObjectName("ProgressLabel");
-	ProgressLabel->setGeometry(QRect(555, 76, 201, 31));
+	ProgressLabel->setGeometry(QRect(501, 76, 201, 31));
 	ProgressLabel->setFont(font3);
 	ProgressLabel->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
 	ProgressLabel->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignVCenter);
@@ -77,19 +76,19 @@ DownloaderThread::DownloaderThread(QWidget* parent) :QWidget(parent) {
 
 	ProgressBar_Back = new QWidget(this);
 	ProgressBar_Back->setObjectName("ProgressBar_Back");
-	ProgressBar_Back->setGeometry(QRect(118, 78, 431, 31));
+	ProgressBar_Back->setGeometry(QRect(118, 78, 377, 31));
 	ProgressBar_Back->setStyleSheet("background-color: rgb(182, 182, 182);");
 	ProgressBar_Back->raise();
 
 	ProgressBar_Front = new QWidget(this);
 	ProgressBar_Front->setObjectName("ProgressBar_Front_");
-	ProgressBar_Front->setGeometry(QRect(120, 80, 427, 27));
+	ProgressBar_Front->setGeometry(QRect(120, 80, 373, 27));
 	ProgressBar_Front->setStyleSheet("background-color: rgb(0, 100, 0);");
 	ProgressBar_Front->raise();
 
 	SongArtists = new QLabel(this);
 	SongArtists->setObjectName("SongArtists_2");
-	SongArtists->setGeometry(QRect(118, 42, 641, 31));
+	SongArtists->setGeometry(QRect(118, 42, 587, 31));
 	SongArtists->setFont(font3);
 	SongArtists->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
 	SongArtists->raise();
