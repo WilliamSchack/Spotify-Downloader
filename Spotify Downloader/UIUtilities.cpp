@@ -3,8 +3,9 @@
 #include "Animation.h"
 
 void SpotifyDownloader::SetupUI(int threadIndex) {
+    _ui.GettingPlaylistDataLabel->hide();
+    
     _downloaderUI.clear();
-
     for (int i = 0; i < threadIndex; i++) {
         DownloaderThread* currentUI = new DownloaderThread();
         _ui.DownloadingSpaceFillerLayout->insertWidget(_ui.DownloadingSpaceFillerLayout->count() - 1, currentUI);
@@ -135,10 +136,6 @@ void SpotifyDownloader::HidePauseWarning(int threadIndex) {
         return;
 
     _ui.PauseWarning->hide();
-}
-
-void SpotifyDownloader::HideGettingDataLabel() {
-    _ui.GettingPlaylistDataLabel->hide();
 }
 
 void SpotifyDownloader::SetThreadFinished(int threadIndex) {

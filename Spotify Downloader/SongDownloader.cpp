@@ -183,10 +183,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			}
 			break;
 	}
+	downloadingFolderName = ValidateString(downloadingFolderName);
 
 	// Set target path
 	QString targetFolder = QString("%1/%2").arg(Main->SaveLocationText).arg(downloadingFolderName);
-	//QString targetPath = QString("%1/%2%3").arg(Main->SaveLocationText).arg(downloadingFolderName).arg(fileName);
 	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(fileName).arg(CODEC);
 
 	if (!QDir(downloadingFolder).exists())

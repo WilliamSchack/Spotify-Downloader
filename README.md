@@ -86,11 +86,42 @@ You can open the program through the start menu or from the installed location t
 ## Usage
 
 <details>
+<summary><b>Side Panel</b></summary>
+
+---
+
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/9e7af915-cefa-49fc-851c-f83ed4f2192c" width="4%" height="4%">
+
+<br/>
+
+**Download Screen Button**
+- Takes you to the setup or processing screen depending on if a download is started or not
+
+**Error Screen Button**
+- Takes you to the previous download's song errors
+- ***Note: Button is non-interactable and faded if no previous download has errors***
+
+**Settings Screen Button**
+- Takes you to the settings screen
+
+**Submit Bug Button**
+- Click to submit an issue to the github repo
+- ***Note: Opens in browser***
+
+**Help Button**
+- Click to access the help documentation (What you are reading now)
+- ***Note: Opens in browser***
+
+---
+
+</details>
+
+<details>
 <summary><b> Setup </b></summary>
 
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/f9ad2e55-ad93-46d5-8bbf-3fb88b81c4e5" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/9755ded7-d784-4ded-8e65-422262f9cf54" width="50%" height="50%">
 
 **Download Status**
 - Shows the result of the last download
@@ -124,14 +155,6 @@ You can open the program through the start menu or from the installed location t
 - The path to your download location. You can click the file icon directly to the right of the input box to browse to a location.
 - ***Note: Saved between sessions***
 
-**Submit Bug Button**
-- Click to submit an issue to the github repo
-- ***Note: Opens in browser***
-
-**Help Button**
-- Click to access the help documentation (What you are reading now)
-- ***Note: Opens in browser***
-
 ---
     
 </details>
@@ -141,11 +164,11 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/1ac8d8ea-57c9-4cd0-ac09-2242b6c68fa0" width="50%" height="50%">
-
 ***Note: All settings are saved between sessions***
 
 ### Output
+
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/993ce9fc-15b2-4cb2-9dcc-9de8c0b5f8bb" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -184,7 +207,12 @@ You can open the program through the start menu or from the installed location t
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
 
+**Folder Sorting**
+- Creates folders within your chosen download path with the title set here
+
 ### Downloading
+
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/f17f7238-8675-4d0e-bb78-1cc7b9fa242c" width="50%" height="50%">
 
 **Show Status Notifications - Recommended: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -204,7 +232,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/824aa97d-e661-4409-9ee9-ec7e251eef31" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/208e4cd3-c593-4047-b62e-8740206c61c9" width="50%" height="50%">
 
 Each track downloading will show its:
 - Cover image
@@ -238,7 +266,7 @@ You can see your total download progress on the counter at the bottom left.
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/88e79624-378d-48ed-a5ee-df99f58c81e7" width="50%" height="50%">
+<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/37c8ada6-2372-4d71-8ce2-1371e2cb4955" width="50%" height="50%">
 
 Shows all of the songs that failed to download due to various reasons that can include:
 - Song not available on youtube
@@ -277,6 +305,7 @@ Shows all of the songs that failed to download due to various reasons that can i
     - Thread Count
     - Download Speed
     - Output Naming Format
+    - Output Folder Sorting
 - **Automatic Cleanup**
     - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
     - If cleanup fails due to any reason, unused files are kept in the temp directory and will be cleaned on later use of the program or by windows automatically
@@ -304,12 +333,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## FAQ
 <details>
 <summary><b>Where are songs downloaded from?</b></summary>
-Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 193 at the time of writing this.
+Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 229 at the time of writing this.
 </details>
 
 <details>
 <summary><b>How accurate are the downloads?</b></summary>
-The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 193 at the time of writing this.
+The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 229 at the time of writing this.
 </details>
 
 <details>

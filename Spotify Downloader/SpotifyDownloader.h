@@ -113,7 +113,6 @@ class SpotifyDownloader : public QDialog
         void SetSongImage(int threadIndex, QPixmap image);
         void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
-        void HideGettingDataLabel();
         void HidePauseWarning(int threadIndex);
         void SetThreadFinished(int threadIndex);
     signals:
@@ -227,7 +226,6 @@ class PlaylistDownloader : public QObject {
         void SetDownloadStatus(QString text);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
-        void HideGettingDataLabel();
         void SetThreadFinished(int threadIndex);
         void ResetDownloadingVariables();
 };

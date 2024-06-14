@@ -123,7 +123,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		trackList.append(currentArray);
 	}
 
-	emit HideGettingDataLabel();
 	emit SetupUI(trackList.count());
 
 	QString startingDownloadMessage = "Shouldn't take too long!";
@@ -305,14 +304,6 @@ PlaylistDownloader::~PlaylistDownloader() {
 	delete _yt;
 	delete _sp;
 
-	// Remove all temp files
-	QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
-	QString coverArtFolder = QString("%1/Cover Art").arg(tempFolder);
-	QString downloadingFolder = QString("%1/Downloading").arg(tempFolder);
-
-	ClearDirFiles(coverArtFolder);
-	ClearDirFiles(downloadingFolder);
-
 	// Change Screen
 	if (!Main->ExitingApplication) {
 		if (_tracksNotFound.count() == 0) {
@@ -320,10 +311,19 @@ PlaylistDownloader::~PlaylistDownloader() {
 			emit ShowMessage("Downloads Complete!", "No download errors!");
 
 			return;
-		} else {
+		}
+		else {
 			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
 		}
 	}
+
+	// Remove all temp files
+	QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
+	QString coverArtFolder = QString("%1/Cover Art").arg(tempFolder);
+	QString downloadingFolder = QString("%1/Downloading").arg(tempFolder);
+
+	ClearDirFiles(coverArtFolder);
+	ClearDirFiles(downloadingFolder);
 }
 
 void PlaylistDownloader::ClearDirFiles(const QString& path)

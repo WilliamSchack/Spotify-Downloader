@@ -64,10 +64,10 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectHoverWatcher.cpp">
+    <ClCompile Include="UISetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UISetup.cpp">
+    <ClCompile Include="ObjectHoverWatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
