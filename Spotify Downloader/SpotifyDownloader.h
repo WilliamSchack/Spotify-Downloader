@@ -243,8 +243,6 @@ class SongDownloader : public QObject {
         QJsonArray RemoveTracks(int numTracksToRemove);
         int SongsRemaining();
         void FinishedDownloading(bool finished);
-
-        static float Lerp(float a, float b, float t);
     public slots:
         void DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
         void Quit();
@@ -252,10 +250,6 @@ class SongDownloader : public QObject {
         void StartDownload(int startIndex);
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
         void CheckForStop();
-
-        QString ValidateString(QString string);
-        void DownloadImage(QString url, QString path, QSize resize = QSize());
-        double LerpInList(std::vector<double> list, int index);
 
         const QString CODEC = "mp3";
         const QString YTDLP_PATH = "yt-dlp.exe";

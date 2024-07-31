@@ -92,10 +92,10 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>taglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\William\Desktop\Files\projects\Spotify-Downloader\Spotify Downloader\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\William\Desktop\Files\projects\Spotify-Downloader\Spotify Downloader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -124,9 +124,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="ImageUtils.cpp" />
     <ClCompile Include="JSONUtils.cpp" />
     <ClCompile Include="ObjectHoverWatcher.cpp" />
     <ClCompile Include="PlaylistDownloader.cpp" />
+    <ClCompile Include="MathUtils.cpp" />
+    <ClCompile Include="Song.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="UISetup.cpp" />
     <ClCompile Include="UIUtilities.cpp" />
     <ClCompile Include="YTMusicAPI.cpp" />
@@ -144,10 +148,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="ImageUtils.h" />
     <ClInclude Include="JSONUtils.h" />
+    <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Network.h" />
     <QtMoc Include="ObjectHoverWatcher.h" />
+    <ClInclude Include="Song.h" />
     <ClInclude Include="SpotifyAPI.h" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="YTMusicAPI.h" />
   </ItemGroup>
   <ItemGroup>

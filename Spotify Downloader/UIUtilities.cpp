@@ -1,6 +1,7 @@
 #include "SpotifyDownloader.h"
 
 #include "Animation.h"
+#include "MathUtils.h"
 
 void SpotifyDownloader::SetupUI(int threadIndex) {
     _ui.GettingPlaylistDataLabel->hide();
@@ -68,7 +69,7 @@ void SpotifyDownloader::SetProgressLabel(int threadIndex, QString text) {
 void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage) {
     if (_downloaderUI.count() == 0) return;
 
-    _downloaderUI[threadIndex]->ProgressBar_Front->resize(SongDownloader::Lerp(0, 373, percentage), 27);
+    _downloaderUI[threadIndex]->ProgressBar_Front->resize(MathUtils::Lerp(0, 373, percentage), 27);
 }
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {
