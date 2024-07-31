@@ -74,6 +74,8 @@ void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage) {
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {
     if (threadIndex >= 0) {
+        if (threadIndex > _downloaderUI.count()) return; // Sometimes a thread can be deleted before this request goes through
+
         QLabel* songCount = _downloaderUI[threadIndex]->SongCount;
         songCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
         songCount->adjustSize();

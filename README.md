@@ -333,12 +333,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ## FAQ
 <details>
 <summary><b>Where are songs downloaded from?</b></summary>
-Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 229 at the time of writing this.
+Despite what the title implies, songs are actually downloaded from youtube. The program retrieves the data of each song from spotify and uses a combination of the duration, title, artists, album, and views in special cases, to determine which songs on youtube correspond to those on spotify. You can find the algorithm behind this in <a href="https://github.com/search?q=repo%3AWilliamSchack%2FSpotify-Downloader+Song%3A%3ASearchForSong&type=code">Song.cpp under SearchForSong</a>.
 </details>
 
 <details>
 <summary><b>How accurate are the downloads?</b></summary>
-The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/WilliamSchack/Spotify-Downloader/blob/main/Spotify%20Downloader/SongDownloader.cpp">SongDownloader.cpp</a> under "#pragma region Search For Song" at line 229 at the time of writing this.
+The downloads are almost always accurate and have only few times has downloaded the incorrect song being usually covers of a song. If the song is not on youtube at all, it will not download the song if there are no extremely similar songs in title, artists, duration, etc. After roughly 500 songs tested over many artists and genres I have only gotten around 5-10 incorrect which were all covers of songs that were not on youtube. You can find the algorithm behind this in <a href="https://github.com/search?q=repo%3AWilliamSchack%2FSpotify-Downloader+Song%3A%3ASearchForSong&type=code">Song.cpp under SearchForSong</a>.
 </details>
 
 <details>

@@ -36,7 +36,6 @@ void SongDownloader::StartDownload(int startIndex) {
 		SongsDownloaded++;
 		emit SongDownloaded();
 
-
 		while (Manager->PauseNewDownloads) {
 			QCoreApplication::processEvents();
 		}
@@ -144,8 +143,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressBar(_threadIndex, 0);
 	song.Download(_currentProcess, Main->Overwrite, [&]() {
 		QString output = _currentProcess->readAll();
-		if (output.contains("%")) {
-			QString progress = output.split("]")[1].split("%")[0];
+		if (output.contains("[download]") && !output.contains(song.FileName)) { // Make sure that it is a download status output and not another file related thing
+			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
 			emit SetProgressBar(_threadIndex, progress.toFloat() / 100);
 		}
 	});
