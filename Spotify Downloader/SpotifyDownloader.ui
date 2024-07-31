@@ -230,6 +230,32 @@ selection-background-color: rgb(0, 120, 215);</string>
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QLabel" name="VersionLabel">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>330</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>12</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>v1.4.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="SettingsScreen">
     <widget class="QStackedWidget" name="SettingsScreens">
