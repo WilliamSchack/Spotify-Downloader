@@ -14,7 +14,7 @@ SpotifyAPI::SpotifyAPI() {
 
 	QByteArray response = Network::Post(req, postData);
 	if (response == nullptr) {
-		qDebug() << "Error Authorizing...";
+		qWarning() << "Error Authorizing...";
 		return;
 	}
 
@@ -97,7 +97,7 @@ QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
 
 		QByteArray response = Network::Get(req);
 		if (response == nullptr) {
-			qDebug() << "Error Getting Tracks...";
+			qWarning() << "Error Getting Tracks...";
 			return QJsonArray();
 		}
 

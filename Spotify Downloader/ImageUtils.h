@@ -1,6 +1,9 @@
 #ifndef IMAGEUTILS_H
 #define IMAGEUTILS_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include "Network.h"
 
 #include <QImage>

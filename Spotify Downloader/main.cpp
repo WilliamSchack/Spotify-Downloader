@@ -1,10 +1,21 @@
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
+#include "Application.h"
 #include "SpotifyDownloader.h"
-#include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    Logger::init();
+    qInfo() << "RUNNING VERSION" << SpotifyDownloader::VERSION;
+
+    Application a(argc, argv);
     SpotifyDownloader w;
     w.show();
-    return a.exec();
+    bool state = a.exec();
+    
+    qInfo() << "Application Quit";
+
+    Logger::clean();
+    return state;
 }

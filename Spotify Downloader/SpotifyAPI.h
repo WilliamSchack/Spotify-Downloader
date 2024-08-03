@@ -1,6 +1,9 @@
 #ifndef SPOTIFYAPI_H
 #define SPOTIFYAPI_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include <QObject>
 #include <QByteArray>
 

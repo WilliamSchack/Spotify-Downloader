@@ -124,6 +124,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="ImageUtils.cpp" />
     <ClCompile Include="JSONUtils.cpp" />
     <ClCompile Include="ObjectHoverWatcher.cpp" />
@@ -148,6 +150,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <QtMoc Include="Application.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="ImageUtils.h" />
     <ClInclude Include="JSONUtils.h" />
     <ClInclude Include="MathUtils.h" />

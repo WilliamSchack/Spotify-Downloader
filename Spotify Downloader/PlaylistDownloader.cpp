@@ -37,6 +37,8 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		emit ShowMessage("Network Error", errorMessage);
 		emit SetDownloadStatus(errorMessage);
 
+		qWarning() << errorMessage;
+
 		Quit();
 		return;
 	}
@@ -84,20 +86,24 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	_totalSongCount = tracks.count();
 	emit SetSongCount(-1, 0, _totalSongCount);
 
-	// Setup Variables
-	_tracksNotFound = QJsonArray();
-	_songsDownloaded = 0;
-	_threadsFinished = 0;
-	_threadCount = 0;
-
 	// In the case that tracks inputted were removed, return to setup screen
 	if (_totalSongCount == 0) {
 		emit ShowMessage("Unable To Pass Initial Check", "Songs are probably already downloaded...");
 		emit SetDownloadStatus("Unable To Pass Initial Check, Songs Are Probably Already Downloaded");
 
+		qWarning() << "0 Songs passed check from spotify playlist. Songs are probably already downloaded";
+
 		Quit();
 		return;
 	}
+
+	qInfo() << "Retrieved" << _totalSongCount << "songs from spotify";
+
+	// Setup Variables
+	_tracksNotFound = QJsonArray();
+	_songsDownloaded = 0;
+	_threadsFinished = 0;
+	_threadCount = 0;
 
 	// Get amount of threads and songs assigned to each
 	int targetThreadCount = Main->ThreadCount;
@@ -165,6 +171,8 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		disconnect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
 
 		_threads << worker;
+
+		qInfo() << "Setup thread" << i << "with" << tracks[i] << "songs";
 	}
 }
 
@@ -181,6 +189,8 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	if (songsLeft > _threadCount - _threadsFinished) {
 		DistributeTracks();
 		_threads[threadIndex]->Downloader->FinishedDownloading(false);
+
+		qInfo() << "Redistributed songs to thread" << threadIndex;
 		return;
 	}
 
@@ -190,6 +200,8 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	_threadsCleaned++;
 
 	emit SetThreadFinished(threadIndex);
+
+	qInfo() << "Thread" << threadIndex << "finished downloading";
 
 	if (_threadsFinished != _threadCount) {
 		return;
@@ -203,6 +215,7 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 void PlaylistDownloader::DisplayFinalMessage() {
 	if (_tracksNotFound.count() == 0) {
 		emit ShowMessage("Downloads Complete!", "No download errors!");
+
 		return;
 	}
 
@@ -283,11 +296,14 @@ void PlaylistDownloader::CleanedUp(int threadIndex) {
 }
 
 PlaylistDownloader::~PlaylistDownloader() {
+	qInfo() << "Playlist Downloader Quitting";
+
 	foreach(Worker* worker, _threads) {
 		worker->Downloader->Quit();
 	}
 
 	if (_threadCount > 0) {
+		qInfo() << "Waiting for threads to clean...";
 		while (_threadsCleaned < _threadCount)
 			QCoreApplication::processEvents();
 	}
@@ -309,11 +325,13 @@ PlaylistDownloader::~PlaylistDownloader() {
 		if (_tracksNotFound.count() == 0) {
 			emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
 			emit ShowMessage("Downloads Complete!", "No download errors!");
+			qInfo() << "Downloads complete with no errors";
 
 			return;
 		}
 		else {
 			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
+			qDebug() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << _tracksNotFound;
 		}
 	}
 
@@ -365,6 +383,8 @@ void PlaylistDownloader::ClearDirFiles(const QString& path)
 		delete watcher;
 		delete timer;
 	}
+
+	qInfo() << "Cleaned directory:" << path;
 }
 
 int PlaylistDownloader::TracksNotFound() {

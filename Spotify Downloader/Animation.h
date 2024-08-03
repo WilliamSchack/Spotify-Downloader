@@ -1,6 +1,9 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include <QObject>
 #include <QWidget>
 #include <QMap>

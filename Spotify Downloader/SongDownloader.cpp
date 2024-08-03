@@ -11,9 +11,9 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const Playlist
 	_threadIndex = threadIndex;
 	_totalSongCount = _downloadingTracks.count();
 
-	QThread* thread = QThread::currentThread();
-
 	emit SetProgressLabel(_threadIndex, "Getting Playlist Data...");
+
+	qInfo() << "Started downloading on thread" << _threadIndex;
 
 	StartDownload(0);
 }
@@ -25,6 +25,8 @@ void SongDownloader::StartDownload(int startIndex) {
 	for (int i = startIndex; i < _totalSongCount; i++) {
 		QJsonObject track = _downloadingTracks[i].toObject();
 
+		qInfo() << "Thread" << _threadIndex << "starting download track" << i << "/" << _totalSongCount << track;
+
 		_currentTrack = track;
 		DownloadSong(track, i, _album);
 
@@ -35,6 +37,8 @@ void SongDownloader::StartDownload(int startIndex) {
 
 		SongsDownloaded++;
 		emit SongDownloaded();
+
+		qInfo() << "Thread" << _threadIndex << "successfully downloaded track" << i << "/" << _totalSongCount;
 
 		while (Manager->PauseNewDownloads) {
 			QCoreApplication::processEvents();
@@ -48,7 +52,10 @@ void SongDownloader::StartDownload(int startIndex) {
 	}
 
 	// If no songs are added and done downloading on thread finish up
-	if (_finishedDownloading) return;
+	if (_finishedDownloading) {
+		qInfo() << "Finished downloading on thread" << _threadIndex;
+		return;
+	}
 
 	// If songs are added restart the downloading from the new index
 	StartDownload(startingTotalSongCount);
@@ -59,7 +66,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// Initialise Song
 	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
-	
+	qDebug() << _threadIndex << "Initialised song" << song.SpotifyId;
+
 	// Set target folder
 	QString targetFolderName = "";
 	switch (Main->FolderSortingIndex) {
@@ -95,15 +103,20 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(CODEC);
 
 	// If not overwriting and song already downloaded, skip to next song
-	if (!Main->Overwrite && QFile::exists(targetPath)) return;
+	if (!Main->Overwrite && QFile::exists(targetPath)) {
+		qInfo() << _threadIndex << "Song" << song.SpotifyId << "already downloaded, skipping...";
+		return;
+	}
 
 	// Check for quit/pause
 	if (_quitting) return;
 	CheckForStop();
 
 	// Download cover image
+	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 	song.DownloadCoverImage();
+	qInfo() << _threadIndex << "Cover art downloaded for" << song.SpotifyId;
 
 	// Check for quit/pause
 	if (_quitting) return;
@@ -119,6 +132,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	CheckForStop();
 
 	// Search for song
+	qInfo() << _threadIndex << "Searching for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Searching...");
 	bool resultFound = song.SearchForSong(_yt);
 	if (!resultFound) {
@@ -130,15 +144,19 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			{"image", JSONUtils::PixmapToJSON(QPixmap::fromImage(song.CoverImage))}
 		});
 	
+		qWarning() << _threadIndex << "Could not find search result for" << song.SpotifyId;
+
 		QThread::sleep(2);
 		return;
 	}
+	qInfo() << _threadIndex << QString("Found search result (%1) for").arg(song.YoutubeId) << song.SpotifyId;
 
 	// Check for quit/pause
 	if (_quitting) return;
 	CheckForStop();
 
 	// Download song
+	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
 	emit SetProgressBar(_threadIndex, 0);
 	song.Download(_currentProcess, Main->Overwrite, [&]() {
@@ -149,6 +167,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 		}
 	});
 
+	qInfo() << _threadIndex << "Successfully downloaded song" << song.SpotifyId;
+
 	emit SetProgressBar(_threadIndex, 1);
 
 	// Check for quit/pause
@@ -157,13 +177,17 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// If normalising, normalise audio, includes setting bitrate of audio
 	if (Main->NormalizeAudio) {
+		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 		song.NormaliseAudio(_currentProcess, Main->NormalizeAudioVolume, Main->AudioBitrate, &_quitting);
+		qInfo() << _threadIndex << "Successfully normalised audio for song" << song.SpotifyId;
 	}
 	// Otherwise set the bitrate
 	else {
+		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
 		song.SetBitrate(_currentProcess, Main->AudioBitrate);
+		qInfo() << _threadIndex << "Successfully set bitrate for song" << song.SpotifyId;
 	}
 
 	// Check for quit/pause
@@ -171,10 +195,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	CheckForStop();
 
 	// Assign metadata
+	qInfo() << _threadIndex << "Assigning metadata for song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 	song.AssignMetadata();
 
 	song.Save(targetFolder, targetPath, Main->Overwrite);
+
+	qInfo() << _threadIndex << "Successfully saved song" << song.SpotifyId;
 }
 
 int SongDownloader::SongsRemaining() {
@@ -217,10 +244,14 @@ void SongDownloader::CheckForStop() {
 	// Paused
 	if (!Main->Paused) return;
 
+	qInfo() << "Thread" << _threadIndex << "paused...";
+
 	emit HidePauseWarning(_threadIndex);
 	while (Main->Paused) {
 		QCoreApplication::processEvents();
 	}
+
+	qInfo() << "Thread" << _threadIndex << "unpaused";
 }
 
 void SongDownloader::Quit() {
@@ -228,9 +259,12 @@ void SongDownloader::Quit() {
 	if (_currentProcess && _currentProcess->state() != QProcess::NotRunning)
 		_currentProcess->kill();
 
+	qInfo() << "Thread" << _threadIndex << "quitting...";
+
 	_quitting = true;
 }
 
 SongDownloader::~SongDownloader() {
+	qInfo() << "Thread" << _threadIndex << "cleaned up";
 	emit CleanedUp(_threadIndex);
 }

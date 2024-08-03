@@ -161,6 +161,7 @@ void SpotifyDownloader::SetupSetupScreen() {
             SetDownloadStatus("");
 
             // Start thread
+            qInfo() << "Starting download for playlist" << PlaylistURLText;
             workerThread.start();
             emit operate(this);
         }
@@ -172,6 +173,9 @@ void SpotifyDownloader::SetupSetupScreen() {
             msg.exec();
         }
     });
+
+    // Set version label
+    _ui.VersionLabel->setText(QString("v%1").arg(VERSION));
 }
 
 void SpotifyDownloader::SetupSettingsScreen() {
@@ -299,6 +303,8 @@ void SpotifyDownloader::SetupProcessingScreen() {
             if (reply == QMessageBox::Yes) {
                 emit DisplayFinalMessage();
                 emit RequestQuit();
+
+                qInfo() << "Download Cancelled";
             }
         }
     });

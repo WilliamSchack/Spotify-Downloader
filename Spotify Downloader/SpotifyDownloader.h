@@ -1,6 +1,9 @@
 #ifndef SPOTIFYDOWNLOADER_H
 #define SPOTIFYDOWNLOADER_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include <QThread>
 
 #include <QSettings>
@@ -47,12 +50,14 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
+        static constexpr const char* VERSION = "1.4.2-testing";
+
         static const int SETUP_SCREEN_INDEX = 0;
         static const int SETTINGS_SCREEN_INDEX = 1;
         static const int PROCESSING_SCREEN_INDEX = 2;
         static const int ERROR_SCREEN_INDEX = 3;
 
-        static constexpr const char * NAMING_TAGS[] = {
+        static constexpr const char* NAMING_TAGS[] = {
             "song name",
             "album name",
             "song artist",

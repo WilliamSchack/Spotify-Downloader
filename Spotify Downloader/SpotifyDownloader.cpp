@@ -28,6 +28,8 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     LoadSettings();
 
     SetupDownloaderThread();
+
+    qInfo() << "Successfully Initialised";
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {
@@ -50,6 +52,8 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
+
+    qInfo() << "Successfully Setup Playlist Worker Thread";
 }
 
 void SpotifyDownloader::SaveSettings() {
@@ -83,6 +87,22 @@ void SpotifyDownloader::SaveSettings() {
     settings.setValue("downloaderThreads", downloaderThreads);
     settings.setValue("downloadSpeedLimit", downloadSpeedLimit);
     settings.endGroup();
+
+    // Log settings
+    QJsonObject settingsLog = QJsonObject{
+        {"Overwrite Enabled", overwriteEnabled},
+        {"Normalise Enabled", normalizeEnabled},
+        {"Normalise Volume", normalizeVolume},
+        {"Audio Bitrate", audioBitrate},
+        {"Song Output Format Tag", songOutputFormatTag},
+        {"Song Output Format", songOutputFormat},
+        {"Folder Sorting Index", folderSortingIndex},
+        {"Status Notifications Enabled", statusNotificationsEnabled},
+        {"Downloader Threads", downloaderThreads},
+        {"Download Speed Limit", downloadSpeedLimit}
+    };
+
+    qInfo() << "Settings Successfully Saved" << settingsLog;
 }
 
 void SpotifyDownloader::LoadSettings() {
@@ -156,6 +176,22 @@ void SpotifyDownloader::LoadSettings() {
     DownloadSpeed = downloadSpeedLimit;
 
     settings.endGroup();
+
+    // Log settings
+    QJsonObject settingsLog = QJsonObject {
+        {"Overwrite Enabled", overwriteEnabled},
+        {"Normalise Enabled", normalizeEnabled},
+        {"Normalise Volume", normalizeVolume},
+        {"Audio Bitrate", audioBitrate},
+        {"Song Output Format Tag", songOutputFormatTag},
+        {"Song Output Format", songOutputFormat},
+        {"Folder Sorting Index", folderSortingIndex},
+        {"Status Notifications Enabled", statusNotificationsEnabled},
+        {"Downloader Threads", downloaderThreads},
+        {"Download Speed Limit", downloadSpeedLimit}
+    };
+
+    qInfo() << "Settings Successfully Loaded" << settingsLog;
 }
 
 void SpotifyDownloader::ResetDownloadingVariables() {
@@ -308,6 +344,8 @@ bool SpotifyDownloader::IsElevated() {
 // Application Exit
 SpotifyDownloader::~SpotifyDownloader()
 {
+    qInfo() << "Quitting...";
+
     if (CurrentScreen() == SETTINGS_SCREEN_INDEX)
         SaveSettings();
 

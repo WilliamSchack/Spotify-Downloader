@@ -1,6 +1,9 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include <QCoreApplication>
 
 #include <QtNetwork/QNetworkAccessManager>

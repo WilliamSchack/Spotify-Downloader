@@ -1,6 +1,9 @@
 #ifndef SONG_H
 #define SONG_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Logger.h"
+
 #include "SpotifyDownloader.h"
 
 #include "Network.h"
@@ -37,7 +40,7 @@ class Song {
 		void GenerateDownloadingPath();
 
 		void DownloadCoverImage();
-		bool SearchForSong(YTMusicAPI* yt);
+		bool SearchForSong(YTMusicAPI*& yt);
 		void Download(QProcess*& process, bool overwrite, std::function<void()> onProgressUpdate);
 		void SetBitrate(QProcess*& process, int bitrate);
 		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting);
@@ -47,7 +50,8 @@ class Song {
 
 		// --- Song Properties ---
 		QString Title;
-		QString Id;
+		QString SpotifyId;
+		QString YoutubeId;
 		float Time;
 
 		QImage CoverImage;

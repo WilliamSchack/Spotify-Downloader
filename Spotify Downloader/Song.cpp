@@ -13,7 +13,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	ArtistsList = song["artists"].toArray();
 	AlbumArtistsList = album["artists"].toArray();
 	Time = song["duration_ms"].toDouble() / 1000;
-	Id = song["id"].toString();
+	SpotifyId = song["id"].toString();
 	AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
 
 	ArtistNamesList = QStringList();
@@ -126,7 +126,7 @@ void Song::DownloadCoverImage() {
 	CoverImage.load(imageFileDir);
 }
 
-bool Song::SearchForSong(YTMusicAPI* yt) {
+bool Song::SearchForSong(YTMusicAPI*& yt) {
 	QString searchQuery = QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName);
 	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
@@ -260,6 +260,7 @@ bool Song::SearchForSong(YTMusicAPI* yt) {
 
 	finalResult = finalResult["result"].toObject();
 	_searchResult = finalResult;
+	YoutubeId = _searchResult["videoId"].toString();
 	return true;
 }
 
@@ -358,7 +359,7 @@ void Song::AssignMetadata() {
 		TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 		TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
 		pubFrame->setText("William S - Spotify Downloader");
-		copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(Id).arg(_searchResult["videoId"].toString()).toStdString().data());
+		copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
 		comFrame->setText("Thanks for using my program! :)\n- William S");
 		tag->addFrame(pubFrame);
 		tag->addFrame(copFrame);

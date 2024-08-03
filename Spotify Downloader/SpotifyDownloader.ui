@@ -250,7 +250,7 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>v1.4.1</string>
+      <string>v0.0.0</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
