@@ -160,8 +160,10 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             SetDownloadStatus("");
 
-            // Start thread
             qInfo() << "Starting download for playlist" << PlaylistURLText;
+            Logger::Flush();
+
+            // Start thread
             workerThread.start();
             emit operate(this);
         }

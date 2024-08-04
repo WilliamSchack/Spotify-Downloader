@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     
     qInfo() << "Application Quit";
 
+    Logger::Flush();
     Logger::clean();
     return state;
 }

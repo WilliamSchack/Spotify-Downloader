@@ -38,8 +38,6 @@ void SongDownloader::StartDownload(int startIndex) {
 		SongsDownloaded++;
 		emit SongDownloaded();
 
-		qInfo() << "Thread" << _threadIndex << "successfully downloaded track" << i << "/" << _totalSongCount;
-
 		while (Manager->PauseNewDownloads) {
 			QCoreApplication::processEvents();
 		}
@@ -66,7 +64,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// Initialise Song
 	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
-	qDebug() << _threadIndex << "Initialised song" << song.SpotifyId;
+	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
 	// Set target folder
 	QString targetFolderName = "";

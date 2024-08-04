@@ -30,6 +30,7 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     SetupDownloaderThread();
 
     qInfo() << "Successfully Initialised";
+    Logger::Flush();
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {

@@ -13,6 +13,7 @@ QHash<QtMsgType, QString> Logger::_contextNames = {
 };
 
 QtMessageHandler originalHandler = nullptr;
+QString currentLog = QString();
 
 void Logger::init() {
 	if (_isInit) {
@@ -72,6 +73,13 @@ void Logger::messageOutput(QtMsgType type, const QMessageLogContext& context, co
 			section(':', -1)).
 		arg(msg);
 
-	_logFile->write(log.toLocal8Bit());
+	// Manually flush, can cause issues with multiple threads accessing it at the same time otherwise
+	currentLog.append(log);
+}
+
+void Logger::Flush() {
+	_logFile->write(currentLog.toLocal8Bit());
 	_logFile->flush();
+
+	currentLog.clear();
 }

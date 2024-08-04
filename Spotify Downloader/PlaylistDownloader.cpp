@@ -59,13 +59,14 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		QJsonObject track = trackVal.toObject();
 		if (url.contains("playlist")) track = track["track"].toObject();
 
-		QString trackTitle = track["name"].toString();
-
-		// If track is null dont add to tracks
-		if (trackTitle == "") continue;
+		// Check if track exists on spotify
+		if (track["id"] == QJsonValue::Null) {
+			continue;
+		}
 
 		// If not overwriting and track already downloaded, dont download
 		if (!Main->Overwrite) {
+			QString trackTitle = track["name"].toString();
 			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 
 			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
@@ -320,21 +321,6 @@ PlaylistDownloader::~PlaylistDownloader() {
 	delete _yt;
 	delete _sp;
 
-	// Change Screen
-	if (!Main->ExitingApplication) {
-		if (_tracksNotFound.count() == 0) {
-			emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
-			emit ShowMessage("Downloads Complete!", "No download errors!");
-			qInfo() << "Downloads complete with no errors";
-
-			return;
-		}
-		else {
-			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
-			qDebug() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << _tracksNotFound;
-		}
-	}
-
 	// Remove all temp files
 	QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
 	QString coverArtFolder = QString("%1/Cover Art").arg(tempFolder);
@@ -342,6 +328,27 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	ClearDirFiles(coverArtFolder);
 	ClearDirFiles(downloadingFolder);
+
+	// Change Screen
+	if (!Main->ExitingApplication) {
+		if (_tracksNotFound.count() == 0) {
+			emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
+			emit ShowMessage("Downloads Complete!", "No download errors!");
+			qInfo() << "Downloads complete with no errors";
+
+			// Save Log after info
+			Logger::Flush();
+
+			return;
+		}
+		else {
+			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
+			qInfo() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << _tracksNotFound;
+
+			// Save Log after info
+			Logger::Flush();
+		}
+	}
 }
 
 void PlaylistDownloader::ClearDirFiles(const QString& path)
