@@ -81,7 +81,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 
 		if (result.contains("musicCardShelfRenderer")) {
 			QJsonObject data = result["musicCardShelfRenderer"].toObject();
-			
+
 			QStringList resultTypes = QStringList{ "artist", "playlist", "song", "video", "station", "profile" };
 			QString subtitle = data["subtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
 			QString resultType = subtitle.toLower();
@@ -192,8 +192,14 @@ QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
 
 	for (int i = 0; i < tracks.count(); i++) {
 		QJsonObject track = tracks[i].toObject();
-		track["album"] = album["title"].toString();
-		track["artists"] = track.contains("artists") ? track["artists"] : album["artists"];
+		track["album"] = QJsonObject{
+			{"id", browseId},
+			{"name", album["title"].toString()}
+		};
+		track["artists"] = track["artists"].toArray().isEmpty() ? album["artists"] : track["artists"];
+
+		track["resultType"] = track["videoType"].toString().contains("MUSIC_VIDEO") ? "video" : ""; // It is a video 99% of the time, just in case it isnt
+
 		tracks[i] = track;
 	}
 
@@ -216,15 +222,21 @@ QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
 
 	QJsonObject album {
 		{"title", header["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
-		{"type", header["subtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
-		{"description", header["description"].toObject()["musicDescriptionShelfRenderer"].toObject()["description"].toObject()["runs"].toArray()[0].toObject()["text"].toString()}
+		{"type", header["subtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString()}
 	};
+
+	if (header.contains("description"))
+		album["description"] = header["description"].toObject()["musicDescriptionShelfRenderer"].toObject()["description"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
 	
 	QJsonObject albumInfo = ParseSongRuns(header["subtitle"].toObject()["runs"].toArray()); // Artists not included, not required for the program
-	albumInfo["artists"] = QJsonObject{
-		{"name", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
-		{"id", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString()}
-	};
+	if (!header["straplineTextOne"].toObject().isEmpty()) { // If this does not pass, artists will be found for tracks individually, only happens for very few albums
+		albumInfo["artists"] = QJsonArray{
+			QJsonObject {
+				{"name", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
+				{"id", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString()}
+			}
+		};
+	}
 	album = JSONUtils::Merge(album, albumInfo);
 
 	if (header["secondSubtitle"].toObject()["runs"].toArray().count() > 1) {
@@ -331,7 +343,7 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 
 		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : QJsonObject();
 
-		song["views"] = isAlbum ? GetItemText(data, 2) : "";
+		song["views"] = isAlbum ? GetItemText(data, 2).split(" ")[0] : "";
 
 		if (data.contains("fixedColumns")) {
 			QString duration = "";
@@ -342,11 +354,14 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 				duration = fixedColumnItemText["runs"].toArray()[0].toObject()["text"].toString();
 
 			song["duration"] = duration;
-			song["duration_seconds"] = TimeToSeconds(duration);
+			song["durationSeconds"] = TimeToSeconds(duration);
 		}
 
-		song["videoType"] = data["menu"].toObject()["menuRenderer"].toObject()["items"].toArray()[0].toObject()["menuNavigationItemRenderer"].toObject()
-			["navigationEndpoint"].toObject()["watchEndpoint"].toObject()["watchEndpointMusicSupportedConfigs"].toObject()["watchEndpointMusicConfig"].toObject()["musicVideoType"].toString();
+		song["videoType"] = "";
+		if (data.contains("menu")) {
+			song["videoType"] = data["menu"].toObject()["menuRenderer"].toObject()["items"].toArray()[0].toObject()["menuNavigationItemRenderer"].toObject()
+				["navigationEndpoint"].toObject()["watchEndpoint"].toObject()["watchEndpointMusicSupportedConfigs"].toObject()["watchEndpointMusicConfig"].toObject()["musicVideoType"].toString();
+		}
 
 		songs.append(song);
 	}

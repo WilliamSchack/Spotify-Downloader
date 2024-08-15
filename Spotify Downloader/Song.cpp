@@ -131,14 +131,70 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
 
-	// Search through albums
+	// Narrow search results
+	QJsonArray finalResults = ScoreSearchResults(searchResults);
+
+	// Add tracks from albums
 	QJsonArray albumResults = yt->Search(searchQuery, "albums", 2);
 	foreach(QJsonValue val, albumResults) {
 		QJsonObject result = val.toObject();
 
 		QJsonArray albumTracks = yt->GetAlbumTracks(result["browseId"].toString());
+		QJsonArray albumFinalResults = ScoreSearchResults(albumTracks);
+
+		finalResults = JSONUtils::Extend(finalResults, albumFinalResults);
 	}
 
+	// Choose the result with the highest score
+	QJsonObject finalResult;
+	if (finalResults.count() > 0) {
+		float highestScore = 0;
+		for (int i = 0; i < finalResults.count(); i++) {
+			QJsonObject result = finalResults[i].toObject();
+			if (result["score"].toDouble() > highestScore) {
+				highestScore = result["score"].toDouble();
+				finalResult = result;
+			}
+		}
+
+		if (finalResult["result"].toObject()["resultType"].toString() == "video") {
+			std::vector<double> finalViews = std::vector<double>();
+			QJsonArray newFinalResults = QJsonArray();
+			foreach(QJsonValue val, finalResults) finalViews.push_back(val.toObject()["views"].toDouble());
+			for (int i = 0; i < finalResults.count(); i++) {
+				QJsonObject result = finalResults[i].toObject();
+				if (result["result"].toObject()["resultType"].toString() == "video" && result["views"].toInt() > 0) {
+					double value = MathUtils::LerpInList(finalViews, i);
+					newFinalResults.append(QJsonObject{
+						{"result", result["result"].toObject()},
+						{"score", result["score"].toDouble() + value},
+						{"views", result["viewCount"].toInt()}
+					});
+				}
+				else newFinalResults.append(result);
+			}
+
+			float newHighestScore = 0;
+			for (int i = 0; i < finalResults.count(); i++) {
+				QJsonObject result = finalResults[i].toObject();
+				if (result["score"].toDouble() > newHighestScore) {
+					newHighestScore = result["score"].toDouble();
+					finalResult = result;
+				}
+			}
+		}
+
+	} else {
+		return false;
+	}
+
+	finalResult = finalResult["result"].toObject();
+	_searchResult = finalResult;
+	YoutubeId = _searchResult["videoId"].toString();
+	return true;
+}
+
+QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	QJsonArray finalResults = QJsonArray();
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
@@ -213,7 +269,9 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 			}
 
 			int viewCount = 0;
-			if (result["resultType"].toString() == "video" && result.contains("views")) viewCount = result["views"].toInt();
+			if (result["resultType"].toString() == "video" && result.contains("views")) {
+				viewCount = StringUtils::StringNumberToInt(result["views"].toString());
+			}
 
 			finalResults.append(QJsonObject{
 				{"result", result},
@@ -223,53 +281,7 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 		}
 	}
 
-	// Choose the result with the highest score
-	QJsonObject finalResult;
-	if (finalResults.count() > 0) {
-		float highestScore = 0;
-		for (int i = 0; i < finalResults.count(); i++) {
-			QJsonObject result = finalResults[i].toObject();
-			if (result["score"].toDouble() > highestScore) {
-				highestScore = result["score"].toDouble();
-				finalResult = result;
-			}
-		}
-
-		if (finalResult["result"].toObject()["resultType"].toString() == "video") {
-			std::vector<double> finalViews = std::vector<double>();
-			QJsonArray newFinalResults = QJsonArray();
-			foreach(QJsonValue val, finalResults) finalViews.push_back(val.toObject()["views"].toDouble());
-			for (int i = 0; i < finalResults.count(); i++) {
-				QJsonObject result = finalResults[i].toObject();
-				if (result["result"].toObject()["resultType"].toString() == "video" && result["views"].toInt() > 0) {
-					double value = MathUtils::LerpInList(finalViews, i);
-					newFinalResults.append(QJsonObject{
-						{"result", result["result"].toObject()},
-						{"score", result["score"].toDouble() + value},
-						{"views", result["viewCount"].toInt()}
-						});
-				}
-				else newFinalResults.append(result);
-			}
-
-			float newHighestScore = 0;
-			for (int i = 0; i < finalResults.count(); i++) {
-				QJsonObject result = finalResults[i].toObject();
-				if (result["score"].toDouble() > newHighestScore) {
-					newHighestScore = result["score"].toDouble();
-					finalResult = result;
-				}
-			}
-		}
-
-	} else {
-		return false;
-	}
-
-	finalResult = finalResult["result"].toObject();
-	_searchResult = finalResult;
-	YoutubeId = _searchResult["videoId"].toString();
-	return true;
+	return finalResults;
 }
 
 void Song::Download(QProcess*& process, bool overwrite, std::function<void()> onProgressUpdate) {

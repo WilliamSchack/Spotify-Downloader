@@ -74,6 +74,8 @@ class Song {
 	private:
 		const SpotifyDownloader* _main;
 
+		QJsonArray ScoreSearchResults(QJsonArray searchResults);
+
 		// --- Settings ---
 		QString _codec;
 		QString _ytdlpPath;

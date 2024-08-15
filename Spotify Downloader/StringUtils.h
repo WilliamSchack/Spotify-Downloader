@@ -6,6 +6,8 @@
 class StringUtils {
 	public:
 		static QString ValidateString(QString string);
+
+		static int StringNumberToInt(QString string);
 };
 
 #endif
