@@ -131,6 +131,14 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
 
+	// Search through albums
+	QJsonArray albumResults = yt->Search(searchQuery, "albums", 2);
+	foreach(QJsonValue val, albumResults) {
+		QJsonObject result = val.toObject();
+
+		QJsonArray albumTracks = yt->GetAlbumTracks(result["browseId"].toString());
+	}
+
 	QJsonArray finalResults = QJsonArray();
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();

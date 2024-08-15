@@ -30,3 +30,28 @@ QPixmap JSONUtils::PixmapFromJSON(const QJsonValue& val) {
 	p.loadFromData(QByteArray::fromBase64(encoded), "PNG");
 	return p;
 }
+
+bool JSONUtils::BranchExists(QJsonValue json, QStringList target) {
+	QJsonValue currentJson = json;
+	foreach(QString string, target) {
+		// Bit of a strange implementation but it works for my case
+		bool stringIsIndex;
+		int index = string.toInt(&stringIsIndex);
+		if (stringIsIndex && currentJson.isArray()) {
+			if (currentJson.toArray().size() >= index) {
+				currentJson = currentJson.toArray()[index];
+				continue;
+			}
+		} else {
+			QJsonObject currentJsonObject = currentJson.toObject();
+			if (currentJsonObject.contains(string)) {
+				currentJson = currentJsonObject[string];
+				continue;
+			}
+		}
+
+		return false;
+	}
+
+	return true;
+}

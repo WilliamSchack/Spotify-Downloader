@@ -1,20 +1,21 @@
 #include "YTMusicAPI.h"
 
-YTMusicAPI::YTMusicAPI() {
-	// Network Request
-	QUrl url = QUrl("https://music.youtube.com/youtubei/v1/search/?alt=json");
-	_request = QNetworkRequest(url);
-	_request.setRawHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
-	_request.setRawHeader("accept", "*/*");
-	_request.setRawHeader("acceps-encoding", "gzip, deflate");
-	_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-	_request.setRawHeader("content-encoding", "gzip");
-	_request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
-}
-
 bool YTMusicAPI::CheckConnection() {
 	QUrl url = QUrl("https://music.youtube.com/youtubei/v1/");
 	return Network::Ping(url);
+}
+
+QNetworkRequest YTMusicAPI::GetRequest(QString endpoint) {
+	QUrl url = QUrl(QString("https://music.youtube.com/youtubei/v1/%1/?alt=json").arg(endpoint));
+	QNetworkRequest request = QNetworkRequest(url);
+	request.setRawHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
+	request.setRawHeader("accept", "*/*");
+	request.setRawHeader("acceps-encoding", "gzip, deflate");
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	request.setRawHeader("content-encoding", "gzip");
+	request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
+	
+	return request;
 }
 
 QJsonObject YTMusicAPI::GetContext() {
@@ -38,8 +39,9 @@ QJsonObject YTMusicAPI::GetContext() {
 QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 	// Get web page
 	QString searchParams = "EgWKAQ"; // Param 1
-	if (filter == "songs") searchParams.append("II"); //  Filter
-	else if (filter == "videos") searchParams.append("IQ"); // ^
+	if (filter == "songs") searchParams.append("II"); //  Songs Filter
+	else if (filter == "videos") searchParams.append("IQ"); // Videos Filter
+	else if (filter == "albums") searchParams.append("IY"); // Albums Filter
 	searchParams.append("AUICCAFqDBAOEAoQAxAEEAkQBQ%3D%3D"); // Ignore Spelling
 
 	QJsonObject body {
@@ -50,7 +52,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(_request, postData);
+	QByteArray response = Network::Post(GetRequest("search"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
 	// Parse page into results
@@ -145,8 +147,8 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 				QString ctoken = continuationResults["continuations"].toArray()[0].toObject()["nextContinuationData"].toObject()["continuation"].toString();
 				QString additionalParams = QString("&ctoken=%1&continuation=%1").arg(ctoken);
 
-				QNetworkRequest continuationRequest = _request;
-				continuationRequest.setUrl(_request.url().toString() + additionalParams);
+				QNetworkRequest continuationRequest = GetRequest("search");
+				continuationRequest.setUrl(continuationRequest.url().toString() + additionalParams);
 				QByteArray continuationResponse = Network::Post(continuationRequest, postData);
 				QJsonObject continuationJson = QJsonDocument::fromJson(continuationResponse).object();
 
@@ -167,6 +169,189 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 	}
 
 	return searchResults;
+}
+
+QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
+	if (!browseId.startsWith("MPRE")) return QJsonObject();
+
+	QJsonObject body {
+		{"browseId", browseId},
+		{"context", GetContext()}
+	};
+
+	QNetworkAccessManager* manager = new QNetworkAccessManager();
+	QByteArray postData = QJsonDocument(body).toJson();
+	QByteArray response = Network::Post(GetRequest("browse"), postData);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	QJsonObject album = ParseAlbumHeader(json);
+
+	QJsonObject results = json["contents"].toObject()["twoColumnBrowseResultsRenderer"].toObject()["secondaryContents"].toObject()
+		["sectionListRenderer"].toObject()["contents"].toArray()[0].toObject()["musicShelfRenderer"].toObject();
+	QJsonArray tracks = ParsePlaylistItems(results["contents"].toArray(), true);
+
+	for (int i = 0; i < tracks.count(); i++) {
+		QJsonObject track = tracks[i].toObject();
+		track["album"] = album["title"].toString();
+		track["artists"] = track.contains("artists") ? track["artists"] : album["artists"];
+		tracks[i] = track;
+	}
+
+	album["tracks"] = tracks;
+
+	return album;
+}
+
+QJsonArray YTMusicAPI::GetAlbumTracks(QString browseId) {
+	QJsonObject album = GetAlbum(browseId);
+	if (album.isEmpty()) return QJsonArray();
+
+	return album["tracks"].toArray();
+}
+
+QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
+	QJsonObject header = response["contents"].toObject()["twoColumnBrowseResultsRenderer"].toObject()
+		["tabs"].toArray()[0].toObject()["tabRenderer"].toObject()["content"].toObject()
+		["sectionListRenderer"].toObject()["contents"].toArray()[0].toObject()["musicResponsiveHeaderRenderer"].toObject();
+
+	QJsonObject album {
+		{"title", header["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
+		{"type", header["subtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
+		{"description", header["description"].toObject()["musicDescriptionShelfRenderer"].toObject()["description"].toObject()["runs"].toArray()[0].toObject()["text"].toString()}
+	};
+	
+	QJsonObject albumInfo = ParseSongRuns(header["subtitle"].toObject()["runs"].toArray()); // Artists not included, not required for the program
+	albumInfo["artists"] = QJsonObject{
+		{"name", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
+		{"id", header["straplineTextOne"].toObject()["runs"].toArray()[0].toObject()["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString()}
+	};
+	album = JSONUtils::Merge(album, albumInfo);
+
+	if (header["secondSubtitle"].toObject()["runs"].toArray().count() > 1) {
+		album["trackCount"] = header["secondSubtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString().split(" ")[0].toInt(); // Output is -- Songs, remove " songs" and convert to int
+		album["duration"] = header["secondSubtitle"].toObject()["runs"].toArray()[2].toObject()["text"].toString();
+	} else {
+		album["duration"] = header["secondSubtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
+	}
+
+	QJsonArray buttons = header["buttons"].toArray();
+	album["audioPlaylistId"] = buttons[1].toObject()["musicPlayButtonRenderer"].toObject()["playNavigationEndpoint"].toObject()["watchEndpoint"].toObject()["playlistId"].toString();
+
+	return album;
+}
+
+QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
+	QJsonArray songs = QJsonArray();
+
+	foreach(QJsonValue val, results) {
+		QJsonObject result = val.toObject();
+
+		if (!result.contains("musicResponsiveListItemRenderer"))
+			continue;
+
+		QJsonObject data = result["musicResponsiveListItemRenderer"].toObject();
+		QJsonObject song = QJsonObject();
+
+		if (data.contains("menu")) {
+			QJsonArray menuItems = data["menu"].toObject()["menuRenderer"].toObject()["items"].toArray();
+			foreach(QJsonValue val, menuItems) {
+				QJsonObject	item = val.toObject();
+
+				if (item.contains("menuServiceItemRenderer")) {
+					QJsonObject menuService = item["menuServiceItemRenderer"].toObject()["menuServiceItemRenderer"].toObject();
+					if (menuService.contains("playlistEditEndpoint")) {
+						song["setVideoId"] = menuService["playlistEditEndpoint"].toObject()["actions"].toArray()[0].toObject()["setVideoId"].toString();
+						song["videoId"] = menuService["playlistEditEndpoint"].toObject()["actions"].toArray()[0].toObject()["removedVideoId"].toString();
+					}
+				}
+			}
+		}
+
+		if (JSONUtils::BranchExists(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer" })) {
+			song["videoId"] = data["overlay"].toObject()["musicItemThumbnailOverlayRenderer"].toObject()["content"].toObject()["musicPlayButtonRenderer"].toObject()
+								["playNavigationEndpoint"].toObject()["watchEndpoint"].toObject()["videoId"].toString();
+		}
+
+		bool isAvailable = true;
+		if (data.contains("musicItemRendererDisplayPolicy")) {
+			isAvailable = data["musicItemRendererDisplayPolicy"].toString() != "MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT";
+		}
+
+		bool usePresetColumns = isAvailable == false || isAlbum == true;
+
+		int titleIndex = usePresetColumns ? 0 : -1;
+		int artistIndex = usePresetColumns ? 1 : -1;
+		int albumIndex = usePresetColumns ? 2 : -1;
+		QList<int> userChannelIndexes = QList<int>();
+		int unrecognisedIndex = -1;
+
+		foreach(QJsonValue val, data["flexColumns"].toArray()) {
+			int index = val.toInt();
+
+			QJsonObject flexColumnItem = GetFlexColumnItem(data, index);
+
+			if (!JSONUtils::BranchExists(flexColumnItem, { "text", "runs", "0", "navigationEndpoint" })) {
+				if (JSONUtils::BranchExists(flexColumnItem, { "text", "runs", "0", "text" })) {
+					unrecognisedIndex = unrecognisedIndex == -1 ? index : unrecognisedIndex;
+				}
+
+				continue;
+			}
+
+			QJsonObject navigationEndpoint = flexColumnItem["text"].toObject()["runs"].toArray()[0].toObject()["navigationEndpoint"].toObject();
+
+			if (navigationEndpoint.contains("watchEndpoint")) {
+				titleIndex = index;
+			} else if (navigationEndpoint.contains("browseEndpoint")) {
+				QString pageType = navigationEndpoint["browseEndpoint"].toObject()["browseEndpointContectSupportedConfigs"].toObject()["browseEndpointContextMusicConfig"].toObject()["pageType"].toString();
+
+				if (pageType == "MUSIC_PAGE_TYPE_ARTIST" || pageType == "MUSIC_PAGE_TYPE_UNKNOWN")
+					artistIndex = index;
+				else if (pageType == "MUSIC_PAGE_TYPE_ALBUM")
+					albumIndex = index;
+				else if (pageType == "MUSIC_PAGE_TYPE_USER_CHANNEL")
+					userChannelIndexes.append(index);
+				else if (pageType == "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE")
+					titleIndex = index;
+			}
+		}
+
+		if (artistIndex == -1 && unrecognisedIndex != -1)
+			artistIndex = unrecognisedIndex;
+
+		if (artistIndex == -1 && !userChannelIndexes.isEmpty())
+			artistIndex = userChannelIndexes.last();
+
+		QString title = titleIndex != -1 ? GetItemText(data, titleIndex) : "";
+		if (title == "Song deleted")
+			return QJsonArray();
+		song["title"] = title;
+
+		song["artists"] = artistIndex != -1 ? ParseSongArtists(data, artistIndex) : QJsonArray();
+
+		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : QJsonObject();
+
+		song["views"] = isAlbum ? GetItemText(data, 2) : "";
+
+		if (data.contains("fixedColumns")) {
+			QString duration = "";
+			QJsonObject fixedColumnItemText = GetFixedColumnItem(data, 0)["text"].toObject();
+			if (fixedColumnItemText.contains("simpleText"))
+				duration = fixedColumnItemText["simpleText"].toString();
+			else
+				duration = fixedColumnItemText["runs"].toArray()[0].toObject()["text"].toString();
+
+			song["duration"] = duration;
+			song["duration_seconds"] = TimeToSeconds(duration);
+		}
+
+		song["videoType"] = data["menu"].toObject()["menuRenderer"].toObject()["items"].toArray()[0].toObject()["menuNavigationItemRenderer"].toObject()
+			["navigationEndpoint"].toObject()["watchEndpoint"].toObject()["watchEndpointMusicSupportedConfigs"].toObject()["watchEndpointMusicConfig"].toObject()["musicVideoType"].toString();
+
+		songs.append(song);
+	}
+
+	return songs;
 }
 
 QJsonObject YTMusicAPI::ParseSongRuns(QJsonArray runs, int offset) {
@@ -252,6 +437,52 @@ QJsonObject YTMusicAPI::GetFlexColumnItem(QJsonObject item, int index) {
 	return flexColumns[index].toObject()["musicResponsiveListItemFlexColumnRenderer"].toObject();
 }
 
+QJsonObject YTMusicAPI::GetFixedColumnItem(QJsonObject item, int index) {
+	if (!item["fixedColumns"].toArray()[index].toObject()["musicResponsiveListItemFixedColumnRenderer"].toObject().contains("text") ||
+		!item["fixedColumns"].toArray()[index].toObject()["musicResponsiveListItemFixedColumnRenderer"].toObject()["text"].toObject().contains("runs")) {
+		
+		return QJsonObject();
+	}
+
+	return item["fixedColumns"].toArray()[index].toObject()["musicResponsiveListItemFixedColumnRenderer"].toObject();
+}
+
+QJsonArray YTMusicAPI::ParseSongArtists(QJsonObject data, int index) {
+	QJsonObject flexItem = GetFlexColumnItem(data, index);
+
+	if (flexItem.isEmpty())
+		return QJsonArray();
+	else {
+		QJsonArray runs = flexItem["text"].toObject()["runs"].toArray();
+
+		QJsonArray artists = QJsonArray();
+		for (int i = 0; i < int(runs.count() / 2 + 1); i++) {
+			QJsonObject artist{
+				{ "name", runs[i * 2].toObject()["text"].toString() },
+				{ "id", runs[i * 2].toObject()["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString() }
+			};
+			artists.append(artist);
+		}
+
+		return artists;
+	}
+}
+
+QJsonObject YTMusicAPI::ParseSongAlbum(QJsonObject data, int index) {
+	QJsonObject flexItem = GetFlexColumnItem(data, index);
+
+	if (flexItem.isEmpty())
+		return QJsonObject();
+	
+	QString browseId = flexItem["text"].toObject()["runs"].toArray()[0].toObject()
+						["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString();
+
+	return QJsonObject {
+		{ "name", GetItemText(data, index) },
+		{ "id", browseId }
+	};
+}
+
 QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType, QString catagory) {
 	QJsonArray finalResults = QJsonArray();
 
@@ -287,7 +518,11 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 		}
 
 		if (resultType == "artist") searchResult["artist"] = GetItemText(data, 0);
-		else if (resultType == "album") searchResult["type"] = GetItemText(data, 1);
+		else if (resultType == "album") {
+			searchResult["type"] = GetItemText(data, 1);
+			searchResult["playlistId"] = data["overlay"].toObject()["musicItemThumbnailOverlayRenderer"].toObject()["content"].toObject()["musicPlayButtonRenderer"].toObject()["playNavigationEndpoint"].toObject()
+				["watchPlaylistEndpoint"].toObject()["playlistId"].toString();
+		}
 		else if (resultType == "playlist") {
 			QJsonArray flexItem = GetFlexColumnItem(data, 1)["text"].toObject()["runs"].toArray();
 			bool hasAuthor = flexItem.count() == defaultOffset + 3;
@@ -350,6 +585,10 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 			QJsonArray runs = flexItem["text"].toObject()["runs"].toArray();
 			QJsonObject songInfo = ParseSongRuns(runs, defaultOffset);
 			searchResult = JSONUtils::Merge(searchResult, songInfo);
+		}
+
+		if (resultType == "album" || resultType == "playlist") {
+			searchResult["browseId"] = data["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString();
 		}
 
 		finalResults.append(searchResult);

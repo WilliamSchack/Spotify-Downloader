@@ -8,6 +8,8 @@
 #include <QBuffer>
 #include <QPixmap>
 
+#include <QStringList>
+
 class JSONUtils {
 	public:
 		static QJsonObject Merge(QJsonObject src, QJsonObject other);
@@ -15,6 +17,8 @@ class JSONUtils {
 
 		static QJsonValue PixmapToJSON(const QPixmap& p);
 		static QPixmap PixmapFromJSON(const QJsonValue& val);
+
+		static bool BranchExists(QJsonValue json, QStringList target);
 };
 
 #endif
