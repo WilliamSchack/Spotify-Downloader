@@ -18,4 +18,5 @@ int StringUtils::StringNumberToInt(QString string) {
 		return string.replace("B", "").toInt() * 1000000000;
 	if (string.contains("T"))
 		return string.replace("T", "").toInt() * 1000000000000;
+	return string.toInt(); // Just incase not returned before
 }

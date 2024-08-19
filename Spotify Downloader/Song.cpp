@@ -140,6 +140,8 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 		QJsonObject result = val.toObject();
 
 		QJsonArray albumTracks = yt->GetAlbumTracks(result["browseId"].toString());
+		if (albumTracks.isEmpty()) continue;
+
 		QJsonArray albumFinalResults = ScoreSearchResults(albumTracks);
 
 		finalResults = JSONUtils::Extend(finalResults, albumFinalResults);
@@ -202,12 +204,18 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		int seconds = result["durationSeconds"].toInt();
 
 		if (seconds != 0 && seconds > Time - 15 && seconds < Time + 15) {
-			// Title score
-			float totalScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), Title.toStdString()).ratio();
+			float totalScore = 0;
 
+			// Title score
+			float titleScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), Title.toStdString()).ratio();
+			totalScore += titleScore;
+			
 			// Time score
 			float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - Time)) / 15);
 			totalScore += timeScore;
+
+			// Check if time and title are similar enough combined
+			if (timeScore < 0.8 && titleScore < 0.6) continue;
 
 			// Artists score
 			if (result.contains("artists")) {
@@ -258,8 +266,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 				}
 				if (banned) continue;
 
-				if (timeScore < 0.8 && !hasTitle) continue;
-
 				foreach(QString artist, ArtistNamesList) {
 					if (title.contains(artist)) {
 						totalScore += 0.2;
@@ -277,7 +283,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 				{"result", result},
 				{"score", totalScore},
 				{"views", viewCount}
-				});
+			});
 		}
 	}
 

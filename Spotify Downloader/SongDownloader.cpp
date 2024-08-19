@@ -109,7 +109,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Check for quit/pause
 	if (_quitting) return;
 	CheckForStop();
-
+	
 	// Download cover image
 	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");

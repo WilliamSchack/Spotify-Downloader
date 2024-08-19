@@ -184,6 +184,8 @@ QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
 	QByteArray response = Network::Post(GetRequest("browse"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
+	if (json.isEmpty()) return QJsonObject();
+
 	QJsonObject album = ParseAlbumHeader(json);
 
 	QJsonObject results = json["contents"].toObject()["twoColumnBrowseResultsRenderer"].toObject()["secondaryContents"].toObject()
