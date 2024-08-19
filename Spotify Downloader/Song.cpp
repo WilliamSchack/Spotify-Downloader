@@ -127,7 +127,7 @@ void Song::DownloadCoverImage() {
 }
 
 bool Song::SearchForSong(YTMusicAPI*& yt) {
-	QString searchQuery = QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName);
+	QString searchQuery = QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName);
 	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
 

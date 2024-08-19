@@ -343,6 +343,13 @@ PlaylistDownloader::~PlaylistDownloader() {
 		}
 		else {
 			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
+			
+			// Remove image data to make it a lot shorter, not needed for log anyways. Can modify variable as its not used later
+			for (int i = 0; i < _tracksNotFound.count(); i++) {
+				QJsonObject song = _tracksNotFound[i].toObject();
+				song.remove("image");
+				_tracksNotFound[i] = song;
+			}
 			qInfo() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << _tracksNotFound;
 
 			// Save Log after info

@@ -8,7 +8,7 @@ bool YTMusicAPI::CheckConnection() {
 QNetworkRequest YTMusicAPI::GetRequest(QString endpoint) {
 	QUrl url = QUrl(QString("https://music.youtube.com/youtubei/v1/%1/?alt=json").arg(endpoint));
 	QNetworkRequest request = QNetworkRequest(url);
-	request.setRawHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0");
+	request.setRawHeader("user-agent", "Mozilla/5.0");
 	request.setRawHeader("accept", "*/*");
 	request.setRawHeader("acceps-encoding", "gzip, deflate");
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -69,9 +69,6 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 	}
 
 	QJsonArray contents = results["sectionListRenderer"].toObject()["contents"].toArray();
-
-	// No results
-	//if (contents.count() == 1 && contents.contains("itemSectionRenderer")) return searchResults;
 
 	foreach(QJsonValue val, contents) {
 		QJsonObject result = val.toObject();
@@ -230,7 +227,7 @@ QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
 	if (header.contains("description"))
 		album["description"] = header["description"].toObject()["musicDescriptionShelfRenderer"].toObject()["description"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
 	
-	QJsonObject albumInfo = ParseSongRuns(header["subtitle"].toObject()["runs"].toArray()); // Artists not included, not required for the program
+	QJsonObject albumInfo = ParseSongRuns(header["subtitle"].toObject()["runs"].toArray());
 	if (!header["straplineTextOne"].toObject().isEmpty()) { // If this does not pass, artists will be found for tracks individually, only happens for very few albums
 		albumInfo["artists"] = QJsonArray{
 			QJsonObject {
