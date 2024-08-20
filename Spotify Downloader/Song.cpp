@@ -127,25 +127,24 @@ void Song::DownloadCoverImage() {
 }
 
 bool Song::SearchForSong(YTMusicAPI*& yt) {
+	// Search for songs
 	QString searchQuery = QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName);
 	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
 	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
-
-	// Narrow search results
-	QJsonArray finalResults = ScoreSearchResults(searchResults);
-
-	// Add tracks from albums
-	QJsonArray albumResults = yt->Search(searchQuery, "albums", 2);
-	foreach(QJsonValue val, albumResults) {
+	
+	// Add album songs
+	QJsonArray albumSearchResults = yt->Search(searchQuery, "albums", 2);
+	foreach(QJsonValue val, albumSearchResults) {
 		QJsonObject result = val.toObject();
 
-		QJsonArray albumTracks = yt->GetAlbumTracks(result["browseId"].toString());
-		if (albumTracks.isEmpty()) continue;
+		QJsonArray albumSongs = yt->GetAlbumTracks(result["browseId"].toString());
+		if (albumSongs.isEmpty()) continue;
 
-		QJsonArray albumFinalResults = ScoreSearchResults(albumTracks);
-
-		finalResults = JSONUtils::Extend(finalResults, albumFinalResults);
+		searchResults = JSONUtils::Extend(searchResults, albumSongs);
 	}
+
+	// Score all songs
+	QJsonArray finalResults = ScoreSearchResults(searchResults);
 
 	// Choose the result with the highest score
 	QJsonObject finalResult;
@@ -207,15 +206,16 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			float totalScore = 0;
 
 			// Title score
-			float titleScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), Title.toStdString()).ratio();
+			//float titleScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), Title.toStdString()).ratio();
+			float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
 			totalScore += titleScore;
-			
+
 			// Time score
 			float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - Time)) / 15);
 			totalScore += timeScore;
 
 			// Check if time and title are similar enough combined
-			if (timeScore < 0.8 && titleScore < 0.6) continue;
+			if (timeScore < 0.8 && titleScore < 0.5) continue;
 
 			// Artists score
 			if (result.contains("artists")) {
