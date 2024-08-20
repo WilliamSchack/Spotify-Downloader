@@ -50,7 +50,7 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
-        static constexpr const char* VERSION = "1.4.2";
+        static constexpr const char* VERSION = "1.5.0";
 
         static const int SETUP_SCREEN_INDEX = 0;
         static const int SETTINGS_SCREEN_INDEX = 1;

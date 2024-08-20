@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include "StringUtils.h"
+
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
 
@@ -52,9 +54,19 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	}
 	else searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
 
+	// Check if spotify returned anything
+	if (searchTracks.isEmpty()) {
+		emit ShowMessage("Error fetching songs", "Please try another link...");
+		emit SetDownloadStatus("Error fetching songs. Please try another link...");
+
+		qWarning() << "Error downloading songs";
+
+		Quit();
+		return;
+	}
+
 	// Dont add tracks that shouldnt be added
 	QJsonArray tracks = QJsonArray();
-	QString invalidChars = R"(<>:"/\|?*)";
 	foreach(QJsonValue trackVal, searchTracks) {
 		QJsonObject track = trackVal.toObject();
 		if (url.contains("playlist")) track = track["track"].toObject();
@@ -70,9 +82,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 
 			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
-			foreach(QChar c, invalidChars) {
-				filename.remove(c);
-			}
+			filename = StringUtils::ValidateString(filename);
 
 			QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
 			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
@@ -355,6 +365,8 @@ PlaylistDownloader::~PlaylistDownloader() {
 			// Save Log after info
 			Logger::Flush();
 		}
+
+		qInfo() << "Songs downloaded to" << Main->SaveLocationText;
 	}
 }
 

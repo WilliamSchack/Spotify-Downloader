@@ -127,20 +127,29 @@ void Song::DownloadCoverImage() {
 }
 
 bool Song::SearchForSong(YTMusicAPI*& yt) {
+	// Multiple queries as some songs will only get picked up by no quotes, and others with
+	QStringList searchQueries{
+		QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName),
+		QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName)
+	};
+
 	// Search for songs
-	QString searchQuery = QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName);
-	QJsonArray searchResults = yt->Search(searchQuery, "songs", 6);
-	searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 6));
-	
-	// Add album songs
-	QJsonArray albumSearchResults = yt->Search(searchQuery, "albums", 2);
-	foreach(QJsonValue val, albumSearchResults) {
-		QJsonObject result = val.toObject();
+	QJsonArray searchResults = QJsonArray();
+	foreach(QString searchQuery, searchQueries) {
+		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "songs", 4));
+		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 4));
 
-		QJsonArray albumSongs = yt->GetAlbumTracks(result["browseId"].toString());
-		if (albumSongs.isEmpty()) continue;
+		// Add album songs
+		QJsonArray albumSearchResults = yt->Search(searchQuery, "albums", 1);
+		foreach(QJsonValue val, albumSearchResults) {
+			QJsonObject result = val.toObject();
 
-		searchResults = JSONUtils::Extend(searchResults, albumSongs);
+			QJsonArray albumSongs = yt->GetAlbumTracks(result["browseId"].toString());
+
+			if (albumSongs.isEmpty()) continue;
+
+			searchResults = JSONUtils::Extend(searchResults, albumSongs);
+		}
 	}
 
 	// Score all songs
@@ -206,7 +215,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			float totalScore = 0;
 
 			// Title score
-			//float titleScore = difflib::MakeSequenceMatcher(result["title"].toString().toStdString(), Title.toStdString()).ratio();
 			float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
 			totalScore += titleScore;
 
@@ -361,12 +369,15 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
 
-			if (quitting) return;
-
 			QFile::remove(_downloadingPath);
 			QFile::rename(normalizedFullPath, _downloadingPath);
+
+			return;
 		}
 	}
+
+	// Set bitrate if song doesn't need to be normalised
+	SetBitrate(process, bitrate);
 }
 
 void Song::AssignMetadata() {
