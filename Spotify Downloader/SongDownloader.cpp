@@ -15,6 +15,9 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const Playlist
 
 	qInfo() << "Started downloading on thread" << _threadIndex;
 
+	// Check if quit requested while getting playlist data
+	if (_quitting) return;
+
 	StartDownload(0);
 }
 

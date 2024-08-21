@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/SpotifyDownloader">
+    <file>Icons/Clipboard_Icon_B.png</file>
     <file>Icons/Error_Icon_Inactive.png</file>
     <file>Icons/Error_Icon_W.png</file>
     <file>Icons/Error_Icon_W_Filled.png</file>

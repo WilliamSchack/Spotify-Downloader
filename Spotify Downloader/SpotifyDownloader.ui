@@ -71,6 +71,9 @@
        <height>41</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>Browse Files</string>
+     </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
@@ -150,7 +153,7 @@
       <rect>
        <x>143</x>
        <y>110</y>
-       <width>451</width>
+       <width>401</width>
        <height>41</height>
       </rect>
      </property>
@@ -254,6 +257,35 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="PasteButton">
+     <property name="geometry">
+      <rect>
+       <x>553</x>
+       <y>110</y>
+       <width>41</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Paste From Clipboard</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="SpotifyDownloader.qrc">
+       <normaloff>:/SpotifyDownloader/Icons/Clipboard_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Clipboard_Icon_B.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
      </property>
     </widget>
    </widget>

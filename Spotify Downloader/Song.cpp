@@ -199,8 +199,8 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 	}
 
 	finalResult = finalResult["result"].toObject();
+	YoutubeId = finalResult["videoId"].toString();
 	_searchResult = finalResult;
-	YoutubeId = _searchResult["videoId"].toString();
 	return true;
 }
 

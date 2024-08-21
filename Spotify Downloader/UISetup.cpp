@@ -1,6 +1,7 @@
 #include "SpotifyDownloader.h"
 
 #include <QTemporaryFile>
+#include <QClipboard>
 
 #include "Animation.h"
 
@@ -133,6 +134,11 @@ void SpotifyDownloader::SetupSideBar() {
 }
 
 void SpotifyDownloader::SetupSetupScreen() {
+    connect(_ui.PasteButton, &QPushButton::clicked, [=] {
+        QClipboard* clipboard = qApp->clipboard();
+        _ui.PlaylistURLInput->setText(clipboard->text());
+    });
+    
     connect(_ui.BrowseButton, &QPushButton::clicked, [=] {
         QString directory = QFileDialog::getExistingDirectory(this, tr("Choose Save Location"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
         if (directory != "") _ui.SaveLocationInput->setText(directory);
