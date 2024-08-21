@@ -113,7 +113,7 @@ class SpotifyDownloader : public QDialog
         void ShowMessage(QString title, QString message, int msecs = 5000);
         void SetDownloadStatus(QString text);
         void SetProgressLabel(int threadIndex, QString text);
-        void SetProgressBar(int threadIndex, float percentage);
+        void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetSongImage(int threadIndex, QPixmap image);
         void SetSongDetails(int threadIndex, QString title, QString artists);
@@ -283,7 +283,7 @@ class SongDownloader : public QObject {
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
         void SetProgressLabel(int threadIndex, QString text);
-        void SetProgressBar(int threadIndex, float percentage);
+        void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetSongImage(int threadIndex, QPixmap image);
         void SetSongDetails(int threadIndex, QString title, QString artists);

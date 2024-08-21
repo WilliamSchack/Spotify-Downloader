@@ -126,20 +126,29 @@ void Song::DownloadCoverImage() {
 	CoverImage.load(imageFileDir);
 }
 
-bool Song::SearchForSong(YTMusicAPI*& yt) {
+bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
 	// Multiple queries as some songs will only get picked up by no quotes, and others with
 	QStringList searchQueries{
 		QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName),
 		QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName)
 	};
 
+	float totalSearches = searchQueries.count() * 3; // For progress bar, float for division
+
 	// Search for songs
 	QJsonArray searchResults = QJsonArray();
-	foreach(QString searchQuery, searchQueries) {
-		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "songs", 4));
-		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 4));
+	for (int i = 0; i < searchQueries.count(); i++) {
+		QString searchQuery = searchQueries[i];
 
-		// Add album songs
+		// Search for songs
+		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "songs", 4));
+		onProgressUpdate(MathUtils::Lerp(0, 0.8, (i * 3 + 1) / totalSearches));
+
+		// Search for videos
+		searchResults = JSONUtils::Extend(searchResults, yt->Search(searchQuery, "videos", 4));
+		onProgressUpdate(MathUtils::Lerp(0, 0.8, (i * 3 + 2) / totalSearches));
+
+		// Search through first album result
 		QJsonArray albumSearchResults = yt->Search(searchQuery, "albums", 1);
 		foreach(QJsonValue val, albumSearchResults) {
 			QJsonObject result = val.toObject();
@@ -150,10 +159,12 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 
 			searchResults = JSONUtils::Extend(searchResults, albumSongs);
 		}
+		onProgressUpdate(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
 	}
 
 	// Score all songs
 	QJsonArray finalResults = ScoreSearchResults(searchResults);
+	onProgressUpdate(0.9);
 
 	// Choose the result with the highest score
 	QJsonObject finalResult;
@@ -198,6 +209,8 @@ bool Song::SearchForSong(YTMusicAPI*& yt) {
 		return false;
 	}
 
+	onProgressUpdate(1);
+
 	finalResult = finalResult["result"].toObject();
 	YoutubeId = finalResult["videoId"].toString();
 	_searchResult = finalResult;
@@ -223,7 +236,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			totalScore += timeScore;
 
 			// Check if time and title are similar enough combined
-			if (timeScore < 0.8 && titleScore < 0.5) continue;
+			if (timeScore < 0.75 && titleScore < 0.5) continue;
 
 			// Artists score
 			if (result.contains("artists")) {
@@ -265,11 +278,12 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 				foreach(QString keyword, bannedKeywords) {
 					foreach(QString addition, bannedKeywordsAdditions) {
 						QString word = addition.arg(keyword);
-						if (title.toLower().contains(word)) {
+						if (title.toLower().contains(word) && !Title.toLower().contains(word)) {
 							banned = true;
 							break;
 						}
 					}
+
 					if (banned) break;
 				}
 				if (banned) continue;
@@ -320,16 +334,35 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void()> on
 	process->waitForFinished(-1);
 }
 
-void Song::SetBitrate(QProcess*& process, int bitrate) {
-	// Audio quality will be somewhere around 256kb/s (not exactly) so change it to desired quality ranging from 33 - 256 in this case (33 is minimum, from there 64, 96, 128, ...)
-	// If quality is not a multiple of 32 ffmpeg will change it to the closest multiple
-	// Don't set quality if normalizing, has to be set there regardless
-
+// Audio quality will be somewhere around 256kb/s (not exactly) so change it to desired quality ranging from 33 - 256 in this case (33 is minimum, from there 64, 96, 128, ...)
+// If quality is not a multiple of 32 ffmpeg will change it to the closest multiple
+// Don't set quality if normalizing, has to be set there regardless
+void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate) {
+	// Get duration for progress bar calculations
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	process->startCommand(QString(R"("%1" -i "%2" -f null -)")
+		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+		.arg(_downloadingPath));
+	process->waitForFinished(-1);
+
+	QString audioOutput = process->readAllStandardError();
+	QString timeString = audioOutput.split("time=").last().split(" bitrate")[0];
+	int ms = QDateTime::fromString(QString("0001-01-01T%1").arg(timeString), Qt::ISODateWithMs).time().msecsSinceStartOfDay();
+
+	// Set bitrate
+	process = new QProcess();
+	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	QObject::connect(process, &QProcess::readyRead, process, [&]() {
+		QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
+		int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
+		float progress = float(msProgress) / float(ms);
+
+		onProgressUpdate(progress);
+	});
 
 	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(_codec);
-	process->startCommand(QString(R"("%1" -i "%2"  -b:a %3k "%4")")
+	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(_downloadingPath)
 		.arg(bitrate)
@@ -340,7 +373,7 @@ void Song::SetBitrate(QProcess*& process, int bitrate) {
 	QFile::rename(newQualityFullPath, _downloadingPath);
 }
 
-void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting) {
+void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate) {
 	// Get Audio Data
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
@@ -357,11 +390,22 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 		float meanVolume = audioOutput.split("mean_volume:")[1].split("dB")[0].toFloat();
 
 		if (meanVolume != normalisedAudioVolume) {
+			// Get time in ms for progress bar
+			QString timeString = audioOutput.split("time=").last().split(" bitrate")[0];
+			int ms = QDateTime::fromString(QString("0001-01-01T%1").arg(timeString), Qt::ISODateWithMs).time().msecsSinceStartOfDay();
+
 			float volumeApply = (normalisedAudioVolume - meanVolume) + 0.4; // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why (ffmpeg all over the place)
 
 			process = new QProcess();
 			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-			process->startCommand(QString(R"("%1" -i "%2" -b:a %3k -af "volume=%4dB" "%5")")
+			QObject::connect(process, &QProcess::readyRead, process, [&]() {
+				QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
+				int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
+				float progress = float(msProgress) / float(ms);
+
+				onProgressUpdate(progress);
+			});
+			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k -af "volume=%4dB" "%5")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
 				.arg(bitrate)
@@ -377,7 +421,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 	}
 
 	// Set bitrate if song doesn't need to be normalised
-	SetBitrate(process, bitrate);
+	SetBitrate(process, bitrate, onProgressUpdate);
 }
 
 void Song::AssignMetadata() {

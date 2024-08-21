@@ -39,10 +39,10 @@ class Song {
 		void GenerateDownloadingPath();
 
 		void DownloadCoverImage();
-		bool SearchForSong(YTMusicAPI*& yt);
+		bool SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate);
 		void Download(QProcess*& process, bool overwrite, std::function<void()> onProgressUpdate);
-		void SetBitrate(QProcess*& process, int bitrate);
-		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting);
+		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
+		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
 		void AssignMetadata();
 
 		void Save(QString targetFolder, QString targetPath, bool overwrite);

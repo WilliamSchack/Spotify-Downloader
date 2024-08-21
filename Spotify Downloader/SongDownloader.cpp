@@ -69,6 +69,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
+	emit SetProgressBar(_threadIndex, 0, 0);
+
 	// Set target folder
 	QString targetFolderName = "";
 	switch (Main->FolderSortingIndex) {
@@ -115,8 +117,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	
 	// Download cover image
 	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
+	emit SetProgressBar(_threadIndex, 0.1, 3000); // No way to track time, just a rough estimate
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 	song.DownloadCoverImage();
+	emit SetProgressBar(_threadIndex, 0.1);
 	qInfo() << _threadIndex << "Cover art downloaded for" << song.SpotifyId;
 
 	// Check for quit/pause
@@ -135,9 +139,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Search for song
 	qInfo() << _threadIndex << "Searching for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Searching...");
-	bool resultFound = song.SearchForSong(_yt);
+	bool resultFound = song.SearchForSong(_yt, [=](float percentComplete) {
+		emit SetProgressBar(_threadIndex, MathUtils::Lerp(0.1, 0.3, percentComplete));
+	});
+
 	if (!resultFound) {
 		emit SetProgressLabel(_threadIndex, "SONG NOT FOUND");
+		emit SetProgressBar(_threadIndex, 1);
 		_tracksNotFound.append(QJsonObject{
 			{"title", song.Title},
 			{"album", song.AlbumName},
@@ -159,18 +167,16 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
-	emit SetProgressBar(_threadIndex, 0);
 	song.Download(_currentProcess, Main->Overwrite, [&]() {
 		QString output = _currentProcess->readAll();
 		if (output.contains("[download]") && !output.contains(song.FileName)) { // Make sure that it is a download status output and not another file related thing
 			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
-			emit SetProgressBar(_threadIndex, progress.toFloat() / 100);
+			float progressBarPercent = MathUtils::Lerp(0.3, 0.7, progress.toFloat() / 100);
+			emit SetProgressBar(_threadIndex, progressBarPercent);
 		}
 	});
 
 	qInfo() << _threadIndex << "Successfully downloaded song" << song.SpotifyId;
-
-	emit SetProgressBar(_threadIndex, 1);
 
 	// Check for quit/pause
 	if (_quitting) return;
@@ -180,22 +186,30 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (Main->NormalizeAudio) {
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
-		song.NormaliseAudio(_currentProcess, Main->NormalizeAudioVolume, Main->AudioBitrate, &_quitting);
+		song.NormaliseAudio(_currentProcess, Main->NormalizeAudioVolume, Main->AudioBitrate, &_quitting, [&](float percentComplete) {
+			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
+			emit SetProgressBar(_threadIndex, progressBarPercent);
+		});
 		qInfo() << _threadIndex << "Successfully normalised audio for song" << song.SpotifyId;
 	}
 	// Otherwise set the bitrate
 	else {
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
-		song.SetBitrate(_currentProcess, Main->AudioBitrate);
+		song.SetBitrate(_currentProcess, Main->AudioBitrate, [&](float percentComplete) {
+			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
+			emit SetProgressBar(_threadIndex, progressBarPercent);
+		});
 		qInfo() << _threadIndex << "Successfully set bitrate for song" << song.SpotifyId;
 	}
+
+	emit SetProgressBar(_threadIndex, 1);
 
 	// Check for quit/pause
 	if (_quitting) return;
 	CheckForStop();
 
-	// Assign metadata
+	// Assign metadata, too quick for progress bar
 	qInfo() << _threadIndex << "Assigning metadata for song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 	song.AssignMetadata();
