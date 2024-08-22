@@ -7,7 +7,7 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
 [![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 
-Spotify Downloader is an application that can download songs from spotify with ease and for free unlike spotify premium requiring a subscription
+Spotify Downloader is an application that allows you to easily download songs from spotify without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
 
 ## Contents
 - [Installation](#installation)
@@ -90,7 +90,7 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/9e7af915-cefa-49fc-851c-f83ed4f2192c" width="4%" height="4%">
+<img src="https://github.com/user-attachments/assets/37bcd571-c564-421b-89b5-85915e473f6e" width="4%" height="4%">
 
 <br/>
 
@@ -103,6 +103,10 @@ You can open the program through the start menu or from the installed location t
 
 **Settings Screen Button**
 - Takes you to the settings screen
+
+**Donate Button**
+- Click to donate and support the development of this program
+- ***Note: Opens in browser***
 
 **Submit Bug Button**
 - Click to submit an issue to the github repo
@@ -121,13 +125,14 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/9755ded7-d784-4ded-8e65-422262f9cf54" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/a120db45-3759-431d-85b7-3e3c8ffd3d30" width="50%" height="50%">
 
 **Download Status**
 - Shows the result of the last download
 
 **Enter Song/Playlist URL**
 - The URL to your songs you would like to download
+- You can click the paste button directly to the right to input the copied text from your clipboard into the input
 - Accepts:
     - Singlular Songs
     - Playlists
@@ -152,7 +157,8 @@ You can open the program through the start menu or from the installed location t
 </details>
 
 **Select A Save Location**
-- The path to your download location. You can click the file icon directly to the right of the input box to browse to a location.
+- The path to your download location
+- You can click the browse button directly to the right to browse to a location
 - ***Note: Saved between sessions***
 
 ---
@@ -168,7 +174,7 @@ You can open the program through the start menu or from the installed location t
 
 ### Output
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/993ce9fc-15b2-4cb2-9dcc-9de8c0b5f8bb" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/14f2ac46-5a5d-47b0-8a3b-2e970c2aebb0" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -212,7 +218,7 @@ You can open the program through the start menu or from the installed location t
 
 ### Downloading
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/f17f7238-8675-4d0e-bb78-1cc7b9fa242c" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/bdd06607-dfd0-4a23-b17c-4fb66b81cdac" width="50%" height="50%">
 
 **Show Status Notifications - Recommended: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -232,7 +238,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/208e4cd3-c593-4047-b62e-8740206c61c9" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/4a19eb7f-cfb5-41c9-9d58-5e931cab5082" width="50%" height="50%">
 
 Each track downloading will show its:
 - Cover image
@@ -266,7 +272,7 @@ You can see your total download progress on the counter at the bottom left.
     
 ---
 
-<img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/37c8ada6-2372-4d71-8ce2-1371e2cb4955" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/4e6776cc-b399-4ecf-8a8e-477b42e5e00a" width="50%" height="50%">
 
 Shows all of the songs that failed to download due to various reasons that can include:
 - Song not available on youtube
@@ -283,14 +289,14 @@ Shows all of the songs that failed to download due to various reasons that can i
 
 - **GUI**
     - Makes it easy to navigate the program
-    - Multiple screens for easier understanding of what is currently happening
-    - Clear communication of what is currently happening in each download
+    - Clear communication of current downloads
+    - Multiple screens seperating the setup, downloads, errors, and settings
 - **Easy Downloading**
-    - Downloading starts with only two inputs and a button click making it easy to start
+    - Downloading starts with only two inputs and a button click
 - **Multithreading**
-    - Can download multiple songs at once by using multiple threads
+    - Can download multiple songs at once using multiple threads
     - Splits playlist into multiple smaller lists that download seperately to speed up the download time significantly
-    - Automatically distributes songs after each thread is finished downloading to not waste any resources
+    - Automatically distributes songs after each thread is finished downloading
 - **Automatic Metadata**
     - Downloads automatically include metadata into each file containing:
     - Song Title
@@ -312,7 +318,6 @@ Shows all of the songs that failed to download due to various reasons that can i
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
-
 
 Spotify Downloader is a program that downloads songs from Spotify.
 Copyright (C) 2024  William Schack
@@ -368,6 +373,5 @@ When I first created this project I has a lot of free time on my hands and was a
 - [ffmpeg](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 - [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
-- [Difflib C++](https://github.com/duckie/difflib) - [MIT License](https://github.com/duckie/difflib/blob/master/LICENSE)
 
 Thanks to you for using my program :)

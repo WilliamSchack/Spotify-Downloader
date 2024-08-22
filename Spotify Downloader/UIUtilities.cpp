@@ -77,7 +77,13 @@ void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage, int du
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {
     if (threadIndex >= 0) {
-        if (threadIndex > _downloaderUI.count()) return; // Sometimes a thread can be deleted before this request goes through
+        if (threadIndex >= _downloaderUI.count()) return; // Sometimes a thread can be deleted before this request goes through
+        
+        // Check if ui not properly removed from list
+        if (_downloaderUI[threadIndex] == NULL) {
+            _downloaderUI.removeAt(threadIndex);
+            return;
+        }
 
         QLabel* songCount = _downloaderUI[threadIndex]->SongCount;
         songCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
@@ -146,5 +152,7 @@ void SpotifyDownloader::HidePauseWarning(int threadIndex) {
 
 void SpotifyDownloader::SetThreadFinished(int threadIndex) {
     _ui.DownloadingSpaceFillerLayout->removeWidget(_downloaderUI[threadIndex]);
-    delete _downloaderUI[threadIndex];
+    DownloaderThread* downloaderThread = _downloaderUI[threadIndex];
+    delete downloaderThread; 
+    _downloaderUI[threadIndex] = NULL;
 }

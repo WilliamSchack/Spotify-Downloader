@@ -197,6 +197,8 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 
 	// If there are still songs remaining across all threads, distribute tracks between them
 	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished); // songs left except currently downloading songs
+	qDebug() << threadIndex << "||" << tracksNotFound.count() << "||" << songsLeft << _totalSongCount << _songsDownloaded << _threadCount << _threadsFinished;
+
 	if (songsLeft > _threadCount - _threadsFinished) {
 		DistributeTracks();
 		_threads[threadIndex]->Downloader->FinishedDownloading(false);

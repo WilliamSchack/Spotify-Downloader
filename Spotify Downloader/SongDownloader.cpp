@@ -72,7 +72,6 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
 	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
-	emit SetSongImage(_threadIndex, QPixmap());
 	emit SetProgressBar(_threadIndex, 0, 0);
 
 	// Set target folder
