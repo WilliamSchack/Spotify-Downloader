@@ -15,9 +15,6 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const Playlist
 
 	qInfo() << "Started downloading on thread" << _threadIndex;
 
-	// Check if quit requested while getting playlist data
-	if (_quitting) return;
-
 	StartDownload(0);
 }
 
@@ -64,6 +61,10 @@ void SongDownloader::StartDownload(int startIndex) {
 
 void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject album) {
 	if (album.isEmpty()) album = track["album"].toObject();
+
+	// Check for quit/pause
+	CheckForStop();
+	if (_quitting) return;
 
 	// Initialise Song
 	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
@@ -115,8 +116,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	}
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 	
 	// Download cover image
 	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
@@ -127,12 +128,12 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	qInfo() << _threadIndex << "Cover art downloaded for" << song.SpotifyId;
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 
 	// Search for song
 	qInfo() << _threadIndex << "Searching for" << song.SpotifyId;
@@ -159,8 +160,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	qInfo() << _threadIndex << QString("Found search result (%1) for").arg(song.YoutubeId) << song.SpotifyId;
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
@@ -177,8 +178,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	qInfo() << _threadIndex << "Successfully downloaded song" << song.SpotifyId;
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 
 	// If normalising, normalise audio, includes setting bitrate of audio
 	if (Main->NormalizeAudio) {
@@ -204,8 +205,8 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressBar(_threadIndex, 1);
 
 	// Check for quit/pause
-	if (_quitting) return;
 	CheckForStop();
+	if (_quitting) return;
 
 	// Assign metadata, too quick for progress bar
 	qInfo() << _threadIndex << "Assigning metadata for song" << song.SpotifyId;
@@ -260,7 +261,7 @@ void SongDownloader::CheckForStop() {
 	qInfo() << "Thread" << _threadIndex << "paused...";
 
 	emit HidePauseWarning(_threadIndex);
-	while (Main->Paused) {
+	while (Main->Paused && !_quitting) {
 		QCoreApplication::processEvents();
 	}
 

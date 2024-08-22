@@ -1749,12 +1749,40 @@ border: none;</string>
      </size>
     </property>
    </widget>
+   <widget class="QPushButton" name="DonateButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>232</y>
+      <width>50</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(44, 44, 44);
+border: none;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="SpotifyDownloader.qrc">
+      <normaloff>:/SpotifyDownloader/Icons/Donate_Icon_W.png</normaloff>:/SpotifyDownloader/Icons/Donate_Icon_W.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>26</width>
+      <height>26</height>
+     </size>
+    </property>
+   </widget>
    <zorder>SideBar_LineIndicator</zorder>
    <zorder>SubmitBugButton</zorder>
    <zorder>HelpButton</zorder>
    <zorder>DownloadingScreenButton</zorder>
    <zorder>SettingsScreenButton</zorder>
    <zorder>ErrorScreenButton</zorder>
+   <zorder>DonateButton</zorder>
   </widget>
  </widget>
  <customwidgets>

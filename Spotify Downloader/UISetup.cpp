@@ -79,6 +79,12 @@ void SpotifyDownloader::SetupSideBar() {
             _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
     });
 
+    _objectHoverWatcher->AddObjectFunctions(_ui.DonateButton, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.DonateButton, QColor(80, 80, 80), 500);
+    }, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.DonateButton, QColor(44, 44, 44), 500);
+    });
+
     _objectHoverWatcher->AddObjectFunctions(_ui.SubmitBugButton, [=](QObject* object) {
         Animation::AnimateBackgroundColour(_ui.SubmitBugButton, QColor(80, 80, 80), 500);
     }, [=](QObject* object) {
@@ -124,6 +130,10 @@ void SpotifyDownloader::SetupSideBar() {
         ChangeScreen(SETTINGS_SCREEN_INDEX);
     });
 
+    connect(_ui.DonateButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://ko-fi.com/williamschack"), "Would you like to donate?", "Your donation will support this programs development\nand help it flourish with new features and community support\nfor the foreseeable future!");
+    });
+
     connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
         OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader/issues/new"), "Submit Bug", "Would you like to submit a bug?");
     });
@@ -160,9 +170,14 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.endGroup();
 
             DownloadStarted = true;
+            Paused = false;
 
+            // Setup and Reset GUI
             ChangeScreen(PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
+
+            _ui.PlayButton->hide();
+            _ui.PauseButton->show();
             _ui.PauseWarning->hide();
 
             SetDownloadStatus("");

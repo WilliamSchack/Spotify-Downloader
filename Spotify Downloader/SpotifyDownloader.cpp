@@ -296,7 +296,7 @@ void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windo
 
     QMessageBox msg = QMessageBox();
     msg.setWindowTitle(windowTitle);
-    msg.setText(QString("%1\nThis will open in your browser").arg(windowMessage));
+    msg.setText(QString("%1\n\nThis will open in your browser").arg(windowMessage));
     msg.setIcon(QMessageBox::Question);
     msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     int reply = msg.exec();
