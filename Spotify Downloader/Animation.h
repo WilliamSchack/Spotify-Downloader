@@ -22,6 +22,8 @@ class Animation {
 	private:
 		// Used to handle animations overwriting each other
 		static QMap<QObject*, QVariantAnimation*> _currentAnimations;
+
+		static void CheckForAnimation(QObject* target);
 };
 
 #endif

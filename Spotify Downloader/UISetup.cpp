@@ -163,6 +163,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             ChangeScreen(PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
+            _ui.PauseWarning->hide();
 
             SetDownloadStatus("");
 
@@ -311,6 +312,8 @@ void SpotifyDownloader::SetupProcessingScreen() {
             if (reply == QMessageBox::Yes) {
                 emit DisplayFinalMessage();
                 emit RequestQuit();
+
+                _ui.PauseWarning->show();
 
                 qInfo() << "Download Cancelled";
             }

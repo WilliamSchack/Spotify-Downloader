@@ -69,6 +69,9 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
+	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
+	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
+	emit SetSongImage(_threadIndex, QPixmap());
 	emit SetProgressBar(_threadIndex, 0, 0);
 
 	// Set target folder
@@ -117,20 +120,15 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	
 	// Download cover image
 	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
-	emit SetProgressBar(_threadIndex, 0.1, 3000); // No way to track time, just a rough estimate
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 	song.DownloadCoverImage();
+	emit SetSongImage(_threadIndex, QPixmap::fromImage(song.CoverImage));
 	emit SetProgressBar(_threadIndex, 0.1);
 	qInfo() << _threadIndex << "Cover art downloaded for" << song.SpotifyId;
 
 	// Check for quit/pause
 	if (_quitting) return;
 	CheckForStop();
-
-	// Assign data to GUI
-	emit SetSongImage(_threadIndex, QPixmap::fromImage(song.CoverImage));
-	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
-	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
 
 	// Check for quit/pause
 	if (_quitting) return;

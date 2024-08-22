@@ -2,10 +2,20 @@
 
 QMap<QObject*, QVariantAnimation*> Animation::_currentAnimations;
 
-void Animation::AnimatePosition(QObject* target, QPoint newPos, int durationMs) {
+void Animation::CheckForAnimation(QObject* target) {
     if (_currentAnimations.contains(target)) {
+        _currentAnimations[target]->stop();
         _currentAnimations[target]->deleteLater();
         _currentAnimations.remove(target);
+    }
+}
+
+void Animation::AnimatePosition(QObject* target, QPoint newPos, int durationMs) {
+    CheckForAnimation(target);
+    
+    if (durationMs == 0) {
+        target->setProperty("pos", newPos);
+        return;
     }
 
     QPropertyAnimation* anim = new QPropertyAnimation(target, "pos");
@@ -24,9 +34,11 @@ void Animation::AnimatePosition(QObject* target, QPoint newPos, int durationMs) 
 }
 
 void Animation::AnimateSize(QObject* target, QSize newSize, int durationMs) {
-    if (_currentAnimations.contains(target)) {
-        _currentAnimations[target]->deleteLater();
-        _currentAnimations.remove(target);
+    CheckForAnimation(target);
+
+    if (durationMs == 0) {
+        target->setProperty("size", newSize);
+        return;
     }
 
     QPropertyAnimation* anim = new QPropertyAnimation(target, "size");
@@ -37,7 +49,7 @@ void Animation::AnimateSize(QObject* target, QSize newSize, int durationMs) {
 
     QObject::connect(anim, &QPropertyAnimation::finished, [=] {
         _currentAnimations.remove(target);
-        });
+    });
 
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 
@@ -45,9 +57,14 @@ void Animation::AnimateSize(QObject* target, QSize newSize, int durationMs) {
 }
 
 void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int durationMs) {
-    if (_currentAnimations.contains(target)) {
-        _currentAnimations[target]->deleteLater();
-        _currentAnimations.remove(target);
+    CheckForAnimation(target);
+
+    if (durationMs == 0) {
+        QPalette newPalette = target->palette();
+        newPalette.setColor(target->backgroundRole(), newColour);
+        target->setPalette(newPalette);
+
+        return;
     }
 
     QVariantAnimation* anim = new QVariantAnimation(target);
