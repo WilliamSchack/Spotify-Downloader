@@ -316,7 +316,7 @@ void SpotifyDownloader::SetupProcessingScreen() {
         _ui.PauseWarning->hide();
     });
     connect(_ui.CancelButton, &QPushButton::clicked, [=] {
-        if (DownloadStarted && !DownloadComplete) {
+        if (DownloadStarted) {
             QMessageBox messageBox;
             messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
             messageBox.setWindowTitle("Are You Sure?");

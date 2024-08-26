@@ -167,7 +167,7 @@ void SpotifyDownloader::LoadSettings() {
     Notifications = statusNotificationsEnabled;
 
     // Downloader Threads
-    int downloaderThreads = settings.value("downloaderThreads", 3).toInt();
+    int downloaderThreads = settings.value("downloaderThreads", 6).toInt();
     _ui.DownloaderThreadsInput->setValue(downloaderThreads);
     ThreadCount = downloaderThreads;
 
@@ -213,7 +213,6 @@ void SpotifyDownloader::ResetDownloadingVariables() {
 
     // Reset Variables
     DownloadStarted = false;
-    DownloadComplete = false;
 
     _totalSongs = 0;
     _songsCompleted = 0;
@@ -306,7 +305,7 @@ void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windo
 }
 
 void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
-    if (DownloadStarted && !DownloadComplete) {
+    if (DownloadStarted) {
         QMessageBox messageBox;
         messageBox.setWindowIcon(QIcon(":/SpotifyDownloader/Icon.ico"));
         messageBox.setWindowTitle("Are You Sure?");

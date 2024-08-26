@@ -1031,7 +1031,7 @@ background-color: rgba(0, 0, 0, 0);</string>
         <enum>Qt::StrongFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Can effect CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;3 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Effects CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;6 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 255, 255);
@@ -1040,8 +1040,11 @@ selection-background-color: rgb(0, 120, 215);</string>
        <property name="minimum">
         <number>1</number>
        </property>
+       <property name="maximum">
+        <number>128</number>
+       </property>
        <property name="value">
-        <number>3</number>
+        <number>6</number>
        </property>
       </widget>
       <widget class="QLabel" name="NotificationSettingLabel">

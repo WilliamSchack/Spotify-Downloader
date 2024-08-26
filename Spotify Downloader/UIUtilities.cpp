@@ -20,8 +20,6 @@ int SpotifyDownloader::CurrentScreen() {
 }
 
 void SpotifyDownloader::ChangeScreen(int screenIndex) {
-    if (screenIndex == ERROR_SCREEN_INDEX) DownloadComplete = true;
-    
     int currentScreen = CurrentScreen();
 
     // Animate Side Panel
@@ -60,14 +58,27 @@ void SpotifyDownloader::SetDownloadStatus(QString text) {
     _ui.DownloadedStatusLabel->setText(text);
 }
 
+bool SpotifyDownloader::DownloaderUIExists(int threadIndex) {
+    if (threadIndex < 0) return false;
+
+    if (_downloaderUI.count() == 0) return false;
+
+    // Sometimes a thread can be deleted before the request goes through
+    if (_downloaderUI[threadIndex] == NULL) {
+        return false;
+    }
+
+    return true;
+}
+
 void SpotifyDownloader::SetProgressLabel(int threadIndex, QString text) {
-    if (_downloaderUI.count() == 0) return;
+    if (!DownloaderUIExists(threadIndex)) return;
 
     _downloaderUI[threadIndex]->ProgressLabel->setText(text);
 }
 
 void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage, int durationMs) {
-    if (_downloaderUI.count() == 0) return;
+    if (!DownloaderUIExists(threadIndex)) return;
 
     QSize newSize = _downloaderUI[threadIndex]->ProgressBar_Front->size();
     newSize.setWidth(MathUtils::Lerp(0, 373, percentage));
@@ -77,13 +88,7 @@ void SpotifyDownloader::SetProgressBar(int threadIndex, float percentage, int du
 
 void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int totalCount) {
     if (threadIndex >= 0) {
-        if (threadIndex >= _downloaderUI.count()) return; // Sometimes a thread can be deleted before this request goes through
-        
-        // Check if ui not properly removed from list
-        if (_downloaderUI[threadIndex] == NULL) {
-            _downloaderUI.removeAt(threadIndex);
-            return;
-        }
+        if (!DownloaderUIExists(threadIndex)) return;
 
         QLabel* songCount = _downloaderUI[threadIndex]->SongCount;
         songCount->setText(QString("%1/%2").arg(QString::number(currentCount)).arg(QString::number(totalCount)));
@@ -101,14 +106,14 @@ void SpotifyDownloader::SetSongCount(int threadIndex, int currentCount, int tota
 }
 
 void SpotifyDownloader::SetSongImage(int threadIndex, QPixmap image) {
-    if (_downloaderUI.count() == 0) return;
+    if (!DownloaderUIExists(threadIndex)) return;
 
     image = image.scaled(_downloaderUI[threadIndex]->SongImage->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     _downloaderUI[threadIndex]->SongImage->setPixmap(image);
 }
 
 void SpotifyDownloader::SetSongDetails(int threadIndex, QString title, QString artists) {
-    if (_downloaderUI.count() == 0) return;
+    if (!DownloaderUIExists(threadIndex)) return;
 
     _downloaderUI[threadIndex]->SongTitle->setText(title);
     _downloaderUI[threadIndex]->SongArtists->setText(artists);
@@ -139,7 +144,7 @@ void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
 }
 
 void SpotifyDownloader::HidePauseWarning(int threadIndex) {
-    if (_downloaderUI.count() == 0) return;
+    if (!DownloaderUIExists(threadIndex)) return;
 
     _downloaderUI[threadIndex]->ProgressLabel->setText("Paused...");
 

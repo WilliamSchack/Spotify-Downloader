@@ -223,7 +223,7 @@ You can open the program through the start menu or from the installed location t
 **Show Status Notifications - Recommended: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
 
-**Downloader Threads - Recommended: 3**
+**Downloader Threads - Recommended: 6**
 - The amount of threads used while downloading songs. This will control how many songs download simultaneously but large values can negatively effect CPU usage. Cannot be changed during download.
 
 **Download Speed Limit - Recommended: 0MB/s**

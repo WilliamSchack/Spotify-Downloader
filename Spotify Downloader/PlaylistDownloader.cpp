@@ -196,13 +196,14 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
 
 	// If there are still songs remaining across all threads, distribute tracks between them
-	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished); // songs left except currently downloading songs
+	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished - 1); // songs left except currently downloading songs
 	if (songsLeft > _threadCount - _threadsFinished) {
-		DistributeTracks();
-		_threads[threadIndex]->Downloader->FinishedDownloading(false);
+		if (DistributeTracks()) {
+			_threads[threadIndex]->Downloader->FinishedDownloading(false);
 
-		qInfo() << "Redistributed songs to thread" << threadIndex;
-		return;
+			qInfo() << "Redistributed songs to thread" << threadIndex;
+			return;
+		}
 	}
 
 	_threads[threadIndex]->Downloader->FinishedDownloading(true);
@@ -236,7 +237,7 @@ void PlaylistDownloader::DisplayFinalMessage() {
 }
 
 // Distribute songs evenly between threads based on the remaining songs on each
-void PlaylistDownloader::DistributeTracks() {
+bool PlaylistDownloader::DistributeTracks() {
 	PauseNewDownloads = true;
 
 	// Get the amount of songs that each thread should have after reassigning //
@@ -249,6 +250,12 @@ void PlaylistDownloader::DistributeTracks() {
 	}
 	int tracksRemainingPerThread = totalTracksRemaining / _threadCount;
 	int tracksRemainingRemainder = totalTracksRemaining % _threadCount;
+
+	// Prevent stack overflow when there are not enough tracks for redistribution remaining
+	if (totalTracksRemaining == 0 || tracksRemainingPerThread == 0) {
+		PauseNewDownloads = false;
+		return false;
+	}
 
 	// Get differences between current total and target total
 	QList<int> differenceInTracksPerThread = QList<int>(_threadCount);
@@ -293,6 +300,8 @@ void PlaylistDownloader::DistributeTracks() {
 	}
 	
 	PauseNewDownloads = false;
+
+	return true;
 }
 
 void PlaylistDownloader::Quit() {

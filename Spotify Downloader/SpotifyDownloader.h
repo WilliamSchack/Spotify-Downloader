@@ -50,7 +50,7 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
-        static constexpr const char* VERSION = "1.5.0";
+        static constexpr const char* VERSION = "1.5.1";
 
         static const int SETUP_SCREEN_INDEX = 0;
         static const int SETTINGS_SCREEN_INDEX = 1;
@@ -82,7 +82,6 @@ class SpotifyDownloader : public QDialog
         bool Paused = false;
 
         bool DownloadStarted = false;
-        bool DownloadComplete = false;
 
         bool VariablesResetting = false;
 
@@ -90,7 +89,7 @@ class SpotifyDownloader : public QDialog
         bool Overwrite = false;
         bool Notifications = true;
 
-        int ThreadCount = 3;
+        int ThreadCount = 6;
         float DownloadSpeed = 0;
 
         bool NormalizeAudio = true;
@@ -149,6 +148,7 @@ class SpotifyDownloader : public QDialog
         int _threadsPaused = 0;
 
         void SetupDownloaderThread();
+        bool DownloaderUIExists(int threadIndex);
 
         void SetupTrayIcon();
         void SetupSideBar();
@@ -199,7 +199,7 @@ class PlaylistDownloader : public QObject {
         void DisplayFinalMessage();
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
-        void DistributeTracks();
+        bool DistributeTracks();
         void ClearDirFiles(const QString& path);
 
         QList<Worker*> _threads;
