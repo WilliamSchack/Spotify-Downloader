@@ -11,5 +11,5 @@ double MathUtils::LerpInList(std::vector<double> list, int index) {
 		if (val > maxVal) maxVal = val;
 	}
 
-	return list[0] / maxVal;
+	return list[index] / maxVal;
 }
