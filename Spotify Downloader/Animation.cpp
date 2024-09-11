@@ -56,6 +56,36 @@ void Animation::AnimateSize(QObject* target, QSize newSize, int durationMs) {
     _currentAnimations.insert(target, anim);
 }
 
+void Animation::AnimateValue(QWidget* target, int newValue, int durationMs) {
+    CheckForAnimation(target);
+
+    if (durationMs == 0) {
+        target->setProperty("value", newValue);
+        return;
+    }
+
+    // Stuttery animations using QPropertyAnimation, using QVariantAnimation instead
+
+    QVariantAnimation* anim = new QVariantAnimation(target);
+    anim->setDuration(durationMs);
+    anim->setEasingCurve(QEasingCurve::Type::OutQuart);
+    anim->setStartValue(target->property("value"));
+    anim->setEndValue(newValue);
+
+    QObject::connect(anim, &QVariantAnimation::valueChanged, [=](QVariant value) {
+        target->setProperty("value", value);
+        target->update();
+        });
+
+    QObject::connect(anim, &QPropertyAnimation::finished, [=] {
+        _currentAnimations.remove(target);
+        });
+
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
+
+    _currentAnimations.insert(target, anim);
+}
+
 void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int durationMs) {
     CheckForAnimation(target);
 

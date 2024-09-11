@@ -122,7 +122,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	qInfo() << _threadIndex << "Downloading cover art for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Cover Art...");
 	song.DownloadCoverImage();
-	emit SetSongImage(_threadIndex, QPixmap::fromImage(song.CoverImage));
+	emit SetSongImage(_threadIndex, song.CoverImage);
 	emit SetProgressBar(_threadIndex, 0.1);
 	qInfo() << _threadIndex << "Cover art downloaded for" << song.SpotifyId;
 

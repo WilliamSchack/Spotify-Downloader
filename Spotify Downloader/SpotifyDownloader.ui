@@ -1476,6 +1476,9 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string notr="true">background-color: rgb(64, 64, 64);
 color: rgb(255, 255, 255);</string>
      </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
      <property name="text">
       <string>Getting Playlist Data...</string>
      </property>
