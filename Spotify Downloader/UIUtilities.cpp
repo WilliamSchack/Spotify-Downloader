@@ -8,7 +8,23 @@ void SpotifyDownloader::SetupUI(int threadIndex) {
     
     _downloaderUI.clear();
     for (int i = 0; i < threadIndex; i++) {
-        DownloaderThread* currentUI = new CompactDownloaderThread();
+        DownloaderThread* currentUI;
+        switch (DownloaderThreadUIIndex) {
+        case 0: // Dynamic
+            // If original threads overflow scroll area use compact design
+            if (threadIndex > 2)
+                currentUI = new CompactDownloaderThread();
+            else
+                currentUI = new OriginalDownloaderThread();
+            break;
+        case 1: // Compact
+            currentUI = new CompactDownloaderThread();
+            break;
+        case 2: // Original
+            currentUI = new OriginalDownloaderThread();
+            break;
+        }
+
 
         _ui.DownloadingSpaceFillerLayout->insertWidget(_ui.DownloadingSpaceFillerLayout->count() - 1, currentUI);
 

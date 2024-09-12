@@ -204,39 +204,45 @@ void SpotifyDownloader::SetupSetupScreen() {
 
 void SpotifyDownloader::SetupSettingsScreen() {
     // Top Buttons
-    _objectHoverWatcher->AddObjectFunctions(_ui.OutputSettingsButton, [=] (QObject* object) {
-        if (_ui.SettingsScreens->currentIndex() != 0)
-            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 12), 200);
-    }, [=](QObject* object) {
-        if (_ui.SettingsScreens->currentIndex() != 0)
-            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 14), 200);
+    QList<QPushButton*> topButtons ({
+        _ui.OutputSettingsButton,
+        _ui.DownloadingSettingsButton,
+        _ui.InterfaceSettingsButton
     });
 
-    _objectHoverWatcher->AddObjectFunctions(_ui.DownloadingSettingsButton, [=](QObject* object) {
-        if (_ui.SettingsScreens->currentIndex() != 1)
-            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 12), 200);
-    }, [=](QObject* object) {
-        if(_ui.SettingsScreens->currentIndex() != 1)
-            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 14), 200);
-    });
+    for (int i = 0; i < topButtons.count(); i++) {
+        // i = screenIndex
 
-    connect(_ui.OutputSettingsButton, &QPushButton::clicked, [=] {
-        if (_ui.SettingsScreens->currentIndex() != 0) {
-            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 8), 300);
-            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 14), 200);
+        QPushButton* button = topButtons[i];
+        QPoint buttonPos = button->pos();
 
-            _ui.SettingsScreens->setCurrentIndex(0);
-        }
-    });
+        // Hover
+        _objectHoverWatcher->AddObjectFunctions(button, [=](QObject* object) {
+            if (_ui.SettingsScreens->currentIndex() != i)
+                Animation::AnimatePosition(button, QPoint(buttonPos.x(), 12), 200);
+        }, [=](QObject* object) {
+            if (_ui.SettingsScreens->currentIndex() != i)
+                Animation::AnimatePosition(button, QPoint(buttonPos.x(), 14), 200);
+        });
 
-    connect(_ui.DownloadingSettingsButton, &QPushButton::clicked, [=] {
-        if (_ui.SettingsScreens->currentIndex() != 1) {
-            Animation::AnimatePosition(_ui.DownloadingSettingsButton, QPoint(371, 8), 300);
-            Animation::AnimatePosition(_ui.OutputSettingsButton, QPoint(8, 14), 200);
+        // Click
+        connect(button, &QPushButton::clicked, [=] {
+            if (_ui.SettingsScreens->currentIndex() != i) {
+                // Move down non-clicked buttons
+                for (int x = 0; x < topButtons.count(); x++) {
+                    if (x == i) continue;
 
-            _ui.SettingsScreens->setCurrentIndex(1);
-        }
-    });
+                    QWidget* currentButton = topButtons[x];
+                    Animation::AnimatePosition(currentButton, QPoint(currentButton->pos().x(), 14), 200);
+                }
+
+                // Move Up Clicked Button
+                Animation::AnimatePosition(button, QPoint(buttonPos.x(), 8), 200);
+
+                _ui.SettingsScreens->setCurrentIndex(i);
+            }
+        });
+    }
 
     // Number Inputs
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
@@ -284,6 +290,10 @@ void SpotifyDownloader::SetupSettingsScreen() {
     for (int i = 0; i < _ui.FolderSortingInput->count(); i++) {
         _ui.FolderSortingInput->setItemData(i, QVariant(folderSortingItemFont), Qt::FontRole);
     }
+
+    // Set combo box variables on change
+    connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { FolderSortingIndex = index; });
+    connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { DownloaderThreadUIIndex = index; });
 
     // Button Clicks (Using isChecked to help with loading settings)
     connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = _ui.OverwriteSettingButton->isChecked; });
@@ -484,37 +494,20 @@ bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
         int newY = ((mouseY + 50 / 2) / 50) * 50; // Round y to closest 50
         newY += 5; // Offset by 5
 
-        switch (_ui.SettingsScreens->currentIndex()) {
-            case 0: // Output Settings
-            {
-                // Clamp y to settings in menu
-                newY = std::clamp(newY, 5, OUTPUT_SETTINGS_LINE_MAX_HEIGHT);
-
-                // Dont animate if already in position
-                QPoint lineIndicatorPos = _ui.OutputSettings_LineIndicator->pos();
-                if (lineIndicatorPos.y() == newY)
-                    break;
-
-                // Animate to new position
-                QPoint newPos(lineIndicatorPos.x(), newY);
-                Animation::AnimatePosition(_ui.OutputSettings_LineIndicator, newPos, 300);
-                break;
-            }
-            case 1: // Downloading Settings
-            {
-                // Clamp y to settings in menu
-                newY = std::clamp(newY, 5, DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT);
-
-                // Dont animate if already in position
-                QPoint lineIndicatorPos = _ui.DownloadingSettings_LineIndicator->pos();
-                if (lineIndicatorPos.y() == newY)
-                    break;
-
-                // Animate to new position
-                QPoint newPos(lineIndicatorPos.x(), newY);
-                Animation::AnimatePosition(_ui.DownloadingSettings_LineIndicator, newPos, 300);
-                break;
-            }
+        // Get current screen line indicator and max height
+        QPair<QWidget*, int> lineIndicatorPair = SETTINGS_LINE_INDICATORS()[_ui.SettingsScreens->currentIndex()];
+        QWidget* lineIndicator = lineIndicatorPair.first;
+        int maxHeight = lineIndicatorPair.second;
+        
+        // Clamp y to settings in menu
+        newY = std::clamp(newY, 5, maxHeight);
+        
+        // Dont animate if already in position
+        QPoint lineIndicatorPos = lineIndicator->pos();
+        if (lineIndicatorPos.y() != newY) {
+            // Animate to new position
+            QPoint newPos(lineIndicatorPos.x(), newY);
+            Animation::AnimatePosition(lineIndicator, newPos, 300);
         }
     }
 

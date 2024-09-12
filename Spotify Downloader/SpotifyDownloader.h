@@ -6,7 +6,11 @@
 
 #include <QThread>
 
-#include <QSettings>
+#include "ui_SpotifyDownloader.h"
+#include "ObjectHoverWatcher.h"
+
+#include "YTMusicAPI.h"
+#include "SpotifyAPI.h"
 
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QVBoxLayout>
@@ -31,11 +35,7 @@
 #include <QEvent>
 #include <QCloseEvent>
 
-#include "ui_SpotifyDownloader.h"
-#include "ObjectHoverWatcher.h"
-
-#include "YTMusicAPI.h"
-#include "SpotifyAPI.h"
+#include <QSettings>
 
 // Forward Declarations
 class PlaylistDownloader;
@@ -86,11 +86,9 @@ class SpotifyDownloader : public QDialog
         bool VariablesResetting = false;
 
         // Below variables will be loaded in LoadSettings()
+        
+        // Output
         bool Overwrite = false;
-        bool Notifications = true;
-
-        int ThreadCount = 6;
-        float DownloadSpeed = 0;
 
         bool NormalizeAudio = true;
         float NormalizeAudioVolume = -14.0;
@@ -102,8 +100,17 @@ class SpotifyDownloader : public QDialog
 
         int FolderSortingIndex = 0;
 
+        // Downloading
+        bool Notifications = true;
+
+        int ThreadCount = 6;
+        float DownloadSpeed = 0;
+
         static QStringList Q_NAMING_TAGS();
         std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const; // Output, Error
+
+        // Interface
+        int DownloaderThreadUIIndex = 0;
 
         virtual bool eventFilter(QObject* obj, QEvent* event) Q_DECL_OVERRIDE;
     public slots:
@@ -129,6 +136,10 @@ class SpotifyDownloader : public QDialog
 
         const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 255;
         const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
+        const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 5;
+
+        QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS();
+        QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS_CACHE;
 
         static QStringList Q_NAMING_TAGS_CACHE;
 

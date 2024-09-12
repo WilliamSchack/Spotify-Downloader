@@ -293,6 +293,7 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 		int titleIndex = usePresetColumns ? 0 : -1;
 		int artistIndex = usePresetColumns ? 1 : -1;
 		int albumIndex = usePresetColumns ? 2 : -1;
+		
 		QList<int> userChannelIndexes = QList<int>();
 		int unrecognisedIndex = -1;
 

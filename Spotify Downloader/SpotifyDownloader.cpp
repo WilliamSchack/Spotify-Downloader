@@ -69,6 +69,7 @@ void SpotifyDownloader::SaveSettings() {
     bool statusNotificationsEnabled = _ui.NotificationSettingButton->isChecked;
     int downloaderThreads = _ui.DownloaderThreadsInput->value();
     float downloadSpeedLimit = _ui.DownloadSpeedSettingInput->value();
+    int downloaderThreadUIIndex = _ui.DownloaderThreadUIInput->currentIndex();
 
     // Save values to settings
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
@@ -89,6 +90,10 @@ void SpotifyDownloader::SaveSettings() {
     settings.setValue("downloadSpeedLimit", downloadSpeedLimit);
     settings.endGroup();
 
+    settings.beginGroup("Interface");
+    settings.setValue("downloaderThreadUIIndex", downloaderThreadUIIndex);
+    settings.endGroup();
+
     // Log settings
     QJsonObject settingsLog = QJsonObject{
         {"Overwrite Enabled", overwriteEnabled},
@@ -100,7 +105,8 @@ void SpotifyDownloader::SaveSettings() {
         {"Folder Sorting Index", folderSortingIndex},
         {"Status Notifications Enabled", statusNotificationsEnabled},
         {"Downloader Threads", downloaderThreads},
-        {"Download Speed Limit", downloadSpeedLimit}
+        {"Download Speed Limit", downloadSpeedLimit},
+        {"Downloader Thread UI Index", downloaderThreadUIIndex}
     };
 
     qInfo() << "Settings Successfully Saved" << settingsLog;
@@ -152,6 +158,7 @@ void SpotifyDownloader::LoadSettings() {
     _ui.SongOutputFormatInput->setText(songOutputFormat);
     SongOutputFormat = songOutputFormat;
 
+    // Folder Sorting
     int folderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
     _ui.FolderSortingInput->setCurrentIndex(folderSortingIndex);
     FolderSortingIndex = folderSortingIndex;
@@ -178,6 +185,15 @@ void SpotifyDownloader::LoadSettings() {
 
     settings.endGroup();
 
+    settings.beginGroup("Interface");
+
+    // Downloader Thread UI
+    int downloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
+    _ui.DownloaderThreadUIInput->setCurrentIndex(downloaderThreadUIIndex);
+    DownloaderThreadUIIndex = downloaderThreadUIIndex;
+
+    settings.endGroup();
+
     // Log settings
     QJsonObject settingsLog = QJsonObject {
         {"Overwrite Enabled", overwriteEnabled},
@@ -189,7 +205,8 @@ void SpotifyDownloader::LoadSettings() {
         {"Folder Sorting Index", folderSortingIndex},
         {"Status Notifications Enabled", statusNotificationsEnabled},
         {"Downloader Threads", downloaderThreads},
-        {"Download Speed Limit", downloadSpeedLimit}
+        {"Download Speed Limit", downloadSpeedLimit},
+        {"Downloader Thread UI Index", downloaderThreadUIIndex}
     };
 
     qInfo() << "Settings Successfully Loaded" << settingsLog;
@@ -245,6 +262,21 @@ QStringList SpotifyDownloader::Q_NAMING_TAGS() {
 
     Q_NAMING_TAGS_CACHE = tags;
     return tags;
+}
+
+QList<QPair<QWidget*, int>> SETTINGS_INDICATORS_CACHE;
+QList<QPair<QWidget*, int>> SpotifyDownloader::SETTINGS_LINE_INDICATORS() {
+    if (!SETTINGS_LINE_INDICATORS_CACHE.isEmpty())
+        return SETTINGS_LINE_INDICATORS_CACHE;
+
+    QList<QPair<QWidget*, int>> lineIndicators {
+        QPair<QWidget*, int>(_ui.OutputSettings_LineIndicator, OUTPUT_SETTINGS_LINE_MAX_HEIGHT),
+        QPair<QWidget*, int>(_ui.DownloadingSettings_LineIndicator, DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT),
+        QPair<QWidget*, int>(_ui.InterfaceSettings_LineIndicator, INTERFACE_SETTINGS_LINE_MAX_HEIGHT)
+    };
+
+    SETTINGS_LINE_INDICATORS_CACHE = lineIndicators;
+    return lineIndicators;
 }
 
 std::tuple<QString, SpotifyDownloader::NamingError> SpotifyDownloader::FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const {
