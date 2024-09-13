@@ -1899,7 +1899,7 @@ border: none;</string>
   <customwidget>
    <class>CheckBox</class>
    <extends>QPushButton</extends>
-   <header>CustomWidgets.h</header>
+   <header>UI/CustomWidgets/CheckBox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -1,7 +1,7 @@
-#include "SpotifyDownloader.h"
+#include "Downloading/SpotifyDownloader.h"
 
-#include "Animation.h"
-#include "MathUtils.h"
+#include "Utilities/Animation.h"
+#include "Utilities/MathUtils.h"
 
 void SpotifyDownloader::SetupUI(int threadIndex) {
     _ui.GettingPlaylistDataLabel->hide();

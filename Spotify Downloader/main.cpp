@@ -1,8 +1,8 @@
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
 
+#include "Downloading/SpotifyDownloader.h"
 #include "Application.h"
-#include "SpotifyDownloader.h"
 
 int main(int argc, char *argv[])
 {

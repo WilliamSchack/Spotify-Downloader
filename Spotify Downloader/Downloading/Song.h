@@ -2,16 +2,16 @@
 #define SONG_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
 
-#include "SpotifyDownloader.h"
+#include "Downloading/SpotifyDownloader.h"
 
-#include "Network.h"
-#include "YTMusicAPI.h"
+#include "Network/Network.h"
+#include "Network/YTMusicAPI.h"
 
-#include "StringUtils.h"
-#include "MathUtils.h"
-#include "ImageUtils.h"
+#include "Utilities/StringUtils.h"
+#include "Utilities/MathUtils.h"
+#include "Utilities/ImageUtils.h"
 
 #include <QObject>
 #include <QProcess>
@@ -28,8 +28,6 @@
 #include <taglib/commentsframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
-
-class SpotifyDownloader;
 
 class Song {
 	public:

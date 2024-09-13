@@ -2,15 +2,19 @@
 #define SPOTIFYDOWNLOADER_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
 
 #include <QThread>
 
 #include "ui_SpotifyDownloader.h"
-#include "ObjectHoverWatcher.h"
 
-#include "YTMusicAPI.h"
-#include "SpotifyAPI.h"
+#include "UI/CustomWidgets/DownloaderThread.h"
+#include "UI/CustomWidgets/SongErrorItem.h"
+
+#include "Utilities/ObjectHoverWatcher.h"
+
+#include "Network/YTMusicAPI.h"
+#include "Network/SpotifyAPI.h"
 
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QVBoxLayout>

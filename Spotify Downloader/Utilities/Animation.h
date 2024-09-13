@@ -2,7 +2,7 @@
 #define ANIMATION_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
 
 #include <QObject>
 #include <QWidget>

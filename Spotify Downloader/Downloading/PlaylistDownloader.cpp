@@ -1,6 +1,6 @@
 #include "SpotifyDownloader.h"
 
-#include "StringUtils.h"
+#include "Utilities/StringUtils.h"
 
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>

@@ -1,7 +1,5 @@
 #include "SpotifyDownloader.h"
 
-#include "CustomWidgets.h"
-
 #include <QDesktopServices>
 
 #include <qt_windows.h>

@@ -2,9 +2,9 @@
 #define IMAGEUTILS_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
 
-#include "Network.h"
+#include "Network/Network.h"
 
 #include <QImage>
 #include <QString>

@@ -16,6 +16,56 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Downloading\PlaylistDownloader.cpp" />
+    <ClCompile Include="Downloading\Song.cpp" />
+    <ClCompile Include="Downloading\SongDownloader.cpp" />
+    <ClCompile Include="Downloading\SpotifyDownloader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\Network.cpp" />
+    <ClCompile Include="Network\SpotifyAPI.cpp" />
+    <ClCompile Include="Network\YTMusicAPI.cpp" />
+    <ClCompile Include="UI\CustomWidgets\CheckBox.cpp" />
+    <ClCompile Include="UI\CustomWidgets\DownloaderThread.cpp" />
+    <ClCompile Include="UI\CustomWidgets\SongErrorItem.cpp" />
+    <ClCompile Include="UI\UISetup.cpp" />
+    <ClCompile Include="UI\UIUtilities.cpp" />
+    <ClCompile Include="Utilities\Animation.cpp" />
+    <ClCompile Include="Utilities\ImageUtils.cpp" />
+    <ClCompile Include="Utilities\JSONUtils.cpp" />
+    <ClCompile Include="Utilities\Logger.cpp" />
+    <ClCompile Include="Utilities\MathUtils.cpp" />
+    <ClCompile Include="Utilities\ObjectHoverWatcher.cpp" />
+    <ClCompile Include="Utilities\StringUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Application.h" />
+    <ClInclude Include="Downloading\Song.h" />
+    <ClInclude Include="Network\Network.h" />
+    <ClInclude Include="Network\SpotifyAPI.h" />
+    <ClInclude Include="Network\YTMusicAPI.h" />
+    <QtMoc Include="UI\CustomWidgets\CheckBox.h" />
+    <QtMoc Include="UI\CustomWidgets\DownloaderThread.h" />
+    <QtMoc Include="UI\CustomWidgets\SongErrorItem.h" />
+    <ClInclude Include="Utilities\Animation.h" />
+    <ClInclude Include="Utilities\ImageUtils.h" />
+    <ClInclude Include="Utilities\JSONUtils.h" />
+    <ClInclude Include="Utilities\Logger.h" />
+    <ClInclude Include="Utilities\MathUtils.h" />
+    <ClInclude Include="Utilities\StringUtils.h" />
+    <QtMoc Include="Utilities\ObjectHoverWatcher.h" />
+    <QtMoc Include="Downloading\SpotifyDownloader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="SpotifyDownloader.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SpotifyDownloader.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="SpotifyDownloader.ui" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D8E18458-F8F2-44E0-87C7-258C5C452470}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
@@ -70,10 +120,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>taglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -92,10 +142,10 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>taglib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Apps\My Software\Source\Spotify-Downloader\Spotify Downloader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -122,52 +172,6 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="ImageUtils.cpp" />
-    <ClCompile Include="JSONUtils.cpp" />
-    <ClCompile Include="ObjectHoverWatcher.cpp" />
-    <ClCompile Include="PlaylistDownloader.cpp" />
-    <ClCompile Include="MathUtils.cpp" />
-    <ClCompile Include="Song.cpp" />
-    <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="UISetup.cpp" />
-    <ClCompile Include="UIUtilities.cpp" />
-    <ClCompile Include="YTMusicAPI.cpp" />
-    <QtUic Include="SpotifyDownloader.ui" />
-    <QtMoc Include="SpotifyDownloader.h" />
-    <ClCompile Include="CustomWidgets.cpp" />
-    <ClCompile Include="Network.cpp" />
-    <ClCompile Include="SongDownloader.cpp" />
-    <ClCompile Include="SpotifyAPI.cpp" />
-    <ClCompile Include="SpotifyDownloader.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="CustomWidgets.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Animation.h" />
-    <QtMoc Include="Application.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="ImageUtils.h" />
-    <ClInclude Include="JSONUtils.h" />
-    <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="Network.h" />
-    <QtMoc Include="ObjectHoverWatcher.h" />
-    <ClInclude Include="Song.h" />
-    <ClInclude Include="SpotifyAPI.h" />
-    <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="YTMusicAPI.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtRcc Include="SpotifyDownloader.qrc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SpotifyDownloader.rc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

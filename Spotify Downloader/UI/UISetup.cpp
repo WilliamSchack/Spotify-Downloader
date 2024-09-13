@@ -1,9 +1,9 @@
-#include "SpotifyDownloader.h"
+#include "Downloading/SpotifyDownloader.h"
 
 #include <QTemporaryFile>
 #include <QClipboard>
 
-#include "Animation.h"
+#include "Utilities/Animation.h"
 
 void SpotifyDownloader::SetupTrayIcon() {
     QAction* progressAction = new QAction(tr("Current Progress"));
@@ -284,11 +284,18 @@ void SpotifyDownloader::SetupSettingsScreen() {
         }
     });
 
-    // Set folder organisation dropdown items font size to 12, cannot do in stylesheet
-    QFont folderSortingItemFont = _ui.FolderSortingInput->font();
-    folderSortingItemFont.setPointSizeF(12);
-    for (int i = 0; i < _ui.FolderSortingInput->count(); i++) {
-        _ui.FolderSortingInput->setItemData(i, QVariant(folderSortingItemFont), Qt::FontRole);
+    // Set combo box dropdown items font size to 12, cannot do in stylesheet
+    QList<QComboBox*> dropdownWidgets({
+        _ui.FolderSortingInput,
+        _ui.DownloaderThreadUIInput
+    });
+
+    QFont dropdownItemFont = _ui.FolderSortingInput->font();
+    dropdownItemFont.setPointSizeF(12);
+    foreach(QComboBox* dropdown, dropdownWidgets) {
+        for (int i = 0; i < _ui.FolderSortingInput->count(); i++) {
+            dropdown->setItemData(i, QVariant(dropdownItemFont), Qt::FontRole);
+        }
     }
 
     // Set combo box variables on change

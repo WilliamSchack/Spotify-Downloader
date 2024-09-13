@@ -2,7 +2,9 @@
 #define SPOTIFYAPI_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
+
+#include "Network/Network.h"
 
 #include <QObject>
 #include <QByteArray>
@@ -13,8 +15,6 @@
 
 #include <QFuture>
 #include <QtConcurrent/QtConcurrentRun>
-
-#include "Network.h"
 
 class SpotifyAPI {
 	public:

@@ -16,15 +16,6 @@ void ObjectHoverWatcher::AddObjectFunctions(QObject* object, std::function<void(
 bool ObjectHoverWatcher::eventFilter(QObject* watched, QEvent* event) {
     QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 
-    //QPushButton* button = qobject_cast<QPushButton*>(watched);
-    //if (!button)
-    //    return false;
-
-    //if (!_hoverFunctions.contains(button))
-    //    return false;
-
-    //qDebug() << watched->objectName() << event->type() << mouseEvent->type();
-
     HoverFunctions functions = _hoverFunctions[watched];
 
     switch (event->type()) {

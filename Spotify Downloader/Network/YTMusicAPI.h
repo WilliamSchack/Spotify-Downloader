@@ -6,16 +6,16 @@
 #define YTMUSICAPI_H
 
 #define QT_MESSAGELOGCONTEXT
-#include "Logger.h"
+#include "Utilities/Logger.h"
+
+#include "Utilities/JSONUtils.h"
+#include "Network/Network.h"
 
 #include <time.h>
 #include <regex>
 
 #include <QObject>
 #include <QTime>
-
-#include "JSONUtils.h"
-#include "Network.h"
 
 class YTMusicAPI {
 	public:
