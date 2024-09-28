@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     Logger::init();
-    qInfo() << "RUNNING VERSION" << SpotifyDownloader::VERSION;
+    qInfo() << "RUNNING VERSION" << Config::VERSION;
 
     Application a(argc, argv);
     SpotifyDownloader w;

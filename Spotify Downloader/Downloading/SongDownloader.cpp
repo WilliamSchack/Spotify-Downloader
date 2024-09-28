@@ -67,7 +67,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	// Initialise Song
-	Song song = Song(track, album, YTDLP_PATH, FFMPEG_PATH, CODEC, Main);
+	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
 	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
@@ -76,12 +76,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// Set target folder
 	QString targetFolderName = "";
-	switch (Main->FolderSortingIndex) {
+	if (Config::FolderSortingIndex != 0) targetFolderName == "/";
+	switch (Config::FolderSortingIndex) {
 		case 1: // Album name
-			targetFolderName = song.AlbumName;
+			targetFolderName.append(song.AlbumName);
 			break;
 		case 2: // Song Artist
-			targetFolderName = song.ArtistName;
+			targetFolderName.append(song.ArtistName);
 			break;
 		case 3: // Song Artists
 			for (int i = 0; i < song.ArtistNamesList.count(); i++) {
@@ -92,7 +93,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			}
 			break;
 		case 4: // Album Artist
-			targetFolderName = song.AlbumArtistNamesList[0];
+			targetFolderName.append(song.AlbumArtistNamesList[0]);
 			break;
 		case 5: // Album Artists
 			for (int i = 0; i < song.AlbumArtistNamesList.count(); i++) {
@@ -105,11 +106,11 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	}
 	
 	// Set target path
-	QString targetFolder = QString("%1/%2").arg(Main->SaveLocationText).arg(targetFolderName);
-	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(CODEC);
+	QString targetFolder = QString("%1%2").arg(Config::SaveLocation).arg(targetFolderName);
+	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Strings[Config::Codec]);
 
 	// If not overwriting and song already downloaded, skip to next song
-	if (!Main->Overwrite && QFile::exists(targetPath)) {
+	if (!Config::Overwrite && QFile::exists(targetPath)) {
 		qInfo() << _threadIndex << "Song" << song.SpotifyId << "already downloaded, skipping...";
 		return;
 	}
@@ -165,13 +166,9 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
-	song.Download(_currentProcess, Main->Overwrite, [&]() {
-		QString output = _currentProcess->readAll();
-		if (output.contains("[download]") && !output.contains(song.FileName)) { // Make sure that it is a download status output and not another file related thing
-			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
-			float progressBarPercent = MathUtils::Lerp(0.3, 0.7, progress.toFloat() / 100);
-			emit SetProgressBar(_threadIndex, progressBarPercent);
-		}
+	song.Download(_currentProcess, Config::Overwrite, [&](float percentComplete) {
+		float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
+		emit SetProgressBar(_threadIndex, progressBarPercent);
 	});
 
 	qInfo() << _threadIndex << "Successfully downloaded song" << song.SpotifyId;
@@ -181,10 +178,10 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	// If normalising, normalise audio, includes setting bitrate of audio
-	if (Main->NormalizeAudio) {
+	if (Config::NormalizeAudio) {
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
-		song.NormaliseAudio(_currentProcess, Main->NormalizeAudioVolume, Main->AudioBitrate, &_quitting, [&](float percentComplete) {
+		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, Config::AudioBitrate, &_quitting, [&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
@@ -194,7 +191,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	else {
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
-		song.SetBitrate(_currentProcess, Main->AudioBitrate, [&](float percentComplete) {
+		song.SetBitrate(_currentProcess, Config::AudioBitrate, [&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
@@ -212,7 +209,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");
 	song.AssignMetadata();
 
-	song.Save(targetFolder, targetPath, Main->Overwrite);
+	song.Save(targetFolder, targetPath, Config::Overwrite);
 
 	qInfo() << _threadIndex << "Successfully saved song" << song.SpotifyId;
 }

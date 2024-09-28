@@ -58,7 +58,7 @@ void SpotifyDownloader::SetupSideBar() {
     }, [=](QObject* object) {
         // If not in a downloading screen, reset icon
         int currentScreen = CurrentScreen();
-        if (currentScreen != SETUP_SCREEN_INDEX && currentScreen != PROCESSING_SCREEN_INDEX)
+        if (currentScreen != Config::SETUP_SCREEN_INDEX && currentScreen != Config::PROCESSING_SCREEN_INDEX)
             _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
     });
 
@@ -66,7 +66,7 @@ void SpotifyDownloader::SetupSideBar() {
         _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
     }, [=](QObject* object) {
         // If not in settings screen, reset icon
-        if(CurrentScreen() != SETTINGS_SCREEN_INDEX)
+        if(CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
             _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
     });
 
@@ -75,7 +75,7 @@ void SpotifyDownloader::SetupSideBar() {
             _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
     }, [=](QObject* object) {
         // If not in error screen, reset icon
-        if(_errorUI.count() > 0 && CurrentScreen() != ERROR_SCREEN_INDEX)
+        if(_errorUI.count() > 0 && CurrentScreen() != Config::ERROR_SCREEN_INDEX)
             _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
     });
 
@@ -99,21 +99,21 @@ void SpotifyDownloader::SetupSideBar() {
 
     // Buttons
     connect(_ui.DownloadingScreenButton, &QPushButton::clicked, [=] {
-        if (CurrentScreen() == SETUP_SCREEN_INDEX)
+        if (CurrentScreen() == Config::SETUP_SCREEN_INDEX)
             return;
 
         // Check if audio naming is valid
-        SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
-        SongOutputFormat = _ui.SongOutputFormatInput->text();
+        Config::SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
+        Config::SongOutputFormat = _ui.SongOutputFormatInput->text();
 
         if (!ValidateSettings())
             return;
 
         // Save Settings
-        SaveSettings();
+        Config::SaveSettings();
 
         // Return to downloading screen
-        int downloadingScreen = DownloadStarted ? PROCESSING_SCREEN_INDEX : SETUP_SCREEN_INDEX;
+        int downloadingScreen = DownloadStarted ? Config::PROCESSING_SCREEN_INDEX : Config::SETUP_SCREEN_INDEX;
         ChangeScreen(downloadingScreen);
     });
 
@@ -122,12 +122,12 @@ void SpotifyDownloader::SetupSideBar() {
             return;
 
         // Change screen
-        ChangeScreen(ERROR_SCREEN_INDEX);
+        ChangeScreen(Config::ERROR_SCREEN_INDEX);
     });
 
     connect(_ui.SettingsScreenButton, &QPushButton::clicked, [=] {
         // Change screen
-        ChangeScreen(SETTINGS_SCREEN_INDEX);
+        ChangeScreen(Config::SETTINGS_SCREEN_INDEX);
     });
 
     connect(_ui.DonateButton, &QPushButton::clicked, [=] {
@@ -155,25 +155,25 @@ void SpotifyDownloader::SetupSetupScreen() {
     });
 
     connect(_ui.ContinueButton, &QPushButton::clicked, [=] {
-        PlaylistURLText = _ui.PlaylistURLInput->text();
-        SaveLocationText = _ui.SaveLocationInput->text();
+        Config::PlaylistURL = _ui.PlaylistURLInput->text();
+        Config::SaveLocation = _ui.SaveLocationInput->text();
 
-        if (PlaylistURLText != "" && SaveLocationText != "") {
+        if (Config::PlaylistURL != "" && Config::SaveLocation != "") {
             // Validate URL and Directory
             if (!ValidateInputs())
                 return;
 
             // Save directory to QSettings
-            QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
+            QSettings settings(Config::ORGANIZATION_NAME, Config::APPLICATION_NAME);
             settings.beginGroup("Output");
-            settings.setValue("saveLocation", SaveLocationText);
+            settings.setValue("saveLocation", Config::SaveLocation);
             settings.endGroup();
 
             DownloadStarted = true;
             Paused = false;
 
             // Setup and Reset GUI
-            ChangeScreen(PROCESSING_SCREEN_INDEX);
+            ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
 
             _ui.PlayButton->hide();
@@ -182,7 +182,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             SetDownloadStatus("");
 
-            qInfo() << "Starting download for playlist" << PlaylistURLText;
+            qInfo() << "Starting download for playlist" << Config::PlaylistURL;
             Logger::Flush();
 
             // Start thread
@@ -199,7 +199,7 @@ void SpotifyDownloader::SetupSetupScreen() {
     });
 
     // Set version label
-    _ui.VersionLabel->setText(QString("v%1").arg(VERSION));
+    _ui.VersionLabel->setText(QString("v%1").arg(Config::VERSION));
 }
 
 void SpotifyDownloader::SetupSettingsScreen() {
@@ -247,17 +247,17 @@ void SpotifyDownloader::SetupSettingsScreen() {
     // Number Inputs
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
         if (_ui.DownloaderThreadsInput->text() != "") {
-            ThreadCount = _ui.DownloaderThreadsInput->value();
+            Config::ThreadCount = _ui.DownloaderThreadsInput->value();
         }
     });
     connect(_ui.DownloadSpeedSettingInput, &QDoubleSpinBox::textChanged, [=] {
         if (_ui.DownloadSpeedSettingInput->text() != "") {
-            DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
+            Config::DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
         }
     });
     connect(_ui.NormalizeVolumeSettingInput, &QDoubleSpinBox::textChanged, [=] {
         if (_ui.NormalizeVolumeSettingInput->text() != "") {
-            NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
+            Config::NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
         }
     });
     connect(_ui.AudioBitrateInput, &QSpinBox::textChanged, [=] {
@@ -275,9 +275,9 @@ void SpotifyDownloader::SetupSettingsScreen() {
                 _ui.AudioBitrateInput->setValue(audioBitrate);
             }
 
-            AudioBitrate = audioBitrate;
+            Config::AudioBitrate = audioBitrate;
 
-            float estimatedFileSize = (((float)AudioBitrate * 60) / 8) / 1024;
+            float estimatedFileSize = (((float)Config::AudioBitrate * 60) / 8) / 1024;
             QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
 
             _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
@@ -299,15 +299,15 @@ void SpotifyDownloader::SetupSettingsScreen() {
     }
 
     // Set combo box variables on change
-    connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { FolderSortingIndex = index; });
-    connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { DownloaderThreadUIIndex = index; });
+    connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { Config::FolderSortingIndex = index; });
+    connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Button Clicks (Using isChecked to help with loading settings)
-    connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Overwrite = _ui.OverwriteSettingButton->isChecked; });
-    connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Notifications = _ui.NotificationSettingButton->isChecked; });
+    connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Config::Overwrite = _ui.OverwriteSettingButton->isChecked; });
+    connect(_ui.NotificationSettingButton, &CheckBox::clicked, [=] { Config::Notifications = _ui.NotificationSettingButton->isChecked; });
     connect(_ui.NormalizeVolumeSettingButton, &CheckBox::clicked, [=] {
-        NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
-        _ui.NormalizeVolumeSettingInput->setEnabled(NormalizeAudio);
+        Config::NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
+        _ui.NormalizeVolumeSettingInput->setEnabled(Config::NormalizeAudio);
     });
 }
 
@@ -353,9 +353,55 @@ void SpotifyDownloader::SetupProcessingScreen() {
     });
 }
 
+void SpotifyDownloader::LoadSettingsUI() {
+    // Clicking buttons to call their callbacks
+    
+    // Overwrite
+    if(_ui.OverwriteSettingButton->isChecked != Config::Overwrite)
+        _ui.OverwriteSettingButton->click();
+    
+    // Normalize Volume
+    if (_ui.NormalizeVolumeSettingButton->isChecked != Config::NormalizeAudio)
+        _ui.NormalizeVolumeSettingButton->click();
+    
+    _ui.NormalizeVolumeSettingInput->setValue(Config::NormalizeAudioVolume);
+    
+    // Audio Bitrate
+    _ui.AudioBitrateInput->setValue(Config::AudioBitrate);
+    
+    float estimatedFileSize = (((float)Config::AudioBitrate * 60) / 8) / 1024;
+    QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
+    _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+    
+    // Save Location
+    _ui.SaveLocationInput->setText(Config::SaveLocation);
+    
+    // Song Output Format
+    _ui.SongOutputFormatTagInput->setText(Config::SongOutputFormatTag);
+    
+    _ui.SongOutputFormatInput->setText(Config::SongOutputFormat);
+    
+    // Folder Sorting
+    _ui.FolderSortingInput->setCurrentIndex(Config::FolderSortingIndex);
+
+    
+    // Status Notifications
+    if (_ui.NotificationSettingButton->isChecked != Config::Notifications)
+        _ui.NotificationSettingButton->click();
+    
+    // Downloader Threads
+    _ui.DownloaderThreadsInput->setValue(Config::ThreadCount);
+    
+    // Download Speed Limit
+    _ui.DownloadSpeedSettingInput->setValue(Config::DownloadSpeed);
+    
+    // Downloader Thread UI
+    _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);
+}
+
 bool SpotifyDownloader::ValidateSettings() {
-    QStringList namingTags = Q_NAMING_TAGS();
-    std::tuple<QString, NamingError> formattedOutputName = FormatOutputNameWithTags([&namingTags](QString tag) -> QString {
+    QStringList namingTags = Config::Q_NAMING_TAGS();
+    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatOutputNameWithTags([&namingTags](QString tag) -> QString {
         if (!namingTags.contains(tag.toLower())) {
             return nullptr;
         }
@@ -364,16 +410,16 @@ bool SpotifyDownloader::ValidateSettings() {
     });
 
     QString formattedOutputNameString = std::get<0>(formattedOutputName);
-    NamingError namingError = std::get<1>(formattedOutputName);
+    Config::NamingError namingError = std::get<1>(formattedOutputName);
 
-    if (namingError == NamingError::EnclosingTagsInvalid) {
+    if (namingError == Config::NamingError::EnclosingTagsInvalid) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid Naming Format Tag");
         msg.setText(QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString));
         msg.setIcon(QMessageBox::Warning);
         msg.exec();
         return false;
-    } else if (namingError == NamingError::TagInvalid) {
+    } else if (namingError == Config::NamingError::TagInvalid) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid Naming Format");
         msg.setText(QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString));
@@ -387,7 +433,7 @@ bool SpotifyDownloader::ValidateSettings() {
 
 bool SpotifyDownloader::ValidateInputs() {
     // Check if both URL and Directory are valid
-    if ((!PlaylistURLText.contains("open.spotify.com/playlist/") && !PlaylistURLText.contains("open.spotify.com/track/") && !PlaylistURLText.contains("open.spotify.com/album/")) && !std::filesystem::exists(SaveLocationText.toStdString())) {
+    if ((!Config::PlaylistURL.contains("open.spotify.com/playlist/") && !Config::PlaylistURL.contains("open.spotify.com/track/") && !Config::PlaylistURL.contains("open.spotify.com/album/")) && !std::filesystem::exists(Config::SaveLocation.toStdString())) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid Fields");
         msg.setText("Please Enter Valid Inputs Into Both Fields");
@@ -406,7 +452,7 @@ bool SpotifyDownloader::ValidateInputs() {
 }
 
 bool SpotifyDownloader::ValidateURL() {
-    if (!PlaylistURLText.contains("open.spotify.com/playlist/") && !PlaylistURLText.contains("open.spotify.com/track/") && !PlaylistURLText.contains("open.spotify.com/album/")) {
+    if (!Config::PlaylistURL.contains("open.spotify.com/playlist/") && !Config::PlaylistURL.contains("open.spotify.com/track/") && !Config::PlaylistURL.contains("open.spotify.com/album/")) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid URL");
         msg.setText("Please Input A Valid URL");
@@ -420,7 +466,7 @@ bool SpotifyDownloader::ValidateURL() {
 
 bool SpotifyDownloader::ValidateDirectory() {
     // Check if Directory is valid
-    if (!std::filesystem::exists(SaveLocationText.toStdString())) {
+    if (!std::filesystem::exists(Config::SaveLocation.toStdString())) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid Directory");
         msg.setText("Please Input A Valid Directory");
@@ -432,7 +478,7 @@ bool SpotifyDownloader::ValidateDirectory() {
     // Check permissions of folder, try to create temp file in location, if error occurs, folder is not writable
     QTemporaryFile tempFile;
     if (tempFile.open()) {
-        QString tempFilePath = QString("%1/folderChecker.temp").arg(SaveLocationText);
+        QString tempFilePath = QString("%1/folderChecker.temp").arg(Config::SaveLocation);
 
         // If rename failed, and error == "Access is denied.", directory requires admin perms
         bool renameSuccessfull = tempFile.rename(tempFilePath);
@@ -483,7 +529,7 @@ bool SpotifyDownloader::ValidateDirectory() {
 bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
     // Handle line indicators
     if (event->type() == QEvent::MouseMove) {        
-        if (CurrentScreen() != SETTINGS_SCREEN_INDEX)
+        if (CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
             return false;
 
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);

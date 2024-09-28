@@ -1177,16 +1177,11 @@ background-color: rgba(0, 0, 0, 0);</string>
         </font>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Style of the UI of each thread while downloading&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Dynamic: &lt;/span&gt;Switches between compact and original depending on threads used to fit the screen&lt;span style=&quot; font-weight:700;&quot;&gt;&lt;br/&gt;Compact: &lt;/span&gt;Newer compact and smaller design&lt;span style=&quot; font-weight:700;&quot;&gt;&lt;br/&gt;Original: &lt;/span&gt;Older larger design, spaces out details&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Compact Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Style of the UI of each thread while downloading&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Compact: &lt;/span&gt;Newer compact and smaller design&lt;span style=&quot; font-weight:700;&quot;&gt;&lt;br/&gt;Original: &lt;/span&gt;Older larger design, spaces out details&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Dynamic: &lt;/span&gt;Switches between compact and original depending on threads used to fit the screen&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Compact Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(255, 255, 255);</string>
        </property>
-       <item>
-        <property name="text">
-         <string>Dynamic</string>
-        </property>
-       </item>
        <item>
         <property name="text">
          <string>Compact</string>
@@ -1195,6 +1190,11 @@ background-color: rgba(0, 0, 0, 0);</string>
        <item>
         <property name="text">
          <string>Original</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Dynamic</string>
         </property>
        </item>
       </widget>

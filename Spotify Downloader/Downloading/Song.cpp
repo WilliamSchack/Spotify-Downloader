@@ -1,6 +1,6 @@
 #include "Song.h"
 
-Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, const QString codec, const SpotifyDownloader* main) {
+Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main) {
 	_main = main;
 
 	_ytdlpPath = ytdlpPath;
@@ -40,8 +40,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 void Song::GenerateFileName(const SpotifyDownloader* main) {
 
 	// Generate file name, replacing tags for values
-	std::tuple<QString, SpotifyDownloader::NamingError> filenameData = main->FormatOutputNameWithTags([=](QString tag) -> QString {
-		QStringList namingTags = main->Q_NAMING_TAGS();
+	std::tuple<QString, Config::NamingError> filenameData = Config::FormatOutputNameWithTags([=](QString tag) -> QString {
+		QStringList namingTags = Config::Q_NAMING_TAGS();
 
 		QString tagReplacement = QString();
 		int indexOfTag = namingTags.indexOf(tag.toLower());
@@ -101,7 +101,7 @@ void Song::GenerateDownloadingPath() {
 		QDir().mkdir(_tempPath);
 
 	_downloadingFolder = QString("%1/Downloading").arg(_tempPath);
-	_downloadingPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName).arg(_codec);
+	_downloadingPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName).arg(Codec::Strings[_codec]);
 
 	if (!QDir(_downloadingFolder).exists())
 		QDir().mkdir(_downloadingFolder);
@@ -312,26 +312,84 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-void Song::Download(QProcess*& process, bool overwrite, std::function<void()> onProgressUpdate) {
+void Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate) {
+	// Use downloading path without codec, will be changed after
+	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
+
 	// Remove from temp folder if exists
-	if (overwrite && QFile::exists(_downloadingPath))
-		QFile::remove(_downloadingPath);
+	if (overwrite && QFile::exists(downloadingPathM4A))
+		QFile::remove(downloadingPathM4A);
 
 	// Setup Process
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-	QObject::connect(process, &QProcess::readyRead, process, onProgressUpdate);
+	QObject::connect(process, &QProcess::readyRead, process, [&]() {
+		QString output = process->readAll();
+		if (output.contains("[download]") && !output.contains(FileName)) { // Make sure that it is a download status output and not another file related thing
+			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
+			float percent = MathUtils::Lerp(0.3, 0.7, progress.toFloat() / 100);
+			// 0-1 if not converting, 0-0.7 otherwise
+			percent = _codec == Codec::Extension::M4A ? MathUtils::Lerp(0, 1, percent) : MathUtils::Lerp(0, 0.7, percent);
+			onProgressUpdate(percent);
+		}
+	});
 
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
-	process->startCommand(QString(R"("%1" --no-part --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 --audio-format %4 "%5")")
+	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 "%4")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(_downloadingPath)
+		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(_codec)
 		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
-	
 	process->waitForFinished(-1);
+
+	if (_codec == Codec::Extension::M4A) return; // No need to convert
+
+	// Get duration for progress bar calculations
+	process = new QProcess();
+	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	process->startCommand(QString(R"("%1" -i "%2" -f null -)")
+		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+		.arg(_downloadingPath));
+	process->waitForFinished(-1);
+
+	QString audioOutput = process->readAllStandardError();
+	QString timeString = audioOutput.split("time=").last().split(" bitrate")[0];
+	int ms = QDateTime::fromString(QString("0001-01-01T%1").arg(timeString), Qt::ISODateWithMs).time().msecsSinceStartOfDay();
+	
+	// Convert m4a to desired codec
+	process = new QProcess();
+	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	QObject::connect(process, &QProcess::readyRead, process, [&]() {
+		QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
+		int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
+		float progress = float(msProgress) / float(ms);
+		progress = MathUtils::Lerp(0.7, 1, progress);
+		onProgressUpdate(progress);
+	});
+
+	QString convertParams = "";
+	switch (_codec) {
+		case Codec::Extension::MP3:
+			convertParams = "-c:v copy";
+			break;
+		case Codec::Extension::AAC:
+			convertParams = "-acodec copy";
+			break;
+	}
+	
+	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -q:a 0 %3 "%4")")
+		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+		.arg(downloadingPathM4A)
+		.arg(convertParams)
+		.arg(_downloadingPath));
+	process->waitForFinished(-1);
+
+	onProgressUpdate(1);
+
+	// Remove temp m4a file
+	QFile::remove(downloadingPathM4A);
 }
 
 // Audio quality will be somewhere around 256kb/s (not exactly) so change it to desired quality ranging from 33 - 256 in this case (33 is minimum, from there 64, 96, 128, ...)
@@ -361,7 +419,7 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 		onProgressUpdate(progress);
 	});
 
-	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(_codec);
+	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Strings[_codec]);
 	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(_downloadingPath)
@@ -385,7 +443,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 	// For some reason ffmpeg outputs to StandardError. idk why
 	QString audioOutput = process->readAllStandardError();
 	if (audioOutput.contains("mean_volume:")) {
-		QString normalizedFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_N").arg(_codec);
+		QString normalizedFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_N").arg(Codec::Strings[_codec]);
 
 		float meanVolume = audioOutput.split("mean_volume:")[1].split("dB")[0].toFloat();
 
@@ -427,36 +485,67 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 void Song::AssignMetadata() {
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
+		// M4A currently doesnt give image into metadata, currently working on it
+		// 
+		// AAC FILE SHOWS NULL, CONVERT TO AAC AFTER FROM M4A
+
 		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(_downloadingPath.constData()));
 		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
-		TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
-
-		TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
-		tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
-		tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
-		tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-
-		TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
-		TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
-		TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
-		pubFrame->setText("William S - Spotify Downloader");
-		copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-		comFrame->setText("Thanks for using my program! :)\n- William S");
-		tag->addFrame(pubFrame);
-		tag->addFrame(copFrame);
-		tag->addFrame(comFrame);
-
+		
 		QByteArray imageBytes;
 		QBuffer buffer(&imageBytes);
 		buffer.open(QIODevice::WriteOnly);
 		CoverImage.save(&buffer, "PNG");
 		buffer.close();
 
-		TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
-		picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
-		picFrame->setMimeType("image/png");
-		picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
-		tag->addFrame(picFrame);
+		switch (Config::Codec) {
+			case Codec::Extension::MP3:
+			{
+				TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
+
+				TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
+				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
+				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
+				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+
+				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
+				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
+				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
+				pubFrame->setText("William S - Spotify Downloader");
+				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				comFrame->setText("Thanks for using my program! :)\n- William S");
+				tag->addFrame(pubFrame);
+				tag->addFrame(copFrame);
+				tag->addFrame(comFrame);
+
+				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
+				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
+				picFrame->setMimeType("image/png");
+				picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
+				tag->addFrame(picFrame);
+
+				break;
+			}
+			case Codec::Extension::M4A:
+			{
+				TagLib::MP4::File* file = dynamic_cast<TagLib::MP4::File*>(tagFileRef.file());
+
+				TagLib::MP4::Tag* tag = file->tag();
+				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
+				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
+				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+
+				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
+				TagLib::MP4::CoverArtList coverArtList;
+				coverArtList.append(coverArt);
+				TagLib::MP4::Item coverItem(coverArtList);
+
+				tag->setItem("covr", coverItem);
+
+				break;
+			}
+		}
 
 		tagFileRef.save();
 	}

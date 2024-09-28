@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="Downloading\PlaylistDownloader.cpp" />
     <ClCompile Include="Downloading\Song.cpp" />
     <ClCompile Include="Downloading\SongDownloader.cpp" />
@@ -41,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Application.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="Downloading\Codec.h" />
     <ClInclude Include="Downloading\Song.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />

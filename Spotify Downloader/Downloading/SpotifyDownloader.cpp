@@ -9,8 +9,8 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
     setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
-    QCoreApplication::setOrganizationName(ORGANIZATION_NAME);
-    QCoreApplication::setApplicationName(APPLICATION_NAME);
+    QCoreApplication::setOrganizationName(Config::ORGANIZATION_NAME);
+    QCoreApplication::setApplicationName(Config::APPLICATION_NAME);
 
     qApp->installEventFilter(this);
     _ui.setupUi(this);
@@ -23,7 +23,8 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     SetupSettingsScreen();
     SetupProcessingScreen();
 
-    LoadSettings();
+    Config::LoadSettings();
+    LoadSettingsUI();
 
     SetupDownloaderThread();
 
@@ -53,161 +54,6 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
 
     qInfo() << "Successfully Setup Playlist Worker Thread";
-}
-
-void SpotifyDownloader::SaveSettings() {
-    // Get values from UI
-    bool overwriteEnabled = _ui.OverwriteSettingButton->isChecked;
-    bool normalizeEnabled = _ui.NormalizeVolumeSettingButton->isChecked;
-    float normalizeVolume = _ui.NormalizeVolumeSettingInput->value();
-    int audioBitrate = _ui.AudioBitrateInput->value();
-    QString songOutputFormatTag = _ui.SongOutputFormatTagInput->text();
-    QString songOutputFormat = _ui.SongOutputFormatInput->text();
-    int folderSortingIndex = _ui.FolderSortingInput->currentIndex();
-    bool statusNotificationsEnabled = _ui.NotificationSettingButton->isChecked;
-    int downloaderThreads = _ui.DownloaderThreadsInput->value();
-    float downloadSpeedLimit = _ui.DownloadSpeedSettingInput->value();
-    int downloaderThreadUIIndex = _ui.DownloaderThreadUIInput->currentIndex();
-
-    // Save values to settings
-    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-
-    settings.beginGroup("Output");
-    settings.setValue("overwriteEnabled", overwriteEnabled);
-    settings.setValue("normalizeEnabled", normalizeEnabled);
-    settings.setValue("normalizeVolume", normalizeVolume);
-    settings.setValue("audioBitrate", audioBitrate);
-    settings.setValue("songOutputFormatTag", songOutputFormatTag);
-    settings.setValue("songOutputFormat", songOutputFormat);
-    settings.setValue("folderSortingIndex", folderSortingIndex);
-    settings.endGroup();
-
-    settings.beginGroup("Downloading");
-    settings.setValue("statusNotificationsEnabled", statusNotificationsEnabled);
-    settings.setValue("downloaderThreads", downloaderThreads);
-    settings.setValue("downloadSpeedLimit", downloadSpeedLimit);
-    settings.endGroup();
-
-    settings.beginGroup("Interface");
-    settings.setValue("downloaderThreadUIIndex", downloaderThreadUIIndex);
-    settings.endGroup();
-
-    // Log settings
-    QJsonObject settingsLog = QJsonObject{
-        {"Overwrite Enabled", overwriteEnabled},
-        {"Normalise Enabled", normalizeEnabled},
-        {"Normalise Volume", normalizeVolume},
-        {"Audio Bitrate", audioBitrate},
-        {"Song Output Format Tag", songOutputFormatTag},
-        {"Song Output Format", songOutputFormat},
-        {"Folder Sorting Index", folderSortingIndex},
-        {"Status Notifications Enabled", statusNotificationsEnabled},
-        {"Downloader Threads", downloaderThreads},
-        {"Download Speed Limit", downloadSpeedLimit},
-        {"Downloader Thread UI Index", downloaderThreadUIIndex}
-    };
-
-    qInfo() << "Settings Successfully Saved" << settingsLog;
-}
-
-void SpotifyDownloader::LoadSettings() {
-    // Clicking buttons to call their callbacks
-    // Default settings are defined here
-
-    QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
-
-    settings.beginGroup("Output");
-
-    // Overwrite
-    bool overwriteEnabled = settings.value("overwriteEnabled", false).toBool();
-    if(_ui.OverwriteSettingButton->isChecked != overwriteEnabled)
-        _ui.OverwriteSettingButton->click();
-    Overwrite = overwriteEnabled;
-
-    // Normalize Volume
-    bool normalizeEnabled = settings.value("normalizeEnabled", true).toBool();
-    if (_ui.NormalizeVolumeSettingButton->isChecked != normalizeEnabled)
-        _ui.NormalizeVolumeSettingButton->click();
-    NormalizeAudio = normalizeEnabled;
-
-    float normalizeVolume = settings.value("normalizeVolume", 14.0).toFloat();
-    _ui.NormalizeVolumeSettingInput->setValue(normalizeVolume);
-    NormalizeAudioVolume = normalizeVolume;
-
-    // Audio Bitrate
-    int audioBitrate = settings.value("audioBitrate", 192).toInt();
-    _ui.AudioBitrateInput->setValue(audioBitrate);
-    AudioBitrate = audioBitrate;
-
-    float estimatedFileSize = (((float)AudioBitrate * 60) / 8) / 1024;
-    QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
-    _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
-
-    // Save Location
-    QString saveLocation = settings.value("saveLocation", "").toString();
-    _ui.SaveLocationInput->setText(saveLocation);
-
-    // Song Output Format
-    QString songOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
-    _ui.SongOutputFormatTagInput->setText(songOutputFormatTag);
-    SongOutputFormatTag = songOutputFormatTag;
-
-    QString songOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
-    _ui.SongOutputFormatInput->setText(songOutputFormat);
-    SongOutputFormat = songOutputFormat;
-
-    // Folder Sorting
-    int folderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
-    _ui.FolderSortingInput->setCurrentIndex(folderSortingIndex);
-    FolderSortingIndex = folderSortingIndex;
-
-    settings.endGroup();
-
-    settings.beginGroup("Downloading");
-
-    // Status Notifications
-    bool statusNotificationsEnabled = settings.value("statusNotificationsEnabled", true).toBool();
-    if (_ui.NotificationSettingButton->isChecked != statusNotificationsEnabled)
-        _ui.NotificationSettingButton->click();
-    Notifications = statusNotificationsEnabled;
-
-    // Downloader Threads
-    int downloaderThreads = settings.value("downloaderThreads", 6).toInt();
-    _ui.DownloaderThreadsInput->setValue(downloaderThreads);
-    ThreadCount = downloaderThreads;
-
-    // Download Speed Limit
-    float downloadSpeedLimit = settings.value("downloadSpeedLimit", 0.0).toFloat();
-    _ui.DownloadSpeedSettingInput->setValue(downloadSpeedLimit);
-    DownloadSpeed = downloadSpeedLimit;
-
-    settings.endGroup();
-
-    settings.beginGroup("Interface");
-
-    // Downloader Thread UI
-    int downloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
-    _ui.DownloaderThreadUIInput->setCurrentIndex(downloaderThreadUIIndex);
-    DownloaderThreadUIIndex = downloaderThreadUIIndex;
-
-    settings.endGroup();
-
-    // Log settings
-    QJsonObject settingsLog = QJsonObject {
-        {"Overwrite Enabled", overwriteEnabled},
-        {"Normalise Enabled", normalizeEnabled},
-        {"Normalise Volume", normalizeVolume},
-        {"Audio Bitrate", audioBitrate},
-        {"Song Output Format Tag", songOutputFormatTag},
-        {"Song Output Format", songOutputFormat},
-        {"Folder Sorting Index", folderSortingIndex},
-        {"Status Notifications Enabled", statusNotificationsEnabled},
-        {"Downloader Threads", downloaderThreads},
-        {"Download Speed Limit", downloadSpeedLimit},
-        {"Downloader Thread UI Index", downloaderThreadUIIndex}
-    };
-
-    qInfo() << "Settings Successfully Loaded" << settingsLog;
 }
 
 void SpotifyDownloader::ResetDownloadingVariables() {
@@ -245,80 +91,19 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     VariablesResetting = false;
 }
 
-// Convert naming tags to QStringList, cannot have const QStringList
-QStringList SpotifyDownloader::Q_NAMING_TAGS_CACHE;
-QStringList SpotifyDownloader::Q_NAMING_TAGS() {
-    if (!Q_NAMING_TAGS_CACHE.isEmpty())
-        return Q_NAMING_TAGS_CACHE;
-
-    QStringList tags = QStringList();
-    int numTags = std::extent<decltype(NAMING_TAGS)>::value;
-    for (int i = 0; i < numTags; i++) {
-        QString tag = QString::fromStdString(NAMING_TAGS[i]);
-        tags.append(tag);
-    }
-
-    Q_NAMING_TAGS_CACHE = tags;
-    return tags;
-}
-
 QList<QPair<QWidget*, int>> SETTINGS_INDICATORS_CACHE;
 QList<QPair<QWidget*, int>> SpotifyDownloader::SETTINGS_LINE_INDICATORS() {
     if (!SETTINGS_LINE_INDICATORS_CACHE.isEmpty())
         return SETTINGS_LINE_INDICATORS_CACHE;
 
     QList<QPair<QWidget*, int>> lineIndicators {
-        QPair<QWidget*, int>(_ui.OutputSettings_LineIndicator, OUTPUT_SETTINGS_LINE_MAX_HEIGHT),
-        QPair<QWidget*, int>(_ui.DownloadingSettings_LineIndicator, DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT),
-        QPair<QWidget*, int>(_ui.InterfaceSettings_LineIndicator, INTERFACE_SETTINGS_LINE_MAX_HEIGHT)
+        QPair<QWidget*, int>(_ui.OutputSettings_LineIndicator, Config::OUTPUT_SETTINGS_LINE_MAX_HEIGHT),
+        QPair<QWidget*, int>(_ui.DownloadingSettings_LineIndicator, Config::DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT),
+        QPair<QWidget*, int>(_ui.InterfaceSettings_LineIndicator, Config::INTERFACE_SETTINGS_LINE_MAX_HEIGHT)
     };
 
     SETTINGS_LINE_INDICATORS_CACHE = lineIndicators;
     return lineIndicators;
-}
-
-std::tuple<QString, SpotifyDownloader::NamingError> SpotifyDownloader::FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const {
-    QString songOutputFormatTag = SongOutputFormatTag;
-    QString songOutputFormat = SongOutputFormat;
-
-    if (songOutputFormatTag.length() != 2) {
-        return std::make_tuple(songOutputFormatTag, NamingError::EnclosingTagsInvalid);
-    }
-
-    QChar leftTag = songOutputFormatTag[0];
-    QChar rightTag = songOutputFormatTag[1];
-
-    QStringList namingTags = Q_NAMING_TAGS();
-
-    QString newString;
-    int currentCharIndex = 0;
-    while (currentCharIndex <= songOutputFormat.length()) {
-        int nextLeftIndex = songOutputFormat.indexOf(leftTag, currentCharIndex);
-        int nextRightIndex = songOutputFormat.indexOf(rightTag, currentCharIndex);
-        int tagLength = nextRightIndex - nextLeftIndex - 1;
-        QString tag = songOutputFormat.mid(nextLeftIndex + 1, tagLength);
-
-        if (nextLeftIndex == -1 || nextRightIndex == -1) {
-            QString afterTagString = songOutputFormat.mid(currentCharIndex, songOutputFormat.length() - currentCharIndex);
-            newString.append(afterTagString);
-
-            break;
-        }
-
-        QString beforeTagString = songOutputFormat.mid(currentCharIndex, nextLeftIndex - currentCharIndex);
-        newString.append(beforeTagString);
-
-        QString tagReplacement = tagHandlerFunc(tag);
-        if (tagReplacement.isNull()) {
-            return std::make_tuple(tag, NamingError::TagInvalid);
-        }
-
-        newString.append(tagReplacement);
-
-        currentCharIndex = nextRightIndex + 1;
-    }
-
-    return std::make_tuple(newString, NamingError::None);
 }
 
 void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {
@@ -376,8 +161,8 @@ SpotifyDownloader::~SpotifyDownloader()
 {
     qInfo() << "Quitting...";
 
-    if (CurrentScreen() == SETTINGS_SCREEN_INDEX)
-        SaveSettings();
+    if (CurrentScreen() == Config::SETTINGS_SCREEN_INDEX)
+        Config::SaveSettings();
 
     ExitingApplication = true;
     Paused = false;

@@ -8,7 +8,7 @@ QByteArray Network::Get(QNetworkRequest request) {
 	QNetworkReply* rep = manager->get(request);
 	QObject::connect(manager, &QNetworkAccessManager::finished, [&complete, &response](QNetworkReply* reply) {
 		if (reply->error() != QNetworkReply::NoError) {
-			qDebug() << reply->errorString();
+			qWarning() << reply->errorString();
 			response = nullptr;
 			complete = true;
 			return;
@@ -35,7 +35,7 @@ QByteArray Network::Post(QNetworkRequest request, QByteArray postData) {
 	QNetworkReply* rep = manager->post(request, postData);
 	QObject::connect(manager, &QNetworkAccessManager::finished, [&complete, &response](QNetworkReply* reply) {
 		if (reply->error() != QNetworkReply::NoError) {
-			qDebug() << reply->errorString();
+			qWarning() << reply->errorString();
 			response = nullptr;
 			complete = true;
 			return;

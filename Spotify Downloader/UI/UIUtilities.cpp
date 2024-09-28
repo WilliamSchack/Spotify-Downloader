@@ -9,20 +9,20 @@ void SpotifyDownloader::SetupUI(int threadIndex) {
     _downloaderUI.clear();
     for (int i = 0; i < threadIndex; i++) {
         DownloaderThread* currentUI;
-        switch (DownloaderThreadUIIndex) {
-        case 0: // Dynamic
-            // If original threads overflow scroll area use compact design
-            if (threadIndex > 2)
+        switch (Config::DownloaderThreadUIIndex) {
+            case 0: // Compact
                 currentUI = new CompactDownloaderThread();
-            else
+                break;
+            case 1: // Original
                 currentUI = new OriginalDownloaderThread();
-            break;
-        case 1: // Compact
-            currentUI = new CompactDownloaderThread();
-            break;
-        case 2: // Original
-            currentUI = new OriginalDownloaderThread();
-            break;
+                break;
+            case 2: // Dynamic
+                // If original threads overflow scroll area use compact design
+                if (threadIndex > 2)
+                    currentUI = new CompactDownloaderThread();
+                else
+                    currentUI = new OriginalDownloaderThread();
+                break;
         }
 
 
@@ -41,20 +41,20 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
 
     // Animate Side Panel
     switch (screenIndex) {
-        case SETUP_SCREEN_INDEX:
-        case PROCESSING_SCREEN_INDEX:
+        case Config::SETUP_SCREEN_INDEX:
+        case Config::PROCESSING_SCREEN_INDEX:
             _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
             if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
             _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.DownloadingScreenButton->y() - 2), 500);
             break;
-        case ERROR_SCREEN_INDEX:
+        case Config::ERROR_SCREEN_INDEX:
             _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
             _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
             _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.ErrorScreenButton->y() - 2), 500);
             break;
-        case SETTINGS_SCREEN_INDEX:
+        case Config::SETTINGS_SCREEN_INDEX:
             _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
             _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
             if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
@@ -67,7 +67,7 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
 }
 
 void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
-    if (!Notifications) return;
+    if (!Config::Notifications) return;
     _trayIcon->showMessage(title, message, QIcon(":/SpotifyDownloader/Icon.ico"), msecs);
 }
 

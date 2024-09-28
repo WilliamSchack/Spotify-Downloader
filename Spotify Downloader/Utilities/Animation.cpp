@@ -1,7 +1,5 @@
 #include "Animation.h"
 
-QMap<QObject*, QVariantAnimation*> Animation::_currentAnimations;
-
 void Animation::CheckForAnimation(QObject* target) {
     if (_currentAnimations.contains(target)) {
         _currentAnimations[target]->stop();

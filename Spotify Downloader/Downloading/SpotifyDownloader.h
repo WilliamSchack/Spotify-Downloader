@@ -8,6 +8,8 @@
 
 #include "ui_SpotifyDownloader.h"
 
+#include "Config.h"
+
 #include "UI/CustomWidgets/DownloaderThread.h"
 #include "UI/CustomWidgets/SongErrorItem.h"
 
@@ -15,6 +17,8 @@
 
 #include "Network/YTMusicAPI.h"
 #include "Network/SpotifyAPI.h"
+
+#include "Downloading/Codec.h"
 
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QVBoxLayout>
@@ -39,8 +43,6 @@
 #include <QEvent>
 #include <QCloseEvent>
 
-#include <QSettings>
-
 // Forward Declarations
 class PlaylistDownloader;
 class SongDownloader;
@@ -54,67 +56,12 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
-        static constexpr const char* VERSION = "1.5.1";
-
-        static const int SETUP_SCREEN_INDEX = 0;
-        static const int SETTINGS_SCREEN_INDEX = 1;
-        static const int PROCESSING_SCREEN_INDEX = 2;
-        static const int ERROR_SCREEN_INDEX = 3;
-
-        static constexpr const char* NAMING_TAGS[] = {
-            "song name",
-            "album name",
-            "song artist",
-            "song artists",
-            "album artist",
-            "album artists",
-            "song time seconds",
-            "song time sinutes",
-            "song time hours"
-        };
-
-        enum class NamingError {
-            None,
-            EnclosingTagsInvalid,
-            TagInvalid
-        };
-
-        QString PlaylistURLText;
-        QString SaveLocationText;
-
         bool ExitingApplication = false;
         bool Paused = false;
 
         bool DownloadStarted = false;
 
         bool VariablesResetting = false;
-
-        // Below variables will be loaded in LoadSettings()
-        
-        // Output
-        bool Overwrite = false;
-
-        bool NormalizeAudio = true;
-        float NormalizeAudioVolume = -14.0;
-
-        int AudioBitrate = 192;
-
-        QString SongOutputFormatTag = "<>";
-        QString SongOutputFormat = "<Song Name> - <Song Artist>";
-
-        int FolderSortingIndex = 0;
-
-        // Downloading
-        bool Notifications = true;
-
-        int ThreadCount = 6;
-        float DownloadSpeed = 0;
-
-        static QStringList Q_NAMING_TAGS();
-        std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) const; // Output, Error
-
-        // Interface
-        int DownloaderThreadUIIndex = 0;
 
         virtual bool eventFilter(QObject* obj, QEvent* event) Q_DECL_OVERRIDE;
     public slots:
@@ -135,17 +82,8 @@ class SpotifyDownloader : public QDialog
         void RequestQuit();
         void DisplayFinalMessage();
     private:
-        const QString ORGANIZATION_NAME = "WilliamSchack";
-        const QString APPLICATION_NAME = "Spotify Downloader";
-
-        const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 255;
-        const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
-        const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 5;
-
         QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS();
         QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS_CACHE;
-
-        static QStringList Q_NAMING_TAGS_CACHE;
 
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;
@@ -171,13 +109,12 @@ class SpotifyDownloader : public QDialog
         void SetupSettingsScreen();
         void SetupProcessingScreen();
 
+        void LoadSettingsUI();
+
         bool ValidateSettings();
         bool ValidateInputs();
         bool ValidateURL();
         bool ValidateDirectory();
-
-        void SaveSettings();
-        void LoadSettings();
 
         void ResetDownloadingVariables();
 
@@ -218,10 +155,6 @@ class PlaylistDownloader : public QObject {
         void ClearDirFiles(const QString& path);
 
         QList<Worker*> _threads;
-
-        const QString CODEC = "mp3";
-        const QString YTDLP_PATH = "yt-dlp.exe";
-        const QString FFMPEG_PATH = "ffmpeg.exe";
 
         const SpotifyDownloader* Main;
         YTMusicAPI* _yt;
@@ -270,10 +203,6 @@ class SongDownloader : public QObject {
         void StartDownload(int startIndex);
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
         void CheckForStop();
-
-        const QString CODEC = "mp3";
-        const QString YTDLP_PATH = "yt-dlp.exe";
-        const QString FFMPEG_PATH = "ffmpeg.exe";
 
         const SpotifyDownloader* Main;
         const PlaylistDownloader* Manager;

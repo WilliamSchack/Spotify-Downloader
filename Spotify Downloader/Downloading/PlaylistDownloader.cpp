@@ -15,7 +15,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	if (QDir(downloadingFolder).exists())
 		ClearDirFiles(downloadingFolder);
 
-	QString url = Main->PlaylistURLText;
+	QString url = Config::PlaylistURL;
 	QString spotifyId = url.split("/").last().split("?")[0];
 	QJsonObject album = QJsonObject();
 
@@ -77,15 +77,15 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		}
 
 		// If not overwriting and track already downloaded, dont download
-		if (!Main->Overwrite) {
+		if (!Config::Overwrite) {
 			QString trackTitle = track["name"].toString();
 			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
 
 			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
 			filename = StringUtils::ValidateString(filename);
 
-			QString targetPath = QString("%1/%2").arg(Main->SaveLocationText).arg(filename);
-			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(CODEC);
+			QString targetPath = QString("%1/%2").arg(Config::SaveLocation).arg(filename);
+			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(Codec::Strings[Config::Codec]);
 
 			if (!QFile::exists(fullTargetPath))
 				tracks.append(trackVal);
@@ -117,7 +117,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	_threadCount = 0;
 
 	// Get amount of threads and songs assigned to each
-	int targetThreadCount = Main->ThreadCount;
+	int targetThreadCount = Config::ThreadCount;
 	_threadCount = _totalSongCount < targetThreadCount ? _totalSongCount : targetThreadCount;
 	int baseCount = _totalSongCount / _threadCount;
 	int lastCount = _totalSongCount % _threadCount;
@@ -351,7 +351,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 	// Change Screen
 	if (!Main->ExitingApplication) {
 		if (_tracksNotFound.count() == 0) {
-			emit ChangeScreen(SpotifyDownloader::SETUP_SCREEN_INDEX);
+			emit ChangeScreen(Config::SETUP_SCREEN_INDEX);
 			emit ShowMessage("Downloads Complete!", "No download errors!");
 			qInfo() << "Downloads complete with no errors";
 
@@ -361,7 +361,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 			return;
 		}
 		else {
-			emit ChangeScreen(SpotifyDownloader::ERROR_SCREEN_INDEX);
+			emit ChangeScreen(Config::ERROR_SCREEN_INDEX);
 			
 			// Remove image data to make it a lot shorter, not needed for log anyways. Can modify variable as its not used later
 			for (int i = 0; i < _tracksNotFound.count(); i++) {
@@ -375,7 +375,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 			Logger::Flush();
 		}
 
-		qInfo() << "Songs downloaded to" << Main->SaveLocationText;
+		qInfo() << "Songs downloaded to" << Config::SaveLocation;
 	}
 }
 

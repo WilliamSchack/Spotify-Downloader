@@ -22,7 +22,7 @@ class Animation {
 		static void AnimateBackgroundColour(QWidget* target, QColor newColour, int durationMs);
 	private:
 		// Used to handle animations overwriting each other
-		static QMap<QObject*, QVariantAnimation*> _currentAnimations;
+		static inline QMap<QObject*, QVariantAnimation*> _currentAnimations;
 
 		static void CheckForAnimation(QObject* target);
 };

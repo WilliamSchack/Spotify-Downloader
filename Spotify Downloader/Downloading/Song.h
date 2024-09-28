@@ -13,6 +13,8 @@
 #include "Utilities/MathUtils.h"
 #include "Utilities/ImageUtils.h"
 
+#include "Codec.h"
+
 #include <QObject>
 #include <QProcess>
 
@@ -22,6 +24,7 @@
 #include <QImage>
 
 #include <taglib/fileref.h>
+
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2frame.h>
@@ -29,16 +32,20 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
 
+#include <taglib/mp4file.h>
+#include <taglib/mp4tag.h>
+#include <taglib/mp4coverart.h>
+
 class Song {
 	public:
-		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, const QString codec = "mp3", const SpotifyDownloader* main = nullptr);
+		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
 
 		void GenerateFileName(const SpotifyDownloader* main);
 		void GenerateDownloadingPath();
 
 		void DownloadCoverImage();
 		bool SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate);
-		void Download(QProcess*& process, bool overwrite, std::function<void()> onProgressUpdate);
+		void Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate);
 		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
 		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
 		void AssignMetadata();
@@ -74,7 +81,7 @@ class Song {
 		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 
 		// --- Settings ---
-		QString _codec;
+		Codec::Extension _codec;
 		QString _ytdlpPath;
 		QString _ffmpegPath;
 
