@@ -51,6 +51,9 @@
     <Filter Include="Source Files\UI\CustomWidgets">
       <UniqueIdentifier>{41aafc13-aa39-47a5-a8d3-fee752e0812c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{2fb372a9-e191-4f82-bc9f-13bcc7488763}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Downloading\PlaylistDownloader.cpp">
@@ -192,5 +195,16 @@
     <QtUic Include="SpotifyDownloader.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="taglib.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="yt-dlp.exe">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="ffmpeg.exe">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
