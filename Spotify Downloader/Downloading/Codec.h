@@ -7,16 +7,29 @@
 class Codec {
 	public:
 		// Planning to add more, just testing with one different codec for now
-		enum Extension {
+		enum class Extension {
 			MP3,
-			M4A, // Currently implementing, not working
-			AAC	 // Currently implementing, not working
+			M4A,	 // Still need to implement bitrate, downloading and metadata works
+			AAC,	 // Currently implementing, not working | Fix metadata not working, convert to aac from m4a at end
+			WAV		 // Currently implementing, not working | Make sampling rate configurable, fix tags not working sometimes
 		};
 
-		static inline const QMap<Extension, QString> Strings{
-			{ Extension::MP3, "mp3" },
-			{ Extension::M4A, "m4a" },
-			{ Extension::AAC, "aac" }
+		enum class ExtensionType {
+			MPEG,
+			MP4,
+			WAV
+		};
+
+		struct ExtensionData {
+			ExtensionType Type;
+			QString String;
+		};
+
+		static inline const QMap<Extension, ExtensionData> Data {
+			{ Extension::MP3, { ExtensionType::MPEG, "mp3" } },
+			{ Extension::M4A, { ExtensionType::MP4, "m4a" } },
+			{ Extension::AAC, { ExtensionType::MP4, "aac" } },
+			{ Extension::WAV, { ExtensionType::WAV, "wav" } }
 		};
 };
 

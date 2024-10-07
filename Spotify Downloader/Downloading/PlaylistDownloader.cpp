@@ -85,7 +85,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			filename = StringUtils::ValidateString(filename);
 
 			QString targetPath = QString("%1/%2").arg(Config::SaveLocation).arg(filename);
-			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(Codec::Strings[Config::Codec]);
+			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(Codec::Data[Config::Codec].String);
 
 			if (!QFile::exists(fullTargetPath))
 				tracks.append(trackVal);

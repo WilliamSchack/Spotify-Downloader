@@ -1902,6 +1902,39 @@ border: none;</string>
    <header>UI/CustomWidgets/CheckBox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>PlaylistURLInput</tabstop>
+  <tabstop>PasteButton</tabstop>
+  <tabstop>SaveLocationInput</tabstop>
+  <tabstop>BrowseButton</tabstop>
+  <tabstop>ContinueButton</tabstop>
+  <tabstop>OutputSettingsButton</tabstop>
+  <tabstop>DownloadingSettingsButton</tabstop>
+  <tabstop>InterfaceSettingsButton</tabstop>
+  <tabstop>OutputSettingsHoverTest</tabstop>
+  <tabstop>OverwriteSettingButton</tabstop>
+  <tabstop>NormalizeVolumeSettingButton</tabstop>
+  <tabstop>NormalizeVolumeSettingInput</tabstop>
+  <tabstop>AudioBitrateInput</tabstop>
+  <tabstop>SongOutputFormatTagInput</tabstop>
+  <tabstop>SongOutputFormatInput</tabstop>
+  <tabstop>FolderSortingInput</tabstop>
+  <tabstop>NotificationSettingButton</tabstop>
+  <tabstop>DownloaderThreadsInput</tabstop>
+  <tabstop>DownloadSpeedSettingInput</tabstop>
+  <tabstop>DownloaderThreadUIInput</tabstop>
+  <tabstop>DownloadingScrollArea</tabstop>
+  <tabstop>PlayButton</tabstop>
+  <tabstop>PauseButton</tabstop>
+  <tabstop>CancelButton</tabstop>
+  <tabstop>ErrorScrollArea</tabstop>
+  <tabstop>DownloadingScreenButton</tabstop>
+  <tabstop>ErrorScreenButton</tabstop>
+  <tabstop>SettingsScreenButton</tabstop>
+  <tabstop>DonateButton</tabstop>
+  <tabstop>SubmitBugButton</tabstop>
+  <tabstop>HelpButton</tabstop>
+ </tabstops>
  <resources>
   <include location="SpotifyDownloader.qrc"/>
  </resources>

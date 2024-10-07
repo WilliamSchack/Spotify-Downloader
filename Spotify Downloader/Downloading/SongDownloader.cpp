@@ -107,7 +107,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	
 	// Set target path
 	QString targetFolder = QString("%1%2").arg(Config::SaveLocation).arg(targetFolderName);
-	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Strings[Config::Codec]);
+	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
 
 	// If not overwriting and song already downloaded, skip to next song
 	if (!Config::Overwrite && QFile::exists(targetPath)) {

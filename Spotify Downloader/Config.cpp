@@ -43,7 +43,6 @@ void Config::SaveSettings() {
 }
 
 void Config::LoadSettings() {
-    // Clicking buttons to call their callbacks
     // Default settings are defined here
 
     // --------------------------------------------------------
@@ -54,61 +53,24 @@ void Config::LoadSettings() {
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
 
     settings.beginGroup("Output");
-
-    // Overwrite
-    bool overwriteEnabled = settings.value("overwriteEnabled", false).toBool();
-    Overwrite = overwriteEnabled;
-
-    // Normalize Volume
-    bool normalizeEnabled = settings.value("normalizeEnabled", true).toBool();
-    NormalizeAudio = normalizeEnabled;
-
-    float normalizeVolume = settings.value("normalizeVolume", 14.0).toFloat();
-    NormalizeAudioVolume = normalizeVolume;
-
-    // Audio Bitrate
-    int audioBitrate = settings.value("audioBitrate", 192).toInt();
-    AudioBitrate = audioBitrate;
-
-    // Save Location
-    QString saveLocation = settings.value("saveLocation", "").toString();
-    SaveLocation = saveLocation;
-
-    // Song Output Format
-    QString songOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
-    SongOutputFormatTag = songOutputFormatTag;
-
-    QString songOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
-    SongOutputFormat = songOutputFormat;
-
-    // Folder Sorting
-    int folderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
-    FolderSortingIndex = folderSortingIndex;
-
+    Overwrite = settings.value("overwriteEnabled", false).toBool();
+    NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
+    NormalizeAudioVolume = settings.value("normalizeVolume", 14.0).toFloat();
+    AudioBitrate = settings.value("audioBitrate", 192).toInt();
+    SaveLocation = settings.value("saveLocation", "").toString();
+    SongOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
+    SongOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
+    FolderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
     settings.endGroup();
 
     settings.beginGroup("Downloading");
-
-    // Status Notifications
-    bool statusNotificationsEnabled = settings.value("statusNotificationsEnabled", true).toBool();
-    Notifications = statusNotificationsEnabled;
-
-    // Downloader Threads
-    int downloaderThreads = settings.value("downloaderThreads", 6).toInt();
-    ThreadCount = downloaderThreads;
-
-    // Download Speed Limit
-    float downloadSpeedLimit = settings.value("downloadSpeedLimit", 0.0).toFloat();
-    DownloadSpeed = downloadSpeedLimit;
-
+    Notifications = settings.value("statusNotificationsEnabled", true).toBool();
+    ThreadCount = settings.value("downloaderThreads", 6).toInt();
+    DownloadSpeed = settings.value("downloadSpeedLimit", 0.0).toFloat();
     settings.endGroup();
 
     settings.beginGroup("Interface");
-
-    // Downloader Thread UI
-    int downloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
-    DownloaderThreadUIIndex = downloaderThreadUIIndex;
-
+    DownloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
     settings.endGroup();
 
     // Log settings

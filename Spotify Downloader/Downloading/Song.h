@@ -36,6 +36,8 @@
 #include <taglib/mp4tag.h>
 #include <taglib/mp4coverart.h>
 
+#include <taglib/wavfile.h>
+
 class Song {
 	public:
 		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
