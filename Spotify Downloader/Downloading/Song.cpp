@@ -384,7 +384,7 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 			convertParams = "-acodec copy";
 			break;
 		case Codec::Extension::WAV:
-			convertParams = "-acodec pcm_s16le ar 44100 ac 2"; // MAKE SAMPLING RATE CONFIGURABLE
+			convertParams = "-acodec pcm_s16le -ar 44100 -ac 2"; // MAKE SAMPLING RATE CONFIGURABLE
 			break;
 	}
 	
@@ -560,30 +560,13 @@ void Song::AssignMetadata() {
 			{
 				TagLib::RIFF::WAV::File* file = dynamic_cast<TagLib::RIFF::WAV::File*>(tagFileRef.file());
 
-				qDebug() << file->hasID3v2Tag();
-				qDebug() << file->ID3v2Tag();
-				qDebug() << file->tag();
-
-				TagLib::ID3v2::Tag* tag = file->ID3v2Tag();
+				TagLib::RIFF::Info::Tag *tag = file->InfoTag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setComment("Downloaded through Spotify Downloader by William S\nThanks for using my program!:)");
 
-				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
-				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
-				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
-				pubFrame->setText("William S - Spotify Downloader");
-				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-				comFrame->setText("Thanks for using my program! :)\n- William S");
-				tag->addFrame(pubFrame);
-				tag->addFrame(copFrame);
-				tag->addFrame(comFrame);
-
-				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
-				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
-				picFrame->setMimeType("image/png");
-				picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
-				tag->addFrame(picFrame);
+				tag->setFieldText("ICOP", QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
 
 				break;
 			}

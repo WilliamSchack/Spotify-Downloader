@@ -277,9 +277,8 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
             Config::AudioBitrate = audioBitrate;
 
-            float estimatedFileSize = (((float)Config::AudioBitrate * 60) / 8) / 1024;
+            float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
             QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
-
             _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
         }
     });
@@ -369,7 +368,7 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Audio Bitrate
     _ui.AudioBitrateInput->setValue(Config::AudioBitrate);
     
-    float estimatedFileSize = (((float)Config::AudioBitrate * 60) / 8) / 1024;
+    float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
     QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
     _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     
