@@ -21,29 +21,29 @@ class Codec {
 	public:
 		// Planning to add more, just testing some different codecs for now
 		enum class Extension {
-			MP3,
+			MP3,	 // Done
 			M4A,	 // Still need to implement bitrate, downloading and metadata works
 			AAC,	 // Currently implementing, not working | Fix metadata not working, convert to aac from m4a at end
-			WAV		 // Still implementing, downloading and metadata works, need to make sampling rate configurable
+			WAV		 // Essentially done, setting bitrate and normalisation dont effect it but changing the bitrate should not be active just to be sure
 		};
 
-		enum class ExtensionType {
+		enum class MetadataType {
 			MPEG,
 			MP4,
-			WAV
+			RIFF
 		};
 
 		struct ExtensionData {
-			ExtensionType Type;
+			MetadataType Type;
 			QString String;
 			float (*CalculateFileSize)(int bitrate, int seconds);
 		};
 
 		static inline const QMap<Extension, ExtensionData> Data {
-			{ Extension::MP3, { ExtensionType::MPEG, "mp3", CalculateBitrateFileSize } },
-			{ Extension::M4A, { ExtensionType::MP4, "m4a", CalculateBitrateFileSize } },
-			{ Extension::AAC, { ExtensionType::MP4, "aac", CalculateBitrateFileSize } },
-			{ Extension::WAV, { ExtensionType::WAV, "wav", CalculateWAVFileSize } }
+			{ Extension::MP3, { MetadataType::MPEG, "mp3", CalculateBitrateFileSize } },
+			{ Extension::M4A, { MetadataType::MP4, "m4a", CalculateBitrateFileSize } },
+			{ Extension::AAC, { MetadataType::MP4, "aac", CalculateBitrateFileSize } },
+			{ Extension::WAV, { MetadataType::RIFF, "wav", CalculateWAVFileSize } }
 		};
 };
 

@@ -508,15 +508,15 @@ void Song::AssignMetadata() {
 		buffer.close();
 
 		switch (Codec::Data[Config::Codec].Type) {
-			case Codec::ExtensionType::MPEG:
+			case Codec::MetadataType::MPEG:
 			{
 				TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
-
+		
 				TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-
+		
 				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
@@ -526,53 +526,54 @@ void Song::AssignMetadata() {
 				tag->addFrame(pubFrame);
 				tag->addFrame(copFrame);
 				tag->addFrame(comFrame);
-
+		
 				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
 				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				picFrame->setMimeType("image/png");
 				picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
 				tag->addFrame(picFrame);
-
+		
 				break;
 			}
-			case Codec::ExtensionType::MP4:
+			case Codec::MetadataType::MP4:
 			{
 				TagLib::MP4::File* file = dynamic_cast<TagLib::MP4::File*>(tagFileRef.file());
-
+		
 				TagLib::MP4::Tag* tag = file->tag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-
-				// Cant set publisher or copyright, add all to comment
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-
+		
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				TagLib::MP4::CoverArtList coverArtList;
 				coverArtList.append(coverArt);
 				TagLib::MP4::Item coverItem(coverArtList);
-
-				tag->setItem("covr", coverItem);
-
+		
+				// Cover art giving error for some reason ?
+				// tag->setItem("covr", coverItem);
+		
 				break;
 			}
-			case Codec::ExtensionType::WAV:
+			case Codec::MetadataType::RIFF:
 			{
 				TagLib::RIFF::WAV::File* file = dynamic_cast<TagLib::RIFF::WAV::File*>(tagFileRef.file());
-
+		
 				TagLib::RIFF::Info::Tag *tag = file->InfoTag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setComment("Downloaded through Spotify Downloader by William S\nThanks for using my program!:)");
-
-				tag->setFieldText("ICOP", QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+		
+				// RIFF only supports text metadata, no cover art
+		
 				break;
 			}
 		}
 
 		tagFileRef.save();
+
+		// With M4A tag->setItem("covr"), will call error here when leaving scope. No clue why still need to fix
 	}
 }
 

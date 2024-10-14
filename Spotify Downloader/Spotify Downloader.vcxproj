@@ -22,11 +22,11 @@
     <ClCompile Include="Downloading\PlaylistDownloader.cpp" />
     <ClCompile Include="Downloading\Song.cpp" />
     <ClCompile Include="Downloading\SongDownloader.cpp" />
-    <ClCompile Include="Downloading\SpotifyDownloader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Network\SpotifyAPI.cpp" />
     <ClCompile Include="Network\YTMusicAPI.cpp" />
+    <ClCompile Include="SpotifyDownloader.cpp" />
     <ClCompile Include="UI\CustomWidgets\CheckBox.cpp" />
     <ClCompile Include="UI\CustomWidgets\DownloaderThread.cpp" />
     <ClCompile Include="UI\CustomWidgets\SongErrorItem.cpp" />
@@ -51,6 +51,7 @@
     <QtMoc Include="UI\CustomWidgets\CheckBox.h" />
     <QtMoc Include="UI\CustomWidgets\DownloaderThread.h" />
     <QtMoc Include="UI\CustomWidgets\SongErrorItem.h" />
+    <QtMoc Include="SpotifyDownloader.h" />
     <ClInclude Include="Utilities\Animation.h" />
     <ClInclude Include="Utilities\ImageUtils.h" />
     <ClInclude Include="Utilities\JSONUtils.h" />
@@ -58,7 +59,6 @@
     <ClInclude Include="Utilities\MathUtils.h" />
     <ClInclude Include="Utilities\StringUtils.h" />
     <QtMoc Include="Utilities\ObjectHoverWatcher.h" />
-    <QtMoc Include="Downloading\SpotifyDownloader.h" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="SpotifyDownloader.qrc" />

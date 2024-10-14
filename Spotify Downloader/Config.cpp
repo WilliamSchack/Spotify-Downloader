@@ -6,6 +6,7 @@ void Config::SaveSettings() {
 
     settings.beginGroup("Output");
     settings.setValue("overwriteEnabled", Overwrite);
+    settings.setValue("codecIndex", CodecIndex());
     settings.setValue("normalizeEnabled", NormalizeAudio);
     settings.setValue("normalizeVolume", NormalizeAudioVolume);
     settings.setValue("audioBitrate", AudioBitrate);
@@ -27,6 +28,7 @@ void Config::SaveSettings() {
     // Log settings
     QJsonObject settingsLog = QJsonObject {
         {"Overwrite Enabled", Overwrite},
+        {"Codec Index", CodecIndex()},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
         {"Audio Bitrate", AudioBitrate},
@@ -45,15 +47,11 @@ void Config::SaveSettings() {
 void Config::LoadSettings() {
     // Default settings are defined here
 
-    // --------------------------------------------------------
-    // TEMP
-    Codec = Codec::Extension::MP3;
-    // --------------------------------------------------------
-
     QSettings settings(ORGANIZATION_NAME, APPLICATION_NAME);
 
     settings.beginGroup("Output");
     Overwrite = settings.value("overwriteEnabled", false).toBool();
+    SetCodecIndex(settings.value("codecIndex", 0).toInt());
     NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
     NormalizeAudioVolume = settings.value("normalizeVolume", 14.0).toFloat();
     AudioBitrate = settings.value("audioBitrate", 192).toInt();
@@ -76,6 +74,7 @@ void Config::LoadSettings() {
     // Log settings
     QJsonObject settingsLog = QJsonObject{
         {"Overwrite Enabled", Overwrite},
+        {"Codec Index", CodecIndex()},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
         {"Audio Bitrate", AudioBitrate},

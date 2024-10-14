@@ -65,9 +65,6 @@
     <ClCompile Include="Downloading\SongDownloader.cpp">
       <Filter>Source Files\Downloading</Filter>
     </ClCompile>
-    <ClCompile Include="Downloading\SpotifyDownloader.cpp">
-      <Filter>Source Files\Downloading</Filter>
-    </ClCompile>
     <ClCompile Include="Network\Network.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
@@ -122,6 +119,9 @@
     <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpotifyDownloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Downloading\Song.h">
@@ -162,9 +162,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Downloading\SpotifyDownloader.h">
-      <Filter>Header Files\Downloading</Filter>
-    </QtMoc>
     <QtMoc Include="Utilities\ObjectHoverWatcher.h">
       <Filter>Header Files\Utilities</Filter>
     </QtMoc>
@@ -179,6 +176,9 @@
     </QtMoc>
     <QtMoc Include="UI\CustomWidgets\SongErrorItem.h">
       <Filter>Header Files\UI\CustomWidgets</Filter>
+    </QtMoc>
+    <QtMoc Include="SpotifyDownloader.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

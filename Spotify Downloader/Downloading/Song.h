@@ -4,7 +4,7 @@
 #define QT_MESSAGELOGCONTEXT
 #include "Utilities/Logger.h"
 
-#include "Downloading/SpotifyDownloader.h"
+#include "SpotifyDownloader.h"
 
 #include "Network/Network.h"
 #include "Network/YTMusicAPI.h"

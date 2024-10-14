@@ -1,4 +1,4 @@
-#include "Downloading/SpotifyDownloader.h"
+#include "SpotifyDownloader.h"
 
 #include <QTemporaryFile>
 #include <QClipboard>
@@ -285,6 +285,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
     // Set combo box dropdown items font size to 12, cannot do in stylesheet
     QList<QComboBox*> dropdownWidgets({
+        _ui.CodecInput,
         _ui.FolderSortingInput,
         _ui.DownloaderThreadUIInput
     });
@@ -298,6 +299,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
     }
 
     // Set combo box variables on change
+    connect(_ui.CodecInput, &QComboBox::currentIndexChanged, [=](int index) { Config::SetCodecIndex(index); });
     connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { Config::FolderSortingIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
@@ -359,6 +361,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     if(_ui.OverwriteSettingButton->isChecked != Config::Overwrite)
         _ui.OverwriteSettingButton->click();
     
+    // Codec
+    _ui.CodecInput->setCurrentIndex(Config::CodecIndex());
+
     // Normalize Volume
     if (_ui.NormalizeVolumeSettingButton->isChecked != Config::NormalizeAudio)
         _ui.NormalizeVolumeSettingButton->click();
@@ -383,7 +388,6 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Folder Sorting
     _ui.FolderSortingInput->setCurrentIndex(Config::FolderSortingIndex);
 
-    
     // Status Notifications
     if (_ui.NotificationSettingButton->isChecked != Config::Notifications)
         _ui.NotificationSettingButton->click();

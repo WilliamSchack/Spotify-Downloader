@@ -1,4 +1,4 @@
-#include "Downloading/SpotifyDownloader.h"
+#include "SpotifyDownloader.h"
 
 #include "Utilities/Animation.h"
 #include "Utilities/MathUtils.h"

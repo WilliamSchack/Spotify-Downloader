@@ -45,11 +45,13 @@ class Config {
             TagInvalid
         };
 
-        static inline Codec::Extension Codec; // TEMP
-
         // Output
         static inline bool Overwrite;
     
+        static inline const int CodecIndex() { return _codecIndex; };
+        static inline Codec::Extension Codec;
+        static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
+
         static inline bool NormalizeAudio;
         static inline float NormalizeAudioVolume;
     
@@ -79,6 +81,8 @@ class Config {
         static void LoadSettings();
     private:
         static inline QStringList Q_NAMING_TAGS_CACHE;
+
+        static inline int _codecIndex;
 };
 
 #endif
