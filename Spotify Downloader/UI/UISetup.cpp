@@ -299,7 +299,17 @@ void SpotifyDownloader::SetupSettingsScreen() {
     }
 
     // Set combo box variables on change
-    connect(_ui.CodecInput, &QComboBox::currentIndexChanged, [=](int index) { Config::SetCodecIndex(index); });
+    connect(_ui.CodecInput, &QComboBox::currentIndexChanged, [=](int index) {
+        Config::SetCodecIndex(index);
+
+        // Update file size text
+        float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
+        QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
+        _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+
+        // Disable bitrate input if it cannot be changed
+        _ui.AudioBitrateInput->setEnabled(!Codec::Data[Config::Codec].LockedBitRate);
+    });
     connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { Config::FolderSortingIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 

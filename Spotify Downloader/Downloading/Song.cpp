@@ -375,23 +375,10 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 		onProgressUpdate(progress);
 	});
 
-	QString convertParams = "";
-	switch (_codec) {
-		case Codec::Extension::MP3:
-			convertParams = "-c:v copy";
-			break;
-		case Codec::Extension::AAC:
-			convertParams = "-acodec copy";
-			break;
-		case Codec::Extension::WAV:
-			convertParams = "-acodec pcm_s16le -ar 44100 -ac 2"; // MAKE SAMPLING RATE CONFIGURABLE
-			break;
-	}
-	
 	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -q:a 0 %3 "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(downloadingPathM4A)
-		.arg(convertParams)
+		.arg(Codec::Data[_codec].FFMPEGConversionParams)
 		.arg(_downloadingPath));
 	process->waitForFinished(-1);
 
@@ -405,6 +392,10 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 // If quality is not a multiple of 32 ffmpeg will change it to the closest multiple
 // Don't set quality if normalizing, has to be set there regardless
 void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate) {
+	// Some codecs have a preset bitrate, no need to set, eg. WAV files
+	if (Codec::Data[_codec].LockedBitRate)
+		return;
+
 	// Get duration for progress bar calculations
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
@@ -429,9 +420,10 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 	});
 
 	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Data[_codec].String);
-	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
+	process->startCommand(QString(R"("%1" -i "%2" %3 -progress - -nostats -b:a %4k "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(_downloadingPath)
+		.arg(Codec::Data[_codec].FFMPEGFormat == "" ? "" : QString("-f %1").arg(Codec::Data[_codec].FFMPEGFormat))
 		.arg(bitrate)
 		.arg(newQualityFullPath));
 	process->waitForFinished(-1);
@@ -472,10 +464,11 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 
 				onProgressUpdate(progress);
 			});
-			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k -af "volume=%4dB" "%5")")
+			process->startCommand(QString(R"("%1" -i "%2" %3 -progress - -nostats %4k -af "volume=%5dB" "%6")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
-				.arg(bitrate)
+				.arg(Codec::Data[_codec].FFMPEGFormat == "" ? "" : QString("-f %1").arg(Codec::Data[_codec].FFMPEGFormat))
+				.arg(Codec::Data[_codec].LockedBitRate ? "" : QString("-b:a %1").arg(bitrate)) // Only set bitrate if not wav file
 				.arg(volumeApply)
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
@@ -507,7 +500,7 @@ void Song::AssignMetadata() {
 		CoverImage.save(&buffer, "PNG");
 		buffer.close();
 
-		switch (Codec::Data[Config::Codec].Type) {
+		switch (Codec::Data[_codec].Type) {
 			case Codec::MetadataType::MPEG:
 			{
 				TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
@@ -538,7 +531,7 @@ void Song::AssignMetadata() {
 			case Codec::MetadataType::MP4:
 			{
 				TagLib::MP4::File* file = dynamic_cast<TagLib::MP4::File*>(tagFileRef.file());
-		
+
 				TagLib::MP4::Tag* tag = file->tag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
@@ -551,7 +544,7 @@ void Song::AssignMetadata() {
 				TagLib::MP4::Item coverItem(coverArtList);
 		
 				// Cover art giving error for some reason ?
-				// tag->setItem("covr", coverItem);
+				//tag->setItem("covr", coverItem);
 		
 				break;
 			}
@@ -559,6 +552,9 @@ void Song::AssignMetadata() {
 			{
 				TagLib::RIFF::WAV::File* file = dynamic_cast<TagLib::RIFF::WAV::File*>(tagFileRef.file());
 		
+				qDebug() << file->hasID3v2Tag();
+				qDebug() << file->hasInfoTag();
+
 				TagLib::RIFF::Info::Tag *tag = file->InfoTag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
@@ -574,6 +570,7 @@ void Song::AssignMetadata() {
 		tagFileRef.save();
 
 		// With M4A tag->setItem("covr"), will call error here when leaving scope. No clue why still need to fix
+		// Strange error, works fine on my laptop but not pc, needs testing
 	}
 }
 

@@ -66,8 +66,11 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	CheckForStop();
 	if (_quitting) return;
 
+	// Codec can be changed during download, use codec set at start of download
+	Codec::Extension codec = Config::Codec;
+
 	// Initialise Song
-	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
+	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, codec, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
 	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
@@ -107,7 +110,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	
 	// Set target path
 	QString targetFolder = QString("%1%2").arg(Config::SaveLocation).arg(targetFolderName);
-	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
+	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Data[codec].String);
 
 	// If not overwriting and song already downloaded, skip to next song
 	if (!Config::Overwrite && QFile::exists(targetPath)) {
