@@ -3,6 +3,8 @@
 #include <QTemporaryFile>
 #include <QClipboard>
 
+#include <QScrollBar.h>
+
 #include "Utilities/Animation.h"
 
 void SpotifyDownloader::SetupTrayIcon() {
@@ -541,7 +543,7 @@ bool SpotifyDownloader::ValidateDirectory() {
 
 bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
     // Handle line indicators
-    if (event->type() == QEvent::MouseMove) {        
+    if (event->type() == QEvent::MouseMove || event->type() == QEvent::Wheel) { // Include mouse movement and scrolling
         if (CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
             return false;
 
@@ -556,24 +558,32 @@ bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
         if (mousePos.x() < settingsScreensGeometry.x() || mousePos.x() > settingsScreensGeometry.x() + settingsScreensGeometry.width())
             return false;
 
-        // Round y to closest setting
-        int newY = ((mouseY + 50 / 2) / 50) * 50; // Round y to closest 50
-        newY += 5; // Offset by 5
+        // Get current screen line indicator data
+        LineIndicator lineIndicatorData = SETTINGS_LINE_INDICATORS()[_ui.SettingsScreens->currentIndex()];
 
-        // Get current screen line indicator and max height
-        QPair<QWidget*, int> lineIndicatorPair = SETTINGS_LINE_INDICATORS()[_ui.SettingsScreens->currentIndex()];
-        QWidget* lineIndicator = lineIndicatorPair.first;
-        int maxHeight = lineIndicatorPair.second;
+        // Offset mouse position to scroll
+        int scrollOffset = lineIndicatorData.ScrollArea == nullptr ? 0 : lineIndicatorData.ScrollArea->verticalScrollBar()->value() % 50;
+        mouseY += scrollOffset;
+
+        // Round y to closest setting
+        int newY = ((mouseY + 50 / 2) / 50) * 50; // Round y to closest 50 + scroll offset
+        newY += 5; // Offset by 5, spacing from top
         
         // Clamp y to settings in menu
-        newY = std::clamp(newY, 5, maxHeight);
-        
+        newY = std::clamp(newY, 5, lineIndicatorData.MaxHeight);
+
+        // Offset indicator to scroll amount
+        if (lineIndicatorData.ScrollArea != nullptr) {
+            int offset = lineIndicatorData.ScrollArea->verticalScrollBar()->value() % 50;
+            newY -= offset;
+        }
+
         // Dont animate if already in position
-        QPoint lineIndicatorPos = lineIndicator->pos();
+        QPoint lineIndicatorPos = lineIndicatorData.Indicator->pos();
         if (lineIndicatorPos.y() != newY) {
             // Animate to new position
             QPoint newPos(lineIndicatorPos.x(), newY);
-            Animation::AnimatePosition(lineIndicator, newPos, 300);
+            Animation::AnimatePosition(lineIndicatorData.Indicator, newPos, event->type() == QEvent::Wheel ? 0 : 300); // Snap to position when animating
         }
     }
 

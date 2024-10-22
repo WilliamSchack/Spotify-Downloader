@@ -53,7 +53,7 @@ void Config::LoadSettings() {
     Overwrite = settings.value("overwriteEnabled", false).toBool();
     SetCodecIndex(settings.value("codecIndex", 0).toInt());
     NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
-    NormalizeAudioVolume = settings.value("normalizeVolume", 14.0).toFloat();
+    NormalizeAudioVolume = settings.value("normalizeVolume", -14.0).toFloat();
     AudioBitrate = settings.value("audioBitrate", 192).toInt();
     SaveLocation = settings.value("saveLocation", "").toString();
     SongOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();

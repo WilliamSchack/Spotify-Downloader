@@ -206,5 +206,11 @@
     <CopyFileToFolders Include="ffmpeg.exe">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="Icon.ico">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\COPYING">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

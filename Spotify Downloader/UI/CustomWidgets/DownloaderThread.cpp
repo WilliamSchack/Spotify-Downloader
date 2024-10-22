@@ -149,7 +149,7 @@ void CompactDownloaderThread::SetImage(QImage image) {
 	// Get image crop rect
 	QRect imageRect;
 	imageRect.setX(0);
-	imageRect.setY(0);
+	imageRect.setY(image.height() / 2); // Center cover art
 	imageRect.setSize(this->size());
 
 	// Scale to widget size
@@ -158,10 +158,10 @@ void CompactDownloaderThread::SetImage(QImage image) {
 
 	// Apply blur and darken image
 	QGraphicsBlurEffect* blur = new QGraphicsBlurEffect();
-	blur->setBlurRadius(4);
+	blur->setBlurRadius(6);
 
 	image = ImageUtils::ApplyEffectToImage(image, blur);
-	image = ImageUtils::AdjustBrightness(image, 0.7);
+	image = ImageUtils::AdjustBrightness(image, 0.6);
 
 	// Copy image cropped to widget
 	_currentImage = image;

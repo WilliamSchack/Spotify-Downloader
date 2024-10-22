@@ -91,15 +91,15 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     VariablesResetting = false;
 }
 
-QList<QPair<QWidget*, int>> SETTINGS_INDICATORS_CACHE;
-QList<QPair<QWidget*, int>> SpotifyDownloader::SETTINGS_LINE_INDICATORS() {
+QList<SpotifyDownloader::LineIndicator> SETTINGS_INDICATORS_CACHE;
+QList<SpotifyDownloader::LineIndicator> SpotifyDownloader::SETTINGS_LINE_INDICATORS() {
     if (!SETTINGS_LINE_INDICATORS_CACHE.isEmpty())
         return SETTINGS_LINE_INDICATORS_CACHE;
 
-    QList<QPair<QWidget*, int>> lineIndicators {
-        QPair<QWidget*, int>(_ui.OutputSettings_LineIndicator, Config::OUTPUT_SETTINGS_LINE_MAX_HEIGHT),
-        QPair<QWidget*, int>(_ui.DownloadingSettings_LineIndicator, Config::DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT),
-        QPair<QWidget*, int>(_ui.InterfaceSettings_LineIndicator, Config::INTERFACE_SETTINGS_LINE_MAX_HEIGHT)
+    QList<LineIndicator> lineIndicators {
+        { _ui.OutputSettings_LineIndicator, Config::OUTPUT_SETTINGS_LINE_MAX_HEIGHT, _ui.OutputSettingsScrollArea },
+        { _ui.DownloadingSettings_LineIndicator, Config::DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT, nullptr },
+        { _ui.InterfaceSettings_LineIndicator, Config::INTERFACE_SETTINGS_LINE_MAX_HEIGHT, nullptr }
     };
 
     SETTINGS_LINE_INDICATORS_CACHE = lineIndicators;

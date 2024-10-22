@@ -130,7 +130,8 @@ bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressU
 	// Multiple queries as some songs will only get picked up by no quotes, and others with
 	QStringList searchQueries{
 		QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName),
-		QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName)
+		QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName),
+		QString("%1 - %2").arg(Title).arg(AlbumName)
 	};
 
 	float totalSearches = searchQueries.count() * 3; // For progress bar, float for division
@@ -544,7 +545,8 @@ void Song::AssignMetadata() {
 				TagLib::MP4::Item coverItem(coverArtList);
 		
 				// Cover art giving error for some reason ?
-				//tag->setItem("covr", coverItem);
+				// Sometimes works sometimes doesnt, really strange
+				tag->setItem("covr", coverItem);
 		
 				break;
 			}

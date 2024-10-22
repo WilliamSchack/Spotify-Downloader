@@ -56,6 +56,13 @@ class SpotifyDownloader : public QDialog
         SpotifyDownloader(QWidget *parent = nullptr);
         ~SpotifyDownloader();
 
+        struct LineIndicator {
+            QWidget* Indicator;
+            int MaxHeight = 0;
+
+            QScrollArea* ScrollArea = nullptr;
+        };
+
         bool ExitingApplication = false;
         bool Paused = false;
 
@@ -82,8 +89,8 @@ class SpotifyDownloader : public QDialog
         void RequestQuit();
         void DisplayFinalMessage();
     private:
-        QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS();
-        QList<QPair<QWidget*, int>> SETTINGS_LINE_INDICATORS_CACHE;
+        QList<LineIndicator> SETTINGS_LINE_INDICATORS();
+        QList<LineIndicator> SETTINGS_LINE_INDICATORS_CACHE;
 
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;
