@@ -467,16 +467,19 @@ bool SpotifyDownloader::ValidateInputs() {
 }
 
 bool SpotifyDownloader::ValidateURL() {
-    if (!Config::PlaylistURL.contains("open.spotify.com/playlist/") && !Config::PlaylistURL.contains("open.spotify.com/track/") && !Config::PlaylistURL.contains("open.spotify.com/album/")) {
-        QMessageBox msg = QMessageBox();
-        msg.setWindowTitle("Invalid URL");
-        msg.setText("Please Input A Valid URL");
-        msg.setIcon(QMessageBox::Warning);
-        msg.exec();
-        return false;
-    }
+    QString url = Config::PlaylistURL;
 
-    return true;
+    // Check if url is from spotify and is a playlist, track, or album
+    if (url.contains("open.spotify.com") && (url.contains("playlist") || url.contains("track") || url.contains("album")))
+        return true;
+
+    // Otherwise let the user know that the url is invalid
+    QMessageBox msg = QMessageBox();
+    msg.setWindowTitle("Invalid URL");
+    msg.setText("Please Input A Valid URL");
+    msg.setIcon(QMessageBox::Warning);
+    msg.exec();
+    return false;
 }
 
 bool SpotifyDownloader::ValidateDirectory() {
