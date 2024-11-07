@@ -79,7 +79,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 
 	// Set target folder
 	QString targetFolderName = "";
-	if (Config::FolderSortingIndex != 0) targetFolderName == "/";
+	if (Config::FolderSortingIndex != 0) targetFolderName = "/";
 	switch (Config::FolderSortingIndex) {
 		case 1: // Album name
 			targetFolderName.append(song.AlbumName);
