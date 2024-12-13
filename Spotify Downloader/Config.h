@@ -11,7 +11,13 @@
 
 class Config {
     public:
-        static constexpr const char* VERSION = "1.5.1";
+        enum class NamingError {
+            None,
+            EnclosingTagsInvalid,
+            TagInvalid
+        };
+
+        static constexpr const char* VERSION = "1.6.0-pre";
         static constexpr const char* ORGANIZATION_NAME = "WilliamSchack";
         static constexpr const char* APPLICATION_NAME = "Spotify Downloader";
 
@@ -34,23 +40,17 @@ class Config {
             "song artists",
             "album artist",
             "album artists",
+            "track number",
             "song time seconds",
             "song time sinutes",
             "song time hours"
         };
 
-        enum class NamingError {
-            None,
-            EnclosingTagsInvalid,
-            TagInvalid
-        };
-
         // Output
         static inline bool Overwrite;
     
-        static inline const int CodecIndex() { return _codecIndex; };
         static inline Codec::Extension Codec;
-        static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
+        static inline const int CodecIndex() { return _codecIndex; };
 
         static inline bool NormalizeAudio;
         static inline float NormalizeAudioVolume;
@@ -71,11 +71,14 @@ class Config {
         static inline int ThreadCount;
         static inline float DownloadSpeed;
     
-        static QStringList Q_NAMING_TAGS();
-        static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc); // Output, Error
     
         // Interface
         static inline int DownloaderThreadUIIndex;
+    public:
+        static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
+
+        static QStringList Q_NAMING_TAGS();
+        static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc); // Output, Error
 
         static void SaveSettings();
         static void LoadSettings();

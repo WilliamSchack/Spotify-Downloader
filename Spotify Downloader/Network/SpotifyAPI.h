@@ -26,11 +26,12 @@ class SpotifyAPI {
 		QJsonArray GetAlbumTracks(QJsonObject album);
 		QJsonObject GetTrack(QString id);
 	private:
-		QByteArray _auth;
-		QJsonArray GetTracks(QJsonObject json);
-
 		const QByteArray CLIENT_ID = "CLIENT_ID";
 		const QByteArray CLIENT_SECRET = "CLIENT_SECRET";
+
+		QByteArray _auth;
+	private:
+		QJsonArray GetTracks(QJsonObject json);
 };
 
 #endif

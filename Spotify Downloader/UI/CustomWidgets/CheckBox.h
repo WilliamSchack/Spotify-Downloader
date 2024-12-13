@@ -7,10 +7,10 @@ class CheckBox : public QPushButton {
 	Q_OBJECT
 
 	public:
+		bool isChecked = false;
+	public:
 		CheckBox(QWidget* parent = nullptr);
 		~CheckBox() {}
-	
-		bool isChecked = false;
 	private:
 		void setCheckedProperly();
 };

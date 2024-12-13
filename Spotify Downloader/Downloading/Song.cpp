@@ -13,6 +13,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	ArtistsList = song["artists"].toArray();
 	AlbumArtistsList = album["artists"].toArray();
 	Time = song["duration_ms"].toDouble() / 1000;
+	TrackNumber = song["track_number"].toInt();
 	SpotifyId = song["id"].toString();
 	AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
 
@@ -74,14 +75,17 @@ void Song::GenerateFileName(const SpotifyDownloader* main) {
 					tagReplacement.append(", ");
 			}
 			break;
-		case 6: // Song Time Seconds
+		case 6: // Track Number
+			tagReplacement = QString::number(TrackNumber);
+			break;
+		case 7: // Song Time Seconds
 			tagReplacement = QString::number((int)Time);
 			break;
-		case 7: // Song Time Minutes
+		case 8: // Song Time Minutes
 			tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
-		case 8: // Song Time Hours
+		case 9: // Song Time Hours
 			tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("hh:mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
@@ -510,13 +514,16 @@ void Song::AssignMetadata() {
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-		
+
+				TagLib::ID3v2::TextIdentificationFrame* numFrame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
 				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
+				numFrame->setText(QString::number(TrackNumber).toStdString().data());
 				pubFrame->setText("William S - Spotify Downloader");
 				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
 				comFrame->setText("Thanks for using my program! :)\n- William S");
+				tag->addFrame(numFrame);
 				tag->addFrame(pubFrame);
 				tag->addFrame(copFrame);
 				tag->addFrame(comFrame);
@@ -538,7 +545,7 @@ void Song::AssignMetadata() {
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-		
+				
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				TagLib::MP4::CoverArtList coverArtList;
 				coverArtList.append(coverArt);

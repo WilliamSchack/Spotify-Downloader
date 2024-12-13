@@ -69,26 +69,22 @@ CompactDownloaderThread::CompactDownloaderThread(QWidget* parent) : DownloaderTh
 
 	ContentsVerticalLayout->addWidget(_songTitle);
 
+	QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
 	QHBoxLayout* ContentsHorizontalLayout = new QHBoxLayout();
 	ContentsHorizontalLayout->setObjectName("DownloaderThreadContentsHorizontalLayout");
-	ContentsHorizontalLayout->setStretch(0, 300);
 
 	_songArtists = new QLabel(this);
 	_songArtists->setObjectName("DownloaderThreadArtistsLabel");
 	_songArtists->setFont(font11);
 	_songArtists->setStyleSheet(QString::fromUtf8("background-color: transparent;"));
+	_songArtists->setMaximumWidth(600);
 
 	ContentsHorizontalLayout->addWidget(_songArtists);
 
 	_progressLabel = new QLabel(this);
 	_progressLabel->setObjectName("DownloaderThreadProgressText");
 
-	QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	sizePolicy.setHorizontalStretch(100);
-	sizePolicy.setVerticalStretch(0);
-	sizePolicy.setHeightForWidth(_progressLabel->sizePolicy().hasHeightForWidth());
-
-	_progressLabel->setSizePolicy(sizePolicy);
 	_progressLabel->setFont(font12);
 	_progressLabel->setStyleSheet(QString::fromUtf8("background-color: transparent;"));
 	_progressLabel->setAlignment(Qt::AlignRight | Qt::AlignTrailing | Qt::AlignVCenter);

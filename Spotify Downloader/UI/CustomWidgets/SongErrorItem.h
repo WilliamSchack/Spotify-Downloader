@@ -8,13 +8,13 @@ class SongErrorItem : public QWidget {
 	Q_OBJECT
 
 	public:
-		SongErrorItem(QWidget* parent = nullptr);
-		~SongErrorItem() {}
-	
 		QLabel* Image;
 		QLabel* Title;
 		QLabel* Album;
 		QLabel* Artists;
+	public:
+		SongErrorItem(QWidget* parent = nullptr);
+		~SongErrorItem() {}
 };
 
 #endif

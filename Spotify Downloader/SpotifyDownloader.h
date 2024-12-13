@@ -53,9 +53,6 @@ class SpotifyDownloader : public QDialog
     QThread workerThread;
 
     public:
-        SpotifyDownloader(QWidget *parent = nullptr);
-        ~SpotifyDownloader();
-
         struct LineIndicator {
             QWidget* Indicator;
             int MaxHeight = 0;
@@ -69,6 +66,9 @@ class SpotifyDownloader : public QDialog
         bool DownloadStarted = false;
 
         bool VariablesResetting = false;
+    public:
+        SpotifyDownloader(QWidget* parent = nullptr);
+        ~SpotifyDownloader();
 
         virtual bool eventFilter(QObject* obj, QEvent* event) Q_DECL_OVERRIDE;
     public slots:
@@ -106,7 +106,7 @@ class SpotifyDownloader : public QDialog
         int _songsCompleted = 0;
 
         int _threadsPaused = 0;
-
+    private:
         void SetupDownloaderThread();
         bool DownloaderUIExists(int threadIndex);
 
@@ -144,9 +144,9 @@ class PlaylistDownloader : public QObject {
     Q_OBJECT
 
     public:
-        ~PlaylistDownloader();
-
         bool PauseNewDownloads = false;
+    public:
+        ~PlaylistDownloader();
 
         int TracksNotFound();
     public slots:
@@ -157,10 +157,6 @@ class PlaylistDownloader : public QObject {
         void CleanedUp(int threadIndex);
         void DisplayFinalMessage();
     private:
-        void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
-        bool DistributeTracks();
-        void ClearDirFiles(const QString& path);
-
         QList<Worker*> _threads;
 
         const SpotifyDownloader* Main;
@@ -176,6 +172,10 @@ class PlaylistDownloader : public QObject {
         int _songsDownloaded = 0;
         int _threadsFinished = 0;
         int _threadsCleaned = 0;
+    private:
+        void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
+        bool DistributeTracks();
+        void ClearDirFiles(const QString& path);
     signals:
         void SetupUI(int count);
         void DownloadOnThread(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
@@ -194,10 +194,11 @@ class SongDownloader : public QObject {
     Q_OBJECT
 
     public:
-        ~SongDownloader();
-
         int SongsDownloaded = 0;
+
         int TotalSongCount() const { return _totalSongCount; }
+    public:
+        ~SongDownloader();
 
         void AddTracks(QJsonArray tracks);
         QJsonArray RemoveTracks(int numTracksToRemove);
@@ -207,10 +208,6 @@ class SongDownloader : public QObject {
         void DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);
         void Quit();
     private:
-        void StartDownload(int startIndex);
-        void DownloadSong(QJsonObject track, int count, QJsonObject album);
-        void CheckForStop();
-
         const SpotifyDownloader* Main;
         const PlaylistDownloader* Manager;
         YTMusicAPI* _yt;
@@ -230,6 +227,10 @@ class SongDownloader : public QObject {
         QJsonArray _tracksNotFound;
         QJsonObject _currentTrack;
         int _totalSongCount = 0;
+    private:
+        void StartDownload(int startIndex);
+        void DownloadSong(QJsonObject track, int count, QJsonObject album);
+        void CheckForStop();
     signals:
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);

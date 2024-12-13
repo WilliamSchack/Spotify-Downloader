@@ -40,25 +40,12 @@
 
 class Song {
 	public:
-		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
-
-		void GenerateFileName(const SpotifyDownloader* main);
-		void GenerateDownloadingPath();
-
-		void DownloadCoverImage();
-		bool SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate);
-		void Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate);
-		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
-		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
-		void AssignMetadata();
-
-		void Save(QString targetFolder, QString targetPath, bool overwrite);
-
 		// --- Song Properties ---
-		QString Title;
-		QString SpotifyId;
-		QString YoutubeId;
-		float Time;
+		QString Title = "";
+		QString SpotifyId = "";
+		QString YoutubeId = "";
+		float Time = 0;
+		int TrackNumber = 0;
 
 		QImage CoverImage;
 
@@ -77,10 +64,22 @@ class Song {
 
 		// --- File Properties ---
 		QString FileName;
+	public:
+		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
+
+		void GenerateFileName(const SpotifyDownloader* main);
+		void GenerateDownloadingPath();
+
+		void DownloadCoverImage();
+		bool SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate);
+		void Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate);
+		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
+		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
+		void AssignMetadata();
+
+		void Save(QString targetFolder, QString targetPath, bool overwrite);
 	private:
 		const SpotifyDownloader* _main;
-
-		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 
 		// --- Settings ---
 		Codec::Extension _codec;
@@ -94,6 +93,8 @@ class Song {
 		QString _tempPath;
 		QString _downloadingFolder;
 		QString _downloadingPath;
+	private:
+		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 };
 
 #endif
