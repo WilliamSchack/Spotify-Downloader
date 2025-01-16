@@ -118,6 +118,8 @@ class SpotifyDownloader : public QDialog
 
         void LoadSettingsUI();
 
+        void UpdateBitrateInput(Codec::Extension codec);
+
         bool ValidateSettings();
         bool ValidateInputs();
         bool ValidateURL();

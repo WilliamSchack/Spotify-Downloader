@@ -166,6 +166,27 @@ void SpotifyDownloader::HidePauseWarning(int threadIndex) {
     _ui.PauseWarning->hide();
 }
 
+void SpotifyDownloader::UpdateBitrateInput(Codec::Extension codec) {
+    // Get tooltip quality values
+    int bitrateLowQuality = Codec::Data[codec].BitrateLowQuality;
+    int bitrateGoodQuality = Codec::Data[codec].BitrateGoodQuality;
+    int bitrateHighQuality = Codec::Data[codec].BitrateHighQuality;
+
+    // Set tooltip
+    QString tooltip = QString(
+        R"(<html><head/><body><p><span style="font-weight: 700;">Recommended Values</span></p>
+        <p><span style="font-weight: 700;">High Quality: </span>%1<br/>
+        <span style="font-weight: 700;">Good Quality: </span>%2<br/>
+        <span style="font-weight: 700;">Low Quality: </span>%3</p>
+        <p>Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)</p></body></html>)"
+    ).arg(bitrateHighQuality).arg(bitrateGoodQuality).arg(bitrateLowQuality);
+
+    _ui.AudioBitrateInput->setToolTip(tooltip);
+
+    // Set maximum to highest quality
+    _ui.AudioBitrateInput->setMaximum(bitrateHighQuality);
+}
+
 void SpotifyDownloader::SetThreadFinished(int threadIndex) {
     _ui.DownloadingSpaceFillerLayout->removeWidget(_downloaderUI[threadIndex]);
     DownloaderThread* downloaderThread = _downloaderUI[threadIndex];

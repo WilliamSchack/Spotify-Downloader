@@ -8,6 +8,11 @@ QString StringUtils::ValidateString(QString string) {
 	return string;
 }
 
+// Remove user name from file path
+QString StringUtils::Anonymize(QString string) {
+    return string.replace(QRegularExpression("/Users/[^/]+/"), "/Users/Anonymous/");
+}
+
 // Bit of a brute force but I doubt views will exceed the trillions 
 int StringUtils::StringNumberToInt(QString string) {
 	if (string.contains("K"))

@@ -8,6 +8,7 @@
 
 #include <QSettings>
 #include <QJsonObject>
+#include <QMap>
 
 class Config {
     public:
@@ -17,7 +18,7 @@ class Config {
             TagInvalid
         };
 
-        static constexpr const char* VERSION = "1.6.0-pre";
+        static constexpr const char* VERSION = "1.6.0";
         static constexpr const char* ORGANIZATION_NAME = "WilliamSchack";
         static constexpr const char* APPLICATION_NAME = "Spotify Downloader";
 
@@ -42,7 +43,7 @@ class Config {
             "album artists",
             "track number",
             "song time seconds",
-            "song time sinutes",
+            "song time minutes",
             "song time hours"
         };
 
@@ -55,7 +56,7 @@ class Config {
         static inline bool NormalizeAudio;
         static inline float NormalizeAudioVolume;
     
-        static inline int AudioBitrate;
+        static inline QMap<Codec::Extension, int> AudioBitrate;
 
         static inline QString PlaylistURL;
         static inline QString SaveLocation;
@@ -76,6 +77,9 @@ class Config {
         static inline int DownloaderThreadUIIndex;
     public:
         static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
+
+        static void SetBitrate(int bitrate) { AudioBitrate[Codec] = bitrate; }
+        static int GetBitrate() { return AudioBitrate[Codec]; }
 
         static QStringList Q_NAMING_TAGS();
         static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc); // Output, Error

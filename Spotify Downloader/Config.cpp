@@ -9,7 +9,20 @@ void Config::SaveSettings() {
     settings.setValue("codecIndex", CodecIndex());
     settings.setValue("normalizeEnabled", NormalizeAudio);
     settings.setValue("normalizeVolume", NormalizeAudioVolume);
-    settings.setValue("audioBitrate", AudioBitrate);
+
+    // Audio Bitrate
+    for (int i = 0; i < Codec::Data.count(); i++) {
+        Codec::Extension currentExtension = (Codec::Extension)i;
+
+        // Dont save if bitrate cannot be set
+        if (Codec::Data[currentExtension].LockedBitrate)
+            continue;
+
+        // Save bitrate
+        QString codecBitrateKey = QString("audioBitrate%1").arg(Codec::Data[currentExtension].String.toUpper());
+        settings.setValue(codecBitrateKey, AudioBitrate[currentExtension]);
+    }
+
     settings.setValue("songOutputFormatTag", SongOutputFormatTag);
     settings.setValue("songOutputFormat", SongOutputFormat);
     settings.setValue("folderSortingIndex", FolderSortingIndex);
@@ -31,7 +44,6 @@ void Config::SaveSettings() {
         {"Codec Index", CodecIndex()},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
-        {"Audio Bitrate", AudioBitrate},
         {"Song Output Format Tag", SongOutputFormatTag},
         {"Song Output Format", SongOutputFormat},
         {"Folder Sorting Index", FolderSortingIndex},
@@ -40,6 +52,15 @@ void Config::SaveSettings() {
         {"Download Speed Limit", DownloadSpeed},
         {"Downloader Thread UI Index", DownloaderThreadUIIndex}
     };
+
+    // Add bitrate to log
+    for (int i = 0; i < Codec::Data.count(); i++) {
+        Codec::Extension currentExtension = (Codec::Extension)i;
+        if (Codec::Data[currentExtension].LockedBitrate)
+            continue;
+
+        settingsLog.insert(QString("Audio Bitrate %1").arg(Codec::Data[currentExtension].String.toUpper()), AudioBitrate[currentExtension]);
+    }
 
     qInfo() << "Settings Successfully Saved" << settingsLog;
 }
@@ -54,7 +75,40 @@ void Config::LoadSettings() {
     SetCodecIndex(settings.value("codecIndex", 0).toInt());
     NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
     NormalizeAudioVolume = settings.value("normalizeVolume", -14.0).toFloat();
-    AudioBitrate = settings.value("audioBitrate", 192).toInt();
+    
+    // Audio Bitrate
+    for (int i = 0; i < Codec::Data.count(); i++) {
+        // Check if bitrate can be set
+        Codec::Extension currentExtension = (Codec::Extension)i;
+        if (Codec::Data[currentExtension].LockedBitrate)
+            continue;
+
+        // Get current metadata type bitrate
+        QString codecBitrateKey = QString("audioBitrate%1").arg(Codec::Data[currentExtension].String.toUpper());
+        int audioBitrate = settings.value(codecBitrateKey, NULL).toInt();
+
+        // If bitrate is not assigned, set to default
+        if (audioBitrate == NULL) {
+            // If MP3 is not assigned and bitrate was set in a previous version, set it to that
+            QVariant previousAudioBitrate = settings.value("audioBitrate", NULL);
+            if (currentExtension == Codec::Extension::MP3 && previousAudioBitrate != NULL) {
+                AudioBitrate[currentExtension] = previousAudioBitrate.toInt();
+
+                // Remove previous value, not needed anymore
+                settings.remove("audioBitrate");
+
+                continue;
+            }
+
+            // If previous bitrate is null, set to default
+            AudioBitrate[currentExtension] = Codec::Data[currentExtension].DefaultBitrate;\
+            continue;
+        }
+
+        // Set bitrate
+        AudioBitrate[currentExtension] = audioBitrate;
+    }
+
     SaveLocation = settings.value("saveLocation", "").toString();
     SongOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
     SongOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
@@ -77,7 +131,6 @@ void Config::LoadSettings() {
         {"Codec Index", CodecIndex()},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
-        {"Audio Bitrate", AudioBitrate},
         {"Song Output Format Tag", SongOutputFormatTag},
         {"Song Output Format", SongOutputFormat},
         {"Folder Sorting Index", FolderSortingIndex},
@@ -86,6 +139,15 @@ void Config::LoadSettings() {
         {"Download Speed Limit", DownloadSpeed},
         {"Downloader Thread UI Index", DownloaderThreadUIIndex}
     };
+
+    // add bitrate to log
+    for (int i = 0; i < Codec::Data.count(); i++) {
+        Codec::Extension currentExtension = (Codec::Extension)i;
+        if (Codec::Data[currentExtension].LockedBitrate)
+            continue;
+
+        settingsLog.insert(QString("Audio Bitrate %1").arg(Codec::Data[currentExtension].String.toUpper()), AudioBitrate[currentExtension]);
+    }
 
     qInfo() << "Settings Successfully Saved" << settingsLog;
 }
@@ -98,7 +160,7 @@ QStringList Config::Q_NAMING_TAGS() {
     QStringList tags = QStringList();
     int numTags = std::extent<decltype(NAMING_TAGS)>::value;
     for (int i = 0; i < numTags; i++) {
-        QString tag = QString::fromStdString(NAMING_TAGS[i]);
+        QString tag = QString::fromUtf8(NAMING_TAGS[i]);
         tags.append(tag);
     }
 

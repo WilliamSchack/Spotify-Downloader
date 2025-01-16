@@ -185,7 +185,6 @@ void SpotifyDownloader::SetupSetupScreen() {
             SetDownloadStatus("");
 
             qInfo() << "Starting download for playlist" << Config::PlaylistURL;
-            Logger::Flush();
 
             // Start thread
             workerThread.start();
@@ -262,6 +261,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
             Config::NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
         }
     });
+
     connect(_ui.AudioBitrateInput, &QSpinBox::textChanged, [=] {
         if (_ui.AudioBitrateInput->text() != "") {
             int audioBitrate = _ui.AudioBitrateInput->value();
@@ -277,9 +277,9 @@ void SpotifyDownloader::SetupSettingsScreen() {
                 _ui.AudioBitrateInput->setValue(audioBitrate);
             }
 
-            Config::AudioBitrate = audioBitrate;
+            Config::SetBitrate(audioBitrate);
 
-            float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
+            float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(audioBitrate, 60);
             QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
             _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
         }
@@ -302,15 +302,27 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
     // Set combo box variables on change
     connect(_ui.CodecInput, &QComboBox::currentIndexChanged, [=](int index) {
+        // Set codec
         Config::SetCodecIndex(index);
 
-        // Update file size text
-        float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
-        QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
-        _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+        // Update bitrate input
+        UpdateBitrateInput(Config::Codec);
 
         // Disable bitrate input if it cannot be changed
-        _ui.AudioBitrateInput->setEnabled(!Codec::Data[Config::Codec].LockedBitRate);
+        bool bitrateLocked = Codec::Data[Config::Codec].LockedBitrate;
+        _ui.AudioBitrateInput->setEnabled(!Codec::Data[Config::Codec].LockedBitrate);
+
+        // Set bitrate input if it can be changed
+        if (!bitrateLocked)
+            _ui.AudioBitrateInput->setValue(Config::GetBitrate());
+
+        // Update codec details
+        _ui.CodecDetailsLabel->setText(Codec::Data[Config::Codec].CodecDetails);
+
+        // Update file size text
+        float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
+        QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
+        _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     });
     connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { Config::FolderSortingIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
@@ -383,9 +395,13 @@ void SpotifyDownloader::LoadSettingsUI() {
     _ui.NormalizeVolumeSettingInput->setValue(Config::NormalizeAudioVolume);
     
     // Audio Bitrate
-    _ui.AudioBitrateInput->setValue(Config::AudioBitrate);
-    
-    float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::AudioBitrate, 60);
+    UpdateBitrateInput(Config::Codec);
+    _ui.AudioBitrateInput->setValue(Config::GetBitrate());
+
+    // Codec details
+    _ui.CodecDetailsLabel->setText(Codec::Data[Config::Codec].CodecDetails);
+
+    float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
     QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
     _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     
@@ -484,7 +500,7 @@ bool SpotifyDownloader::ValidateURL() {
 
 bool SpotifyDownloader::ValidateDirectory() {
     // Check if Directory is valid
-    if (!std::filesystem::exists(Config::SaveLocation.toStdString())) {
+    if (!std::filesystem::exists(reinterpret_cast<const wchar_t*>(Config::SaveLocation.constData()))) {
         QMessageBox msg = QMessageBox();
         msg.setWindowTitle("Invalid Directory");
         msg.setText("Please Input A Valid Directory");

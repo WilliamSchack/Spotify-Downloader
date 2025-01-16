@@ -25,7 +25,6 @@
 
 #include <taglib/fileref.h>
 
-#include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2frame.h>
 #include <taglib/commentsframe.h>
@@ -37,6 +36,9 @@
 #include <taglib/mp4coverart.h>
 
 #include <taglib/wavfile.h>
+
+#include <taglib/flacpicture.h>
+#include <taglib/xiphcomment.h>
 
 class Song {
 	public:

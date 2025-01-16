@@ -181,10 +181,11 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	// If normalising, normalise audio, includes setting bitrate of audio
+	int bitrate = Config::AudioBitrate[codec]; // Get current bitrate
 	if (Config::NormalizeAudio) {
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
-		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, Config::AudioBitrate, &_quitting, [&](float percentComplete) {
+		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, bitrate, &_quitting, [&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
@@ -194,7 +195,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	else {
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
-		song.SetBitrate(_currentProcess, Config::AudioBitrate, [&](float percentComplete) {
+		song.SetBitrate(_currentProcess, bitrate, [&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});

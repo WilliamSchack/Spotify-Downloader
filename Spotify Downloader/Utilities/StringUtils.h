@@ -3,9 +3,13 @@
 
 #include <QString>
 
+#include <QRegularExpression>
+
 class StringUtils {
 	public:
 		static QString ValidateString(QString string);
+
+		static QString Anonymize(QString string);
 
 		static int StringNumberToInt(QString string);
 

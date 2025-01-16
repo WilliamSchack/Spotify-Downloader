@@ -29,12 +29,14 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	}
 	AlbumArtistNames = AlbumArtistNamesList.join("; ");
 
+	// Set Codec
+	_codec = codec;
+
 	// Generate File Name
 	if (_main != nullptr)
 		GenerateFileName(_main);
 
-	//Generate Downloading Path
-	_codec = codec;
+	// Generate Downloading Path
 	GenerateDownloadingPath();
 }
 
@@ -349,6 +351,12 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
 
+	// New yt-dlp version sometimes adds extra .m4a to the end, check for that here
+	// Bit of a workaround but couldn't find anything about it on the github page
+	QString downloadingPathExtraM4A = QString("%1.m4a").arg(downloadingPathM4A);
+	if (QFile::exists(downloadingPathExtraM4A))
+		QFile::rename(downloadingPathExtraM4A, downloadingPathM4A);
+
 	// No need to convert
 	if (_codec == Codec::Extension::M4A) {
 		onProgressUpdate(1);
@@ -398,7 +406,7 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 // Don't set quality if normalizing, has to be set there regardless
 void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate) {
 	// Some codecs have a preset bitrate, no need to set, eg. WAV files
-	if (Codec::Data[_codec].LockedBitRate)
+	if (Codec::Data[_codec].LockedBitrate)
 		return;
 
 	// Get duration for progress bar calculations
@@ -425,10 +433,9 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 	});
 
 	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Data[_codec].String);
-	process->startCommand(QString(R"("%1" -i "%2" %3 -progress - -nostats -b:a %4k "%5")")
+	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(_downloadingPath)
-		.arg(Codec::Data[_codec].FFMPEGFormat == "" ? "" : QString("-f %1").arg(Codec::Data[_codec].FFMPEGFormat))
 		.arg(bitrate)
 		.arg(newQualityFullPath));
 	process->waitForFinished(-1);
@@ -463,17 +470,18 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 			process = new QProcess();
 			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
 			QObject::connect(process, &QProcess::readyRead, process, [&]() {
-				QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
+				QString progressS = process->readAll();
+
+				QString msProgressString = QString(progressS.split("\n")[3].split("=")[1]);
 				int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
 				float progress = float(msProgress) / float(ms);
 
 				onProgressUpdate(progress);
 			});
-			process->startCommand(QString(R"("%1" -i "%2" %3 -progress - -nostats %4k -af "volume=%5dB" "%6")")
+			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
-				.arg(Codec::Data[_codec].FFMPEGFormat == "" ? "" : QString("-f %1").arg(Codec::Data[_codec].FFMPEGFormat))
-				.arg(Codec::Data[_codec].LockedBitRate ? "" : QString("-b:a %1").arg(bitrate)) // Only set bitrate if not wav file
+				.arg(Codec::Data[_codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not wav file
 				.arg(volumeApply)
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
@@ -492,13 +500,9 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 void Song::AssignMetadata() {
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
-		// M4A currently doesnt give image into metadata, currently working on it
-		// 
-		// AAC FILE SHOWS NULL, CONVERT TO AAC AFTER FROM M4A
-
 		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(_downloadingPath.constData()));
 		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
-		
+
 		QByteArray imageBytes;
 		QBuffer buffer(&imageBytes);
 		buffer.open(QIODevice::WriteOnly);
@@ -506,14 +510,17 @@ void Song::AssignMetadata() {
 		buffer.close();
 
 		switch (Codec::Data[_codec].Type) {
-			case Codec::MetadataType::MPEG:
+			case Codec::MetadataType::ID3V2:
 			{
-				TagLib::MPEG::File* file = dynamic_cast<TagLib::MPEG::File*>(tagFileRef.file());
-		
-				TagLib::ID3v2::Tag* tag = file->ID3v2Tag(true);
+				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				// Below work on specific systems where the above dont (#33) need to look further into it
+				// tag->setTitle(Title.trimmed().toUtf8().data());
+				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
+				// tag->setAlbum(AlbumName.trimmed().toUtf8().data());
 
 				TagLib::ID3v2::TextIdentificationFrame* numFrame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
 				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
@@ -538,48 +545,58 @@ void Song::AssignMetadata() {
 			}
 			case Codec::MetadataType::MP4:
 			{
-				TagLib::MP4::File* file = dynamic_cast<TagLib::MP4::File*>(tagFileRef.file());
-
-				TagLib::MP4::Tag* tag = file->tag();
+				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
-				
+				tag->setTrack(TrackNumber);
+
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				TagLib::MP4::CoverArtList coverArtList;
 				coverArtList.append(coverArt);
 				TagLib::MP4::Item coverItem(coverArtList);
 		
-				// Cover art giving error for some reason ?
-				// Sometimes works sometimes doesnt, really strange
 				tag->setItem("covr", coverItem);
 		
 				break;
 			}
 			case Codec::MetadataType::RIFF:
 			{
-				TagLib::RIFF::WAV::File* file = dynamic_cast<TagLib::RIFF::WAV::File*>(tagFileRef.file());
-		
-				qDebug() << file->hasID3v2Tag();
-				qDebug() << file->hasInfoTag();
+				TagLib::RIFF::Info::Tag *tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
 
-				TagLib::RIFF::Info::Tag *tag = file->InfoTag();
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setTrack(TrackNumber);
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
 		
 				// RIFF only supports text metadata, no cover art
 		
 				break;
 			}
+			case Codec::MetadataType::XIPH:
+			{
+				TagLib::Ogg::XiphComment* tag = dynamic_cast<TagLib::Ogg::XiphComment*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+
+				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
+				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
+				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setTrack(TrackNumber);
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				
+				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
+				coverArt->setData(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
+				coverArt->setMimeType("image/png");
+				coverArt->setType(TagLib::FLAC::Picture::Type::FrontCover);
+				tag->addPicture(coverArt);
+
+				break;
+			}
 		}
 
 		tagFileRef.save();
-
-		// With M4A tag->setItem("covr"), will call error here when leaving scope. No clue why still need to fix
-		// Strange error, works fine on my laptop but not pc, needs testing
 	}
 }
 
