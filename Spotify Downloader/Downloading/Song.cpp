@@ -7,6 +7,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	_ffmpegPath = ffmpegPath;
 
 	// Get Song Details
+	if (album.isEmpty()) album = song["album"].toObject();
+
 	Title = song["name"].toString();
 	AlbumName = album["name"].toString();
 	ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
@@ -498,6 +500,10 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::AssignMetadata() {
+	// Only assign metadata if required
+	if (Codec::Data[_codec].Type == Codec::MetadataType::NONE)
+		return;
+
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
 		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(_downloadingPath.constData()));
@@ -526,9 +532,9 @@ void Song::AssignMetadata() {
 				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
-				numFrame->setText(QString::number(TrackNumber).toStdString().data());
+				numFrame->setText(QString::number(TrackNumber).toUtf8().data());
 				pubFrame->setText("William S - Spotify Downloader");
-				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				comFrame->setText("Thanks for using my program! :)\n- William S");
 				tag->addFrame(numFrame);
 				tag->addFrame(pubFrame);
@@ -550,7 +556,7 @@ void Song::AssignMetadata() {
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				tag->setTrack(TrackNumber);
 
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
@@ -570,7 +576,7 @@ void Song::AssignMetadata() {
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setTrack(TrackNumber);
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 		
 				// RIFF only supports text metadata, no cover art
 		
@@ -584,7 +590,7 @@ void Song::AssignMetadata() {
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setTrack(TrackNumber);
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toStdString().data());
+				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				
 				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
 				coverArt->setData(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));

@@ -23,13 +23,13 @@ class Codec {
 			return (44.1 * (16 / 8) * 2 * (float)seconds) / 1024; // Sample Rate * (Bits Per Sample / 8) * Channels * Seconds
 		}
 
-		// Get tags for metadata
-		static TagLib::Tag* GetMP3FileTag(TagLib::FileRef fileRef) {
-			return dynamic_cast<TagLib::MPEG::File*>(fileRef.file())->ID3v2Tag(true);
-		}
-		
+		// Get tags for metadata		
 		static TagLib::Tag* GetM4AFileTag(TagLib::FileRef fileRef) {
 			return dynamic_cast<TagLib::MP4::File*>(fileRef.file())->tag();
+		}
+
+		static TagLib::Tag* GetMP3FileTag(TagLib::FileRef fileRef) {
+			return dynamic_cast<TagLib::MPEG::File*>(fileRef.file())->ID3v2Tag(true);
 		}
 
 		static TagLib::Tag* GetOGGFileTag(TagLib::FileRef fileRef) {
@@ -47,6 +47,7 @@ class Codec {
 		// Planning to add more, just testing some different codecs for now
 		enum class Extension {
 			M4A,
+			AAC,	// Cannot store metadata, raw audio stream
 			MP3,
 			OGG,
 			WAV,
@@ -57,7 +58,8 @@ class Codec {
 			ID3V2,
 			MP4,
 			RIFF,	// Not all programs support RIFF chunks
-			XIPH
+			XIPH,
+			NONE
 		};
 
 		struct ExtensionData {
@@ -84,10 +86,11 @@ class Codec {
 		};
 
 		static inline const QMap<Extension, ExtensionData> Data {
-			{ Extension::M4A, { MetadataType::MP4, "m4a", "", 128, false, 64, 96, 128, "MP4 Tags", CalculateBitrateFileSize, GetM4AFileTag}},
+			{ Extension::M4A, { MetadataType::MP4, "m4a", "", 128, false, 64, 96, 128, "", CalculateBitrateFileSize, GetM4AFileTag}},
+			{ Extension::AAC, { MetadataType::NONE, "aac", "-c:a copy", 128, false, 64, 96, 128, R"(Converting M4A > AAC || Audio Only, <span style="color:rgb(255, 0, 0); ">No Metadata</span>)", CalculateBitrateFileSize, NULL}},
 			{ Extension::MP3, { MetadataType::ID3V2, "mp3", "-c:v copy", 192, false, 128, 192, 256, "Converting M4A > MP3 || ID3v2 Tags", CalculateBitrateFileSize, GetMP3FileTag}},
 			{ Extension::OGG, { MetadataType::XIPH, "ogg", "-acodec libvorbis", 128, false, 64, 96, 128, "Converting M4A > OGG Vorbis || XIPH Tags", CalculateBitrateFileSize, GetOGGFileTag } },
-			{ Extension::WAV, { MetadataType::RIFF, "wav", "-acodec pcm_s16le -ar 44100 -ac 2", 0, true, 0, 0, 0, R"(Converting M4A > WAV <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || RIFF Tags)", CalculatePCMFileSize, GetWAVFileTag } },
+			{ Extension::WAV, { MetadataType::RIFF, "wav", "-acodec pcm_s16le -ar 44100 -ac 2", 0, true, 0, 0, 0, R"(Converting M4A > WAV <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || RIFF Tags, <span style="color:rgb(255, 0, 0);">No Cover Art</span>)", CalculatePCMFileSize, GetWAVFileTag } },
 			{ Extension::FLAC, { MetadataType::XIPH, "flac", "-c:a flac -af aformat=s16:44100 -ac 2", 0, true, 0, 0, 0, R"(Converting M4A > FLAC <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || XIPH Tags)", CalculatePCMFileSize, GetFLACFileTag } }
 		};
 };

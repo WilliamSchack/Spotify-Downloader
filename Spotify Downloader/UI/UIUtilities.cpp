@@ -43,21 +43,21 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
     switch (screenIndex) {
         case Config::SETUP_SCREEN_INDEX:
         case Config::PROCESSING_SCREEN_INDEX:
-            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
-            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
-            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled());
+            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.DownloadingScreenButton->y() - 2), 500);
             break;
         case Config::ERROR_SCREEN_INDEX:
-            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
-            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
-            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            _ui.ErrorScreenButton->setIcon(Config::ErrorIconFilled());
+            _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.ErrorScreenButton->y() - 2), 500);
             break;
         case Config::SETTINGS_SCREEN_INDEX:
-            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
-            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
-            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
+            _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
+            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.SettingsScreenButton->y() - 2), 500);
             break;
     }
@@ -72,6 +72,7 @@ void SpotifyDownloader::ShowMessage(QString title, QString message, int msecs) {
 }
 
 void SpotifyDownloader::SetDownloadStatus(QString text) {
+    _ui.DownloadedStatusLabel->setVisible(true);
     _ui.DownloadedStatusLabel->setText(text);
 }
 
@@ -178,8 +179,8 @@ void SpotifyDownloader::UpdateBitrateInput(Codec::Extension codec) {
         <p><span style="font-weight: 700;">High Quality: </span>%1<br/>
         <span style="font-weight: 700;">Good Quality: </span>%2<br/>
         <span style="font-weight: 700;">Low Quality: </span>%3</p>
-        <p>Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)</p></body></html>)"
-    ).arg(bitrateHighQuality).arg(bitrateGoodQuality).arg(bitrateLowQuality);
+        <p>Only accepts numbers within 33-%4 with a multiple of 32 (excluding 33)</p></body></html>)"
+    ).arg(bitrateHighQuality).arg(bitrateGoodQuality).arg(bitrateLowQuality).arg(bitrateHighQuality);
 
     _ui.AudioBitrateInput->setToolTip(tooltip);
 

@@ -56,29 +56,29 @@ void SpotifyDownloader::SetupTrayIcon() {
 void SpotifyDownloader::SetupSideBar() {
     // Hover
     _objectHoverWatcher->AddObjectFunctions(_ui.DownloadingScreenButton, [=](QObject* object) {
-        _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png"));
+        _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled());
     }, [=](QObject* object) {
         // If not in a downloading screen, reset icon
         int currentScreen = CurrentScreen();
         if (currentScreen != Config::SETUP_SCREEN_INDEX && currentScreen != Config::PROCESSING_SCREEN_INDEX)
-            _ui.DownloadingScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_W.png"));
+            _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
     });
 
     _objectHoverWatcher->AddObjectFunctions(_ui.SettingsScreenButton, [=](QObject* object) {
-        _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png"));
+        _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
     }, [=](QObject* object) {
         // If not in settings screen, reset icon
         if(CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
-            _ui.SettingsScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/SettingsCog_W.png"));
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
     });
 
     _objectHoverWatcher->AddObjectFunctions(_ui.ErrorScreenButton, [=](QObject* object) {
         if(_errorUI.count() > 0)
-            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png"));
+            _ui.ErrorScreenButton->setIcon(Config::ErrorIconFilled());
     }, [=](QObject* object) {
         // If not in error screen, reset icon
         if(_errorUI.count() > 0 && CurrentScreen() != Config::ERROR_SCREEN_INDEX)
-            _ui.ErrorScreenButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Error_Icon_W.png"));
+            _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
     });
 
     _objectHoverWatcher->AddObjectFunctions(_ui.DonateButton, [=](QObject* object) {
@@ -133,7 +133,7 @@ void SpotifyDownloader::SetupSideBar() {
     });
 
     connect(_ui.DonateButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://ko-fi.com/williamschack"), "Would you like to donate?", "Your donation will support this programs development\nand help it flourish with new features and community support\nfor the foreseeable future!");
+        OpenURL(QUrl("https://ko-fi.com/williamschack"), "Donate", "Would you like to donate?\nYour donation will support the development of this program and many to come\nEven the smallest amount goes a long way :)");
     });
 
     connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
@@ -146,6 +146,13 @@ void SpotifyDownloader::SetupSideBar() {
 }
 
 void SpotifyDownloader::SetupSetupScreen() {
+    // Disable status and donation prompt
+    _ui.DownloadedStatusLabel->setVisible(false);
+    _ui.DonationPromptButton->setVisible(false);
+
+    // Set version label
+    _ui.VersionLabel->setText(QString("v%1").arg(Config::VERSION));
+
     connect(_ui.PasteButton, &QPushButton::clicked, [=] {
         QClipboard* clipboard = qApp->clipboard();
         _ui.PlaylistURLInput->setText(clipboard->text());
@@ -199,8 +206,16 @@ void SpotifyDownloader::SetupSetupScreen() {
         }
     });
 
-    // Set version label
-    _ui.VersionLabel->setText(QString("v%1").arg(Config::VERSION));
+    // Donation prompt button
+    _objectHoverWatcher->AddObjectFunctions(_ui.DonationPromptButton, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.DonationPromptButton, QColor(80, 80, 80), 500);
+    }, [=](QObject* object) {
+        Animation::AnimateBackgroundColour(_ui.DonationPromptButton, QColor(65, 65, 65), 500);
+    });
+
+    connect(_ui.DonationPromptButton, &QPushButton::clicked, [=] {
+        _ui.DonateButton->click();
+    });
 }
 
 void SpotifyDownloader::SetupSettingsScreen() {
@@ -317,7 +332,9 @@ void SpotifyDownloader::SetupSettingsScreen() {
             _ui.AudioBitrateInput->setValue(Config::GetBitrate());
 
         // Update codec details
-        _ui.CodecDetailsLabel->setText(Codec::Data[Config::Codec].CodecDetails);
+        QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
+        _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
+        _ui.CodecDetailsLabel->setText(codecDetails);
 
         // Update file size text
         float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
@@ -333,6 +350,17 @@ void SpotifyDownloader::SetupSettingsScreen() {
     connect(_ui.NormalizeVolumeSettingButton, &CheckBox::clicked, [=] {
         Config::NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
         _ui.NormalizeVolumeSettingInput->setEnabled(Config::NormalizeAudio);
+    });
+    connect(_ui.SidebarIconsColourButton, &CheckBox::clicked, [=] {
+        Config::SidebarIconsColour = _ui.SidebarIconsColourButton->isChecked;
+
+        // Set icons
+        _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
+        if(_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon()); // Only set if error screen is active
+        _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled()); // Set to filled, current screen will be settings, user clicked the button here
+        _ui.DonateButton->setIcon(Config::DonateIcon());
+        _ui.SubmitBugButton->setIcon(Config::BugIcon());
+        _ui.HelpButton->setIcon(Config::HelpIcon());
     });
 }
 
@@ -399,7 +427,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     _ui.AudioBitrateInput->setValue(Config::GetBitrate());
 
     // Codec details
-    _ui.CodecDetailsLabel->setText(Codec::Data[Config::Codec].CodecDetails);
+    QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
+    _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
+    _ui.CodecDetailsLabel->setText(codecDetails);
 
     float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
     QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
@@ -428,6 +458,17 @@ void SpotifyDownloader::LoadSettingsUI() {
     
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);
+
+    // Sidebar Icons Colour
+    if (_ui.SidebarIconsColourButton->isChecked != Config::SidebarIconsColour)
+        _ui.SidebarIconsColourButton->click();
+
+    // Set icons colour
+    _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled()); // Set to filled, current screen will be setup, LoadSettingsUI only called on startup
+    _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
+    _ui.DonateButton->setIcon(Config::DonateIcon());
+    _ui.SubmitBugButton->setIcon(Config::BugIcon());
+    _ui.HelpButton->setIcon(Config::HelpIcon());
 }
 
 bool SpotifyDownloader::ValidateSettings() {

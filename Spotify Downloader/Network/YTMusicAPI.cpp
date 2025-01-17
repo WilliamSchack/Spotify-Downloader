@@ -391,14 +391,14 @@ QJsonObject YTMusicAPI::ParseSongRuns(QJsonArray runs, int offset) {
 			}
 		}
 		else {
-			if (std::regex_match(text.toStdString(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
+			if (std::regex_match(text.toUtf8().constData(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
 				parsed["views"] = text.split(" ")[0];
 			}
-			else if (std::regex_match(text.toStdString(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
+			else if (std::regex_match(text.toUtf8().constData(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
 				parsed["duration"] = text;
 				parsed["durationSeconds"] = TimeToSeconds(text);
 			}
-			else if (std::regex_match(text.toStdString(), std::regex(R"(^\d{4}$)"))) {
+			else if (std::regex_match(text.toUtf8().constData(), std::regex(R"(^\d{4}$)"))) {
 				parsed["year"] = text;
 			}
 			else {

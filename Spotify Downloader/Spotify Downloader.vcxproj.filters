@@ -197,9 +197,6 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="taglib.dll">
-      <Filter>Dependencies</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="yt-dlp.exe">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>

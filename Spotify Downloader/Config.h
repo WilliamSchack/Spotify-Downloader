@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QJsonObject>
 #include <QMap>
+#include <QIcon>
 
 class Config {
     public:
@@ -32,7 +33,27 @@ class Config {
 
         static const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 255;
         static const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
-        static const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 5;
+        static const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 55;
+
+        static constexpr const char* DOWNLOAD_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png";
+        static constexpr const char* DOWNLOAD_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Download_Icon_Colour_Filled.png";
+        static constexpr const char* DOWNLOAD_ICON_WHITE = ":/SpotifyDownloader/Icons/Download_Icon_W.png";
+        static constexpr const char* DOWNLOAD_ICON_COLOUR = ":/SpotifyDownloader/Icons/Download_Icon_Colour.png";
+        static constexpr const char* ERROR_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/Error_Icon_W_Filled.png";
+        static constexpr const char* ERROR_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Error_Icon_Colour_Filled.png";
+        static constexpr const char* ERROR_ICON_WHITE = ":/SpotifyDownloader/Icons/Error_Icon_W.png";
+        static constexpr const char* ERROR_ICON_COLOUR = ":/SpotifyDownloader/Icons/Error_Icon_Colour.png";
+        static constexpr const char* SETTINGS_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png";
+        static constexpr const char* SETTINGS_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/SettingsCog_Colour_Filled.png";
+        static constexpr const char* SETTINGS_ICON_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W.png";
+        static constexpr const char* SETTINGS_ICON_COLOUR = ":/SpotifyDownloader/Icons/SettingsCog_Colour.png";
+
+        static constexpr const char* DONATE_ICON_WHITE = ":/SpotifyDownloader/Icons/Donate_Icon_W.png";
+        static constexpr const char* DONATE_ICON_COLOUR = ":/SpotifyDownloader/Icons/Donate_Icon_Colour.png";
+        static constexpr const char* BUG_ICON_WHITE = ":/SpotifyDownloader/Icons/Bug_Icon_W.png";
+        static constexpr const char* BUG_ICON_COLOUR = ":/SpotifyDownloader/Icons/Bug_Icon_Colour.png";
+        static constexpr const char* HELP_ICON_WHITE = ":/SpotifyDownloader/Icons/Help_Icon_W.png";
+        static constexpr const char* HELP_ICON_COLOUR = ":/SpotifyDownloader/Icons/Help_Icon_Colour.png";
 
         static constexpr const char* NAMING_TAGS[] = {
             "song name",
@@ -72,9 +93,10 @@ class Config {
         static inline int ThreadCount;
         static inline float DownloadSpeed;
     
-    
         // Interface
         static inline int DownloaderThreadUIIndex;
+
+        static inline bool SidebarIconsColour;
     public:
         static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
 
@@ -83,6 +105,16 @@ class Config {
 
         static QStringList Q_NAMING_TAGS();
         static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc); // Output, Error
+
+        static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }
+        static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }
+        static QIcon ErrorIconFilled() { return QIcon(SidebarIconsColour ? ERROR_ICON_FILLED_COLOUR : ERROR_ICON_FILLED_WHITE); }
+        static QIcon ErrorIcon() { return QIcon(SidebarIconsColour ? ERROR_ICON_COLOUR : ERROR_ICON_WHITE); }
+        static QIcon SettingsIconFilled() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_FILLED_COLOUR : SETTINGS_ICON_FILLED_WHITE); }
+        static QIcon SettingsIcon() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_COLOUR : SETTINGS_ICON_WHITE); }
+        static QIcon DonateIcon() { return QIcon(SidebarIconsColour ? DONATE_ICON_COLOUR : DONATE_ICON_WHITE); }
+        static QIcon BugIcon() { return QIcon(SidebarIconsColour ? BUG_ICON_COLOUR : BUG_ICON_WHITE); }
+        static QIcon HelpIcon() { return QIcon(SidebarIconsColour ? HELP_ICON_COLOUR : HELP_ICON_WHITE); }
 
         static void SaveSettings();
         static void LoadSettings();

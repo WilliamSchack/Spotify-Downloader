@@ -59,10 +59,7 @@
     <string notr="true">background-color: rgb(44, 44, 44);</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::Shape::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Shadow::Raised</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
    </property>
    <property name="currentIndex">
     <number>0</number>
@@ -133,22 +130,23 @@
       <rect>
        <x>4</x>
        <y>330</y>
-       <width>201</width>
+       <width>361</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>12</pointsize>
+       <pointsize>11</pointsize>
        <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
+      <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(55, 55, 55);</string>
      </property>
      <property name="text">
-      <string>© 2024 William Schack</string>
+      <string>© 2024-2025 William Schack</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
@@ -177,9 +175,6 @@ selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="frame">
       <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
      <property name="placeholderText">
       <string>Enter Song/Playlist URL...</string>
@@ -213,50 +208,25 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string>Select A Save Location...</string>
      </property>
     </widget>
-    <widget class="QLabel" name="DownloadedStatusLabel">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>60</y>
-       <width>731</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Segoe UI</family>
-       <pointsize>15</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-    </widget>
     <widget class="QLabel" name="VersionLabel">
      <property name="geometry">
       <rect>
-       <x>530</x>
+       <x>370</x>
        <y>330</y>
-       <width>201</width>
+       <width>361</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>12</pointsize>
+       <pointsize>11</pointsize>
        <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
+      <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(55, 55, 55);</string>
      </property>
      <property name="text">
       <string>v0.0.0</string>
@@ -294,6 +264,116 @@ selection-background-color: rgb(0, 120, 215);</string>
       </size>
      </property>
     </widget>
+    <widget class="QPushButton" name="DonationPromptButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>290</y>
+       <width>737</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 160, 160);
+background-color: rgb(65, 65, 65);
+border: none;</string>
+     </property>
+     <property name="text">
+      <string>Thanks for using my program! Would you like to donate to support development?</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="DownloadedStatusLabel">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>50</y>
+       <width>736</width>
+       <height>45</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Segoe UI</family>
+       <pointsize>15</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Download Status</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>330</y>
+       <width>737</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(55, 55, 55);</string>
+     </property>
+    </widget>
+    <zorder>widget</zorder>
+    <zorder>BrowseButton</zorder>
+    <zorder>ContinueButton</zorder>
+    <zorder>CopyrightLabel</zorder>
+    <zorder>PlaylistURLInput</zorder>
+    <zorder>SaveLocationInput</zorder>
+    <zorder>VersionLabel</zorder>
+    <zorder>PasteButton</zorder>
+    <zorder>DownloadedStatusLabel</zorder>
+    <zorder>DonationPromptButton</zorder>
    </widget>
    <widget class="QWidget" name="SettingsScreen">
     <widget class="QStackedWidget" name="SettingsScreens">
@@ -433,10 +513,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Shape::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Raised</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="lineWidth">
         <number>1</number>
@@ -445,7 +522,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
@@ -453,16 +530,13 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-       </property>
        <widget class="QWidget" name="OutputSettingsScrollAreaWidgetContents">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>713</width>
-          <height>427</height>
+          <width>715</width>
+          <height>423</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -613,6 +687,11 @@ background-color: rgba(0, 0, 0, 0);</string>
              </item>
              <item>
               <property name="text">
+               <string>AAC</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>MP3</string>
               </property>
              </item>
@@ -726,7 +805,7 @@ color: rgb(0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::FocusPolicy::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -844,7 +923,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::FocusPolicy::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::NoFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;High Quality: &lt;/span&gt;256&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Good Quality: &lt;/span&gt;192&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Low Quality: &lt;/span&gt;128&lt;/p&gt;&lt;p&gt;Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1079,9 +1158,6 @@ selection-background-color: rgb(0, 120, 215);</string>
              <property name="frame">
               <bool>true</bool>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
-             </property>
              <property name="placeholderText">
               <string>Enter Song Naming Format</string>
              </property>
@@ -1121,9 +1197,6 @@ selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="frame">
               <bool>true</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
              <property name="placeholderText">
               <string>Enter Song Naming Format</string>
@@ -1278,7 +1351,7 @@ background-color: rgba(0, 0, 0, 0);</string>
         <bool>true</bool>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::StrongFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="toolTip">
         <string>0 Is Uncapped</string>
@@ -1368,7 +1441,7 @@ background-color: rgba(0, 0, 0, 0);</string>
         <bool>true</bool>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::FocusPolicy::StrongFocus</enum>
+        <enum>Qt::FocusPolicy::NoFocus</enum>
        </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Effects CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;6 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1538,6 +1611,58 @@ background-color: rgba(0, 0, 0, 0);</string>
         </property>
        </item>
       </widget>
+      <widget class="QLabel" name="SidebarIconsColourLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>261</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>15</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Sidebar Icons Colour</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="CheckBox" name="SidebarIconsColourButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>630</x>
+         <y>60</y>
+         <width>41</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QPushButton" name="OutputSettingsButton">
@@ -1627,7 +1752,7 @@ text-align: top;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>60</x>
+       <x>62</x>
        <y>320</y>
        <width>591</width>
        <height>30</height>
@@ -1698,7 +1823,7 @@ background-color: rgb(30, 30, 30);</string>
     <widget class="QLabel" name="SongCount">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>12</x>
        <y>320</y>
        <width>41</width>
        <height>30</height>
@@ -1718,6 +1843,9 @@ color: rgb(255, 255, 255);</string>
      <property name="text">
       <string>0/0</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+     </property>
      <property name="margin">
       <number>5</number>
      </property>
@@ -1725,7 +1853,7 @@ color: rgb(255, 255, 255);</string>
     <widget class="QPushButton" name="PauseButton">
      <property name="geometry">
       <rect>
-       <x>654</x>
+       <x>656</x>
        <y>320</y>
        <width>32</width>
        <height>32</height>
@@ -1766,7 +1894,7 @@ color: rgb(255, 255, 255);</string>
     <widget class="QFrame" name="BottomBacking">
      <property name="geometry">
       <rect>
-       <x>2</x>
+       <x>4</x>
        <y>314</y>
        <width>729</width>
        <height>42</height>
@@ -1776,10 +1904,7 @@ color: rgb(255, 255, 255);</string>
       <string notr="true">background-color: rgb(30, 30, 30);</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
     </widget>
     <widget class="QScrollArea" name="DownloadingScrollArea">
@@ -1788,10 +1913,10 @@ color: rgb(255, 255, 255);</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>2</x>
-       <y>2</y>
+       <x>4</x>
+       <y>4</y>
        <width>729</width>
-       <height>309</height>
+       <height>307</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -1799,6 +1924,10 @@ color: rgb(255, 255, 255);</string>
 	background-color: rgb(64, 64, 64);
 	color: rgb(255, 255, 255);
 	selection-background-color: rgb(0, 120, 215);
+}
+
+QScrollBar {
+	border: none;
 }
 
 /* VERTICAL SCROLLBAR */
@@ -1872,10 +2001,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Sunken</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -1884,7 +2010,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
@@ -1892,15 +2018,12 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-     </property>
      <widget class="QWidget" name="downloadingScrollAreaWidgetContents">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>727</width>
+        <width>729</width>
         <height>307</height>
        </rect>
       </property>
@@ -1919,10 +2042,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <item>
           <widget class="QFrame" name="DownloadingSpaceFillerFrame">
            <property name="frameShape">
-            <enum>QFrame::Shape::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Shadow::Raised</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
           </widget>
          </item>
@@ -1937,7 +2057,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      </property>
      <property name="geometry">
       <rect>
-       <x>694</x>
+       <x>696</x>
        <y>320</y>
        <width>32</width>
        <height>32</height>
@@ -1978,7 +2098,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     <widget class="QLabel" name="GettingPlaylistDataLabel">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>22</x>
        <y>130</y>
        <width>695</width>
        <height>51</height>
@@ -2018,16 +2138,16 @@ color: rgb(255, 255, 255);</string>
     <widget class="QLabel" name="ErrorScreenTitle">
      <property name="geometry">
       <rect>
-       <x>11</x>
-       <y>0</y>
-       <width>715</width>
-       <height>51</height>
+       <x>0</x>
+       <y>4</y>
+       <width>737</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Segoe UI</family>
-       <pointsize>18</pointsize>
+       <pointsize>17</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -2035,7 +2155,10 @@ color: rgb(255, 255, 255);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>Songs Not Found</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Songs Not Found&lt;br&gt;&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;Songs here could not be found on YouTube and cannot be downloaded&lt;/span&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::TextFormat::RichText</enum>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -2048,9 +2171,9 @@ color: rgb(255, 255, 255);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>50</y>
+       <y>70</y>
        <width>715</width>
-       <height>301</height>
+       <height>280</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -2058,6 +2181,10 @@ color: rgb(255, 255, 255);</string>
 	background-color: rgb(64, 64, 64);
 	color: rgb(255, 255, 255);
 	selection-background-color: rgb(0, 120, 215);
+}
+
+QScrollArea {
+	border: none;
 }
 
 /* VERTICAL SCROLLBAR */
@@ -2131,10 +2258,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Shape::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Sunken</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -2143,7 +2267,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
@@ -2151,16 +2275,13 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-     </property>
      <widget class="QWidget" name="errorScrollAreaWidgetContents">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>713</width>
-        <height>299</height>
+        <width>715</width>
+        <height>280</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -2175,10 +2296,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <item>
           <widget class="QFrame" name="ErrorSpaceFillerFrame">
            <property name="frameShape">
-            <enum>QFrame::Shape::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Shadow::Raised</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
           </widget>
          </item>
@@ -2219,7 +2337,7 @@ border: none;</string>
     </property>
     <property name="icon">
      <iconset resource="SpotifyDownloader.qrc">
-      <normaloff>:/SpotifyDownloader/Icons/Bug_Icon_W.png</normaloff>:/SpotifyDownloader/Icons/Bug_Icon_W.png</iconset>
+      <normaloff>:/SpotifyDownloader/Icons/Bug_Icon_Colour.png</normaloff>:/SpotifyDownloader/Icons/Bug_Icon_Colour.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -2246,7 +2364,7 @@ border: none;</string>
     </property>
     <property name="icon">
      <iconset resource="SpotifyDownloader.qrc">
-      <normaloff>:/SpotifyDownloader/Icons/Help_Icon_W_Filled.png</normaloff>:/SpotifyDownloader/Icons/Help_Icon_W_Filled.png</iconset>
+      <normaloff>:/SpotifyDownloader/Icons/Help_Icon_Colour.png</normaloff>:/SpotifyDownloader/Icons/Help_Icon_Colour.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -2273,7 +2391,7 @@ border: none;</string>
     </property>
     <property name="icon">
      <iconset resource="SpotifyDownloader.qrc">
-      <normaloff>:/SpotifyDownloader/Icons/Download_Icon_W_Filled.png</normaloff>:/SpotifyDownloader/Icons/Download_Icon_W_Filled.png</iconset>
+      <normaloff>:/SpotifyDownloader/Icons/Download_Icon_Colour_Filled.png</normaloff>:/SpotifyDownloader/Icons/Download_Icon_Colour_Filled.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -2300,7 +2418,7 @@ border: none;</string>
     </property>
     <property name="icon">
      <iconset resource="SpotifyDownloader.qrc">
-      <normaloff>:/SpotifyDownloader/Icons/SettingsCog_W.png</normaloff>:/SpotifyDownloader/Icons/SettingsCog_W.png</iconset>
+      <normaloff>:/SpotifyDownloader/Icons/SettingsCog_Colour.png</normaloff>:/SpotifyDownloader/Icons/SettingsCog_Colour.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -2367,7 +2485,7 @@ border: none;</string>
     </property>
     <property name="icon">
      <iconset resource="SpotifyDownloader.qrc">
-      <normaloff>:/SpotifyDownloader/Icons/Donate_Icon_W.png</normaloff>:/SpotifyDownloader/Icons/Donate_Icon_W.png</iconset>
+      <normaloff>:/SpotifyDownloader/Icons/Donate_Icon_Colour.png</normaloff>:/SpotifyDownloader/Icons/Donate_Icon_Colour.png</iconset>
     </property>
     <property name="iconSize">
      <size>

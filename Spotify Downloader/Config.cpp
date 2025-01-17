@@ -36,6 +36,7 @@ void Config::SaveSettings() {
 
     settings.beginGroup("Interface");
     settings.setValue("downloaderThreadUIIndex", DownloaderThreadUIIndex);
+    settings.setValue("sidebarIconsColour", SidebarIconsColour);
     settings.endGroup();
 
     // Log settings
@@ -50,7 +51,8 @@ void Config::SaveSettings() {
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},
-        {"Downloader Thread UI Index", DownloaderThreadUIIndex}
+        {"Downloader Thread UI Index", DownloaderThreadUIIndex},
+        {"Sidebar Icons Colour", SidebarIconsColour}
     };
 
     // Add bitrate to log
@@ -123,6 +125,7 @@ void Config::LoadSettings() {
 
     settings.beginGroup("Interface");
     DownloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
+    SidebarIconsColour = settings.value("sidebarIconsColour", true).toBool();
     settings.endGroup();
 
     // Log settings
@@ -137,7 +140,8 @@ void Config::LoadSettings() {
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},
-        {"Downloader Thread UI Index", DownloaderThreadUIIndex}
+        {"Downloader Thread UI Index", DownloaderThreadUIIndex},
+        {"Sidebar Icons Colour", SidebarIconsColour}
     };
 
     // add bitrate to log

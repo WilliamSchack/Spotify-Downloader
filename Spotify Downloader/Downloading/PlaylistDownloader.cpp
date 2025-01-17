@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include "Downloading/Song.h"
+
 #include "Utilities/StringUtils.h"
 
 #include <QFileSystemWatcher>
@@ -78,13 +80,11 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 		// If not overwriting and track already downloaded, dont download
 		if (!Config::Overwrite) {
-			QString trackTitle = track["name"].toString();
-			QString artistName = track["artists"].toArray()[0].toObject()["name"].toString();
+			// Create song object to generate filename
+			Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
 
-			QString filename = QString("%1 - %2").arg(trackTitle).arg(artistName);
-			filename = StringUtils::ValidateString(filename);
-
-			QString targetPath = QString("%1/%2").arg(Config::SaveLocation).arg(filename);
+			// Check if file already exists
+			QString targetPath = QString("%1/%2").arg(Config::SaveLocation).arg(song.FileName);
 			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(Codec::Data[Config::Codec].String);
 
 			if (!QFile::exists(fullTargetPath))
@@ -183,7 +183,13 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 
 		_threads << worker;
 
-		qInfo() << "Setup thread" << i << "with" << tracks[i] << "songs";
+		// Log all track ids
+		QList<QString> trackIds = QList<QString>();
+		for (int x = 0; x < tracks[i].count(); x++) {
+			trackIds.append(tracks[i][x].toObject()["id"].toString());
+		}
+
+		qInfo() << "Setup thread" << i << "with the songs:" << trackIds;
 	}
 }
 
@@ -219,7 +225,7 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 		return;
 	}
 
-	DisplayFinalMessage();
+	emit DisplayFinalMessage();
 
 	Quit();
 }
@@ -234,6 +240,9 @@ void PlaylistDownloader::DisplayFinalMessage() {
 	int tracksNotFoundCount = _tracksNotFound.count();
 	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(tracksNotFoundCount).arg(tracksNotFoundCount != 1 ? "s" : ""));
 	emit SetErrorItems(_tracksNotFound);
+
+	if (_tracksNotFound.count() != 0)
+		emit SetErrorItems(_tracksNotFound);
 }
 
 // Distribute songs evenly between threads based on the remaining songs on each
@@ -352,7 +361,6 @@ PlaylistDownloader::~PlaylistDownloader() {
 	if (!Main->ExitingApplication) {
 		if (_tracksNotFound.count() == 0) {
 			emit ChangeScreen(Config::SETUP_SCREEN_INDEX);
-			emit ShowMessage("Downloads Complete!", "No download errors!");
 			qInfo() << "Downloads complete with no errors";
 
 			// Save Log after info
@@ -363,13 +371,22 @@ PlaylistDownloader::~PlaylistDownloader() {
 		else {
 			emit ChangeScreen(Config::ERROR_SCREEN_INDEX);
 			
-			// Remove image data to make it a lot shorter, not needed for log anyways. Can modify variable as its not used later
+			QList<QString> trackIds = QList<QString>();
 			for (int i = 0; i < _tracksNotFound.count(); i++) {
 				QJsonObject song = _tracksNotFound[i].toObject();
+
+				// Remove image data as its not needed anymore. Can modify variable as its not used later
 				song.remove("image");
 				_tracksNotFound[i] = song;
+
+				// Add song id to log output
+				if (song["id"].isNull())
+					trackIds.append(QString("ID NULL: (%1 - %2)").arg(song["title"].toString()).arg(song["artists"].toString()));
+				else
+					trackIds.append(song["id"].toString());
 			}
-			qInfo() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << _tracksNotFound;
+
+			qInfo() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << trackIds;
 
 			// Save Log after info
 			Logger::Flush();

@@ -101,13 +101,37 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
     anim->setStartValue(target->palette().color(target->backgroundRole()));
     anim->setEndValue(newColour);
 
+    // Could not get QPalette working, just ended up setting the style sheet, its a bit manual but it works
+
     QObject::connect(anim, &QVariantAnimation::valueChanged, [=](QVariant value) {
-        // Could not get QPalette working, just ended up setting the style sheet, its a bit manual but it works
-        target->setStyleSheet(QString("QWidget#%1 {background-color: %2; border: none;}").arg(target->objectName()).arg(value.value<QColor>().name()));
+        // Get current style sheet and remove background-color if set
+        QString styleSheet = target->styleSheet();
+        if (styleSheet.contains("background-color:")) {
+            int startIndex = styleSheet.indexOf("background-color:");
+            int endIndex = startIndex + styleSheet.mid(startIndex).indexOf(";") + 1;
+            
+            styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
+        }
+        
+        // Add new background colour
+        styleSheet.append(QString("background-color: %1;").arg(value.value<QColor>().name()));
+        target->setStyleSheet(styleSheet);
     });
 
     QObject::connect(anim, &QVariantAnimation::finished, [=] {
-        target->setStyleSheet(QString("QWidget#%1 {background-color: %2; border: none;}").arg(target->objectName()).arg(newColour.name()));
+        // Get current style sheet and remove background-color if set
+        QString styleSheet = target->styleSheet();
+        if (styleSheet.contains("background-color:")) {
+            int startIndex = styleSheet.indexOf("background-color:");
+            int endIndex = startIndex + styleSheet.mid(startIndex).indexOf(";") + 1;
+
+            styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
+        }
+
+        // Add new background colour
+        styleSheet.append(QString("background-color: %1;").arg(newColour.name()));
+        target->setStyleSheet(styleSheet);
+
         _currentAnimations.remove(target);
     });
 

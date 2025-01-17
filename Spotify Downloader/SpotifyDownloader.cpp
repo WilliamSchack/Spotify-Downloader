@@ -70,6 +70,8 @@ void SpotifyDownloader::ResetDownloadingVariables() {
         } else {
             SetDownloadStatus("Downloading Complete");
         }
+
+        _ui.DonationPromptButton->setVisible(true);
     }
 
     // Reset Variables

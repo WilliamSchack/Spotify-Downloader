@@ -25,7 +25,7 @@ void SongDownloader::StartDownload(int startIndex) {
 	for (int i = startIndex; i < _totalSongCount; i++) {
 		QJsonObject track = _downloadingTracks[i].toObject();
 
-		qInfo() << "Thread" << _threadIndex << "starting download track" << i << "/" << _totalSongCount << track;
+		qInfo() << "Thread" << _threadIndex << "starting download track" << i << "/" << _totalSongCount << track["id"].toString();
 
 		_currentTrack = track;
 		DownloadSong(track, i, _album);
