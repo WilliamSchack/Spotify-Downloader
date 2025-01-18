@@ -534,7 +534,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-112</y>
           <width>715</width>
           <height>423</height>
          </rect>
@@ -2155,7 +2155,7 @@ color: rgb(255, 255, 255);</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Songs Not Found&lt;br&gt;&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;Songs here could not be found on YouTube and cannot be downloaded&lt;/span&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Download Errors&lt;br/&gt;&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;Songs here cannot be downloaded for reasons listed below each song&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::TextFormat::RichText</enum>
@@ -2516,25 +2516,23 @@ border: none;</string>
   <tabstop>SaveLocationInput</tabstop>
   <tabstop>BrowseButton</tabstop>
   <tabstop>ContinueButton</tabstop>
+  <tabstop>DonationPromptButton</tabstop>
   <tabstop>OutputSettingsButton</tabstop>
   <tabstop>DownloadingSettingsButton</tabstop>
   <tabstop>InterfaceSettingsButton</tabstop>
-  <tabstop>OutputSettingsHoverTest</tabstop>
   <tabstop>OutputSettingsScrollArea</tabstop>
-  <tabstop>NotificationSettingButton</tabstop>
-  <tabstop>DownloaderThreadsInput</tabstop>
-  <tabstop>DownloadSpeedSettingInput</tabstop>
-  <tabstop>DownloaderThreadUIInput</tabstop>
   <tabstop>DownloadingScrollArea</tabstop>
   <tabstop>OverwriteSettingButton</tabstop>
+  <tabstop>CodecInput</tabstop>
   <tabstop>NormalizeVolumeSettingButton</tabstop>
-  <tabstop>NormalizeVolumeSettingInput</tabstop>
-  <tabstop>AudioBitrateInput</tabstop>
   <tabstop>SongOutputFormatTagInput</tabstop>
   <tabstop>SongOutputFormatInput</tabstop>
   <tabstop>FolderSortingInput</tabstop>
-  <tabstop>PlayButton</tabstop>
+  <tabstop>NotificationSettingButton</tabstop>
+  <tabstop>DownloaderThreadUIInput</tabstop>
+  <tabstop>SidebarIconsColourButton</tabstop>
   <tabstop>PauseButton</tabstop>
+  <tabstop>PlayButton</tabstop>
   <tabstop>CancelButton</tabstop>
   <tabstop>ErrorScrollArea</tabstop>
   <tabstop>DownloadingScreenButton</tabstop>
@@ -2543,6 +2541,7 @@ border: none;</string>
   <tabstop>DonateButton</tabstop>
   <tabstop>SubmitBugButton</tabstop>
   <tabstop>HelpButton</tabstop>
+  <tabstop>OutputSettingsHoverTest</tabstop>
  </tabstops>
  <resources>
   <include location="SpotifyDownloader.qrc"/>

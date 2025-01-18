@@ -134,7 +134,7 @@ void Song::DownloadCoverImage() {
 	CoverImage.load(imageFileDir);
 }
 
-bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
+QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
 	// Multiple queries as some songs will only get picked up by no quotes, and others with
 	QStringList searchQueries{
 		QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName),
@@ -178,6 +178,7 @@ bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressU
 	// Choose the result with the highest score
 	QJsonObject finalResult;
 	if (finalResults.count() > 0) {
+		// Get result with highest score
 		float highestScore = 0;
 		for (int i = 0; i < finalResults.count(); i++) {
 			QJsonObject result = finalResults[i].toObject();
@@ -187,6 +188,7 @@ bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressU
 			}
 		}
 
+		// If final result is a video, take views into account
 		if (finalResult["result"].toObject()["resultType"].toString() == "video") {
 			std::vector<double> finalViews = std::vector<double>();
 			QJsonArray newFinalResults = QJsonArray();
@@ -204,18 +206,49 @@ bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressU
 				else newFinalResults.append(result);
 			}
 
-			float newHighestScore = 0;
+			// Get result with new highest score
+			highestScore = 0;
 			for (int i = 0; i < finalResults.count(); i++) {
 				QJsonObject result = finalResults[i].toObject();
-				if (result["score"].toDouble() > newHighestScore) {
-					newHighestScore = result["score"].toDouble();
+				if (result["score"].toDouble() > highestScore) {
+					highestScore = result["score"].toDouble();
 					finalResult = result;
 				}
 			}
 		}
 
+		// Check if final result has any errors
+		QString errorReason = yt->VideoError(finalResult["result"].toObject()["videoId"].toString());
+		if (!errorReason.isEmpty()) {
+			// If there is an error the song cannot be downloaded
+			// Check all other songs within a 0.5 score range as a fallback, if they have errors then the song cannot be downloaded
+			float newHighestScore = 0;
+			QJsonObject newFinalResult;
+			for (int i = 0; i < finalResults.count(); i++) {
+				QJsonObject result = finalResults[i].toObject();
+
+				// If score is below highest - 0.5 or lower than new highest, do not consider
+				float score = result["score"].toDouble();
+				if (score < highestScore - 0.5 || score <= newHighestScore)
+					continue;
+
+				// Dont consider if song has an error
+				QString currentErrorReason = yt->VideoError(result["result"].toObject()["videoId"].toString());
+				if (!currentErrorReason.isEmpty())
+					continue;
+
+				// If no errors, use this as the new final result
+				newHighestScore = score;
+				finalResult = result;
+			}
+
+			// If song was not found, return false
+			if (newHighestScore == 0)
+				return errorReason;
+		}
+
 	} else {
-		return false;
+		return "Song Cannot Be Found On YouTube";
 	}
 
 	onProgressUpdate(1);
@@ -223,7 +256,7 @@ bool Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressU
 	finalResult = finalResult["result"].toObject();
 	YoutubeId = finalResult["videoId"].toString();
 	_searchResult = finalResult;
-	return true;
+	return "";
 }
 
 QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
@@ -276,6 +309,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 					hasTitle = true;
 				}
 
+				// Keywords that are not allowed unless they are in the spotify song title as well
+				// Will only work in english titled songs
 				QStringList bannedKeywords = {
 					"reverse", "instrumental"
 				};
@@ -321,7 +356,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-void Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate) {
+QString Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate) {
 	// Use downloading path without codec, will be changed after
 	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
 
@@ -353,16 +388,37 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
 
+	// Check for any errors in the download
+	QString errorOutput = process->readAllStandardError();
+	if (!errorOutput.isEmpty()) {
+		// I would preferably check some of these when searching to skip the song but no way of checking there
+
+		// If video is drm protected, cannot be downloaded
+		if (errorOutput.toLower().contains("drm protected")) {
+			return "Video is DRM protected";
+		}
+
+		// If the video does not have a m4a file (majority should)
+		if (errorOutput.toLower().contains("requested format is not available")) {
+			return "Video does not have file to download";
+		}
+	}
+
 	// New yt-dlp version sometimes adds extra .m4a to the end, check for that here
 	// Bit of a workaround but couldn't find anything about it on the github page
 	QString downloadingPathExtraM4A = QString("%1.m4a").arg(downloadingPathM4A);
 	if (QFile::exists(downloadingPathExtraM4A))
 		QFile::rename(downloadingPathExtraM4A, downloadingPathM4A);
 
+	// Check if song downloaded incase error wasn't previously picked up
+	if (!QFile::exists(downloadingPathM4A)) {
+		return "Download failed with an unknown error";
+	}
+
 	// No need to convert
 	if (_codec == Codec::Extension::M4A) {
 		onProgressUpdate(1);
-		return; 
+		return "";
 	}
 
 	onProgressUpdate(0.7);
@@ -401,6 +457,8 @@ void Song::Download(QProcess*& process, bool overwrite, std::function<void(float
 
 	// Remove temp m4a file
 	QFile::remove(downloadingPathM4A);
+
+	return "";
 }
 
 // Audio quality will be somewhere around 256kb/s (not exactly) so change it to desired quality ranging from 33 - 256 in this case (33 is minimum, from there 64, 96, 128, ...)

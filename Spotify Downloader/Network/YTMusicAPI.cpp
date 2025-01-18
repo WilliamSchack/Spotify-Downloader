@@ -10,7 +10,7 @@ QNetworkRequest YTMusicAPI::GetRequest(QString endpoint) {
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setRawHeader("user-agent", "Mozilla/5.0");
 	request.setRawHeader("accept", "*/*");
-	request.setRawHeader("acceps-encoding", "gzip, deflate");
+	request.setRawHeader("accept-encoding", "gzip, deflate");
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 	request.setRawHeader("content-encoding", "gzip");
 	request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
@@ -50,7 +50,6 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 		{"context", GetContext()}
 	};
 
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QByteArray postData = QJsonDocument(body).toJson();
 	QByteArray response = Network::Post(GetRequest("search"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
@@ -176,7 +175,6 @@ QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
 		{"context", GetContext()}
 	};
 
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QByteArray postData = QJsonDocument(body).toJson();
 	QByteArray response = Network::Post(GetRequest("browse"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
@@ -610,4 +608,44 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 	}
 	
 	return finalResults;
+}
+
+// If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
+QString YTMusicAPI::VideoError(QString id) {
+	// Get the song details
+	QJsonObject body{
+		{"playbackContext", QJsonObject{
+			{"contentPlaybackContext", QJsonObject{
+				{"signatureTimestamp", QDateTime::currentSecsSinceEpoch() / 86400 - 1}
+			}}
+		}},
+		{"video_id", id},
+		{"context", GetContext()}
+	};
+
+	QByteArray postData = QJsonDocument(body).toJson();
+	QByteArray response = Network::Post(GetRequest("player"), postData);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	// Get the playability status to check if there are any errors
+	if (!json.contains("playabilityStatus"))
+		return "Video does not contain playability status";
+
+	QJsonObject playabiityStatus = json["playabilityStatus"].toObject();
+	QString status = playabiityStatus["status"].toString();
+	
+	// No error
+	if (status == "OK")
+		return "";
+
+	QString reason = playabiityStatus["reason"].toString();
+
+	// Age restricted
+	if (status == "LOGIN_REQUIRED" && reason == "Sign in to confirm your age")
+		return "Video is age restricted";
+
+	// ^^ Need to find more errors so I can rename them for easier interpretation but this is all I have found for now
+
+	// Other error
+	return reason;
 }

@@ -62,11 +62,11 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     // Set Downloading Status
     if (_ui.DownloadedStatusLabel->text() == "") {
         if (_songsCompleted > 0) {
-            int tracksNotFound = _playlistDownloader->TracksNotFound();
-            int tracksDownloaded = _songsCompleted - tracksNotFound;
+            int downloadErrors = _playlistDownloader->DownloadErrors();
+            int tracksDownloaded = _songsCompleted - downloadErrors;
             SetDownloadStatus(QString("Successfully Downloaded %1 Song%2 With %3 Error%4")
                 .arg(tracksDownloaded).arg(tracksDownloaded != 1 ? "s" : "")
-                .arg(tracksNotFound).arg(tracksNotFound != 1 ? "s" : ""));
+                .arg(downloadErrors).arg(downloadErrors != 1 ? "s" : ""));
         } else {
             SetDownloadStatus("Downloading Complete");
         }

@@ -14,14 +14,20 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 	font2.setBold(false);
 	font2.setWeight(QFont::Weight(50));
 
+	QFont font3 = QFont();
+	font3.setFamily("Segoe UI");
+	font3.setPointSize(12);
+	font3.setBold(false);
+	font1.setWeight(QFont::Weight(50));
+
 	// Setup parent frame
 	this->setObjectName("ErrorItem");
-	this->setGeometry(QRect(60, 130, 751, 91));
-	this->setMinimumSize(0, 91);
-	this->setMaximumSize(16777215, 91);
+	this->setGeometry(QRect(60, 130, 751, 114));
+	this->setMinimumSize(0, 114);
+	this->setMaximumSize(16777215, 114);
 
 	QWidget* background = new QWidget(this);
-	background->setGeometry(QRect(0, 0, 1000, 91));
+	background->setGeometry(QRect(0, 0, 1000, 114));
 	background->setStyleSheet("background: rgb(53, 53, 53);");
 	background->raise();
 
@@ -49,11 +55,19 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 	Album->setFont(font2);
 	Album->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
 
-	//Error Item Artists
+	// Error Item Artists
 	Artists = new QLabel(this);
 	Artists->setText("Song Artists");
 	Artists->setObjectName("ErrorItemArtists");
 	Artists->setGeometry(QRect(90, 60, 661, 20));
 	Artists->setFont(font2);
 	Artists->setStyleSheet("color: rgb(255, 255, 255);\nbackground-color: rgb(53, 53, 53);");
+
+	// Error Message
+	Error = new QLabel(this);
+	Error->setText("Error Message");
+	Error->setObjectName("ErrorItemErrorMessage");
+	Error->setGeometry(QRect(0, 88, 751, 26));
+	Error->setFont(font3);
+	Error->setStyleSheet("color: rgb(255, 0, 0);\nbackground-color: rgb(40, 40, 40); padding-left: 10px; padding-right: 10px; padding-bottom: 3px;");
 }

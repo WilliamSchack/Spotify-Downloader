@@ -111,7 +111,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	qInfo() << "Retrieved" << _totalSongCount << "songs from spotify";
 
 	// Setup Variables
-	_tracksNotFound = QJsonArray();
+	_downloadErrors = QJsonArray();
 	_songsDownloaded = 0;
 	_threadsFinished = 0;
 	_threadCount = 0;
@@ -198,8 +198,8 @@ void PlaylistDownloader::SongDownloaded() {
 	emit SetSongCount(-1, _songsDownloaded, _totalSongCount);
 }
 
-void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound) {
-	_tracksNotFound = JSONUtils::Extend(_tracksNotFound, tracksNotFound);
+void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray downloadErrors) {
+	_downloadErrors = JSONUtils::Extend(_downloadErrors, downloadErrors);
 
 	// If there are still songs remaining across all threads, distribute tracks between them
 	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished - 1); // songs left except currently downloading songs
@@ -231,18 +231,18 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray tracksNotFound
 }
 
 void PlaylistDownloader::DisplayFinalMessage() {
-	if (_tracksNotFound.count() == 0) {
+	if (_downloadErrors.count() == 0) {
 		emit ShowMessage("Downloads Complete!", "No download errors!");
 
 		return;
 	}
 
-	int tracksNotFoundCount = _tracksNotFound.count();
-	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(tracksNotFoundCount).arg(tracksNotFoundCount != 1 ? "s" : ""));
-	emit SetErrorItems(_tracksNotFound);
+	int downloadErrorsCount = _downloadErrors.count();
+	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(downloadErrorsCount).arg(downloadErrorsCount != 1 ? "s" : ""));
+	emit SetErrorItems(_downloadErrors);
 
-	if (_tracksNotFound.count() != 0)
-		emit SetErrorItems(_tracksNotFound);
+	if (_downloadErrors.count() != 0)
+		emit SetErrorItems(_downloadErrors);
 }
 
 // Distribute songs evenly between threads based on the remaining songs on each
@@ -359,7 +359,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	// Change Screen
 	if (!Main->ExitingApplication) {
-		if (_tracksNotFound.count() == 0) {
+		if (_downloadErrors.count() == 0) {
 			emit ChangeScreen(Config::SETUP_SCREEN_INDEX);
 			qInfo() << "Downloads complete with no errors";
 
@@ -372,12 +372,12 @@ PlaylistDownloader::~PlaylistDownloader() {
 			emit ChangeScreen(Config::ERROR_SCREEN_INDEX);
 			
 			QList<QString> trackIds = QList<QString>();
-			for (int i = 0; i < _tracksNotFound.count(); i++) {
-				QJsonObject song = _tracksNotFound[i].toObject();
+			for (int i = 0; i < _downloadErrors.count(); i++) {
+				QJsonObject song = _downloadErrors[i].toObject();
 
 				// Remove image data as its not needed anymore. Can modify variable as its not used later
 				song.remove("image");
-				_tracksNotFound[i] = song;
+				_downloadErrors[i] = song;
 
 				// Add song id to log output
 				if (song["id"].isNull())
@@ -386,7 +386,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 					trackIds.append(song["id"].toString());
 			}
 
-			qInfo() << "Downloads complete with" << _tracksNotFound.count() << "error(s)" << trackIds;
+			qInfo() << "Downloads complete with" << _downloadErrors.count() << "error(s)" << trackIds;
 
 			// Save Log after info
 			Logger::Flush();
@@ -439,6 +439,6 @@ void PlaylistDownloader::ClearDirFiles(const QString& path)
 	qInfo() << "Cleaned directory:" << StringUtils::Anonymize(path);
 }
 
-int PlaylistDownloader::TracksNotFound() {
-	return _tracksNotFound.count();
+int PlaylistDownloader::DownloadErrors() {
+	return _downloadErrors.count();
 }

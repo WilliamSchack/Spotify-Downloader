@@ -1,7 +1,5 @@
 #include "SpotifyDownloader.h"
 
-#include "Song.h"
-
 void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
 	Main = main;
 	Manager = manager;
@@ -21,7 +19,7 @@ void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const Playlist
 void SongDownloader::StartDownload(int startIndex) {
 	int startingTotalSongCount = _totalSongCount;
 
-	_tracksNotFound = QJsonArray();
+	_downloadErrors = QJsonArray();
 	for (int i = startIndex; i < _totalSongCount; i++) {
 		QJsonObject track = _downloadingTracks[i].toObject();
 
@@ -44,7 +42,7 @@ void SongDownloader::StartDownload(int startIndex) {
 	}
 
 	_waitingForFinishedResponse = true;
-	emit Finish(_threadIndex, _tracksNotFound);
+	emit Finish(_threadIndex, _downloadErrors);
 	while (_waitingForFinishedResponse) {
 		QCoreApplication::processEvents();
 	}
@@ -141,23 +139,13 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Search for song
 	qInfo() << _threadIndex << "Searching for" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Searching...");
-	bool resultFound = song.SearchForSong(_yt, [=](float percentComplete) {
+	QString searchResult = song.SearchForSong(_yt, [=](float percentComplete) {
 		emit SetProgressBar(_threadIndex, MathUtils::Lerp(0.1, 0.3, percentComplete));
 	});
 
-	if (!resultFound) {
-		emit SetProgressLabel(_threadIndex, "SONG NOT FOUND");
-		emit SetProgressBar(_threadIndex, 1);
-		_tracksNotFound.append(QJsonObject{
-			{"title", song.Title},
-			{"album", song.AlbumName},
-			{"artists", song.ArtistNames},
-			{"image", JSONUtils::PixmapToJSON(QPixmap::fromImage(song.CoverImage))}
-		});
-	
-		qWarning() << _threadIndex << "Could not find search result for" << song.SpotifyId;
-
-		QThread::sleep(2);
+	// If result contains an error, add it to the download errors
+	if (!searchResult.isEmpty()) {
+		AddSongToErrors(song, searchResult);
 		return;
 	}
 	qInfo() << _threadIndex << QString("Found search result (%1) for").arg(song.YoutubeId) << song.SpotifyId;
@@ -169,10 +157,15 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
-	song.Download(_currentProcess, Config::Overwrite, [&](float percentComplete) {
+	QString downloadResult = song.Download(_currentProcess, Config::Overwrite, [&](float percentComplete) {
 		float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
 		emit SetProgressBar(_threadIndex, progressBarPercent);
 	});
+
+	if (!downloadResult.isEmpty()) {
+		AddSongToErrors(song, downloadResult);
+		return;
+	}
 
 	qInfo() << _threadIndex << "Successfully downloaded song" << song.SpotifyId;
 
@@ -252,6 +245,22 @@ QJsonArray SongDownloader::RemoveTracks(int numTracksToRemove) {
 void SongDownloader::FinishedDownloading(bool finished) {
 	_waitingForFinishedResponse = false;
 	_finishedDownloading = finished;
+}
+
+void SongDownloader::AddSongToErrors(Song song, QString error) {
+	emit SetProgressLabel(_threadIndex, "CANNOT DOWNLOAD");
+	emit SetProgressBar(_threadIndex, 1);
+	_downloadErrors.append(QJsonObject{
+		{"title", song.Title},
+		{"album", song.AlbumName},
+		{"artists", song.ArtistNames},
+		{"image", JSONUtils::PixmapToJSON(QPixmap::fromImage(song.CoverImage))},
+		{"error", error }
+	});
+
+	qWarning() << _threadIndex << "Could not find search result for" << song.SpotifyId << "with the error:" << error;
+
+	QThread::msleep(500);
 }
 
 void SongDownloader::CheckForStop() {

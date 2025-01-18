@@ -148,6 +148,7 @@ void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
         errorItem->Album->setText(track["album"].toString());
         errorItem->Artists->setText(track["artists"].toString());
         errorItem->Image->setPixmap(JSONUtils::PixmapFromJSON(track["image"]).scaled(errorItem->Image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        errorItem->Error->setText(track["error"].toString());
 
         _ui.ScrollLayout->insertWidget(_ui.ScrollLayout->count() - 1, errorItem);
 

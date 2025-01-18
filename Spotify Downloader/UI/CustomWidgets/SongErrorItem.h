@@ -12,6 +12,7 @@ class SongErrorItem : public QWidget {
 		QLabel* Title;
 		QLabel* Album;
 		QLabel* Artists;
+		QLabel* Error;
 	public:
 		SongErrorItem(QWidget* parent = nullptr);
 		~SongErrorItem() {}

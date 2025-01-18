@@ -150,11 +150,11 @@ class PlaylistDownloader : public QObject {
     public:
         ~PlaylistDownloader();
 
-        int TracksNotFound();
+        int DownloadErrors();
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
-        void FinishThread(int threadIndex, QJsonArray tracksNotFound);
+        void FinishThread(int threadIndex, QJsonArray dowwnloadErrors);
         void Quit();
         void CleanedUp(int threadIndex);
         void DisplayFinalMessage();
@@ -167,7 +167,7 @@ class PlaylistDownloader : public QObject {
 
         bool _quitting = false;
 
-        QJsonArray _tracksNotFound;
+        QJsonArray _downloadErrors;
         int _totalSongCount = 0;
 
         int _threadCount = 0;
@@ -191,6 +191,9 @@ class PlaylistDownloader : public QObject {
         void SetThreadFinished(int threadIndex);
         void ResetDownloadingVariables();
 };
+
+#include "Downloading/Song.h"
+class Song;
 
 class SongDownloader : public QObject {
     Q_OBJECT
@@ -226,12 +229,13 @@ class SongDownloader : public QObject {
         QJsonObject _album;
 
         QJsonArray _downloadingTracks;
-        QJsonArray _tracksNotFound;
+        QJsonArray _downloadErrors;
         QJsonObject _currentTrack;
         int _totalSongCount = 0;
     private:
         void StartDownload(int startIndex);
         void DownloadSong(QJsonObject track, int count, QJsonObject album);
+        void AddSongToErrors(Song song, QString error);
         void CheckForStop();
     signals:
         void ChangeScreen(int screenIndex);
@@ -244,7 +248,7 @@ class SongDownloader : public QObject {
         void SetErrorItems(QJsonArray tracks);
         void HidePauseWarning(int threadIndex);
         void SongDownloaded();
-        void Finish(int threadIndex, QJsonArray tracksNotFound);
+        void Finish(int threadIndex, QJsonArray downloadErrors);
         void RequestQuit();
         void CleanedUp(int threadIndex);
 };
