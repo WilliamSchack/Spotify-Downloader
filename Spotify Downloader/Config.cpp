@@ -172,7 +172,7 @@ QStringList Config::Q_NAMING_TAGS() {
     return tags;
 }
 
-std::tuple<QString, Config::NamingError> Config::FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc) {
+std::tuple<QString, Config::NamingError> Config::FormatOutputNameWithTags(std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
     QString songOutputFormatTag = SongOutputFormatTag;
     QString songOutputFormat = SongOutputFormat;
 
@@ -203,10 +203,15 @@ std::tuple<QString, Config::NamingError> Config::FormatOutputNameWithTags(std::f
         QString beforeTagString = songOutputFormat.mid(currentCharIndex, nextLeftIndex - currentCharIndex);
         newString.append(beforeTagString);
 
-        QString tagReplacement = tagHandlerFunc(tag);
-        if (tagReplacement.isNull()) {
+        std::tuple<QString, bool> tagReplacementReturn = tagHandlerFunc(tag);
+
+        // If right value is false, tag replacement was not returned
+        if (!std::get<1>(tagReplacementReturn)) {
             return std::make_tuple(tag, NamingError::TagInvalid);
         }
+
+        QString tagReplacement = std::get<0>(tagReplacementReturn);
+
 
         newString.append(tagReplacement);
 

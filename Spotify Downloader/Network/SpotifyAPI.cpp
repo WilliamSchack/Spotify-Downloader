@@ -78,6 +78,23 @@ QJsonObject SpotifyAPI::GetTrack(QString id) {
 	return QJsonDocument::fromJson(response).object();
 }
 
+QJsonObject SpotifyAPI::GetEpisode(QString id) {
+	QNetworkAccessManager* manager = new QNetworkAccessManager();
+	QUrl url = QUrl("https://api.spotify.com/v1/episodes/" + id);
+
+	QNetworkRequest req(url);
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+	req.setRawHeader("Authorization", "Bearer " + _auth);
+
+	QByteArray response = Network::Get(req);
+	if (response == nullptr) {
+		"Error Getting Track...";
+		return QJsonObject();
+	}
+
+	return QJsonDocument::fromJson(response).object();
+}
+
 QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
 	if (json["next"].toString() == "") return json["items"].toArray();
 	

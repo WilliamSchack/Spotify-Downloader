@@ -25,6 +25,7 @@ class SpotifyAPI {
 		QJsonObject GetAlbum(QString id);
 		QJsonArray GetAlbumTracks(QJsonObject album);
 		QJsonObject GetTrack(QString id);
+		QJsonObject GetEpisode(QString id);
 	private:
 		const QByteArray CLIENT_ID = "CLIENT_ID";
 		const QByteArray CLIENT_SECRET = "CLIENT_SECRET";

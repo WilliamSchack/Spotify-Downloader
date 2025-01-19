@@ -69,5 +69,5 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 	Error->setObjectName("ErrorItemErrorMessage");
 	Error->setGeometry(QRect(0, 88, 751, 26));
 	Error->setFont(font3);
-	Error->setStyleSheet("color: rgb(255, 0, 0);\nbackground-color: rgb(40, 40, 40); padding-left: 10px; padding-right: 10px; padding-bottom: 3px;");
+	Error->setStyleSheet("color: #ff6464;\nbackground-color: rgb(40, 40, 40); padding-left: 10px; padding-right: 10px; padding-bottom: 3px;");
 }

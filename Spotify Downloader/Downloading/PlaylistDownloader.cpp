@@ -49,12 +49,16 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	// Get tracks from spotify
 	QJsonArray searchTracks = QJsonArray();
-	if (url.contains("playlist")) searchTracks = _sp->GetPlaylistTracks(spotifyId);
+	if (url.contains("playlist")) 
+		searchTracks = _sp->GetPlaylistTracks(spotifyId);
 	else if (url.contains("album")) {
 		album = _sp->GetAlbum(spotifyId);
 		searchTracks = _sp->GetAlbumTracks(album);
 	}
-	else searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
+	else if (url.contains("episode"))
+		searchTracks = QJsonArray{ _sp->GetEpisode(spotifyId) };
+	else
+		searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
 
 	// Check if spotify returned anything
 	if (searchTracks.isEmpty()) {

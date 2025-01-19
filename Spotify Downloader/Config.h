@@ -31,7 +31,7 @@ class Config {
         static const int PROCESSING_SCREEN_INDEX = 2;
         static const int ERROR_SCREEN_INDEX = 3;
 
-        static const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 255;
+        static const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 305;
         static const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
         static const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 55;
 
@@ -104,7 +104,7 @@ class Config {
         static int GetBitrate() { return AudioBitrate[Codec]; }
 
         static QStringList Q_NAMING_TAGS();
-        static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<QString(QString)> tagHandlerFunc); // Output, Error
+        static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error), Input: (Tag Replacement, Replacement Is Set)
 
         static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }
         static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }

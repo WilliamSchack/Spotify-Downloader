@@ -473,12 +473,12 @@ void SpotifyDownloader::LoadSettingsUI() {
 
 bool SpotifyDownloader::ValidateSettings() {
     QStringList namingTags = Config::Q_NAMING_TAGS();
-    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatOutputNameWithTags([&namingTags](QString tag) -> QString {
+    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatOutputNameWithTags([&namingTags](QString tag) -> std::tuple<QString, bool> {
         if (!namingTags.contains(tag.toLower())) {
-            return nullptr;
+            return std::make_tuple("", false);
         }
         else
-            return QString("");
+            return std::make_tuple("", true);
     });
 
     QString formattedOutputNameString = std::get<0>(formattedOutputName);
@@ -504,16 +504,6 @@ bool SpotifyDownloader::ValidateSettings() {
 }
 
 bool SpotifyDownloader::ValidateInputs() {
-    // Check if both URL and Directory are valid
-    if ((!Config::PlaylistURL.contains("open.spotify.com/playlist/") && !Config::PlaylistURL.contains("open.spotify.com/track/") && !Config::PlaylistURL.contains("open.spotify.com/album/")) && !std::filesystem::exists(Config::SaveLocation.toStdString())) {
-        QMessageBox msg = QMessageBox();
-        msg.setWindowTitle("Invalid Fields");
-        msg.setText("Please Enter Valid Inputs Into Both Fields");
-        msg.setIcon(QMessageBox::Warning);
-        msg.exec();
-        return false;
-    }
-
     if (!ValidateURL())
         return false;
 
@@ -526,8 +516,8 @@ bool SpotifyDownloader::ValidateInputs() {
 bool SpotifyDownloader::ValidateURL() {
     QString url = Config::PlaylistURL;
 
-    // Check if url is from spotify and is a playlist, track, or album
-    if (url.contains("open.spotify.com") && (url.contains("playlist") || url.contains("track") || url.contains("album")))
+    // Check if url is from spotify and is a playlist, track, album, or episode
+    if (url.contains("open.spotify.com") && (url.contains("playlist") || url.contains("track") || url.contains("album") || url.contains("episode")))
         return true;
 
     // Otherwise let the user know that the url is invalid

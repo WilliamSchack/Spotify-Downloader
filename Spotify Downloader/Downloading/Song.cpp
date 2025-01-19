@@ -6,30 +6,67 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	_ytdlpPath = ytdlpPath;
 	_ffmpegPath = ffmpegPath;
 
-	// Get Song Details
-	if (album.isEmpty()) album = song["album"].toObject();
-
+	// Get universal details
 	Title = song["name"].toString();
-	AlbumName = album["name"].toString();
-	ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
-	ArtistsList = song["artists"].toArray();
-	AlbumArtistsList = album["artists"].toArray();
 	Time = song["duration_ms"].toDouble() / 1000;
 	TrackNumber = song["track_number"].toInt();
 	SpotifyId = song["id"].toString();
-	AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
 
-	ArtistNamesList = QStringList();
-	foreach(QJsonValue artist, ArtistsList) {
-		ArtistNamesList.append(artist["name"].toString());
-	}
-	ArtistNames = ArtistNamesList.join("; ");
+	// Handle episode, details are different (If song is episode and contains show object or album object that is a show
+	if (song["type"].toString() == "episode" && (song.contains("show") || (song.contains("album") && song["album"].toObject()["type"].toString() == "show"))) {
+		QJsonObject show;
 
-	AlbumArtistNamesList = QStringList();
-	foreach(QJsonValue artist, AlbumArtistsList) {
-		AlbumArtistNamesList.append(artist["name"].toString());
+		// If contains a show object, get show and artist from that
+		if (song.contains("show")) {
+			show = song["show"].toObject();
+
+			ArtistName = show["publisher"].toString();
+		}
+		// Otherwise from album if it is used as a show
+		else {
+			show = song["album"].toObject();
+
+			// Artist name is stored in type for some reason
+			// Will return the podcast name instead as it does not store the artist name when stored in an album
+			ArtistName = song["artists"].toArray()[0].toObject()["type"].toString();
+		}
+
+		// Artists
+		ArtistNamesList = QStringList{ ArtistName };
+		ArtistNames = ArtistName;
+
+		// Album
+		AlbumName = show["name"].toString();
+		AlbumImageURL = show["images"].toArray()[0].toObject()["url"].toString();
+		AlbumArtistNamesList = ArtistNamesList;
+		AlbumArtistNames = ArtistNames;
 	}
-	AlbumArtistNames = AlbumArtistNamesList.join("; ");
+	// Handle regular track
+	else {
+		// Get Song Details
+		if (album.isEmpty()) album = song["album"].toObject();
+
+		// Artists
+		ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
+		ArtistsList = song["artists"].toArray();
+
+		ArtistNamesList = QStringList();
+		foreach(QJsonValue artist, ArtistsList) {
+			ArtistNamesList.append(artist["name"].toString());
+		}
+		ArtistNames = ArtistNamesList.join("; ");
+
+		// Album
+		AlbumName = album["name"].toString();
+		AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
+		AlbumArtistsList = album["artists"].toArray();
+
+		AlbumArtistNamesList = QStringList();
+		foreach(QJsonValue artist, AlbumArtistsList) {
+			AlbumArtistNamesList.append(artist["name"].toString());
+		}
+		AlbumArtistNames = AlbumArtistNamesList.join("; ");
+	}
 
 	// Set Codec
 	_codec = codec;
@@ -45,57 +82,60 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 void Song::GenerateFileName(const SpotifyDownloader* main) {
 
 	// Generate file name, replacing tags for values
-	std::tuple<QString, Config::NamingError> filenameData = Config::FormatOutputNameWithTags([=](QString tag) -> QString {
+	std::tuple<QString, Config::NamingError> filenameData = Config::FormatOutputNameWithTags([=](QString tag) -> std::tuple<QString, bool> {
 		QStringList namingTags = Config::Q_NAMING_TAGS();
 
 		QString tagReplacement = QString();
 		int indexOfTag = namingTags.indexOf(tag.toLower());
 		switch (indexOfTag) {
-		case 0: // Song Name
-			tagReplacement = Title;
-			break;
-		case 1: // Album Name
-			tagReplacement = AlbumName;
-			break;
-		case 2: // Song Artist
-			tagReplacement = ArtistName;
-			break;
-		case 3: // Song Artists
-			for (int i = 0; i < ArtistNamesList.count(); i++) {
-				QString artistName = ArtistNamesList[i];
-				tagReplacement.append(artistName);
-				if (i < ArtistNamesList.count() - 1)
-					tagReplacement.append(", ");
-			}
-			break;
-		case 4: // Album Artist
-			tagReplacement = AlbumArtistNamesList[0];
-			break;
-		case 5: // Album Artists
-			for (int i = 0; i < AlbumArtistNamesList.count(); i++) {
-				QString artistName = AlbumArtistNamesList[i];
-				tagReplacement.append(artistName);
-				if (i < AlbumArtistNamesList.count() - 1)
-					tagReplacement.append(", ");
-			}
-			break;
-		case 6: // Track Number
-			tagReplacement = QString::number(TrackNumber);
-			break;
-		case 7: // Song Time Seconds
-			tagReplacement = QString::number((int)Time);
-			break;
-		case 8: // Song Time Minutes
-			tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("mm:ss");
-			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
-			break;
-		case 9: // Song Time Hours
-			tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("hh:mm:ss");
-			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
-			break;
+			case 0: // Song Name
+				tagReplacement = Title;
+				break;
+			case 1: // Album Name
+				tagReplacement = AlbumName;
+				break;
+			case 2: // Song Artist
+				tagReplacement = ArtistName;
+				break;
+			case 3: // Song Artists
+				for (int i = 0; i < ArtistNamesList.count(); i++) {
+					QString artistName = ArtistNamesList[i];
+					tagReplacement.append(artistName);
+					if (i < ArtistNamesList.count() - 1)
+						tagReplacement.append(", ");
+				}
+				break;
+			case 4: // Album Artist
+				tagReplacement = AlbumArtistNamesList[0];
+				break;
+			case 5: // Album Artists
+				for (int i = 0; i < AlbumArtistNamesList.count(); i++) {
+					QString artistName = AlbumArtistNamesList[i];
+					tagReplacement.append(artistName);
+					if (i < AlbumArtistNamesList.count() - 1)
+						tagReplacement.append(", ");
+				}
+				break;
+			case 6: // Track Number
+				tagReplacement = QString::number(TrackNumber);
+				break;
+			case 7: // Song Time Seconds
+				tagReplacement = QString::number((int)Time);
+				break;
+			case 8: // Song Time Minutes
+				tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("mm:ss");
+				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+				break;
+			case 9: // Song Time Hours
+				tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("hh:mm:ss");
+				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+				break;
 		}
 
-		return tagReplacement;
+		// Value was set if index is from 0-9
+		bool valueSet = indexOfTag >= 0 && indexOfTag <= 9;
+
+		return std::make_tuple(tagReplacement, valueSet);
 	});
 
 	// No need to check error, was already checked in setup
