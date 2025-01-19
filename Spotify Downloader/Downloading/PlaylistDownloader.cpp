@@ -62,8 +62,8 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	// Check if spotify returned anything
 	if (searchTracks.isEmpty()) {
-		emit ShowMessage("Error fetching songs", "Please try another link...");
-		emit SetDownloadStatus("Error fetching songs. Please try another link...");
+		emit ShowMessage("Error fetching songs", "Please try another link or ensure your playlist is public");
+		emit SetDownloadStatus(R"(Error fetching songs.<br><span style="font-size: 13pt">Please try another link or ensure your playlist is public</span>)");
 
 		qWarning() << "Error downloading songs";
 

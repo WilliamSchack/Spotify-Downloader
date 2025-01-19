@@ -317,9 +317,9 @@ border: none;</string>
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>50</y>
+       <y>34</y>
        <width>736</width>
-       <height>45</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="minimumSize">
