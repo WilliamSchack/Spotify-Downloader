@@ -638,19 +638,19 @@ void Song::AssignMetadata() {
 				tag->addFrame(pubFrame);
 				tag->addFrame(copFrame);
 				tag->addFrame(comFrame);
-		
+
 				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
 				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				picFrame->setMimeType("image/png");
 				picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
 				tag->addFrame(picFrame);
-		
+
 				break;
 			}
 			case Codec::MetadataType::MP4:
 			{
 				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
-				
+
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
@@ -661,23 +661,23 @@ void Song::AssignMetadata() {
 				TagLib::MP4::CoverArtList coverArtList;
 				coverArtList.append(coverArt);
 				TagLib::MP4::Item coverItem(coverArtList);
-		
+
 				tag->setItem("covr", coverItem);
-		
+
 				break;
 			}
 			case Codec::MetadataType::RIFF:
 			{
-				TagLib::RIFF::Info::Tag *tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				TagLib::RIFF::Info::Tag* tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
 
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setTrack(TrackNumber);
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
-		
+
 				// RIFF only supports text metadata, no cover art
-		
+
 				break;
 			}
 			case Codec::MetadataType::XIPH:
@@ -689,7 +689,7 @@ void Song::AssignMetadata() {
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setTrack(TrackNumber);
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
-				
+
 				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
 				coverArt->setData(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				coverArt->setMimeType("image/png");

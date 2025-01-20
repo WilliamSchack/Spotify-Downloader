@@ -168,6 +168,8 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		connect(worker->Downloader, &SongDownloader::SongDownloaded, this, &PlaylistDownloader::SongDownloaded);
 		connect(worker->Downloader, &SongDownloader::Finish, this, &PlaylistDownloader::FinishThread);
 		connect(worker->Downloader, &SongDownloader::CleanedUp, this, &PlaylistDownloader::CleanedUp);
+		connect(worker->Downloader, &SongDownloader::AddDownloadErrors, this, &PlaylistDownloader::AddDownloadErrors);
+		connect(worker->Downloader, &SongDownloader::RequestQuit, this, &PlaylistDownloader::Quit);
 
 		// Allow thread to access ui elements
 		connect(worker->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
@@ -202,8 +204,12 @@ void PlaylistDownloader::SongDownloaded() {
 	emit SetSongCount(-1, _songsDownloaded, _totalSongCount);
 }
 
-void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray downloadErrors) {
+void PlaylistDownloader::AddDownloadErrors(int threadIndex, QJsonArray downloadErrors) {
 	_downloadErrors = JSONUtils::Extend(_downloadErrors, downloadErrors);
+}
+
+void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray downloadErrors) {
+	AddDownloadErrors(threadIndex, downloadErrors);
 
 	// If there are still songs remaining across all threads, distribute tracks between them
 	int songsLeft = _totalSongCount - (_songsDownloaded + _threadCount - _threadsFinished - 1); // songs left except currently downloading songs
@@ -229,8 +235,6 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray downloadErrors
 		return;
 	}
 
-	emit DisplayFinalMessage();
-
 	Quit();
 }
 
@@ -243,10 +247,6 @@ void PlaylistDownloader::DisplayFinalMessage() {
 
 	int downloadErrorsCount = _downloadErrors.count();
 	emit ShowMessage("Downloads Complete!", QString("%1 download error%2...").arg(downloadErrorsCount).arg(downloadErrorsCount != 1 ? "s" : ""));
-	emit SetErrorItems(_downloadErrors);
-
-	if (_downloadErrors.count() != 0)
-		emit SetErrorItems(_downloadErrors);
 }
 
 // Distribute songs evenly between threads based on the remaining songs on each
@@ -350,6 +350,10 @@ PlaylistDownloader::~PlaylistDownloader() {
 			QCoreApplication::processEvents();
 	}
 
+	// Display final message
+	emit DisplayFinalMessage();
+
+	// Cleanup
 	delete _yt;
 	delete _sp;
 
@@ -373,8 +377,13 @@ PlaylistDownloader::~PlaylistDownloader() {
 			return;
 		}
 		else {
+			// Set error items
+			emit SetErrorItems(_downloadErrors);
+
+			// Change screen
 			emit ChangeScreen(Config::ERROR_SCREEN_INDEX);
 			
+			// Log error items
 			QList<QString> trackIds = QList<QString>();
 			for (int i = 0; i < _downloadErrors.count(); i++) {
 				QJsonObject song = _downloadErrors[i].toObject();

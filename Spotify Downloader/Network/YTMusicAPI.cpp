@@ -73,7 +73,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 		QJsonObject result = val.toObject();
 
 		QString type;
-		QString catagory;
+		QString category;
 
 		if (result.contains("musicCardShelfRenderer")) {
 			QJsonObject data = result["musicCardShelfRenderer"].toObject();
@@ -85,8 +85,8 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 			QJsonObject topResult = QJsonObject();
 			topResult["resultType"] = resultType;
 
-			QString catagory = data["header"].toObject()["musicCardShelfHeaderBasicRenderer"].toObject()["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
-			topResult["catagory"] = catagory;
+			QString category = data["header"].toObject()["musicCardShelfHeaderBasicRenderer"].toObject()["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
+			topResult["category"] = category;
 
 			if (resultType == "song" || resultType == "video") {
 				QJsonObject onTap = data["onTap"].toObject();
@@ -107,10 +107,10 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 
 			if (contents == result["musicCardShelfRenderer"].toObject()["contents"].toArray()) {
 				contents = result["musicCardShelfRenderer"].toObject()["contents"].toArray();
-				catagory = "";
+				category = "";
 				if (contents[0].toObject().contains("messageRenderer")) {
 					contents.pop_front();
-					catagory = contents[0].toObject()["messageRenderer"].toObject()["text"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
+					category = contents[0].toObject()["messageRenderer"].toObject()["text"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
 				}
 				//type = filter.removeLast();
 			} else {
@@ -120,7 +120,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 
 		} else if (result.contains("musicShelfRenderer")) {
 			contents = result["musicShelfRenderer"].toObject()["contents"].toArray();
-			catagory = result["musicShelfRenderer"].toObject()["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
+			category = result["musicShelfRenderer"].toObject()["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString();
 			type = filter.removeLast().toLower();
 		} else {
 			continue;
@@ -131,7 +131,7 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 			while (contents.count() > limit) contents.removeLast();
 		}
 
-		QJsonArray currentSearchResults = ParseSearchResults(contents, type, catagory);
+		QJsonArray currentSearchResults = ParseSearchResults(contents, type, category);
 		searchResults = JSONUtils::Extend(searchResults, currentSearchResults);
 
 		if (filter != "") {
@@ -152,8 +152,8 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 				else break;
 
 				QJsonArray continuationContents = QJsonArray();
-				if (continuationResults.contains("contents")) continuationContents = ParseSearchResults(continuationResults["contents"].toArray(), type, catagory);
-				else if (continuationResults.contains("items")) continuationContents = ParseSearchResults(continuationResults["items"].toArray(), type, catagory);
+				if (continuationResults.contains("contents")) continuationContents = ParseSearchResults(continuationResults["contents"].toArray(), type, category);
+				else if (continuationResults.contains("items")) continuationContents = ParseSearchResults(continuationResults["items"].toArray(), type, category);
 
 				if (continuationContents.count() == 0) break;
 
@@ -496,7 +496,7 @@ QJsonObject YTMusicAPI::ParseSongAlbum(QJsonObject data, int index) {
 	};
 }
 
-QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType, QString catagory) {
+QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType, QString category) {
 	QJsonArray finalResults = QJsonArray();
 
 	int defaultOffset = (resultType == "" ? true : false) * 2;
@@ -505,7 +505,7 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 		QJsonObject data = val.toObject()["musicResponsiveListItemRenderer"].toObject();
 
 		QJsonObject searchResult {
-			{"catagory", catagory}
+			{"category", category}
 		};
 
 		QString videoType = data["overlay"].toObject()["musicItemThumbnailOverlayRenderer"].toObject()["content"].toObject()["musicPlayButtonRenderer"].toObject()["playNavigationEndpoint"].toObject()
@@ -633,7 +633,7 @@ QString YTMusicAPI::VideoError(QString id) {
 
 	QJsonObject playabiityStatus = json["playabilityStatus"].toObject();
 	QString status = playabiityStatus["status"].toString();
-	
+
 	// No error
 	if (status == "OK")
 		return "";
@@ -643,6 +643,10 @@ QString YTMusicAPI::VideoError(QString id) {
 	// Age restricted
 	if (status == "LOGIN_REQUIRED" && reason == "Sign in to confirm your age")
 		return "Video is age restricted";
+
+	// IP was flagged (Error is "Sign in to confirm youre not a bot" but I havent replicated it, logs show "you re" but not sure if its actually you're, just being safe with the contains
+	if (reason.contains("Sign in to confirm") && reason.contains("not a bot"))
+		return "YouTube has flagged your IP. Try disabling your vpn or enabling one";
 
 	// ^^ Need to find more errors so I can rename them for easier interpretation but this is all I have found for now
 

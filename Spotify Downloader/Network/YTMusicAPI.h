@@ -38,7 +38,7 @@ class YTMusicAPI {
 		QJsonArray ParseSongArtists(QJsonObject data, int index);
 		QJsonObject ParseSongAlbum(QJsonObject data, int index);
 
-		QJsonArray ParseSearchResults(QJsonArray results, QString resultType = "", QString catagory = "");
+		QJsonArray ParseSearchResults(QJsonArray results, QString resultType = "", QString category = "");
 
 		QString GetItemText(QJsonObject item, int index = 0, int runIndex = 0);
 		QJsonObject GetFlexColumnItem(QJsonObject item, int index);

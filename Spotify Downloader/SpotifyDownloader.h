@@ -154,6 +154,7 @@ class PlaylistDownloader : public QObject {
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
+        void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);
         void FinishThread(int threadIndex, QJsonArray dowwnloadErrors);
         void Quit();
         void CleanedUp(int threadIndex);
@@ -248,6 +249,7 @@ class SongDownloader : public QObject {
         void SetErrorItems(QJsonArray tracks);
         void HidePauseWarning(int threadIndex);
         void SongDownloaded();
+        void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);
         void Finish(int threadIndex, QJsonArray downloadErrors);
         void RequestQuit();
         void CleanedUp(int threadIndex);

@@ -29,6 +29,9 @@ void SongDownloader::StartDownload(int startIndex) {
 		DownloadSong(track, i, _album);
 
 		if (_quitting) {
+			// Add download errors before quitting
+			emit AddDownloadErrors(_threadIndex, _downloadErrors);
+
 			this->thread()->quit();
 			return;
 		}
@@ -146,6 +149,12 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// If result contains an error, add it to the download errors
 	if (!searchResult.isEmpty()) {
 		AddSongToErrors(song, searchResult);
+
+		// If IP is flagged cancel download and warn user in download errors
+		if (searchResult.contains("YouTube has flagged your IP")) {
+			emit RequestQuit();
+		}
+
 		return;
 	}
 	qInfo() << _threadIndex << QString("Found search result (%1) for").arg(song.YoutubeId) << song.SpotifyId;
@@ -250,6 +259,7 @@ void SongDownloader::FinishedDownloading(bool finished) {
 void SongDownloader::AddSongToErrors(Song song, QString error) {
 	emit SetProgressLabel(_threadIndex, "CANNOT DOWNLOAD");
 	emit SetProgressBar(_threadIndex, 1);
+
 	_downloadErrors.append(QJsonObject{
 		{"title", song.Title},
 		{"album", song.AlbumName},
