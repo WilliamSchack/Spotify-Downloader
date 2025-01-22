@@ -10,7 +10,7 @@
 
 Spotify Downloader is an application that allows you to easily download songs from spotify without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
 
-> **Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work**
+> Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
 ## Contents
 - [Installation](#installation)
@@ -23,7 +23,7 @@ Spotify Downloader is an application that allows you to easily download songs fr
 ## Installation
 ***Only currently supports windows. Other platforms may be coming soon***
 
-The latest release can be found [Here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest). **Installer Recommended**
+The latest release can be found [Here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest). **For multiple use Installer Recommended, for single use Portable Recommended**
 
 Follow the instructions below depending on your chosen install type.
 
@@ -72,7 +72,7 @@ You can open the program through the start menu or from the installed location t
 </details>
 
 <details>
-<summary><b> ZIP </b></summary>
+<summary><b> Portable/ZIP </b></summary>
 
 ---
 
@@ -88,12 +88,16 @@ You can open the program through the start menu or from the installed location t
 
 ## Usage
 
+> Please note that downloading too many songs in a short time span can lead to YouTube flagging your IP and preventing further downloads (Will not effect your YouTube experience). I have not experienced it personally and have downloaded a few thousand songs within a day on a few occasions when testing but there is a case where someone downloaded 5000 songs in one day which got their IP flagged so if you intend to download a large amount of songs it is safer to spread it out over a few days or limit your download speed in the settings.
+
 <details>
 <summary><b>Side Panel</b></summary>
 
 ---
 
-<img src="https://github.com/user-attachments/assets/37bcd571-c564-421b-89b5-85915e473f6e" width="4%" height="4%">
+***Note: Icon colour can be toggled to white by changing the Sidebar Icons Colour setting***
+
+<img src="https://github.com/user-attachments/assets/d98568b8-985f-4763-ac11-cb55f879cd7f" width="4%" height="4%">
 
 <br/>
 
@@ -128,7 +132,7 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/user-attachments/assets/a120db45-3759-431d-85b7-3e3c8ffd3d30" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/c56bc950-0ca7-47fb-9652-2dff39eee572" width="50%" height="50%">
 
 **Download Status**
 - Shows the result of the last download
@@ -177,10 +181,15 @@ You can open the program through the start menu or from the installed location t
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/14f2ac46-5a5d-47b0-8a3b-2e970c2aebb0" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/5e000ca3-c32e-4a0f-8994-02532b207331" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/66c7d61e-274e-4ac8-a3ba-94e9a714f5b8" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
+
+**Codec - Recommended: M4A**
+- The format the each song will be output as
+- ***Note: All formats will be converted from M4A and as a result WAV & FLAC are lossy and only implemented for convenience***
 
 **Normalize Volume - Recommended: ON, -14dB**
 - If enabled, changes the value of all songs to the same depending on its average volume.  
@@ -198,6 +207,11 @@ You can open the program through the start menu or from the installed location t
 - Displays a estimated file size based on the chosen bitrate
 - File Size (MB) = (bitrate(kbs) * duration(seconds)) / 8) / 1024
 - ***Does not take into account metadata, an extra ~0.9MB is added***
+
+**Codec Details**
+- Displays conversion details to remind that it is converted from an M4A file
+- Shows what type of metadata is used for the selected format
+- Shows warnings in red when something is different (No cover art for example)
 
 **Naming Format**
 - Enclosing tag input sets the characters to open and close a tag
@@ -221,9 +235,9 @@ You can open the program through the start menu or from the installed location t
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/bdd06607-dfd0-4a23-b17c-4fb66b81cdac" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/73da35b4-6b0d-4a7e-8ce8-d40d6b5681c8" width="50%" height="50%">
 
-**Show Status Notifications - Recommended: ON**
+**Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
 
 **Downloader Threads - Recommended: 6**
@@ -231,6 +245,19 @@ You can open the program through the start menu or from the installed location t
 
 **Download Speed Limit - Recommended: 0MB/s**
 - The speed limit to downloading songs in MB/s. A value of 0 is uncapped
+
+### Interface
+
+<img src="https://github.com/user-attachments/assets/41050d81-6629-4fe5-94ce-919880f653c4" width="50%" height="50%">
+
+**Downloader Thread UI - Recommended: Compact**
+- Changes the style of each thread UI while downloading
+- **Compact:** Newer compact and smaller design
+- **Original:** Older larger design, spaces out details
+- **Dynamic:** Switches between compact and original depending on threads used to fit the screen
+
+**Sidebar Icons Colour - Default: ON**
+- Enables colour for the sidebar icons
 
 ---
     
@@ -241,7 +268,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/user-attachments/assets/4a19eb7f-cfb5-41c9-9d58-5e931cab5082" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/a4e83ea5-0570-4106-afe2-2e22a79851a3" width="50%" height="50%">
 
 Each track downloading will show its:
 - Cover image
@@ -271,18 +298,13 @@ You can see your total download progress on the counter at the bottom left.
 </details>
 
 <details>
-<summary><b> Failed Downloads </b></summary>
+<summary><b> Download Errors </b></summary>
     
 ---
 
-<img src="https://github.com/user-attachments/assets/4e6776cc-b399-4ecf-8a8e-477b42e5e00a" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/5c2866d5-222e-40e4-9a72-0e7f217ea0ed" width="50%" height="50%">
 
-Shows all of the songs that failed to download due to various reasons that can include:
-- Song not available on youtube
-- Song on youtube not close enough to spotify version
-
-**Return To Setup Screen Button**
-- Returns to the setup screen
+Shows all of the songs that failed to download due to various reasons that will be listed below each song
 
 ---
     
@@ -290,34 +312,35 @@ Shows all of the songs that failed to download due to various reasons that can i
 
 ## Features
 
-- **GUI**
-    - Makes it easy to navigate the program
-    - Clear communication of current downloads
-    - Multiple screens seperating the setup, downloads, errors, and settings
+- **Simple GUI**
 - **Easy Downloading**
-    - Downloading starts with only two inputs and a button click
 - **Multithreading**
-    - Can download multiple songs at once using multiple threads
-    - Splits playlist into multiple smaller lists that download seperately to speed up the download time significantly
-    - Automatically distributes songs after each thread is finished downloading
-- **Automatic Metadata**
-    - Downloads automatically include metadata into each file containing:
+    - Automatically splits playlists into smaller lists that download seperately speeding up download time significantly
+- **Automatic Metadata Saving**
+    - Automatically saves the following to each file:
     - Song Title
     - Artists
     - Album Name & Cover
+    - Track Number
     - Spotify & Youtube ID used to download the song
-- **Customisable**
-    - Allows you to have control over the downloading with settings saving between sessions, including:
+- **Many Downloading Settings**
+    - Many settings for downloading including:
     - Overwriting
+    - Audio Codec
     - Volume Normalization
     - Audio Bitrate
-    - Thread Count
-    - Download Speed
-    - Output Naming Format
-    - Output Folder Sorting
+    - Dynamic File Naming
+    - Automatic Folder Sorting
+    - Downloading Thread Count & Speed Limit
+    - Multiple GUI Settings
+- **Multiple File Formats**
+    - M4A
+    - AAC
+    - MP3
+    - OGG Vorbis
+    - WAV
+    - FLAC
 - **Automatic Cleanup**
-    - When quitting the application it will automatically quit and cleanup any currently downloading and temp files that will not be needed later
-    - If cleanup fails due to any reason, unused files are kept in the temp directory and will be cleaned on later use of the program or by windows automatically
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
@@ -360,8 +383,13 @@ The audio quality of each song can be configured in the settings ranging from 33
 </details>
 
 <details>
-<summary><b>Can I change the file extension of output files?</b></summary>
-No. Not yet at least. For now they will always be outputed as an mp3 file, but this is planned to change in the future and more file extensions will come in later updates. Currently there are some things in the code that are created specially regarding mp3 files and would not work with other file extensions (taglib with the metadata assigning as an example) and would need more work put into it to accommodate for more. For now I have other updates planned before regarding this, but it will definitely be a feature soon.
+<summary><b>Why are the lossless audio formats lossy?</b></summary>
+Each file is downloaded as an M4A format through youtube at approx ~128kb/s. This is then later converted to the codec chosen in the settings. Because of this formats like WAV that are usually lossless will still have the quality of that M4A file and the quality cannot be increased further. Lossless audio formats where only implemented as it may be easier for some people to download it with those formats if they require them rather than converting each file themselves.
+</details>
+
+<details>
+<summary><b>Why would my IP be flagged and how can I fix it?</b></summary>
+Downloading too many songs in a short time span can lead to YouTube flagging your IP and prevent further downloads (Will not effect your YouTube experience). I have not experienced it personally and have downloaded a few thousand songs within a day on a few occasions when testing but there is a case where someone downloaded 5000 songs in one day which got their IP flagged so it is only administered on overuse. I have no control over when YouTube flags your IP or have any clue what the threshold is but after it has been done there isn't much I can do. The only suggestion I have is to disable your VPN as its IP may have been previously flagged if you have one enabled or try using one if not. 
 </details>
 
 <details>
@@ -371,10 +399,10 @@ When I first created this project I has a lot of free time on my hands and was a
 
 ## Credits
 **Packages Used**
-- [Qt5](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6.5/lgpl.html)
+- [Qt v6.5.3](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6.5/lgpl.html)
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT License](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
-- [ffmpeg](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
-- [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
+- [ffmpeg 2023-09-07-essentials-www.gyan.dev](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
+- [yt-dlp 2025-01-12](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
+- [Taglib v2.0.2](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
 
 Thanks to you for using my program :)

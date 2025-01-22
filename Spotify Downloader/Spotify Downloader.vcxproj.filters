@@ -209,5 +209,11 @@
     <CopyFileToFolders Include="..\COPYING">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="zlib1.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="tag.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>

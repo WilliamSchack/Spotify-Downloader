@@ -675,7 +675,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Codec that the output file will be&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;WILL BE CONVERTED FROM M4A&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Formats that should be lossless are lossy as a result&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Codec that the output file will be&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;WILL BE CONVERTED FROM M4A&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Formats that should be lossless are lossy as a result&lt;/span&gt;&lt;/p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;M4A Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);</string>
