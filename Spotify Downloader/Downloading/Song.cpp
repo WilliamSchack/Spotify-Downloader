@@ -79,68 +79,80 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	GenerateDownloadingPath();
 }
 
+std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
+	QStringList namingTags = Config::Q_NAMING_TAGS();
+
+	QString tagReplacement = QString();
+	int indexOfTag = namingTags.indexOf(tag.toLower());
+	switch (indexOfTag) {
+		case 0: // Song Name
+			tagReplacement = song.Title;
+			break;
+		case 1: // Album Name
+			tagReplacement = song.AlbumName;
+			break;
+		case 2: // Song Artist
+			tagReplacement = song.ArtistName;
+			break;
+		case 3: // Song Artists
+			for (int i = 0; i < song.ArtistNamesList.count(); i++) {
+				QString artistName = song.ArtistNamesList[i];
+				tagReplacement.append(artistName);
+				if (i < song.ArtistNamesList.count() - 1)
+					tagReplacement.append(", ");
+			}
+			break;
+		case 4: // Album Artist
+			tagReplacement = song.AlbumArtistNamesList[0];
+			break;
+		case 5: // Album Artists
+			for (int i = 0; i < song.AlbumArtistNamesList.count(); i++) {
+				QString artistName = song.AlbumArtistNamesList[i];
+				tagReplacement.append(artistName);
+				if (i < song.AlbumArtistNamesList.count() - 1)
+					tagReplacement.append(", ");
+			}
+			break;
+		case 6: // Track Number
+			tagReplacement = QString::number(song.TrackNumber);
+			break;
+		case 7: // Song Time Seconds
+			tagReplacement = QString::number((int)song.Time);
+			break;
+		case 8: // Song Time Minutes
+			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("mm:ss");
+			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+			break;
+		case 9: // Song Time Hours
+			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("hh:mm:ss");
+			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
+			break;
+	}
+
+	// Value was set if index is from 0-9
+	bool valueSet = indexOfTag >= 0 && indexOfTag <= 9;
+
+	qDebug() << indexOfTag << tagReplacement << valueSet;
+
+	return std::make_tuple(tagReplacement, valueSet);
+}
+
+std::tuple<QString, Config::NamingError> Song::OutputNameWithTags(Song song) {
+	return Config::FormatStringWithTags(Config::SongOutputFormatTag, Config::SongOutputFormat, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
+}
+
+std::tuple<QString, Config::NamingError> Song::SubFoldersWithTags(Song song) {
+	return Config::FormatStringWithTags(Config::SubFoldersTag, Config::SubFolders, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
+}
+
 void Song::GenerateFileName(const SpotifyDownloader* main) {
 
 	// Generate file name, replacing tags for values
-	std::tuple<QString, Config::NamingError> filenameData = Config::FormatOutputNameWithTags([=](QString tag) -> std::tuple<QString, bool> {
-		QStringList namingTags = Config::Q_NAMING_TAGS();
-
-		QString tagReplacement = QString();
-		int indexOfTag = namingTags.indexOf(tag.toLower());
-		switch (indexOfTag) {
-			case 0: // Song Name
-				tagReplacement = Title;
-				break;
-			case 1: // Album Name
-				tagReplacement = AlbumName;
-				break;
-			case 2: // Song Artist
-				tagReplacement = ArtistName;
-				break;
-			case 3: // Song Artists
-				for (int i = 0; i < ArtistNamesList.count(); i++) {
-					QString artistName = ArtistNamesList[i];
-					tagReplacement.append(artistName);
-					if (i < ArtistNamesList.count() - 1)
-						tagReplacement.append(", ");
-				}
-				break;
-			case 4: // Album Artist
-				tagReplacement = AlbumArtistNamesList[0];
-				break;
-			case 5: // Album Artists
-				for (int i = 0; i < AlbumArtistNamesList.count(); i++) {
-					QString artistName = AlbumArtistNamesList[i];
-					tagReplacement.append(artistName);
-					if (i < AlbumArtistNamesList.count() - 1)
-						tagReplacement.append(", ");
-				}
-				break;
-			case 6: // Track Number
-				tagReplacement = QString::number(TrackNumber);
-				break;
-			case 7: // Song Time Seconds
-				tagReplacement = QString::number((int)Time);
-				break;
-			case 8: // Song Time Minutes
-				tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("mm:ss");
-				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
-				break;
-			case 9: // Song Time Hours
-				tagReplacement = QDateTime::fromSecsSinceEpoch(Time, Qt::UTC).toString("hh:mm:ss");
-				tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
-				break;
-		}
-
-		// Value was set if index is from 0-9
-		bool valueSet = indexOfTag >= 0 && indexOfTag <= 9;
-
-		return std::make_tuple(tagReplacement, valueSet);
-	});
+	std::tuple<QString, Config::NamingError> filenameData = Song::OutputNameWithTags(*this);
 
 	// No need to check error, was already checked in setup
 	FileName = std::get<0>(filenameData);
-	FileName = StringUtils::ValidateString(FileName);
+	FileName = StringUtils::ValidateFileName(FileName);
 }
 
 void Song::GenerateDownloadingPath() {
@@ -157,7 +169,7 @@ void Song::GenerateDownloadingPath() {
 
 void Song::DownloadCoverImage() {
 	QString coverFilename = QString("%1(%2)_Cover").arg(AlbumName).arg(AlbumArtistNames);
-	coverFilename = StringUtils::ValidateString(coverFilename);
+	coverFilename = StringUtils::ValidateFileName(coverFilename);
 	QString imageTempPath = QString("%1/Cover Art").arg(_tempPath);
 	QString imageFileDir = QString("%1/%2.png").arg(imageTempPath).arg(coverFilename);
 
@@ -709,9 +721,20 @@ void Song::Save(QString targetFolder, QString targetPath, bool overwrite) {
 	if (overwrite && QFile::exists(targetPath))
 		QFile::remove(targetPath);
 
-	// Create target folder if it doesnt exist
-	if (!QDir(targetFolder).exists())
-		QDir().mkdir(targetFolder);
+	// Check each folder in target folder and create them if they doesnt exist
+	// Start with second folder (Drive/Folder), dont check for drive
+	QStringList folders = targetFolder.split("/");
+	QString currentFolder = QString("%1/%2").arg(folders[0]).arg(folders[1]);
+	for (int i = 1; i < folders.count(); i++) {
+		qDebug() << "Testing folder" << currentFolder;
+		qDebug() << "Exists:" << QDir(currentFolder).exists();
+
+		if (!QDir(currentFolder).exists())
+			qDebug() << "Making Dir:" << QDir().mkdir(currentFolder);
+
+		if (i + 1 < folders.count())
+			currentFolder = QString("%1/%2").arg(currentFolder).arg(folders[i + 1]);
+	}
 
 	// Move from downloading path to target path
 	QFile::rename(_downloadingPath, targetPath);

@@ -104,10 +104,15 @@ void SpotifyDownloader::SetupSideBar() {
         if (CurrentScreen() == Config::SETUP_SCREEN_INDEX)
             return;
 
-        // Check if audio naming is valid
+        // Set output format
         Config::SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
         Config::SongOutputFormat = _ui.SongOutputFormatInput->text();
 
+        // Set sub folders
+        Config::SubFoldersTag = _ui.SubFoldersTagInput->text();
+        Config::SubFolders = _ui.SubFoldersInput->text();
+
+        // Check if audio naming & sub folders are valid
         if (!ValidateSettings())
             return;
 
@@ -198,11 +203,11 @@ void SpotifyDownloader::SetupSetupScreen() {
             emit operate(this);
         }
         else {
-            QMessageBox msg = QMessageBox();
-            msg.setWindowTitle("Fields Incorrect");
-            msg.setText("Please Input Both Fields");
-            msg.setIcon(QMessageBox::Warning);
-            msg.exec();
+            ShowMessageBox(
+                "Fields Incorrect",
+                "Please Input Both Fields",
+                QMessageBox::Warning
+            );
         }
     });
 
@@ -303,14 +308,13 @@ void SpotifyDownloader::SetupSettingsScreen() {
     // Set combo box dropdown items font size to 12, cannot do in stylesheet
     QList<QComboBox*> dropdownWidgets({
         _ui.CodecInput,
-        _ui.FolderSortingInput,
         _ui.DownloaderThreadUIInput
     });
 
-    QFont dropdownItemFont = _ui.FolderSortingInput->font();
+    QFont dropdownItemFont = dropdownWidgets[0]->font();
     dropdownItemFont.setPointSizeF(12);
     foreach(QComboBox* dropdown, dropdownWidgets) {
-        for (int i = 0; i < _ui.FolderSortingInput->count(); i++) {
+        for (int i = 0; i < dropdown->count(); i++) {
             dropdown->setItemData(i, QVariant(dropdownItemFont), Qt::FontRole);
         }
     }
@@ -341,7 +345,6 @@ void SpotifyDownloader::SetupSettingsScreen() {
         QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
         _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     });
-    connect(_ui.FolderSortingInput, &QComboBox::currentIndexChanged, [=](int index) { Config::FolderSortingIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Button Clicks (Using isChecked to help with loading settings)
@@ -440,11 +443,11 @@ void SpotifyDownloader::LoadSettingsUI() {
     
     // Song Output Format
     _ui.SongOutputFormatTagInput->setText(Config::SongOutputFormatTag);
-    
     _ui.SongOutputFormatInput->setText(Config::SongOutputFormat);
     
     // Folder Sorting
-    _ui.FolderSortingInput->setCurrentIndex(Config::FolderSortingIndex);
+    _ui.SubFoldersTagInput->setText(Config::SubFoldersTag);
+    _ui.SubFoldersInput->setText(Config::SubFolders);
 
     // Status Notifications
     if (_ui.NotificationSettingButton->isChecked != Config::Notifications)
@@ -473,7 +476,9 @@ void SpotifyDownloader::LoadSettingsUI() {
 
 bool SpotifyDownloader::ValidateSettings() {
     QStringList namingTags = Config::Q_NAMING_TAGS();
-    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatOutputNameWithTags([&namingTags](QString tag) -> std::tuple<QString, bool> {
+
+    // Output Format
+    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatStringWithTags(Config::SongOutputFormatTag, Config::SongOutputFormat, [&namingTags](QString tag) -> std::tuple<QString, bool> {
         if (!namingTags.contains(tag.toLower())) {
             return std::make_tuple("", false);
         }
@@ -482,21 +487,92 @@ bool SpotifyDownloader::ValidateSettings() {
     });
 
     QString formattedOutputNameString = std::get<0>(formattedOutputName);
-    Config::NamingError namingError = std::get<1>(formattedOutputName);
+    Config::NamingError outputNameNamingError = std::get<1>(formattedOutputName);
 
-    if (namingError == Config::NamingError::EnclosingTagsInvalid) {
-        QMessageBox msg = QMessageBox();
-        msg.setWindowTitle("Invalid Naming Format Tag");
-        msg.setText(QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString));
-        msg.setIcon(QMessageBox::Warning);
-        msg.exec();
+    if (outputNameNamingError == Config::NamingError::EnclosingTagsInvalid) {
+        ShowMessageBox(
+            "Invalid Naming Format Tag",
+            QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString),
+            QMessageBox::Warning
+        );
         return false;
-    } else if (namingError == Config::NamingError::TagInvalid) {
-        QMessageBox msg = QMessageBox();
-        msg.setWindowTitle("Invalid Naming Format");
-        msg.setText(QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString));
-        msg.setIcon(QMessageBox::Warning);
-        msg.exec();
+    } else if (outputNameNamingError == Config::NamingError::TagInvalid) {
+        ShowMessageBox(
+            "Invalid Naming Format",
+            QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString),
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Sub Folders
+
+    // Cannot start with directory
+    if (Config::SubFolders.startsWith("/") || Config::SubFolders.startsWith("\\")) {
+        ShowMessageBox(
+            "Invalid Sub Folders",
+            R"(Sub Folders cannot start with "/" or "\")",
+            QMessageBox::Warning
+        );
+        return false;
+    }
+    
+    // Cannot end with directory
+    if (Config::SubFolders.endsWith("/") || Config::SubFolders.endsWith("\\")) {
+        ShowMessageBox(
+            "Invalid Sub Folders",
+            R"(Sub Folders cannot end with "/" or "\")",
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Cannot contain double slashes
+    if (Config::SubFolders.contains("//") || Config::SubFolders.contains("\\\\")) {
+        ShowMessageBox(
+            "Invalid Sub Folders",
+            R"(Sub Folders cannot contain "//" or "\\")",
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Cannot contain /\ or \/
+    if (Config::SubFolders.contains("/\\") || Config::SubFolders.contains("\\/")) {
+        ShowMessageBox(
+            "Invalid Sub Folders",
+            R"(Sub Folders cannot contain "/\" or "\/")",
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Check tags
+    std::tuple<QString, Config::NamingError> formattedSubFolders = Config::FormatStringWithTags(Config::SubFoldersTag, Config::SubFolders, [&namingTags](QString tag) -> std::tuple<QString, bool> {
+        if (!namingTags.contains(tag.toLower())) {
+            return std::make_tuple("", false);
+        }
+        else
+            return std::make_tuple("", true);
+    });
+
+    QString formattedSubFoldersString = std::get<0>(formattedSubFolders);
+    Config::NamingError subFoldersNamingError = std::get<1>(formattedSubFolders);
+
+    if (subFoldersNamingError == Config::NamingError::EnclosingTagsInvalid) {
+        ShowMessageBox(
+            "Invalid Sub Folders Tag",
+            QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedSubFoldersString),
+            QMessageBox::Warning
+        );
+        return false;
+    }
+    else if (subFoldersNamingError == Config::NamingError::TagInvalid) {
+        ShowMessageBox(
+            "Invalid Sub Folders",
+            QString("Invalid Tag Detected:\n%1").arg(formattedSubFoldersString),
+            QMessageBox::Warning
+        );
         return false;
     }
 
@@ -521,22 +597,22 @@ bool SpotifyDownloader::ValidateURL() {
         return true;
 
     // Otherwise let the user know that the url is invalid
-    QMessageBox msg = QMessageBox();
-    msg.setWindowTitle("Invalid URL");
-    msg.setText("Please Input A Valid URL");
-    msg.setIcon(QMessageBox::Warning);
-    msg.exec();
+    ShowMessageBox(
+        "Invalid URL",
+        "Please Input A Valid URL",
+        QMessageBox::Warning
+    );
     return false;
 }
 
 bool SpotifyDownloader::ValidateDirectory() {
     // Check if Directory is valid
     if (!std::filesystem::exists(reinterpret_cast<const wchar_t*>(Config::SaveLocation.constData()))) {
-        QMessageBox msg = QMessageBox();
-        msg.setWindowTitle("Invalid Directory");
-        msg.setText("Please Input A Valid Directory");
-        msg.setIcon(QMessageBox::Warning);
-        msg.exec();
+        ShowMessageBox(
+            "Invalid Directory",
+            "Please Input A Valid Directory",
+            QMessageBox::Warning
+        );
         return false;
     }
 
@@ -554,22 +630,22 @@ bool SpotifyDownloader::ValidateDirectory() {
             bool isElevated = IsElevated();
 
             if (isElevated) {
-                QMessageBox msg = QMessageBox();
-                msg.setWindowTitle("Directory Error");
-                msg.setText(QString("DIR ERROR: %1\nPlease try another folder.").arg(errorString));
-                msg.setIcon(QMessageBox::Critical);
-                msg.setStandardButtons(QMessageBox::Ok);
-                msg.exec();
+                ShowMessageBoxWithButtons(
+                    "Directory Error",
+                    QString("DIR ERROR: %1\nPlease try another folder.").arg(errorString),
+                    QMessageBox::Critical,
+                    QMessageBox::Ok
+                );
 
                 return false;
             }
             else {
-                QMessageBox msg = QMessageBox();
-                msg.setWindowTitle("Directory Error");
-                msg.setText(QString("DIR ERROR: %1\nWould you like to restart with admin permissions?").arg(errorString));
-                msg.setIcon(QMessageBox::Critical);
-                msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                int adminInput = msg.exec();
+                int adminInput = ShowMessageBoxWithButtons(
+                    "Directory Error",
+                    QString("DIR ERROR: %1\nWould you like to restart with admin permissions?").arg(errorString),
+                    QMessageBox::Critical,
+                    QMessageBox::Yes | QMessageBox::No
+                );
 
                 if (adminInput == QMessageBox::Yes) {
                     // Restart with admin perms

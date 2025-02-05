@@ -7,7 +7,8 @@
 
 class StringUtils {
 	public:
-		static QString ValidateString(QString string);
+		static QString ValidateFileName(QString string);
+		static QString ValidateFolderName(QString string);
 
 		static QString Anonymize(QString string);
 

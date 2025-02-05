@@ -79,39 +79,18 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	emit SetProgressBar(_threadIndex, 0, 0);
 
 	// Set target folder
-	QString targetFolderName = "";
-	if (Config::FolderSortingIndex != 0) targetFolderName = "/";
-	switch (Config::FolderSortingIndex) {
-		case 1: // Album name
-			targetFolderName.append(song.AlbumName);
-			break;
-		case 2: // Song Artist
-			targetFolderName.append(song.ArtistName);
-			break;
-		case 3: // Song Artists
-			for (int i = 0; i < song.ArtistNamesList.count(); i++) {
-				QString artistName = song.ArtistNamesList[i];
-				targetFolderName.append(artistName);
-				if (i < song.ArtistNamesList.count() - 1)
-					targetFolderName.append(", ");
-			}
-			break;
-		case 4: // Album Artist
-			targetFolderName.append(song.AlbumArtistNamesList[0]);
-			break;
-		case 5: // Album Artists
-			for (int i = 0; i < song.AlbumArtistNamesList.count(); i++) {
-				QString artistName = song.AlbumArtistNamesList[i];
-				targetFolderName.append(artistName);
-				if (i < song.AlbumArtistNamesList.count() - 1)
-					targetFolderName.append(", ");
-			}
-			break;
+	QString targetFolderName = "/";
+	if (!Config::SubFolders.isEmpty()) {
+		targetFolderName = QString("/%1").arg(std::get<0>(Song::SubFoldersWithTags(song)));
+		targetFolderName.replace("\\", "/");
+		targetFolderName = StringUtils::ValidateFolderName(targetFolderName);
 	}
 	
 	// Set target path
 	QString targetFolder = QString("%1%2").arg(Config::SaveLocation).arg(targetFolderName);
 	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Data[codec].String);
+
+	qDebug() << "TARGET PATH" << targetPath;
 
 	// If not overwriting and song already downloaded, skip to next song
 	if (!Config::Overwrite && QFile::exists(targetPath)) {

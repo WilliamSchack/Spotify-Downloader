@@ -129,6 +129,9 @@ class SpotifyDownloader : public QDialog
 
         int CurrentScreen();
 
+        void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
+        int ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
+
         void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
 
         void closeEvent(QCloseEvent* closeEvent);

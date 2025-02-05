@@ -69,6 +69,11 @@ class Song {
 	public:
 		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
 
+		// Helpers for config naming tags
+		static std::tuple<QString, bool> TagHandler(Song song, QString tag);
+		static std::tuple<QString, Config::NamingError> OutputNameWithTags(Song song);
+		static std::tuple<QString, Config::NamingError> SubFoldersWithTags(Song song);
+
 		void GenerateFileName(const SpotifyDownloader* main);
 		void GenerateDownloadingPath();
 

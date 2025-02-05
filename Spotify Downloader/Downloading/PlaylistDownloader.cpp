@@ -88,10 +88,19 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
 
 			// Check if file already exists
-			QString targetPath = QString("%1/%2").arg(Config::SaveLocation).arg(song.FileName);
-			QString fullTargetPath = QString("%1.%2").arg(targetPath).arg(Codec::Data[Config::Codec].String);
+			QString targetPath = Config::SaveLocation;
 
-			if (!QFile::exists(fullTargetPath))
+			// Get sub directories
+			QString targetFolderName = "/";
+			if (!Config::SubFolders.isEmpty()) {
+				targetFolderName = QString("/%1").arg(std::get<0>(Song::SubFoldersWithTags(song)));
+				targetFolderName.replace("\\", "/");
+				targetFolderName = StringUtils::ValidateFolderName(targetFolderName);
+			}
+
+			targetPath = QString("%1/%2/%3.%4").arg(targetPath).arg(targetFolderName).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
+
+			if (!QFile::exists(targetPath))
 				tracks.append(trackVal);
 		} else {
 			tracks.append(trackVal);

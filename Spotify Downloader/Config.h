@@ -85,7 +85,8 @@ class Config {
         static inline QString SongOutputFormatTag;
         static inline QString SongOutputFormat;
     
-        static inline int FolderSortingIndex;
+        static inline QString SubFoldersTag;
+        static inline QString SubFolders;
     
         // Downloading
         static inline bool Notifications;
@@ -104,7 +105,7 @@ class Config {
         static int GetBitrate() { return AudioBitrate[Codec]; }
 
         static QStringList Q_NAMING_TAGS();
-        static std::tuple<QString, NamingError> FormatOutputNameWithTags(std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error), Input: (Tag Replacement, Replacement Is Set)
+        static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error), Input: (Tag Replacement, Replacement Is Set)
 
         static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }
         static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }
@@ -119,6 +120,8 @@ class Config {
         static void SaveSettings();
         static void LoadSettings();
     private:
+        static QJsonObject SettingsLog();
+
         static inline QStringList Q_NAMING_TAGS_CACHE;
 
         static inline int _codecIndex;

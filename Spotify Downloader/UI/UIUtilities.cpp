@@ -195,3 +195,20 @@ void SpotifyDownloader::SetThreadFinished(int threadIndex) {
     delete downloaderThread; 
     _downloaderUI[threadIndex] = NULL;
 }
+
+void SpotifyDownloader::ShowMessageBox(QString title, QString message, QMessageBox::Icon icon) {
+    QMessageBox msg = QMessageBox();
+    msg.setWindowTitle(title);
+    msg.setText(message);
+    msg.setIcon(icon);
+    msg.exec();
+}
+
+int SpotifyDownloader::ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons) {
+    QMessageBox msg = QMessageBox();
+    msg.setWindowTitle(title);
+    msg.setText(message);
+    msg.setIcon(icon);
+    msg.setStandardButtons(standardButtons);
+    return msg.exec();
+}

@@ -25,7 +25,8 @@ void Config::SaveSettings() {
 
     settings.setValue("songOutputFormatTag", SongOutputFormatTag);
     settings.setValue("songOutputFormat", SongOutputFormat);
-    settings.setValue("folderSortingIndex", FolderSortingIndex);
+    settings.setValue("subFoldersTag", SubFoldersTag);
+    settings.setValue("subFolders", SubFolders);
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -40,31 +41,7 @@ void Config::SaveSettings() {
     settings.endGroup();
 
     // Log settings
-    QJsonObject settingsLog = QJsonObject {
-        {"Overwrite Enabled", Overwrite},
-        {"Codec Index", CodecIndex()},
-        {"Normalise Enabled", NormalizeAudio},
-        {"Normalise Volume", NormalizeAudioVolume},
-        {"Song Output Format Tag", SongOutputFormatTag},
-        {"Song Output Format", SongOutputFormat},
-        {"Folder Sorting Index", FolderSortingIndex},
-        {"Status Notifications Enabled", Notifications},
-        {"Downloader Threads", ThreadCount},
-        {"Download Speed Limit", DownloadSpeed},
-        {"Downloader Thread UI Index", DownloaderThreadUIIndex},
-        {"Sidebar Icons Colour", SidebarIconsColour}
-    };
-
-    // Add bitrate to log
-    for (int i = 0; i < Codec::Data.count(); i++) {
-        Codec::Extension currentExtension = (Codec::Extension)i;
-        if (Codec::Data[currentExtension].LockedBitrate)
-            continue;
-
-        settingsLog.insert(QString("Audio Bitrate %1").arg(Codec::Data[currentExtension].String.toUpper()), AudioBitrate[currentExtension]);
-    }
-
-    qInfo() << "Settings Successfully Saved" << settingsLog;
+    qInfo() << "Settings Successfully Saved" << SettingsLog();
 }
 
 void Config::LoadSettings() {
@@ -114,7 +91,42 @@ void Config::LoadSettings() {
     SaveLocation = settings.value("saveLocation", "").toString();
     SongOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
     SongOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
-    FolderSortingIndex = settings.value("folderSortingIndex", 0).toInt();
+
+    // Folder Sorting
+    SubFoldersTag = settings.value("subFoldersTag", "<>").toString();
+    QString subFolders = settings.value("subFolders", "").toString();
+
+    // Check if folder sorting index was set in previous version
+    QVariant previousFolderSortingIndex = settings.value("folderSortingIndex", NULL);
+    if (previousFolderSortingIndex != NULL) {
+        // If it was set, assign new folder sorting to it
+        int folderSortingIndex = previousFolderSortingIndex.toInt();
+
+        switch (folderSortingIndex) {
+            // 0 is None
+            case 1: // Album Name
+                subFolders = "<Album Name>";
+                break;
+            case 2: // Song Artist
+                subFolders = "<Song Artist>";
+                break;
+            case 3: // Song Artists
+                subFolders = "<Song Artists>";
+                break;
+            case 4: // Album Artist
+                subFolders = "<Album Artist>";
+                break;
+            case 5: // Album Artists
+                subFolders = "<Album Artists>";
+                break;
+        }
+
+        // Remove previous value, not needed anymore
+        settings.remove("folderSortingIndex");
+    }
+
+    SubFolders = subFolders;
+
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -129,6 +141,11 @@ void Config::LoadSettings() {
     settings.endGroup();
 
     // Log settings
+    qInfo() << "Settings Successfully Saved" << SettingsLog();
+}
+
+QJsonObject Config::SettingsLog() {
+    // Log settings
     QJsonObject settingsLog = QJsonObject{
         {"Overwrite Enabled", Overwrite},
         {"Codec Index", CodecIndex()},
@@ -136,7 +153,8 @@ void Config::LoadSettings() {
         {"Normalise Volume", NormalizeAudioVolume},
         {"Song Output Format Tag", SongOutputFormatTag},
         {"Song Output Format", SongOutputFormat},
-        {"Folder Sorting Index", FolderSortingIndex},
+        {"Sub Folders Tag", SubFoldersTag},
+        {"Sub Folders", SubFolders},
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},
@@ -153,7 +171,7 @@ void Config::LoadSettings() {
         settingsLog.insert(QString("Audio Bitrate %1").arg(Codec::Data[currentExtension].String.toUpper()), AudioBitrate[currentExtension]);
     }
 
-    qInfo() << "Settings Successfully Saved" << settingsLog;
+    return settingsLog;
 }
 
 // Convert naming tags to QStringList, cannot have const QStringList
@@ -172,35 +190,32 @@ QStringList Config::Q_NAMING_TAGS() {
     return tags;
 }
 
-std::tuple<QString, Config::NamingError> Config::FormatOutputNameWithTags(std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
-    QString songOutputFormatTag = SongOutputFormatTag;
-    QString songOutputFormat = SongOutputFormat;
-
-    if (songOutputFormatTag.length() != 2) {
-        return std::make_tuple(songOutputFormatTag, NamingError::EnclosingTagsInvalid);
+std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
+    if (stringTag.length() != 2) {
+        return std::make_tuple(stringTag, NamingError::EnclosingTagsInvalid);
     }
 
-    QChar leftTag = songOutputFormatTag[0];
-    QChar rightTag = songOutputFormatTag[1];
+    QChar leftTag = stringTag[0];
+    QChar rightTag = stringTag[1];
 
     QStringList namingTags = Q_NAMING_TAGS();
 
     QString newString;
     int currentCharIndex = 0;
-    while (currentCharIndex <= songOutputFormat.length()) {
-        int nextLeftIndex = songOutputFormat.indexOf(leftTag, currentCharIndex);
-        int nextRightIndex = songOutputFormat.indexOf(rightTag, currentCharIndex);
+    while (currentCharIndex <= string.length()) {
+        int nextLeftIndex = string.indexOf(leftTag, currentCharIndex);
+        int nextRightIndex = string.indexOf(rightTag, currentCharIndex);
         int tagLength = nextRightIndex - nextLeftIndex - 1;
-        QString tag = songOutputFormat.mid(nextLeftIndex + 1, tagLength);
+        QString tag = string.mid(nextLeftIndex + 1, tagLength);
 
         if (nextLeftIndex == -1 || nextRightIndex == -1) {
-            QString afterTagString = songOutputFormat.mid(currentCharIndex, songOutputFormat.length() - currentCharIndex);
+            QString afterTagString = string.mid(currentCharIndex, string.length() - currentCharIndex);
             newString.append(afterTagString);
 
             break;
         }
 
-        QString beforeTagString = songOutputFormat.mid(currentCharIndex, nextLeftIndex - currentCharIndex);
+        QString beforeTagString = string.mid(currentCharIndex, nextLeftIndex - currentCharIndex);
         newString.append(beforeTagString);
 
         std::tuple<QString, bool> tagReplacementReturn = tagHandlerFunc(tag);
