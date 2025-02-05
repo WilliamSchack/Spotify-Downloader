@@ -534,7 +534,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-112</y>
+          <y>0</y>
           <width>715</width>
           <height>423</height>
          </rect>
@@ -1081,7 +1081,7 @@ margin-right: 40px;</string>
             <string>Codec Details</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
            <property name="margin">
             <number>0</number>
@@ -1089,12 +1089,12 @@ margin-right: 40px;</string>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="OutputFormatSettingLayout">
+          <layout class="QHBoxLayout" name="FileNameSettingLayout">
            <property name="rightMargin">
             <number>0</number>
            </property>
            <item>
-            <widget class="QLabel" name="SongOutputFormatLabel">
+            <widget class="QLabel" name="FileNameLabel">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1113,7 +1113,7 @@ margin-right: 40px;</string>
 background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="text">
-              <string>Naming Format</string>
+              <string>File Name</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1121,7 +1121,7 @@ background-color: rgba(0, 0, 0, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="SongOutputFormatTagInput">
+            <widget class="QLineEdit" name="FileNameTagInput">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1164,7 +1164,7 @@ selection-background-color: rgb(0, 120, 215);</string>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="SongOutputFormatInput">
+            <widget class="QLineEdit" name="FileNameInput">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -1186,7 +1186,7 @@ selection-background-color: rgb(0, 120, 215);</string>
               <bool>false</bool>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output Naming Format&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - Index of the track in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;File Name&lt;br/&gt;&lt;/span&gt;Specify the way each song will be named&lt;/p&gt;&lt;p&gt;eg. If the song is called &amp;quot;DelTree by Jam2go&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt; - &amp;lt;Artist Name&amp;gt;&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree - Jam2Togo&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;##&amp;quot;: &amp;quot;#Song Name#&amp;quot;, &lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;DelTree&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - Index of the track in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
@@ -1199,14 +1199,14 @@ selection-background-color: rgb(0, 120, 215);</string>
               <bool>true</bool>
              </property>
              <property name="placeholderText">
-              <string>Enter Song Naming Format</string>
+              <string>Enter File Name</string>
              </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="FolderSortingSettingLayout">
+          <layout class="QHBoxLayout" name="SubFoldersSettingLayout">
            <item>
             <widget class="QLabel" name="SubFoldersLabel">
              <property name="minimumSize">
@@ -1300,7 +1300,7 @@ selection-background-color: rgb(0, 120, 215);</string>
               <bool>false</bool>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Folder Sorting&lt;br/&gt;&lt;/span&gt;Creates folders within your chosen download path with sub-folders set here&lt;/p&gt;&lt;p&gt;eg. if you want songs to download to &amp;quot;DownloadPath/ArtistName/AlbumName&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Sub Folders:&lt;/span&gt; &amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Artist Name&amp;gt;/&amp;lt;Album Name&amp;gt;&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - Index of the track in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Sub Folders&lt;br/&gt;&lt;/span&gt;Creates folders within your chosen download path with sub-folders set here&lt;/p&gt;&lt;p&gt;eg. if you want songs to download to &amp;quot;DownloadPath/ArtistName/AlbumName&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Sub Folders:&lt;/span&gt; &amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Artist Name&amp;gt;/&amp;lt;Album Name&amp;gt;&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - Index of the track in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
@@ -1687,6 +1687,61 @@ color: rgb(0, 0, 0);</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+      <widget class="CheckBox" name="CheckForUpdatesButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>630</x>
+         <y>110</y>
+         <width>41</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles if the application checks for updates when launching&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="CheckForUpdatesLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>110</y>
+         <width>261</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Segoe UI</family>
+         <pointsize>15</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+       </property>
+       <property name="text">
+        <string>Check For Updates</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
      </widget>
@@ -2497,7 +2552,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>232</y>
+      <y>189</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -2520,6 +2575,57 @@ border: none;</string>
      </size>
     </property>
    </widget>
+   <widget class="QPushButton" name="UpdateButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>232</y>
+      <width>50</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(44, 44, 44);
+border: none;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>26</width>
+      <height>26</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="UpdateImageLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>235</y>
+      <width>30</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(150, 50, 50, 0); border-radius: 5px;</string>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="SpotifyDownloader.qrc">:/SpotifyDownloader/Icons/Update_Colour.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
    <zorder>SideBar_LineIndicator</zorder>
    <zorder>SubmitBugButton</zorder>
    <zorder>HelpButton</zorder>
@@ -2527,6 +2633,8 @@ border: none;</string>
    <zorder>SettingsScreenButton</zorder>
    <zorder>ErrorScreenButton</zorder>
    <zorder>DonateButton</zorder>
+   <zorder>UpdateButton</zorder>
+   <zorder>UpdateImageLabel</zorder>
   </widget>
  </widget>
  <customwidgets>
@@ -2551,8 +2659,8 @@ border: none;</string>
   <tabstop>OverwriteSettingButton</tabstop>
   <tabstop>CodecInput</tabstop>
   <tabstop>NormalizeVolumeSettingButton</tabstop>
-  <tabstop>SongOutputFormatTagInput</tabstop>
-  <tabstop>SongOutputFormatInput</tabstop>
+  <tabstop>FileNameTagInput</tabstop>
+  <tabstop>FileNameInput</tabstop>
   <tabstop>NotificationSettingButton</tabstop>
   <tabstop>DownloaderThreadUIInput</tabstop>
   <tabstop>SidebarIconsColourButton</tabstop>

@@ -122,6 +122,9 @@
     <ClCompile Include="SpotifyDownloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Network\VersionManager.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Downloading\Song.h">
@@ -159,6 +162,9 @@
     </ClInclude>
     <ClInclude Include="Downloading\Codec.h">
       <Filter>Header Files\Downloading</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\VersionManager.h">
+      <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

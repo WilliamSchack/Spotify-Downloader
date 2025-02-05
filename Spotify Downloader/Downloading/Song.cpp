@@ -80,10 +80,9 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 }
 
 std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
-	QStringList namingTags = Config::Q_NAMING_TAGS();
-
 	QString tagReplacement = QString();
-	int indexOfTag = namingTags.indexOf(tag.toLower());
+	int indexOfTag = Config::NAMING_TAGS.indexOf(tag.toLower());
+
 	switch (indexOfTag) {
 		case 0: // Song Name
 			tagReplacement = song.Title;
@@ -138,7 +137,7 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 }
 
 std::tuple<QString, Config::NamingError> Song::OutputNameWithTags(Song song) {
-	return Config::FormatStringWithTags(Config::SongOutputFormatTag, Config::SongOutputFormat, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
+	return Config::FormatStringWithTags(Config::FileNameTag, Config::FileName, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
 }
 
 std::tuple<QString, Config::NamingError> Song::SubFoldersWithTags(Song song) {

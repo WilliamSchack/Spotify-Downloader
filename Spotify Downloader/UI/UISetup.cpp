@@ -81,23 +81,21 @@ void SpotifyDownloader::SetupSideBar() {
             _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
     });
 
-    _objectHoverWatcher->AddObjectFunctions(_ui.DonateButton, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.DonateButton, QColor(80, 80, 80), 500);
-    }, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.DonateButton, QColor(44, 44, 44), 500);
-    });
+    // Lower buttons
+    QList<QPushButton*> lowerSidebarButtons{
+        _ui.DonateButton,
+        _ui.UpdateButton,
+        _ui.SubmitBugButton,
+        _ui.HelpButton,
+    };
 
-    _objectHoverWatcher->AddObjectFunctions(_ui.SubmitBugButton, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.SubmitBugButton, QColor(80, 80, 80), 500);
-    }, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.SubmitBugButton, QColor(44, 44, 44), 500);
-    });
-
-    _objectHoverWatcher->AddObjectFunctions(_ui.HelpButton, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.HelpButton, QColor(80, 80, 80), 500);
-    }, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.HelpButton, QColor(44, 44, 44), 500);
-    });
+    foreach(QPushButton* button, lowerSidebarButtons) {
+        _objectHoverWatcher->AddObjectFunctions(button, [=](QObject* object) {
+            Animation::AnimateBackgroundColour(button, QColor(80, 80, 80), 500);
+        }, [=](QObject* object) {
+            Animation::AnimateBackgroundColour(button, QColor(44, 44, 44), 500);
+        });
+    }
 
     // Buttons
     connect(_ui.DownloadingScreenButton, &QPushButton::clicked, [=] {
@@ -105,8 +103,8 @@ void SpotifyDownloader::SetupSideBar() {
             return;
 
         // Set output format
-        Config::SongOutputFormatTag = _ui.SongOutputFormatTagInput->text();
-        Config::SongOutputFormat = _ui.SongOutputFormatInput->text();
+        Config::FileNameTag = _ui.FileNameTagInput->text();
+        Config::FileName = _ui.FileNameInput->text();
 
         // Set sub folders
         Config::SubFoldersTag = _ui.SubFoldersTagInput->text();
@@ -138,7 +136,32 @@ void SpotifyDownloader::SetupSideBar() {
     });
 
     connect(_ui.DonateButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://ko-fi.com/williamschack"), "Donate", "Would you like to donate?\nYour donation will support the development of this program and many to come\nEven the smallest amount goes a long way :)");
+        OpenURL(QUrl("https://ko-fi.com/williamschack"), "Donate", "Would you like to donate and support development?\nEven the smallest amount goes a long way :)");
+    });
+
+    _ui.UpdateImageLabel->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+
+    connect(_ui.UpdateButton, &QPushButton::clicked, [=] {
+        CheckForUpdate();
+
+        if (VersionManager::LatestVersion().isEmpty())
+            ShowMessageBox(
+                "Cannot Check For Updates",
+                "Cannot connect to github servers to check for updates",
+                QMessageBox::Warning
+            );
+        else if (VersionManager::UpdateAvailable())
+            OpenURL(
+                QUrl("https://github.com/WilliamSchack/Spotify-Downloader/releases/latest"),
+                "Update Available",
+                QString("An Update is available, would you like to update from v%1 to %2?").arg(VersionManager::VERSION).arg(VersionManager::LatestVersion())
+            );
+        else
+            ShowMessageBox(
+                "You Are Up To Date",
+                "You are on the latest version, no updates required!",
+                QMessageBox::Information
+            );
     });
 
     connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
@@ -156,7 +179,7 @@ void SpotifyDownloader::SetupSetupScreen() {
     _ui.DonationPromptButton->setVisible(false);
 
     // Set version label
-    _ui.VersionLabel->setText(QString("v%1").arg(Config::VERSION));
+    _ui.VersionLabel->setText(QString("v%1").arg(VersionManager::VERSION));
 
     connect(_ui.PasteButton, &QPushButton::clicked, [=] {
         QClipboard* clipboard = qApp->clipboard();
@@ -364,7 +387,15 @@ void SpotifyDownloader::SetupSettingsScreen() {
         _ui.DonateButton->setIcon(Config::DonateIcon());
         _ui.SubmitBugButton->setIcon(Config::BugIcon());
         _ui.HelpButton->setIcon(Config::HelpIcon());
+
+        if (VersionManager::LatestVersion().isEmpty())
+            _ui.UpdateImageLabel->setPixmap(Config::UpdateIcon());
+        else if (VersionManager::UpdateAvailable())
+            _ui.UpdateImageLabel->setPixmap(Config::UpdateAvailableIcon());
+        else
+            _ui.UpdateImageLabel->setPixmap(Config::UpdateUpToDateIcon());
     });
+    connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
 }
 
 void SpotifyDownloader::SetupProcessingScreen() {
@@ -442,8 +473,8 @@ void SpotifyDownloader::LoadSettingsUI() {
     _ui.SaveLocationInput->setText(Config::SaveLocation);
     
     // Song Output Format
-    _ui.SongOutputFormatTagInput->setText(Config::SongOutputFormatTag);
-    _ui.SongOutputFormatInput->setText(Config::SongOutputFormat);
+    _ui.FileNameTagInput->setText(Config::FileNameTag);
+    _ui.FileNameInput->setText(Config::FileName);
     
     // Folder Sorting
     _ui.SubFoldersTagInput->setText(Config::SubFoldersTag);
@@ -466,19 +497,24 @@ void SpotifyDownloader::LoadSettingsUI() {
     if (_ui.SidebarIconsColourButton->isChecked != Config::SidebarIconsColour)
         _ui.SidebarIconsColourButton->click();
 
+    // Check for updates
+    if (_ui.CheckForUpdatesButton->isChecked != Config::CheckForUpdates)
+        _ui.CheckForUpdatesButton->click();
+
     // Set icons colour
     _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled()); // Set to filled, current screen will be setup, LoadSettingsUI only called on startup
     _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
     _ui.DonateButton->setIcon(Config::DonateIcon());
+    _ui.UpdateImageLabel->setPixmap(Config::UpdateIcon());
     _ui.SubmitBugButton->setIcon(Config::BugIcon());
     _ui.HelpButton->setIcon(Config::HelpIcon());
 }
 
 bool SpotifyDownloader::ValidateSettings() {
-    QStringList namingTags = Config::Q_NAMING_TAGS();
+    QStringList namingTags = Config::NAMING_TAGS;
 
     // Output Format
-    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatStringWithTags(Config::SongOutputFormatTag, Config::SongOutputFormat, [&namingTags](QString tag) -> std::tuple<QString, bool> {
+    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatStringWithTags(Config::FileNameTag, Config::FileName, [&namingTags](QString tag) -> std::tuple<QString, bool> {
         if (!namingTags.contains(tag.toLower())) {
             return std::make_tuple("", false);
         }

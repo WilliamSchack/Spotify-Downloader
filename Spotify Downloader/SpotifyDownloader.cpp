@@ -1,12 +1,15 @@
 #include "SpotifyDownloader.h"
 
 #include <QDesktopServices>
+#include <QMovie>
 
 #include <qt_windows.h>
 
 // Ui Setup
 SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
+    qInfo() << "RUNNING VERSION" << VersionManager::VERSION;
+
     setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
     QCoreApplication::setOrganizationName(Config::ORGANIZATION_NAME);
@@ -27,6 +30,9 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     LoadSettingsUI();
 
     SetupDownloaderThread();
+
+    if (Config::CheckForUpdates)
+        CheckForUpdate();
 
     qInfo() << "Successfully Initialised";
     Logger::Flush();
@@ -106,6 +112,28 @@ QList<SpotifyDownloader::LineIndicator> SpotifyDownloader::SETTINGS_LINE_INDICAT
 
     SETTINGS_LINE_INDICATORS_CACHE = lineIndicators;
     return lineIndicators;
+}
+
+void SpotifyDownloader::CheckForUpdate() {
+    QMovie* updateRotatingGif = Config::UpdateRotatingIcon();
+    _ui.UpdateImageLabel->setMovie(updateRotatingGif);
+    updateRotatingGif->start();
+
+    bool updateAvailable = VersionManager::UpdateAvailable();
+    updateRotatingGif->stop();
+
+    // Check connection to server
+    if (VersionManager::LatestVersion().isEmpty()) {
+        _ui.UpdateImageLabel->setPixmap(Config::UpdateIcon());
+        return;
+    }
+
+    if (updateAvailable)
+        _ui.UpdateImageLabel->setPixmap(Config::UpdateAvailableIcon());
+    else
+        _ui.UpdateImageLabel->setPixmap(Config::UpdateUpToDateIcon());
+
+    qInfo() << "Latest Version:" << VersionManager::LatestVersion() << "| Update Available:" << updateAvailable;
 }
 
 void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {

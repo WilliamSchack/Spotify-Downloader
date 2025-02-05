@@ -25,6 +25,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Network\SpotifyAPI.cpp" />
+    <ClCompile Include="Network\VersionManager.cpp" />
     <ClCompile Include="Network\YTMusicAPI.cpp" />
     <ClCompile Include="SpotifyDownloader.cpp" />
     <ClCompile Include="UI\CustomWidgets\CheckBox.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="Downloading\Song.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />
+    <ClInclude Include="Network\VersionManager.h" />
     <ClInclude Include="Network\YTMusicAPI.h" />
     <QtMoc Include="UI\CustomWidgets\CheckBox.h" />
     <QtMoc Include="UI\CustomWidgets\DownloaderThread.h" />

@@ -23,8 +23,8 @@ void Config::SaveSettings() {
         settings.setValue(codecBitrateKey, AudioBitrate[currentExtension]);
     }
 
-    settings.setValue("songOutputFormatTag", SongOutputFormatTag);
-    settings.setValue("songOutputFormat", SongOutputFormat);
+    settings.setValue("songOutputFormatTag", FileNameTag);
+    settings.setValue("songOutputFormat", FileName);
     settings.setValue("subFoldersTag", SubFoldersTag);
     settings.setValue("subFolders", SubFolders);
     settings.endGroup();
@@ -38,6 +38,7 @@ void Config::SaveSettings() {
     settings.beginGroup("Interface");
     settings.setValue("downloaderThreadUIIndex", DownloaderThreadUIIndex);
     settings.setValue("sidebarIconsColour", SidebarIconsColour);
+    settings.setValue("checkForUpdates", CheckForUpdates);
     settings.endGroup();
 
     // Log settings
@@ -89,8 +90,8 @@ void Config::LoadSettings() {
     }
 
     SaveLocation = settings.value("saveLocation", "").toString();
-    SongOutputFormatTag = settings.value("songOutputFormatTag", "<>").toString();
-    SongOutputFormat = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
+    FileNameTag = settings.value("songOutputFormatTag", "<>").toString();
+    FileName = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
 
     // Folder Sorting
     SubFoldersTag = settings.value("subFoldersTag", "<>").toString();
@@ -138,6 +139,7 @@ void Config::LoadSettings() {
     settings.beginGroup("Interface");
     DownloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
     SidebarIconsColour = settings.value("sidebarIconsColour", true).toBool();
+    CheckForUpdates = settings.value("checkForUpdates", true).toBool();
     settings.endGroup();
 
     // Log settings
@@ -151,15 +153,16 @@ QJsonObject Config::SettingsLog() {
         {"Codec Index", CodecIndex()},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
-        {"Song Output Format Tag", SongOutputFormatTag},
-        {"Song Output Format", SongOutputFormat},
+        {"File Name Tag", FileNameTag},
+        {"File Name Format", FileName},
         {"Sub Folders Tag", SubFoldersTag},
         {"Sub Folders", SubFolders},
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},
         {"Downloader Thread UI Index", DownloaderThreadUIIndex},
-        {"Sidebar Icons Colour", SidebarIconsColour}
+        {"Sidebar Icons Colour", SidebarIconsColour},
+        {"Check For Updates", CheckForUpdates}
     };
 
     // add bitrate to log
@@ -174,22 +177,6 @@ QJsonObject Config::SettingsLog() {
     return settingsLog;
 }
 
-// Convert naming tags to QStringList, cannot have const QStringList
-QStringList Config::Q_NAMING_TAGS() {
-    if (!Q_NAMING_TAGS_CACHE.isEmpty())
-        return Q_NAMING_TAGS_CACHE;
-
-    QStringList tags = QStringList();
-    int numTags = std::extent<decltype(NAMING_TAGS)>::value;
-    for (int i = 0; i < numTags; i++) {
-        QString tag = QString::fromUtf8(NAMING_TAGS[i]);
-        tags.append(tag);
-    }
-
-    Q_NAMING_TAGS_CACHE = tags;
-    return tags;
-}
-
 std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
     if (stringTag.length() != 2) {
         return std::make_tuple(stringTag, NamingError::EnclosingTagsInvalid);
@@ -197,8 +184,6 @@ std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString st
 
     QChar leftTag = stringTag[0];
     QChar rightTag = stringTag[1];
-
-    QStringList namingTags = Q_NAMING_TAGS();
 
     QString newString;
     int currentCharIndex = 0;

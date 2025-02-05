@@ -73,7 +73,7 @@ void Animation::AnimateValue(QWidget* target, int newValue, int durationMs) {
     QObject::connect(anim, &QVariantAnimation::valueChanged, [=](QVariant value) {
         target->setProperty("value", value);
         target->update();
-        });
+    });
 
     QObject::connect(anim, &QPropertyAnimation::finished, [=] {
         _currentAnimations.remove(target);
@@ -114,7 +114,9 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
         }
         
         // Add new background colour
-        styleSheet.append(QString("background-color: %1;").arg(value.value<QColor>().name()));
+        QColor colour = value.value<QColor>();
+        QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(colour.red()).arg(colour.green()).arg(colour.blue()).arg(colour.alpha());
+        styleSheet.append(QString("background-color: %1;").arg(rgbaString));
         target->setStyleSheet(styleSheet);
     });
 
@@ -129,7 +131,8 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
         }
 
         // Add new background colour
-        styleSheet.append(QString("background-color: %1;").arg(newColour.name()));
+        QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(newColour.red()).arg(newColour.green()).arg(newColour.blue()).arg(newColour.alpha());
+        styleSheet.append(QString("background-color: %1;").arg(rgbaString));
         target->setStyleSheet(styleSheet);
 
         _currentAnimations.remove(target);

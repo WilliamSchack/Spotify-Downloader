@@ -17,6 +17,7 @@
 
 #include "Network/YTMusicAPI.h"
 #include "Network/SpotifyAPI.h"
+#include "Network/VersionManager.h"
 
 #include "Downloading/Codec.h"
 
@@ -126,6 +127,8 @@ class SpotifyDownloader : public QDialog
         bool ValidateDirectory();
 
         void ResetDownloadingVariables();
+
+        void CheckForUpdate();
 
         int CurrentScreen();
 
