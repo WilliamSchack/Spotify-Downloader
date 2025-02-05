@@ -158,7 +158,7 @@ void SpotifyDownloader::SetupSideBar() {
             );
         else
             ShowMessageBox(
-                "You Are Up To Date",
+                "Up To Date",
                 "You are on the latest version, no updates required!",
                 QMessageBox::Information
             );

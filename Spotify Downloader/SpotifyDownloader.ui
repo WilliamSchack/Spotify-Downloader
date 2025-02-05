@@ -2661,9 +2661,12 @@ border: none;</string>
   <tabstop>NormalizeVolumeSettingButton</tabstop>
   <tabstop>FileNameTagInput</tabstop>
   <tabstop>FileNameInput</tabstop>
+  <tabstop>SubFoldersTagInput</tabstop>
+  <tabstop>SubFoldersInput</tabstop>
   <tabstop>NotificationSettingButton</tabstop>
   <tabstop>DownloaderThreadUIInput</tabstop>
   <tabstop>SidebarIconsColourButton</tabstop>
+  <tabstop>CheckForUpdatesButton</tabstop>
   <tabstop>PauseButton</tabstop>
   <tabstop>PlayButton</tabstop>
   <tabstop>CancelButton</tabstop>
@@ -2672,6 +2675,7 @@ border: none;</string>
   <tabstop>ErrorScreenButton</tabstop>
   <tabstop>SettingsScreenButton</tabstop>
   <tabstop>DonateButton</tabstop>
+  <tabstop>UpdateButton</tabstop>
   <tabstop>SubmitBugButton</tabstop>
   <tabstop>HelpButton</tabstop>
   <tabstop>OutputSettingsHoverTest</tabstop>

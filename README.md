@@ -97,7 +97,7 @@ You can open the program through the start menu or from the installed location t
 
 ***Note: Icon colour can be toggled to white by changing the Sidebar Icons Colour setting***
 
-<img src="https://github.com/user-attachments/assets/d98568b8-985f-4763-ac11-cb55f879cd7f" width="4%" height="4%">
+<img src="https://github.com/user-attachments/assets/17c8f5bf-f438-4837-9786-4c141784748c" width="4%" height="4%">
 
 <br/>
 
@@ -114,6 +114,12 @@ You can open the program through the start menu or from the installed location t
 **Donate Button**
 - Click to donate and support the development of this program
 - ***Note: Opens in browser***
+
+**Update Button**
+- Click to check for updates
+- The icon will change state depending on the checking status, and if an update is available or not
+- If an update is available it will redirect you to the newest github release
+    - ***Note: Opens in browser***
 
 **Submit Bug Button**
 - Click to submit an issue to the github repo
@@ -132,7 +138,7 @@ You can open the program through the start menu or from the installed location t
 
 ---
 
-<img src="https://github.com/user-attachments/assets/c56bc950-0ca7-47fb-9652-2dff39eee572" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/35c16d15-a3fb-474d-8719-7be92f97171c" width="50%" height="50%">
 
 **Download Status**
 - Shows the result of the last download
@@ -181,8 +187,8 @@ You can open the program through the start menu or from the installed location t
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/5e000ca3-c32e-4a0f-8994-02532b207331" width="50%" height="50%">
-<img src="https://github.com/user-attachments/assets/66c7d61e-274e-4ac8-a3ba-94e9a714f5b8" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/017fee92-5f01-4553-8e1d-2194bbd2da4a" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/ff53d6de-1dda-4f92-b528-9a5d435cd1e5" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -213,13 +219,13 @@ You can open the program through the start menu or from the installed location t
 - Shows what type of metadata is used for the selected format
 - Shows warnings in red when something is different (No cover art for example)
 
-**Naming Format**
+**File Name**
 - Enclosing tag input sets the characters to open and close a tag
     - Left character sets the opening input
     - Right character sets the closing input
-- Format Input sets the output name of each song.
+- File Name Input sets the output name of each song.
     - Each tag must be enclosed with the characters set in the left input field
-- Naming format can only include these currently implemented tags:
+- Can only include these currently implemented tags:
     - **Song Name** - Name of the song
     - **Album Name** - Name of the album
     - **Song Artist** - Name of the first artist of a song
@@ -230,12 +236,26 @@ You can open the program through the start menu or from the installed location t
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
 
-**Folder Sorting**
-- Creates folders within your chosen download path with the title set here
+**Sub Folders**
+- Enclosing tag input sets the characters to open and close a tag
+    - Left character sets the opening input
+    - Right character sets the closing input
+- Sub Folders Input sets the sub folders within the chosen directory that each song will be saved to
+    - Each tag must be enclosed with the characters set in the left input field
+- Can only include these currently implemented tags:
+    - **Song Name** - Name of the song
+    - **Album Name** - Name of the album
+    - **Song Artist** - Name of the first artist of a song
+    - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
+    - **Album Artist** - Name of the first artist of the songs album
+    - **Album Artists** - Names of each artist of a songs album "Artist1, Artist2, Artist3, ..."
+    - **Song Time Seconds** - Time of the song in seconds
+    - **Song Time Minutes** - Time of the song in minutes "01.23"
+    - **Song Time Hours** - Time of the song in hours "00.01.23"
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/73da35b4-6b0d-4a7e-8ce8-d40d6b5681c8" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/891b6c9c-bd8d-4d68-b242-0bb7fc23abd2" width="50%" height="50%">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -248,7 +268,7 @@ You can open the program through the start menu or from the installed location t
 
 ### Interface
 
-<img src="https://github.com/user-attachments/assets/41050d81-6629-4fe5-94ce-919880f653c4" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/299655c8-acd1-4b83-9a0b-32f38ab401b2" width="50%" height="50%">
 
 **Downloader Thread UI - Recommended: Compact**
 - Changes the style of each thread UI while downloading
@@ -259,6 +279,9 @@ You can open the program through the start menu or from the installed location t
 **Sidebar Icons Colour - Default: ON**
 - Enables colour for the sidebar icons
 
+**Check For Updates - Default: ON**
+- Toggles if the app checks for updates when launching
+
 ---
     
 </details>
@@ -268,7 +291,7 @@ You can open the program through the start menu or from the installed location t
     
 ---
 
-<img src="https://github.com/user-attachments/assets/a4e83ea5-0570-4106-afe2-2e22a79851a3" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/f5ba738f-8fa4-4bdd-a697-fb802c544e97" width="50%" height="50%">
 
 Each track downloading will show its:
 - Cover image
@@ -302,7 +325,7 @@ You can see your total download progress on the counter at the bottom left.
     
 ---
 
-<img src="https://github.com/user-attachments/assets/5c2866d5-222e-40e4-9a72-0e7f217ea0ed" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/ff63eee3-9a3a-4912-a288-52f2576b504d" width="50%" height="50%">
 
 Shows all of the songs that failed to download due to various reasons that will be listed below each song
 
@@ -330,7 +353,7 @@ Shows all of the songs that failed to download due to various reasons that will 
     - Volume Normalization
     - Audio Bitrate
     - Dynamic File Naming
-    - Automatic Folder Sorting
+    - Sub-Folders
     - Downloading Thread Count & Speed Limit
     - Multiple GUI Settings
 - **Multiple File Formats**
@@ -374,12 +397,12 @@ The downloads are almost always accurate and have only few times has downloaded 
 
 <details>
 <summary><b>What can I download from spotify?</b></summary>
-You can download a playlist, album, or individual songs. Episodes are also unsupported if in a playlist/album (cannot be inputted manully), but there may also be other types of media that I have not found yet. You also cannot download all songs from a given artist but if you need to get around this the only suggestion I have is to compile all of their songs into a playlist and input that into the program but I may have a look into supporting this in the future. If you need any help finding the link for your music, there is a guide <a href="https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage">Here</a> under Setup > How To Find Your URL.
+You can download a playlist, album, episode, or individual songs. You also cannot download all songs from a given artist but if you need to get around this the only suggestion I have is to compile all of their songs into a playlist and input that into the program but I may have a look into supporting this in the future. If you need any help finding the link for your music, there is a guide <a href="https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage">Here</a> under Setup > How To Find Your URL.
 </details>
 
 <details>
 <summary><b>What is the quality of the downloaded songs?</b></summary>
-The audio quality of each song can be configured in the settings ranging from 33-256kb/s in steps of 32 (excluding 33). The program downloads the highest quality stream from youtube usually being from 230-260kb/s and converts it to the desired quality.
+The audio quality of each song can be configured in the settings ranging from 33-256kb/s with an mp3 file, and 33-128kb/s for everything else in steps of 32 (excluding 33). The program downloads the highest quality stream from youtube usually being around a 128kb/s m4a file and converts it to the desired quality.
 </details>
 
 <details>
