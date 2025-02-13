@@ -6,6 +6,8 @@
 
 #include "Downloading/Codec.h"
 
+#include "Utilities/StringUtils.h"
+
 #include <QSettings>
 #include <QJsonObject>
 #include <QMap>

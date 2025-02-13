@@ -211,7 +211,7 @@ std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString st
         }
 
         QString tagReplacement = std::get<0>(tagReplacementReturn);
-
+        tagReplacement = StringUtils::ValidateFileName(tagReplacement);
 
         newString.append(tagReplacement);
 
