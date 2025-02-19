@@ -48,6 +48,7 @@ class Song {
 		QString YoutubeId = "";
 		float Time = 0;
 		int TrackNumber = 0;
+		bool IsExplicit;
 
 		QImage CoverImage;
 

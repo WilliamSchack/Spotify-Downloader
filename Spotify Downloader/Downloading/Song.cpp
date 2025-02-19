@@ -11,6 +11,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	Time = song["duration_ms"].toDouble() / 1000;
 	TrackNumber = song["track_number"].toInt();
 	SpotifyId = song["id"].toString();
+	IsExplicit = song["explicit"].toBool();
 
 	// Handle episode, details are different (If song is episode and contains show object or album object that is a show
 	if (song["type"].toString() == "episode" && (song.contains("show") || (song.contains("album") && song["album"].toObject()["type"].toString() == "show"))) {
@@ -131,8 +132,6 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 	// Value was set if index is from 0-9
 	bool valueSet = indexOfTag >= 0 && indexOfTag <= 9;
 
-	qDebug() << indexOfTag << tagReplacement << valueSet;
-
 	return std::make_tuple(tagReplacement, valueSet);
 }
 
@@ -224,6 +223,7 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 
 	// Score all songs
 	QJsonArray finalResults = ScoreSearchResults(searchResults);
+
 	onProgressUpdate(0.9);
 
 	// Choose the result with the highest score
@@ -307,6 +307,7 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 	finalResult = finalResult["result"].toObject();
 	YoutubeId = finalResult["videoId"].toString();
 	_searchResult = finalResult;
+
 	return "";
 }
 
@@ -314,6 +315,11 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	QJsonArray finalResults = QJsonArray();
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
+
+		// If song is explicit only allow explicit results
+		if (IsExplicit && !result["isExplicit"].toBool()) {
+			continue;
+		}
 
 		int seconds = result["durationSeconds"].toInt();
 
@@ -725,12 +731,6 @@ void Song::Save(QString targetFolder, QString targetPath, bool overwrite) {
 	QStringList folders = targetFolder.split("/");
 	QString currentFolder = QString("%1/%2").arg(folders[0]).arg(folders[1]);
 	for (int i = 1; i < folders.count(); i++) {
-		qDebug() << "Testing folder" << currentFolder;
-		qDebug() << "Exists:" << QDir(currentFolder).exists();
-
-		if (!QDir(currentFolder).exists())
-			qDebug() << "Making Dir:" << QDir().mkdir(currentFolder);
-
 		if (i + 1 < folders.count())
 			currentFolder = QString("%1/%2").arg(currentFolder).arg(folders[i + 1]);
 	}

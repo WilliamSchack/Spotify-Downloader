@@ -246,6 +246,12 @@ QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
 	QJsonArray buttons = header["buttons"].toArray();
 	album["audioPlaylistId"] = buttons[1].toObject()["musicPlayButtonRenderer"].toObject()["playNavigationEndpoint"].toObject()["watchEndpoint"].toObject()["playlistId"].toString();
 
+	bool isExplicit = false;
+	if (header.contains("description"))
+		isExplicit =  header["description"].toObject()["musicDescriptionShelfRenderer"].toObject().contains("straplineBadge");
+
+	album["isExplicit"] = isExplicit;
+
 	return album;
 }
 
@@ -342,6 +348,8 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : QJsonObject();
 
 		song["views"] = isAlbum ? GetItemText(data, 2).split(" ")[0] : "";
+
+		song["isExplicit"] = data.contains("badges");
 
 		if (data.contains("fixedColumns")) {
 			QString duration = "";
@@ -603,6 +611,9 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 		if (resultType == "album" || resultType == "playlist") {
 			searchResult["browseId"] = data["navigationEndpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString();
 		}
+
+		if (resultType == "song" || resultType == "album")
+			searchResult["isExplicit"] = data.contains("badges");
 
 		finalResults.append(searchResult);
 	}

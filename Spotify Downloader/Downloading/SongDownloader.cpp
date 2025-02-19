@@ -90,8 +90,6 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	QString targetFolder = QString("%1%2").arg(Config::SaveLocation).arg(targetFolderName);
 	QString targetPath = QString("%1/%2.%3").arg(targetFolder).arg(song.FileName).arg(Codec::Data[codec].String);
 
-	qDebug() << "TARGET PATH" << targetPath;
-
 	// If not overwriting and song already downloaded, skip to next song
 	if (!Config::Overwrite && QFile::exists(targetPath)) {
 		qInfo() << _threadIndex << "Song" << song.SpotifyId << "already downloaded, skipping...";
