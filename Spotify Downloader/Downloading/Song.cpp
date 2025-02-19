@@ -71,7 +71,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		}
 		ArtistNames = ArtistNamesList.join("; ");
 
-		// Release Album
+		// Album
 		AlbumName = album["name"].toString();
 		AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
 		AlbumArtistsList = album["artists"].toArray();
@@ -786,6 +786,9 @@ void Song::Save(QString targetFolder, QString targetPath, bool overwrite) {
 	QStringList folders = targetFolder.split("/");
 	QString currentFolder = QString("%1/%2").arg(folders[0]).arg(folders[1]);
 	for (int i = 1; i < folders.count(); i++) {
+		if (!QDir(currentFolder).exists())
+			qDebug() << "Making Dir:" << QDir().mkdir(currentFolder);
+
 		if (i + 1 < folders.count())
 			currentFolder = QString("%1/%2").arg(currentFolder).arg(folders[i + 1]);
 	}
