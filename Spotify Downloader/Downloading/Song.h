@@ -23,6 +23,8 @@
 
 #include <QImage>
 
+#include <QDate>
+
 #include <taglib/fileref.h>
 
 #include <taglib/id3v2tag.h>
@@ -49,6 +51,7 @@ class Song {
 		float Time = 0;
 		int TrackNumber = 0;
 		bool IsExplicit;
+		QDate ReleaseDate;
 
 		QImage CoverImage;
 
@@ -67,6 +70,7 @@ class Song {
 
 		// --- File Properties ---
 		QString FileName;
+		Codec::Extension Codec;
 	public:
 		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
 
@@ -90,7 +94,6 @@ class Song {
 		const SpotifyDownloader* _main;
 
 		// --- Settings ---
-		Codec::Extension _codec;
 		QString _ytdlpPath;
 		QString _ffmpegPath;
 

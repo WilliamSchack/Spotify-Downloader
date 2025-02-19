@@ -235,6 +235,10 @@ You can open the program through the start menu or from the installed location t
     - **Song Time Seconds** - Time of the song in seconds
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
+	- **Year** - Release Year of the song
+	- **Month** - Release month of the song
+	- **Day** - Release day of the song
+	- **Codec** - The codec of the downloaded song
 
 **Sub Folders**
 - Enclosing tag input sets the characters to open and close a tag
@@ -252,6 +256,10 @@ You can open the program through the start menu or from the installed location t
     - **Song Time Seconds** - Time of the song in seconds
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
+	- **Year** - Release Year of the song
+	- **Month** - Release month of the song
+	- **Day** - Release day of the song
+	- **Codec** - The codec of the downloaded song
 
 ### Downloading
 

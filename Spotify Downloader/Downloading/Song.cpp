@@ -9,7 +9,6 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	// Get universal details
 	Title = song["name"].toString();
 	Time = song["duration_ms"].toDouble() / 1000;
-	TrackNumber = song["track_number"].toInt();
 	SpotifyId = song["id"].toString();
 	IsExplicit = song["explicit"].toBool();
 
@@ -32,6 +31,9 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 			ArtistName = song["artists"].toArray()[0].toObject()["type"].toString();
 		}
 
+		// No track number so use 1
+		TrackNumber = 1;
+
 		// Artists
 		ArtistNamesList = QStringList{ ArtistName };
 		ArtistNames = ArtistName;
@@ -41,11 +43,23 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		AlbumImageURL = show["images"].toArray()[0].toObject()["url"].toString();
 		AlbumArtistNamesList = ArtistNamesList;
 		AlbumArtistNames = ArtistNames;
+
+		// Release Date
+		QStringList dates = song["release_date"].toString().split("-");
+
+		if (dates.length() == 0) { dates.append("1970"); dates.append("1"); dates.append("1"); } // No Date			   => 1970-1-1
+		else if (dates.length() == 1) { dates.append("1"); dates.append("1"); }					 // Format: Year	   => Year-1-1
+		else if (dates.length() == 2) { dates.append("1"); }									 // Format: Year-Month => Year-Month-1
+
+		ReleaseDate = QDate(dates[0].toInt(), dates[1].toInt(), dates[2].toInt());
 	}
 	// Handle regular track
 	else {
 		// Get Song Details
 		if (album.isEmpty()) album = song["album"].toObject();
+
+		// Track Number
+		TrackNumber = song["track_number"].toInt();
 
 		// Artists
 		ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
@@ -57,7 +71,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		}
 		ArtistNames = ArtistNamesList.join("; ");
 
-		// Album
+		// Release Album
 		AlbumName = album["name"].toString();
 		AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
 		AlbumArtistsList = album["artists"].toArray();
@@ -67,10 +81,19 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 			AlbumArtistNamesList.append(artist["name"].toString());
 		}
 		AlbumArtistNames = AlbumArtistNamesList.join("; ");
+
+		// Release Date
+		QStringList dates = song["album"].toObject()["release_date"].toString().split("-");
+
+		if (dates.length() == 0) { dates.append("1970"); dates.append("1"); dates.append("1"); } // No Date			   => 1970-1-1
+		else if (dates.length() <= 1) { dates.append("1"); dates.append("1"); }					 // Format: Year	   => Year-1-1
+		else if (dates.length() <= 2) { dates.append("1"); }									 // Format: Year-Month => Year-Month-1
+
+		ReleaseDate = QDate(dates[0].toInt(), dates[1].toInt(), dates[2].toInt());
 	}
 
 	// Set Codec
-	_codec = codec;
+	Codec = codec;
 
 	// Generate File Name
 	if (_main != nullptr)
@@ -127,10 +150,22 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("hh:mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
+		case 10: // Year
+			tagReplacement = QString::number(song.ReleaseDate.year());
+			break;
+		case 11: // Month
+			tagReplacement = QString::number(song.ReleaseDate.month());
+			break;
+		case 12: // Day
+			tagReplacement = QString::number(song.ReleaseDate.day());
+			break;
+		case 13: // Codec
+			tagReplacement = Codec::Data[song.Codec].String;
+			break;
 	}
 
-	// Value was set if index is from 0-9
-	bool valueSet = indexOfTag >= 0 && indexOfTag <= 9;
+	// Value was set if index is from 0-tag length
+	bool valueSet = indexOfTag >= 0 && indexOfTag <= Config::NAMING_TAGS.length();
 
 	return std::make_tuple(tagReplacement, valueSet);
 }
@@ -159,7 +194,7 @@ void Song::GenerateDownloadingPath() {
 		QDir().mkdir(_tempPath);
 
 	_downloadingFolder = QString("%1/Downloading").arg(_tempPath);
-	_downloadingPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName).arg(Codec::Data[_codec].String);
+	_downloadingPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName).arg(Codec::Data[Codec].String);
 
 	if (!QDir(_downloadingFolder).exists())
 		QDir().mkdir(_downloadingFolder);
@@ -430,7 +465,7 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
 			float percent = progress.toFloat() / 100;
 			// 0-1 if not converting, 0-0.7 otherwise
-			percent = _codec == Codec::Extension::M4A ? MathUtils::Lerp(0, 1, percent) : MathUtils::Lerp(0, 0.7, percent);
+			percent = Codec == Codec::Extension::M4A ? MathUtils::Lerp(0, 1, percent) : MathUtils::Lerp(0, 0.7, percent);
 			onProgressUpdate(percent);
 		}
 	});
@@ -473,7 +508,7 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 	}
 
 	// No need to convert
-	if (_codec == Codec::Extension::M4A) {
+	if (Codec == Codec::Extension::M4A) {
 		onProgressUpdate(1);
 		return "";
 	}
@@ -506,7 +541,7 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -q:a 0 %3 "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(downloadingPathM4A)
-		.arg(Codec::Data[_codec].FFMPEGConversionParams)
+		.arg(Codec::Data[Codec].FFMPEGConversionParams)
 		.arg(_downloadingPath));
 	process->waitForFinished(-1);
 
@@ -523,7 +558,7 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 // Don't set quality if normalizing, has to be set there regardless
 void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate) {
 	// Some codecs have a preset bitrate, no need to set, eg. WAV files
-	if (Codec::Data[_codec].LockedBitrate)
+	if (Codec::Data[Codec].LockedBitrate)
 		return;
 
 	// Get duration for progress bar calculations
@@ -549,7 +584,7 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 		onProgressUpdate(progress);
 	});
 
-	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Data[_codec].String);
+	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Data[Codec].String);
 	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(_downloadingPath)
@@ -573,7 +608,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 	// For some reason ffmpeg outputs to StandardError. idk why
 	QString audioOutput = process->readAllStandardError();
 	if (audioOutput.contains("mean_volume:")) {
-		QString normalizedFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_N").arg(Codec::Data[_codec].String);
+		QString normalizedFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_N").arg(Codec::Data[Codec].String);
 
 		float meanVolume = audioOutput.split("mean_volume:")[1].split("dB")[0].toFloat();
 
@@ -598,7 +633,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
-				.arg(Codec::Data[_codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not wav file
+				.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not wav file
 				.arg(volumeApply)
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
@@ -616,7 +651,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 
 void Song::AssignMetadata() {
 	// Only assign metadata if required
-	if (Codec::Data[_codec].Type == Codec::MetadataType::NONE)
+	if (Codec::Data[Codec].Type == Codec::MetadataType::NONE)
 		return;
 
 	// FileRef destroys when leaving scope, give it a scope to do its thing
@@ -630,14 +665,17 @@ void Song::AssignMetadata() {
 		CoverImage.save(&buffer, "PNG");
 		buffer.close();
 
-		switch (Codec::Data[_codec].Type) {
+		bool coverArtOverride = Codec::Data[Codec].CoverArtOverride != NULL;
+
+		switch (Codec::Data[Codec].Type) {
 			case Codec::MetadataType::ID3V2:
 			{
-				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setYear(ReleaseDate.year());
 				// Below work on specific systems where the above dont (#33) need to look further into it
 				// tag->setTitle(Title.trimmed().toUtf8().data());
 				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
@@ -655,6 +693,9 @@ void Song::AssignMetadata() {
 				tag->addFrame(pubFrame);
 				tag->addFrame(copFrame);
 				tag->addFrame(comFrame);
+				
+				if (coverArtOverride)
+					break;
 
 				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
 				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
@@ -666,13 +707,17 @@ void Song::AssignMetadata() {
 			}
 			case Codec::MetadataType::MP4:
 			{
-				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setYear(ReleaseDate.year());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				tag->setTrack(TrackNumber);
+
+				if (coverArtOverride)
+					break;
 
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				TagLib::MP4::CoverArtList coverArtList;
@@ -685,11 +730,12 @@ void Song::AssignMetadata() {
 			}
 			case Codec::MetadataType::RIFF:
 			{
-				TagLib::RIFF::Info::Tag* tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				TagLib::RIFF::Info::Tag* tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setYear(ReleaseDate.year());
 				tag->setTrack(TrackNumber);
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 
@@ -699,13 +745,17 @@ void Song::AssignMetadata() {
 			}
 			case Codec::MetadataType::XIPH:
 			{
-				TagLib::Ogg::XiphComment* tag = dynamic_cast<TagLib::Ogg::XiphComment*>(Codec::Data[_codec].GetFileTag(tagFileRef));
+				TagLib::Ogg::XiphComment* tag = dynamic_cast<TagLib::Ogg::XiphComment*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
 				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
+				tag->setYear(ReleaseDate.year());
 				tag->setTrack(TrackNumber);
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+
+				if (coverArtOverride)
+					break;
 
 				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
 				coverArt->setData(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
@@ -717,6 +767,11 @@ void Song::AssignMetadata() {
 			}
 		}
 
+		// Call cover art function if set
+		if (coverArtOverride)
+			Codec::Data[Codec].CoverArtOverride(tagFileRef, imageBytes);
+
+		// Save metadata
 		tagFileRef.save();
 	}
 }

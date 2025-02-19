@@ -76,7 +76,11 @@ class Config {
             "track number",
             "song time seconds",
             "song time minutes",
-            "song time hours"
+            "song time hours",
+            "year",
+            "month",
+            "day",
+            "codec"
         };
 
         // Output
