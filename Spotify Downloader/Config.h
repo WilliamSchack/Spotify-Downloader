@@ -8,6 +8,8 @@
 
 #include "Utilities/StringUtils.h"
 
+#include "Network/SpotifyAPI.h"
+
 #include <QSettings>
 #include <QJsonObject>
 #include <QMap>
@@ -34,7 +36,7 @@ class Config {
         static const int ERROR_SCREEN_INDEX = 3;
 
         static const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 305;
-        static const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 105;
+        static const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 255;
         static const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 105;
 
         static inline const QString DOWNLOAD_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png";

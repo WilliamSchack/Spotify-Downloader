@@ -33,6 +33,8 @@ void Config::SaveSettings() {
     settings.setValue("statusNotificationsEnabled", Notifications);
     settings.setValue("downloaderThreads", ThreadCount);
     settings.setValue("downloadSpeedLimit", DownloadSpeed);
+    settings.setValue("clientID", SpotifyAPI::ClientID);
+    settings.setValue("clientSecret", SpotifyAPI::ClientSecret);
     settings.endGroup();
 
     settings.beginGroup("Interface");
@@ -134,6 +136,8 @@ void Config::LoadSettings() {
     Notifications = settings.value("statusNotificationsEnabled", true).toBool();
     ThreadCount = settings.value("downloaderThreads", 6).toInt();
     DownloadSpeed = settings.value("downloadSpeedLimit", 0.0).toFloat();
+    SpotifyAPI::ClientID = settings.value("clientID", "").toByteArray();
+    SpotifyAPI::ClientSecret = settings.value("clientSecret", "").toByteArray();
     settings.endGroup();
 
     settings.beginGroup("Interface");

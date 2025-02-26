@@ -263,7 +263,7 @@ You can open the program through the start menu or from the installed location t
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/891b6c9c-bd8d-4d68-b242-0bb7fc23abd2" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/f8ce98d5-070b-49ba-98e2-b2afb3a8d2ff" width="50%" height="50%">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -273,6 +273,16 @@ You can open the program through the start menu or from the installed location t
 
 **Download Speed Limit - Recommended: 0MB/s**
 - The speed limit to downloading songs in MB/s. A value of 0 is uncapped
+
+**Spotify Client ID**
+- Spotify API Client ID used for fetching songs
+- **If empty uses the default Spotify API Client ID**
+
+**Spotify Client Secret**
+- Spotify API Client Secret used for fetching songs
+- **If empty uses the default Spotify API Client Secret**
+
+*For help creating your own spotify app and keys, view the lower section titled "Creating your own Spotify API keys"*
 
 ### Interface
 
@@ -339,6 +349,36 @@ Shows all of the songs that failed to download due to various reasons that will 
 
 ---
     
+</details>
+
+<details>
+<summary><b> Creating your own Spotify API keys </b></summary>
+
+---
+ 
+Go to the [spotify developer dashboard](https://developer.spotify.com/dashboard) and sign in with your spotify account *(Can be any it doesnt matter)*
+
+Click the "Create app" button and input the following fields:
+
+<img src="https://github.com/user-attachments/assets/5d999095-874d-4929-a40a-9ebdce8501c0" width="50%" height="50%">
+
+- **App Name:** Anything you like
+- **App Description:** Anything you like
+- **Redirect URIs:** *(For each input them and click the "Add" button on the right)*
+  - http://127.0.0.1:1337/callback
+  - http://localhost:8888/callback
+-  **Which API/SDKs are you planning to use?** Tick "Web API"
+
+Once you have read and accepted Spotify's [Developer Terms of Service](https://developer.spotify.com/terms) and [Design Guidelines](https://developer.spotify.com/documentation/design) you can click the "Save" button at the bottom
+
+Now in the app page, click the "Settings" button at the top right
+
+In this menu click the "View client secret" button to access the secret and now you have both the Client ID and Client Secret. Copy these both into the respective fields in the Spotify Downloader and it will now use your keys
+
+<img src="https://github.com/user-attachments/assets/8a46ffde-38cd-4486-bccd-303775746c89" width="50%" height="50%">
+
+---
+
 </details>
 
 ## Features

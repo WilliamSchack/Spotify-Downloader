@@ -57,15 +57,28 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	}
 	else if (url.contains("episode"))
 		searchTracks = QJsonArray{ _sp->GetEpisode(spotifyId) };
-	else
+	else // Track
 		searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
 
 	// Check if spotify returned anything
 	if (searchTracks.isEmpty()) {
 		emit ShowMessage("Error fetching songs", "Please try another link or ensure your playlist is public");
-		emit SetDownloadStatus(R"(Error fetching songs.<br><span style="font-size: 13pt">Please try another link or ensure your playlist is public</span>)");
+		emit SetDownloadStatus(R"(Error fetching songs<br><span style="font-size: 13pt">Please try another link or ensure your playlist is public</span>)");
 
 		qWarning() << "Error downloading songs";
+
+		Quit();
+		return;
+	}
+	
+	// If one track exists that is empty, we have been rate limited
+	else if (searchTracks.count() == 1 && searchTracks[0].toObject().isEmpty()) {
+		emit ShowMessage("App is rate limited", "Use your own API keys in the downloading settings");
+
+		QString helpMessage = SpotifyAPI::ClientID.isEmpty() ? "Use your own api keys in the downloading settings" : "Try changing your API keys or using the default ones";
+		emit SetDownloadStatus(QString(R"(App is rate limited<br><span style="font-size: 13pt">%1</span>)").arg(helpMessage));
+
+		qWarning() << "Error downloading songs, app is rate limited";
 
 		Quit();
 		return;

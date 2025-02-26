@@ -6,8 +6,10 @@ SpotifyAPI::SpotifyAPI() {
 	
 	QByteArray postData;
 	postData.append("grant_type=client_credentials&");
-	postData.append("client_id=" + CLIENT_ID + "&");
-	postData.append("client_secret=" + CLIENT_SECRET);
+
+	// Use default api keys if not set
+	postData.append("client_id=" + (ClientID.isEmpty() ? DEFAULT_CLIENT_ID : ClientID) + "&");
+	postData.append("client_secret=" + (ClientSecret.isEmpty() ? DEFAULT_CLIENT_SECRET : ClientSecret));
 	
 	QNetworkRequest req(url);
 	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");

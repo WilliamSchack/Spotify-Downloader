@@ -206,6 +206,19 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.setValue("saveLocation", Config::SaveLocation);
             settings.endGroup();
 
+            // Save spotify api keys
+            QByteArray clientID = _ui.SpotifyClientIDInput->text().toUtf8();
+            QByteArray clientSecret = _ui.SpotifyClientSecretInput->text().toUtf8();
+
+            settings.beginGroup("Downloading");
+            settings.setValue("clientID", clientID);
+            settings.setValue("clientSecret", clientSecret);
+            settings.endGroup();
+
+            SpotifyAPI::ClientID = clientID;
+            SpotifyAPI::ClientSecret = clientSecret;
+
+            // Initialize variables
             DownloadStarted = true;
             Paused = false;
 
@@ -289,6 +302,11 @@ void SpotifyDownloader::SetupSettingsScreen() {
     }
 
     // Number Inputs
+    connect(_ui.NormalizeVolumeSettingInput, &QDoubleSpinBox::textChanged, [=] {
+        if (_ui.NormalizeVolumeSettingInput->text() != "") {
+            Config::NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
+        }
+    });
     connect(_ui.DownloaderThreadsInput, &QSpinBox::textChanged, [=] {
         if (_ui.DownloaderThreadsInput->text() != "") {
             Config::ThreadCount = _ui.DownloaderThreadsInput->value();
@@ -297,11 +315,6 @@ void SpotifyDownloader::SetupSettingsScreen() {
     connect(_ui.DownloadSpeedSettingInput, &QDoubleSpinBox::textChanged, [=] {
         if (_ui.DownloadSpeedSettingInput->text() != "") {
             Config::DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
-        }
-    });
-    connect(_ui.NormalizeVolumeSettingInput, &QDoubleSpinBox::textChanged, [=] {
-        if (_ui.NormalizeVolumeSettingInput->text() != "") {
-            Config::NormalizeAudioVolume = _ui.NormalizeVolumeSettingInput->value();
         }
     });
 
@@ -396,6 +409,12 @@ void SpotifyDownloader::SetupSettingsScreen() {
             _ui.UpdateImageLabel->setPixmap(Config::UpdateUpToDateIcon());
     });
     connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
+
+    // Regular Buttons
+    connect(_ui.SpotifyAPIHelpButton, &QPushButton::clicked, [=] {
+        // Simulate clicking the help button
+        _ui.HelpButton->click();
+    });
 }
 
 void SpotifyDownloader::SetupProcessingScreen() {
@@ -490,6 +509,12 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Download Speed Limit
     _ui.DownloadSpeedSettingInput->setValue(Config::DownloadSpeed);
     
+    // Spotify Client ID
+    _ui.SpotifyClientIDInput->setText(SpotifyAPI::ClientID);
+
+    // Spotify Client Secret
+    _ui.SpotifyClientSecretInput->setText(SpotifyAPI::ClientSecret);
+
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);
 
@@ -607,6 +632,16 @@ bool SpotifyDownloader::ValidateSettings() {
         ShowMessageBox(
             "Invalid Sub Folders",
             QString("Invalid Tag Detected:\n%1").arg(formattedSubFoldersString),
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Spotify API Keys, return false if one is set without the other
+    if ((!_ui.SpotifyClientIDInput->text().isEmpty() && _ui.SpotifyClientSecretInput->text().isEmpty()) || (_ui.SpotifyClientIDInput->text().isEmpty() && !_ui.SpotifyClientSecretInput->text().isEmpty())) {
+        ShowMessageBox(
+            "Invalid API Key",
+            QString("Both the Client ID and Secret must be set."),
             QMessageBox::Warning
         );
         return false;
