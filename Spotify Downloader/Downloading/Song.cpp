@@ -85,9 +85,6 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		// Release Date
 		QStringList dates = album["release_date"].toString().split("-");
 
-		SpotifyAPI sp = SpotifyAPI();
-		QJsonObject newSong = sp.GetTrack(song["href"].toString().split("/").last());
-
 		if (dates.length() == 0) { dates.append("1970"); dates.append("1"); dates.append("1"); } // No Date			   => 1970-1-1
 		else if (dates.length() <= 1) { dates.append("1"); dates.append("1"); }					 // Format: Year	   => Year-1-1
 		else if (dates.length() <= 2) { dates.append("1"); }									 // Format: Year-Month => Year-Month-1
