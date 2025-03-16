@@ -373,14 +373,38 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
         // Update codec details
         QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
-        _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
         _ui.CodecDetailsLabel->setText(codecDetails);
+
+        // Update visibility and line indicator height if changed
+        _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
+
+        // Would update line indicator height here but it somehow updates itself
+        // I got no clue but if it works it works
 
         // Update file size text
         float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
         QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
         _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     });
+
+    connect(_ui.TrackNumberInput, &QComboBox::currentIndexChanged, [=](int index) {
+        Config::TrackNumberIndex = index;
+
+        // Update warning if set to playlist track number and line indicator height if changed
+        bool wasVisible = _ui.CodecDetailsLabel->isVisible();
+        bool visible = index == 0;
+
+        _ui.TrackNumberWarningLabel->setVisible(visible);
+
+        // Add height if enabled, remove height if disabled
+        if (wasVisible != visible) {
+            if (visible)
+                _settingsLineIndicatorsCache[0].MaxHeight += 50;
+            else
+                _settingsLineIndicatorsCache[0].MaxHeight -= 50;
+        }
+    });
+
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Button Clicks (Using isChecked to help with loading settings)
@@ -462,12 +486,24 @@ void SpotifyDownloader::SetupProcessingScreen() {
 void SpotifyDownloader::LoadSettingsUI() {
     // Clicking buttons to call their callbacks
     
+    // Calculate initial line indicator heights
+    SettingsLineIndicators();
+
     // Overwrite
     if(_ui.OverwriteSettingButton->isChecked != Config::Overwrite)
         _ui.OverwriteSettingButton->click();
     
     // Codec
     _ui.CodecInput->setCurrentIndex(Config::CodecIndex());
+
+    // Codec details
+    QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
+    _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
+    _ui.CodecDetailsLabel->setText(codecDetails);
+
+    // Remove height for line indicator if disabled
+    if(codecDetails.isEmpty())
+        _settingsLineIndicatorsCache[0].MaxHeight -= 50;
 
     // Normalize Volume
     if (_ui.NormalizeVolumeSettingButton->isChecked != Config::NormalizeAudio)
@@ -479,15 +515,21 @@ void SpotifyDownloader::LoadSettingsUI() {
     UpdateBitrateInput(Config::Codec);
     _ui.AudioBitrateInput->setValue(Config::GetBitrate());
 
-    // Codec details
-    QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
-    _ui.CodecDetailsLabel->setVisible(!codecDetails.isEmpty());
-    _ui.CodecDetailsLabel->setText(codecDetails);
-
+    // Estimated file size
     float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
     QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
     _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+
+    // Track Number
+    _ui.TrackNumberInput->setCurrentIndex(Config::TrackNumberIndex);
+
+    // Track Number warning, only visible for playlist setting
+    _ui.TrackNumberWarningLabel->setVisible(Config::TrackNumberIndex == 0);
     
+    // Remove height for line indicator if disabled
+    if(Config::TrackNumberIndex != 0)
+        _settingsLineIndicatorsCache[0].MaxHeight -= 50;
+
     // Save Location
     _ui.SaveLocationInput->setText(Config::SaveLocation);
     
@@ -756,7 +798,7 @@ bool SpotifyDownloader::eventFilter(QObject* watched, QEvent* event) {
             return false;
 
         // Get current screen line indicator data
-        LineIndicator lineIndicatorData = SETTINGS_LINE_INDICATORS()[_ui.SettingsScreens->currentIndex()];
+        LineIndicator lineIndicatorData = SettingsLineIndicators()[_ui.SettingsScreens->currentIndex()];
 
         // Offset mouse position to scroll
         int scrollOffset = lineIndicatorData.ScrollArea == nullptr ? 0 : lineIndicatorData.ScrollArea->verticalScrollBar()->value() % 50;

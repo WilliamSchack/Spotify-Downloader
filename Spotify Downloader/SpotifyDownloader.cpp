@@ -100,17 +100,25 @@ void SpotifyDownloader::ResetDownloadingVariables() {
 }
 
 QList<SpotifyDownloader::LineIndicator> SETTINGS_INDICATORS_CACHE;
-QList<SpotifyDownloader::LineIndicator> SpotifyDownloader::SETTINGS_LINE_INDICATORS() {
-    if (!SETTINGS_LINE_INDICATORS_CACHE.isEmpty())
-        return SETTINGS_LINE_INDICATORS_CACHE;
+QList<SpotifyDownloader::LineIndicator> SpotifyDownloader::SettingsLineIndicators() {
+    // Return cache if already created
+    if (!_settingsLineIndicatorsCache.isEmpty())
+        return _settingsLineIndicatorsCache;
 
+    // Calculate max heights
+    int outputMaxHeight = 5 + 50 * (_ui.OutputSettingsScrollAreaWidgetContents->layout()->children().count() - 1);
+    int downloadingMaxHeight = 5 + 50 * (_ui.DownloadingSettingsScrollAreaWidgetContents->layout()->children().count() - 1);
+    int interfaceMaxHeight = 5 + 50 * (_ui.InterfaceSettingsScrollAreaWidgetContents->layout()->children().count() - 1);
+
+    // Create indicator list
     QList<LineIndicator> lineIndicators {
-        { _ui.OutputSettings_LineIndicator, Config::OUTPUT_SETTINGS_LINE_MAX_HEIGHT, _ui.OutputSettingsScrollArea },
-        { _ui.DownloadingSettings_LineIndicator, Config::DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT, nullptr },
-        { _ui.InterfaceSettings_LineIndicator, Config::INTERFACE_SETTINGS_LINE_MAX_HEIGHT, nullptr }
+        { _ui.OutputSettings_LineIndicator, outputMaxHeight, _ui.OutputSettingsScrollArea },
+        { _ui.DownloadingSettings_LineIndicator, downloadingMaxHeight, _ui.DownloadingSettingsScrollArea },
+        { _ui.InterfaceSettings_LineIndicator, interfaceMaxHeight, _ui.InterfaceSettingsScrollArea }
     };
 
-    SETTINGS_LINE_INDICATORS_CACHE = lineIndicators;
+    // Return indicators
+    _settingsLineIndicatorsCache = lineIndicators;
     return lineIndicators;
 }
 

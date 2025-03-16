@@ -1,6 +1,9 @@
 #include "ImageUtils.h"
 
 void ImageUtils::DownloadImage(QString url, QString path, QSize resize) {
+    if (url.isEmpty())
+        return;
+
 	QNetworkRequest req(url);
 	QByteArray response = Network::Get(req);
 	QImage image;

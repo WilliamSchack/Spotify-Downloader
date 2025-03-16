@@ -7,6 +7,7 @@ void Config::SaveSettings() {
     settings.beginGroup("Output");
     settings.setValue("overwriteEnabled", Overwrite);
     settings.setValue("codecIndex", CodecIndex());
+    settings.setValue("trackNumberIndex", TrackNumberIndex);
     settings.setValue("normalizeEnabled", NormalizeAudio);
     settings.setValue("normalizeVolume", NormalizeAudioVolume);
 
@@ -55,6 +56,7 @@ void Config::LoadSettings() {
     settings.beginGroup("Output");
     Overwrite = settings.value("overwriteEnabled", false).toBool();
     SetCodecIndex(settings.value("codecIndex", 0).toInt());
+    TrackNumberIndex = settings.value("trackNumberIndex", 0).toInt();
     NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
     NormalizeAudioVolume = settings.value("normalizeVolume", -14.0).toFloat();
     
@@ -155,6 +157,7 @@ QJsonObject Config::SettingsLog() {
     QJsonObject settingsLog = QJsonObject{
         {"Overwrite Enabled", Overwrite},
         {"Codec Index", CodecIndex()},
+        {"Track Number Index", TrackNumberIndex},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
         {"File Name Tag", FileNameTag},

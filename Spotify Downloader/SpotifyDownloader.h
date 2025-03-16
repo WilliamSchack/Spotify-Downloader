@@ -56,7 +56,7 @@ class SpotifyDownloader : public QDialog
     public:
         struct LineIndicator {
             QWidget* Indicator;
-            int MaxHeight = 0;
+            int MaxHeight = 0; // Hidden widgets modify this height themselves
 
             QScrollArea* ScrollArea = nullptr;
         };
@@ -90,8 +90,8 @@ class SpotifyDownloader : public QDialog
         void RequestQuit();
         void DisplayFinalMessage();
     private:
-        QList<LineIndicator> SETTINGS_LINE_INDICATORS();
-        QList<LineIndicator> SETTINGS_LINE_INDICATORS_CACHE;
+        QList<LineIndicator> SettingsLineIndicators();
+        QList<LineIndicator> _settingsLineIndicatorsCache;
 
         Ui::SpotifyDownloader _ui;
         PlaylistDownloader* _playlistDownloader;

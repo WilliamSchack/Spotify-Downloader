@@ -11,6 +11,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	Time = song["duration_ms"].toDouble() / 1000;
 	SpotifyId = song["id"].toString();
 	IsExplicit = song["explicit"].toBool();
+	InPlaylist = song.contains("playlist_track_number");
+	PlaylistTrackNumber = song["playlist_track_number"].toInt();
 
 	// Handle episode, details are different (If song is episode and contains show object or album object that is a show
 	if (song["type"].toString() == "episode" && (song.contains("show") || (song.contains("album") && song["album"].toObject()["type"].toString() == "show"))) {
@@ -32,7 +34,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		}
 
 		// No track number so use 1
-		TrackNumber = 1;
+		AlbumTrackNumber = 1;
+		DiscNumber = 1;
 
 		// Artists
 		ArtistNamesList = QStringList{ ArtistName };
@@ -40,7 +43,12 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 		// Album
 		AlbumName = show["name"].toString();
-		AlbumImageURL = show["images"].toArray()[0].toObject()["url"].toString();
+
+		// Check if any images where returned, rare case that they arent
+		QJsonArray images = show["images"].toArray();
+		if (images.count() != 0)
+			AlbumImageURL = images[0].toObject()["url"].toString();
+
 		AlbumArtistNamesList = ArtistNamesList;
 		AlbumArtistNames = ArtistNames;
 
@@ -59,7 +67,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		if (album.isEmpty()) album = song["album"].toObject();
 
 		// Track Number
-		TrackNumber = song["track_number"].toInt();
+		AlbumTrackNumber = song["track_number"].toInt();
+		DiscNumber = song["disc_number"].toInt();
 
 		// Artists
 		ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
@@ -73,7 +82,12 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 		// Album
 		AlbumName = album["name"].toString();
-		AlbumImageURL = album["images"].toArray()[0].toObject()["url"].toString();
+
+		// Check if any images where returned, rare case that they arent
+		QJsonArray images = album["images"].toArray();
+		if(images.count() != 0)
+			AlbumImageURL = images[0].toObject()["url"].toString();
+		
 		AlbumArtistsList = album["artists"].toArray();
 
 		AlbumArtistNamesList = QStringList();
@@ -101,6 +115,21 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 	// Generate Downloading Path
 	GenerateDownloadingPath();
+}
+
+int Song::TrackNumber() {
+	switch (Config::TrackNumberIndex) {
+		case 0: // Playlist Track Number
+			// Return album track number if song not in playlist
+			return InPlaylist ? PlaylistTrackNumber : AlbumTrackNumber;
+		case 1: // Album Track Number
+			return AlbumTrackNumber;
+		case 2: // Disk Track Number
+			return DiscNumber;
+	}
+
+	// Shouldnt reach here but just incase
+	return AlbumTrackNumber;
 }
 
 std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
@@ -136,31 +165,40 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 					tagReplacement.append(", ");
 			}
 			break;
-		case 6: // Track Number
-			tagReplacement = QString::number(song.TrackNumber);
+		case 6: // Codec
+			tagReplacement = Codec::Data[song.Codec].String;
 			break;
-		case 7: // Song Time Seconds
+		case 7: // Track Number
+			tagReplacement = QString::number(song.TrackNumber());
+			break;
+		case 8: // Playlist Track Number
+			tagReplacement = QString::number(song.PlaylistTrackNumber);
+			break;
+		case 9: // Album Track Number
+			tagReplacement = QString::number(song.AlbumTrackNumber);
+			break;
+		case 10: // Disk Number
+			tagReplacement = QString::number(song.DiscNumber);
+			break;
+		case 11: // Song Time Seconds
 			tagReplacement = QString::number((int)song.Time);
 			break;
-		case 8: // Song Time Minutes
+		case 12: // Song Time Minutes
 			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
-		case 9: // Song Time Hours
+		case 13: // Song Time Hours
 			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("hh:mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
-		case 10: // Year
+		case 14: // Year
 			tagReplacement = QString::number(song.ReleaseDate.year());
 			break;
-		case 11: // Month
+		case 15: // Month
 			tagReplacement = QString::number(song.ReleaseDate.month());
 			break;
-		case 12: // Day
+		case 16: // Day
 			tagReplacement = QString::number(song.ReleaseDate.day());
-			break;
-		case 13: // Codec
-			tagReplacement = Codec::Data[song.Codec].String;
 			break;
 	}
 
@@ -201,6 +239,12 @@ void Song::GenerateDownloadingPath() {
 }
 
 void Song::DownloadCoverImage() {
+	// Return if album image url was not found
+	if (AlbumImageURL.isEmpty()) {
+		qWarning() << QString("Could not download cover image for (%1).").arg(SpotifyId);
+		return;
+	}
+
 	QString coverFilename = QString("%1(%2)_Cover").arg(AlbumName).arg(AlbumArtistNames);
 	coverFilename = StringUtils::ValidateFileName(coverFilename);
 	QString imageTempPath = QString("%1/Cover Art").arg(_tempPath);
@@ -504,7 +548,7 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 
 	// Check if song downloaded incase error wasn't previously picked up
 	if (!QFile::exists(downloadingPathM4A)) {
-		return "Download failed with an unknown error";
+		return "Download failed with an unknown error, try downloading again";
 	}
 
 	// No need to convert
@@ -659,14 +703,19 @@ void Song::AssignMetadata() {
 		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(_downloadingPath.constData()));
 		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
 
+		// Only load cover art if image found
 		QByteArray imageBytes;
-		QBuffer buffer(&imageBytes);
-		buffer.open(QIODevice::WriteOnly);
-		CoverImage.save(&buffer, "PNG");
-		buffer.close();
+		if (!CoverImage.isNull()) {
+			QBuffer buffer(&imageBytes);
+			buffer.open(QIODevice::WriteOnly);
+			CoverImage.save(&buffer, "PNG");
+			buffer.close();
+		}
 
+		// Check if the cover art is handled differently
 		bool coverArtOverride = Codec::Data[Codec].CoverArtOverride != NULL;
 
+		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {
 			case Codec::MetadataType::ID3V2:
 			{
@@ -685,7 +734,7 @@ void Song::AssignMetadata() {
 				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
-				numFrame->setText(QString::number(TrackNumber).toUtf8().data());
+				numFrame->setText(QString::number(TrackNumber()).toUtf8().data());
 				pubFrame->setText("William S - Spotify Downloader");
 				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				comFrame->setText("Thanks for using my program! :)\n- William S");
@@ -694,7 +743,7 @@ void Song::AssignMetadata() {
 				tag->addFrame(copFrame);
 				tag->addFrame(comFrame);
 				
-				if (coverArtOverride)
+				if (coverArtOverride || CoverImage.isNull())
 					break;
 
 				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
@@ -714,9 +763,9 @@ void Song::AssignMetadata() {
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setYear(ReleaseDate.year());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
-				tag->setTrack(TrackNumber);
+				tag->setTrack(TrackNumber());
 
-				if (coverArtOverride)
+				if (coverArtOverride || CoverImage.isNull())
 					break;
 
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
@@ -736,7 +785,7 @@ void Song::AssignMetadata() {
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setYear(ReleaseDate.year());
-				tag->setTrack(TrackNumber);
+				tag->setTrack(TrackNumber());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 
 				// RIFF only supports text metadata, no cover art
@@ -751,10 +800,10 @@ void Song::AssignMetadata() {
 				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
 				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
 				tag->setYear(ReleaseDate.year());
-				tag->setTrack(TrackNumber);
+				tag->setTrack(TrackNumber());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 
-				if (coverArtOverride)
+				if (coverArtOverride || CoverImage.isNull())
 					break;
 
 				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();

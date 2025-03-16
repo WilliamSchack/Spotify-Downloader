@@ -35,10 +35,6 @@ class Config {
         static const int PROCESSING_SCREEN_INDEX = 2;
         static const int ERROR_SCREEN_INDEX = 3;
 
-        static const int OUTPUT_SETTINGS_LINE_MAX_HEIGHT = 305;
-        static const int DOWNLOADING_SETTINGS_LINE_MAX_HEIGHT = 255;
-        static const int INTERFACE_SETTINGS_LINE_MAX_HEIGHT = 105;
-
         static inline const QString DOWNLOAD_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/Download_Icon_W_Filled.png";
         static inline const QString DOWNLOAD_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Download_Icon_Colour_Filled.png";
         static inline const QString DOWNLOAD_ICON_WHITE = ":/SpotifyDownloader/Icons/Download_Icon_W.png";
@@ -75,14 +71,17 @@ class Config {
             "song artists",
             "album artist",
             "album artists",
+            "codec",
             "track number",
+            "playlist track number",
+            "album track number",
+            "disk number",
             "song time seconds",
             "song time minutes",
             "song time hours",
             "year",
             "month",
-            "day",
-            "codec"
+            "day"
         };
 
         // Output
@@ -90,6 +89,8 @@ class Config {
     
         static inline Codec::Extension Codec;
         static inline const int CodecIndex() { return _codecIndex; };
+
+        static inline int TrackNumberIndex;
 
         static inline bool NormalizeAudio;
         static inline float NormalizeAudioVolume;

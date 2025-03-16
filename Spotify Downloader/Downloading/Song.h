@@ -49,9 +49,14 @@ class Song {
 		QString SpotifyId = "";
 		QString YoutubeId = "";
 		float Time = 0;
-		int TrackNumber = 0;
 		bool IsExplicit;
 		QDate ReleaseDate;
+
+		int PlaylistTrackNumber = 0;
+		int AlbumTrackNumber = 0;
+		int DiscNumber = 0;
+
+		bool InPlaylist;
 
 		QImage CoverImage;
 
@@ -105,6 +110,8 @@ class Song {
 		QString _downloadingFolder;
 		QString _downloadingPath;
 	private:
+		int TrackNumber();
+
 		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 };
 

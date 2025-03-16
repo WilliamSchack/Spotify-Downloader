@@ -98,36 +98,54 @@ QJsonObject SpotifyAPI::GetEpisode(QString id) {
 }
 
 QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
-	if (json["next"].toString() == "") return json["items"].toArray();
-	
-	QNetworkRequest req(QUrl(""));
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	bool finished = false;
 	QJsonArray tracks = json["items"].toArray();
-	while (!finished) {
-		if (json["next"].toString() == "") {
-			finished = true;
-			break;
+	
+	// Continue to get tracks if more than 100 are requested
+	if (json["next"].toString() != "") {
+		QNetworkRequest req(QUrl(""));
+		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+		req.setRawHeader("Authorization", "Bearer " + _auth);
+
+		// Get tracks in chunks of 100
+		bool finished = false;
+		while (!finished) {
+			if (json["next"].toString() == "") {
+				finished = true;
+				break;
+			}
+
+			req.setUrl(json["next"].toString());
+
+			QByteArray response = Network::Get(req);
+			if (response == nullptr) {
+				qWarning() << "Error Getting Tracks...";
+				return QJsonArray();
+			}
+
+			json = QJsonDocument::fromJson(response).object();
+			QJsonArray items = json["items"].toArray();
+
+			foreach(QJsonValue item, items) {
+				tracks.append(item);
+			}
+
+			if (json["next"].toString() == "") finished = true;
 		}
+	}
 
-		req.setUrl(json["next"].toString());
+	// Add playlist track number, the one included is the position in the album
+	// Tracks will be positioned at its count in the spotify playlist, use index for track number
+	for (int i = 0; i < tracks.count(); i++) {
+		// Get track
+		QJsonObject track = tracks[i].toObject();
+		QJsonObject trackData = track["track"].toObject();
 
-		QByteArray response = Network::Get(req);
-		if (response == nullptr) {
-			qWarning() << "Error Getting Tracks...";
-			return QJsonArray();
-		}
+		// Add playlist track number
+		trackData["playlist_track_number"] = i + 1;
 
-		json = QJsonDocument::fromJson(response).object();
-		QJsonArray items = json["items"].toArray();
-
-		foreach(QJsonValue item, items) {
-			tracks.append(item);
-		}
-
-		if (json["next"].toString() == "") finished = true;
+		// Add data to original track
+		track["track"] = trackData;
+		tracks[i] = track;
 	}
 
 	return tracks;
