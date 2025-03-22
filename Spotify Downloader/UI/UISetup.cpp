@@ -208,10 +208,12 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             settings.beginGroup("Downloading");
 
-            // Save youtube cookies
+            // Save youtube cookies and po token
             QString youtubeCookies = _ui.YoutubeCookiesInput->text();
+            QString poToken = _ui.POTokenInput->text();
 
             settings.setValue("youtubeCookies", youtubeCookies);
+            settings.setValue("poToken", poToken);
 
             Config::YouTubeCookies = youtubeCookies;
 
@@ -252,6 +254,7 @@ void SpotifyDownloader::SetupSetupScreen() {
             ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
             _ui.YoutubeCookiesInput->setEnabled(false);
+            _ui.POTokenInput->setEnabled(false);
 
             _ui.PlayButton->hide();
             _ui.PauseButton->show();
@@ -461,14 +464,34 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
     connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
 
-    // Cookies/Spotify API Buttons
+    // Paste Buttons
     connect(_ui.YoutubeCookiesPasteButton, &QPushButton::clicked, [=] {
         QClipboard* clipboard = qApp->clipboard();
         _ui.YoutubeCookiesInput->setText(clipboard->text());
     });
 
+    connect(_ui.POTokenPasteButton, &QPushButton::clicked, [=] {
+        QClipboard* clipboard = qApp->clipboard();
+        _ui.POTokenInput->setText(clipboard->text());
+    });
+
+    connect(_ui.SpotifyAPIClientPasteButton, &QPushButton::clicked, [=] {
+        QClipboard* clipboard = qApp->clipboard();
+        _ui.SpotifyClientIDInput->setText(clipboard->text());
+    });
+
+    connect(_ui.SpotifyAPISecretPasteButton, &QPushButton::clicked, [=] {
+        QClipboard* clipboard = qApp->clipboard();
+        _ui.SpotifyClientSecretInput->setText(clipboard->text());
+    });
+
+    // Help Buttons
     connect(_ui.YoutubeCookiesHelpButton, &QPushButton::clicked, [=]{
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Music Cookies are not required. It is used to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Cookies are not required. It is used with the PO Token to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
+    });
+
+    connect(_ui.POTokenHelpButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "A PO Token is not required. It is used with the Youtube Cookies to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
     });
 
     connect(_ui.SpotifyAPIClientHelpButton, &QPushButton::clicked, [=] {
@@ -592,6 +615,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     
     // YouTube Cookies
     _ui.YoutubeCookiesInput->setText(Config::YouTubeCookies);
+
+    // PO Token
+    _ui.POTokenInput->setText(Config::POToken);
 
     // Spotify Client ID
     _ui.SpotifyClientIDInput->setText(SpotifyAPI::ClientID);
@@ -721,11 +747,21 @@ bool SpotifyDownloader::ValidateSettings() {
         return false;
     }
 
+    // Youtube Cookies / PO Token, return false if one is set without the other
+    if ((!_ui.YoutubeCookiesInput->text().isEmpty() && _ui.POTokenInput->text().isEmpty()) || (_ui.YoutubeCookiesInput->text().isEmpty() && !_ui.POTokenInput->text().isEmpty())) {
+        ShowMessageBox(
+            "Invalid Youtube Cookies",
+            QString("Both the Youtube Cookies and PO Token must be set"),
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
     // Spotify API Keys, return false if one is set without the other
     if ((!_ui.SpotifyClientIDInput->text().isEmpty() && _ui.SpotifyClientSecretInput->text().isEmpty()) || (_ui.SpotifyClientIDInput->text().isEmpty() && !_ui.SpotifyClientSecretInput->text().isEmpty())) {
         ShowMessageBox(
             "Invalid API Key",
-            QString("Both the Client ID and Secret must be set."),
+            QString("Both the Spotify API Client ID and Secret must be set"),
             QMessageBox::Warning
         );
         return false;

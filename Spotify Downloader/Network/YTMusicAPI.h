@@ -20,12 +20,11 @@
 class YTMusicAPI {
 	public:
 		bool CheckConnection();
+		
 		QJsonArray Search(QString query, QString filter, int limit);
 
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
-
-		QString VideoError(QString id);
 	private:
 		QNetworkRequest GetRequest(QString endpoint);
 		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one

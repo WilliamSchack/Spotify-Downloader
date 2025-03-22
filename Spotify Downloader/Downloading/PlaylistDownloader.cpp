@@ -196,6 +196,8 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		// Allow thread to access ui elements
 		connect(worker->Downloader, &SongDownloader::ChangeScreen, Main, &SpotifyDownloader::ChangeScreen);
 		connect(worker->Downloader, &SongDownloader::ShowMessage, Main, &SpotifyDownloader::ShowMessage);
+		connect(worker->Downloader, &SongDownloader::ShowMessageBox, Main, &SpotifyDownloader::ShowMessageBox);
+		connect(worker->Downloader, &SongDownloader::ShowMessageBoxWithButtons, Main, &SpotifyDownloader::ShowMessageBoxWithButtons);
 		connect(worker->Downloader, &SongDownloader::SetProgressLabel, Main, &SpotifyDownloader::SetProgressLabel);
 		connect(worker->Downloader, &SongDownloader::SetProgressBar, Main, &SpotifyDownloader::SetProgressBar);
 		connect(worker->Downloader, &SongDownloader::SetSongCount, Main, &SpotifyDownloader::SetSongCount);

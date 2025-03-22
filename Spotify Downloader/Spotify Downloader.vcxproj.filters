@@ -127,9 +127,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Downloading\Song.h">
-      <Filter>Header Files\Downloading</Filter>
-    </ClInclude>
     <ClInclude Include="Network\Network.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
@@ -165,6 +162,9 @@
     </ClInclude>
     <ClInclude Include="Network\VersionManager.h">
       <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Downloading\Song.h">
+      <Filter>Header Files\Downloading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

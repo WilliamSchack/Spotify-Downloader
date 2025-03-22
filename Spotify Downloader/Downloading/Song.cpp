@@ -347,36 +347,6 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 			}
 		}
 
-		// Check if final result has any errors
-		QString errorReason = yt->VideoError(finalResult["result"].toObject()["videoId"].toString());
-		if (!errorReason.isEmpty()) {
-			// If there is an error the song cannot be downloaded
-			// Check all other songs within a 0.5 score range as a fallback, if they have errors then the song cannot be downloaded
-			float newHighestScore = 0;
-			QJsonObject newFinalResult;
-			for (int i = 0; i < finalResults.count(); i++) {
-				QJsonObject result = finalResults[i].toObject();
-
-				// If score is below highest - 0.5 or lower than new highest, do not consider
-				float score = result["score"].toDouble();
-				if (score < highestScore - 0.5 || score <= newHighestScore)
-					continue;
-
-				// Dont consider if song has an error
-				QString currentErrorReason = yt->VideoError(result["result"].toObject()["videoId"].toString());
-				if (!currentErrorReason.isEmpty())
-					continue;
-
-				// If no errors, use this as the new final result
-				newHighestScore = score;
-				finalResult = result;
-			}
-
-			// If song was not found, return false
-			if (newHighestScore == 0)
-				return errorReason;
-		}
-
 	} else {
 		return "Song Cannot Be Found On YouTube";
 	}
@@ -492,7 +462,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-QString Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate) {
+QString Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning) {
 	// Use downloading path without codec, will be changed after
 	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
 
@@ -530,15 +500,14 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 		out << Config::YouTubeCookies;
 	}
 
-
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" %4 -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
+		.arg(usingCookies ? QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(usingCookies ? QString("--cookies \"%1\"").arg(cookiesFilePath) : "") // Only inclue cookies if set
 		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
 
@@ -547,13 +516,31 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 	if (!errorOutput.isEmpty()) {
 		// I would preferably check some of these when searching to skip the song but no way of checking there
 
+		// Check if PO Token is invalid, dont cancel download just warn user
+		if (errorOutput.toLower().contains("invalid po_token configuration")) {
+			qWarning() << SpotifyId << "YT-DLP Returned warning:" << errorOutput;
+			qWarning() << "PO Token is invalid";
+
+			// Call PO Token warning callback if assigned
+			if (onPOTokenWarning != nullptr)
+				onPOTokenWarning();
+		}
+
+		// If video is age restricted, cannot download, requires cookies
+		if (errorOutput.toLower().contains("sign in to confirm your age")) {
+			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
+			return "Video is Age Restricted. Please assign cookies in the downloading settings";
+		}
+
 		// If video is drm protected, cannot be downloaded
 		if (errorOutput.toLower().contains("drm protected")) {
+			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video is DRM protected";
 		}
 
 		// If the video does not have a m4a file (majority should)
 		if (errorOutput.toLower().contains("requested format is not available")) {
+			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video does not have file to download";
 		}
 	}
@@ -566,6 +553,8 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 
 	// Check if song downloaded incase error wasn't previously picked up
 	if (!QFile::exists(downloadingPathM4A)) {
+		qWarning() << SpotifyId << "Download Failed. YT-DLP Output:" << errorOutput;
+
 		return "Download failed with an unknown error, try downloading again";
 	}
 

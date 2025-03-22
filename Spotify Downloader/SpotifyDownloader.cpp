@@ -1,6 +1,5 @@
 #include "SpotifyDownloader.h"
 
-#include <QDesktopServices>
 #include <QMovie>
 
 #include <qt_windows.h>
@@ -53,6 +52,8 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetupUI, this, &SpotifyDownloader::SetupUI);
     connect(_playlistDownloader, &PlaylistDownloader::ChangeScreen, this, &SpotifyDownloader::ChangeScreen);
     connect(_playlistDownloader, &PlaylistDownloader::ShowMessage, this, &SpotifyDownloader::ShowMessage);
+    connect(_playlistDownloader, &PlaylistDownloader::ShowMessageBox, this, &SpotifyDownloader::ShowMessageBox);
+    connect(_playlistDownloader, &PlaylistDownloader::ShowMessageBoxWithButtons, this, &SpotifyDownloader::ShowMessageBoxWithButtons);
     connect(_playlistDownloader, &PlaylistDownloader::SetDownloadStatus, this, &SpotifyDownloader::SetDownloadStatus);
     connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
     connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
@@ -91,6 +92,7 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     _ui.PlaylistURLInput->setText("");
     _ui.DownloaderThreadsInput->setEnabled(true);
     _ui.YoutubeCookiesInput->setEnabled(true);
+    _ui.POTokenInput->setEnabled(true);
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
 
@@ -143,19 +145,6 @@ void SpotifyDownloader::CheckForUpdate() {
         _ui.UpdateImageLabel->setPixmap(Config::UpdateUpToDateIcon());
 
     qInfo() << "Latest Version:" << VersionManager::LatestVersion() << "| Update Available:" << updateAvailable;
-}
-
-void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {
-
-    QMessageBox msg = QMessageBox();
-    msg.setWindowTitle(windowTitle);
-    msg.setText(QString("%1\n\nThis will open in your browser").arg(windowMessage));
-    msg.setIcon(QMessageBox::Question);
-    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-    int reply = msg.exec();
-
-    if(reply == QMessageBox::Yes)
-        QDesktopServices::openUrl(address);
 }
 
 void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {

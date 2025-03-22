@@ -113,6 +113,7 @@ class Config {
         static inline float DownloadSpeed;
 
         static inline QString YouTubeCookies;
+        static inline QString POToken;
     
         // Interface
         static inline int DownloaderThreadUIIndex;

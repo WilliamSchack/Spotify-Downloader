@@ -3,6 +3,8 @@
 #include "Utilities/Animation.h"
 #include "Utilities/MathUtils.h"
 
+#include <QDesktopServices>
+
 void SpotifyDownloader::SetupUI(int threadIndex) {
     _ui.GettingPlaylistDataLabel->hide();
     
@@ -211,4 +213,17 @@ int SpotifyDownloader::ShowMessageBoxWithButtons(QString title, QString message,
     msg.setIcon(icon);
     msg.setStandardButtons(standardButtons);
     return msg.exec();
+}
+
+void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {
+
+    int reply = ShowMessageBoxWithButtons(
+        windowTitle,
+        QString("%1\n\nThis will open in your browser").arg(windowMessage),
+        QMessageBox::Question,
+        QMessageBox::Yes | QMessageBox::No
+    );
+
+    if (reply == QMessageBox::Yes)
+        QDesktopServices::openUrl(address);
 }

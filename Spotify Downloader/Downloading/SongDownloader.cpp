@@ -143,10 +143,15 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
-	QString downloadResult = song.Download(_currentProcess, Config::Overwrite, [&](float percentComplete) {
-		float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
-		emit SetProgressBar(_threadIndex, progressBarPercent);
-	});
+	QString downloadResult = song.Download(_currentProcess, Config::Overwrite,
+		[&](float percentComplete) {
+			float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
+			emit SetProgressBar(_threadIndex, progressBarPercent);
+		},
+		[this]() {
+			emit ShowMessageBoxWithButtons("Invalid PO Token", "The assigned PO Token is invalid/expired. Download will continue but cookies will not be used. Please change your PO Token.", QMessageBox::Warning, QMessageBox::Ok);
+		}
+	);
 
 	if (!downloadResult.isEmpty()) {
 		AddSongToErrors(song, downloadResult);

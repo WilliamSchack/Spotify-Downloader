@@ -76,6 +76,8 @@ class SpotifyDownloader : public QDialog
         void SetupUI(int count);
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
+        void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
+        int ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
         void SetDownloadStatus(QString text);
         void SetProgressLabel(int threadIndex, QString text);
         void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
@@ -131,9 +133,6 @@ class SpotifyDownloader : public QDialog
         void CheckForUpdate();
 
         int CurrentScreen();
-
-        void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
-        int ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
 
         void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
 
@@ -192,6 +191,8 @@ class PlaylistDownloader : public QObject {
 
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
+        void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
+        void ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
         void SetDownloadStatus(QString text);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
@@ -247,6 +248,8 @@ class SongDownloader : public QObject {
     signals:
         void ChangeScreen(int screenIndex);
         void ShowMessage(QString title, QString message, int msecs = 5000);
+        void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
+        void ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
         void SetProgressLabel(int threadIndex, QString text);
         void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
