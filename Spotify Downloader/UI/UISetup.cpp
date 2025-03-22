@@ -206,17 +206,43 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.setValue("saveLocation", Config::SaveLocation);
             settings.endGroup();
 
+            settings.beginGroup("Downloading");
+
+            // Save youtube cookies
+            QString youtubeCookies = _ui.YoutubeCookiesInput->text();
+
+            settings.setValue("youtubeCookies", youtubeCookies);
+
+            Config::YouTubeCookies = youtubeCookies;
+
             // Save spotify api keys
             QByteArray clientID = _ui.SpotifyClientIDInput->text().toUtf8();
             QByteArray clientSecret = _ui.SpotifyClientSecretInput->text().toUtf8();
 
-            settings.beginGroup("Downloading");
             settings.setValue("clientID", clientID);
             settings.setValue("clientSecret", clientSecret);
+            
             settings.endGroup();
 
             SpotifyAPI::ClientID = clientID;
             SpotifyAPI::ClientSecret = clientSecret;
+
+            // Create cookies file if needed
+            if (!youtubeCookies.isEmpty()) {
+                // Access/Create file
+                QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
+                QString cookiesFilePath = QString("%1/cookies.txt").arg(tempFolder);
+                
+                QFile cookiesFile(cookiesFilePath);
+                cookiesFile.open(QIODevice::WriteOnly);
+
+                // Clear file of any contents
+                cookiesFile.resize(0);
+
+                // Write cookies
+                QTextStream out(&cookiesFile);
+                out << Config::YouTubeCookies;
+            }
 
             // Initialize variables
             DownloadStarted = true;
@@ -225,6 +251,7 @@ void SpotifyDownloader::SetupSetupScreen() {
             // Setup and Reset GUI
             ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
+            _ui.YoutubeCookiesInput->setEnabled(false);
 
             _ui.PlayButton->hide();
             _ui.PauseButton->show();
@@ -342,10 +369,10 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
 
     // Set combo box dropdown items font size to 12, cannot do in stylesheet
-    QList<QComboBox*> dropdownWidgets({
+    QList<QComboBox*> dropdownWidgets {
         _ui.CodecInput,
         _ui.DownloaderThreadUIInput
-    });
+    };
 
     QFont dropdownItemFont = dropdownWidgets[0]->font();
     dropdownItemFont.setPointSizeF(12);
@@ -434,10 +461,22 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
     connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
 
-    // Regular Buttons
-    connect(_ui.SpotifyAPIHelpButton, &QPushButton::clicked, [=] {
-        // Simulate clicking the help button
-        _ui.HelpButton->click();
+    // Cookies/Spotify API Buttons
+    connect(_ui.YoutubeCookiesPasteButton, &QPushButton::clicked, [=] {
+        QClipboard* clipboard = qApp->clipboard();
+        _ui.YoutubeCookiesInput->setText(clipboard->text());
+    });
+
+    connect(_ui.YoutubeCookiesHelpButton, &QPushButton::clicked, [=]{
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Music Cookies are not required. It is used to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
+    });
+
+    connect(_ui.SpotifyAPIClientHelpButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "Spotify API Keys are not required. The Client ID is used with the Secret ID to use your own Spotify API Application. Would you like to access the help documentation?");
+     });
+
+    connect(_ui.SpotifyAPISecretHelpButton, &QPushButton::clicked, [=] {
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "Spotify API Keys are not required. The Secret ID is used with the Client ID to use your own Spotify API Application. Would you like to access the help documentation?");
     });
 }
 
@@ -551,6 +590,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Download Speed Limit
     _ui.DownloadSpeedSettingInput->setValue(Config::DownloadSpeed);
     
+    // YouTube Cookies
+    _ui.YoutubeCookiesInput->setText(Config::YouTubeCookies);
+
     // Spotify Client ID
     _ui.SpotifyClientIDInput->setText(SpotifyAPI::ClientID);
 

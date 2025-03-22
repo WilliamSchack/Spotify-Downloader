@@ -111,6 +111,8 @@ class Config {
     
         static inline int ThreadCount;
         static inline float DownloadSpeed;
+
+        static inline QString YouTubeCookies;
     
         // Interface
         static inline int DownloaderThreadUIIndex;

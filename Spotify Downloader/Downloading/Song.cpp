@@ -514,13 +514,31 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 		}
 	});
 
+	// Get youtube cookies file path
+	QString cookiesFilePath = QString("%1/cookies.txt").arg(_tempPath);
+	bool usingCookies = !Config::YouTubeCookies.isEmpty();
+
+	// Check if cookies file has been deleted during download and if so, re-create it
+	QFileInfo cookiesFileInfo(cookiesFilePath);
+	if (!cookiesFileInfo.exists() && usingCookies) {
+		// Create file
+		QFile cookiesFile(cookiesFilePath);
+		cookiesFile.open(QIODevice::WriteOnly);
+
+		// Write cookies to file
+		QTextStream out(&cookiesFile);
+		out << Config::YouTubeCookies;
+	}
+
+
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" -x --audio-quality 0 "%4")")// --audio - format % 4 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args youtube:player_client=ios,web -f m4a/bestaudio/best -o "%2" --ffmpeg-location "%3" %4 -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+		.arg(usingCookies ? QString("--cookies \"%1\"").arg(cookiesFilePath) : "") // Only inclue cookies if set
 		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
 

@@ -387,6 +387,9 @@ PlaylistDownloader::~PlaylistDownloader() {
 	ClearDirFiles(coverArtFolder);
 	ClearDirFiles(downloadingFolder);
 
+	QString cookieFilePath = QString("%1/cookies.txt").arg(tempFolder);
+	QFile(cookieFilePath).remove();
+
 	// Change Screen
 	if (!Main->ExitingApplication) {
 		if (_downloadErrors.count() == 0) {

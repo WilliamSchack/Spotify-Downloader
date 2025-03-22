@@ -356,6 +356,8 @@ Shows all of the songs that failed to download due to various reasons that will 
 
 ---
  
+***Spotify API Keys are not required***
+ 
 Go to the [spotify developer dashboard](https://developer.spotify.com/dashboard) and sign in with your spotify account *(Can be any it doesnt matter)*
 
 Click the "Create app" button and input the following fields:
