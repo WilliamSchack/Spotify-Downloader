@@ -560,7 +560,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			// If video is not age restricted, cookies assigned, and user does not have premium
 			// Set premium to false and restart download
 			if (Config::HasPremium && cookiesAssigned && !ageRestricted) {
-				qInfo() << "User does not have premium, restarting download without";
+				qInfo() << "User does not have premium, restarting download without cookies";
 				
 				// Set premium to false
 				Config::HasPremium = false;

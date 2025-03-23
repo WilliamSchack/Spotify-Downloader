@@ -389,7 +389,7 @@ border: none;</string>
       <string notr="true">background-color: rgb(30, 30, 30);</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="OutputSettings">
       <widget class="QWidget" name="OutputSettings_LineIndicator" native="true">
@@ -517,7 +517,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-214</y>
           <width>715</width>
           <height>525</height>
          </rect>
@@ -822,7 +822,7 @@ color: rgb(0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -940,7 +940,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;High Quality: &lt;/span&gt;256&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Good Quality: &lt;/span&gt;192&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Low Quality: &lt;/span&gt;128&lt;/p&gt;&lt;p&gt;Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1667,7 +1667,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Effects CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;6 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1743,7 +1743,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::NoFocus</enum>
+              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>0 Is Uncapped</string>
@@ -1822,45 +1822,85 @@ background-color: rgba(0, 0, 0, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="YoutubeCookiesInput">
+            <widget class="QLabel" name="YoutubeCookiesAssignedLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
-               <width>0</width>
+               <width>324</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>371</width>
+               <width>324</width>
                <height>41</height>
               </size>
              </property>
              <property name="font">
               <font>
-               <pointsize>14</pointsize>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
               </font>
              </property>
-             <property name="mouseTracking">
-              <bool>false</bool>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
              </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;YouTube Cookies used for downloading&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <property name="text">
+              <string>&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;No Cookies Assigned&lt;/span&gt;</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::RichText</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="YoutubeCookiesClearButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
-selection-background-color: rgb(0, 120, 215);</string>
+color: rgb(0, 0, 0);</string>
              </property>
              <property name="text">
               <string/>
              </property>
-             <property name="maxLength">
-              <number>999999999</number>
+             <property name="icon">
+              <iconset resource="SpotifyDownloader.qrc">
+               <normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</iconset>
              </property>
-             <property name="frame">
-              <bool>true</bool>
-             </property>
-             <property name="placeholderText">
-              <string>Enter YouTube Cookies</string>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -1987,7 +2027,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>371</width>
+               <width>324</width>
                <height>41</height>
               </size>
              </property>
@@ -2017,6 +2057,47 @@ selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="placeholderText">
               <string>Enter PO Token</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="POTokenClearButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="SpotifyDownloader.qrc">
+               <normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -2143,7 +2224,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>371</width>
+               <width>324</width>
                <height>41</height>
               </size>
              </property>
@@ -2170,6 +2251,47 @@ selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="placeholderText">
               <string>Enter Spotify API Client ID</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="SpotifyAPIClientClearButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="SpotifyDownloader.qrc">
+               <normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -2296,7 +2418,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>371</width>
+               <width>324</width>
                <height>41</height>
               </size>
              </property>
@@ -2323,6 +2445,47 @@ selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="placeholderText">
               <string>Enter Spotify API Client Secret</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="SpotifyAPISecretClearButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="SpotifyDownloader.qrc">
+               <normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</normaloff>:/SpotifyDownloader/Icons/Cancel_Icon_B.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -3665,12 +3828,32 @@ border: none;</string>
   <tabstop>OverwriteSettingButton</tabstop>
   <tabstop>CodecInput</tabstop>
   <tabstop>NormalizeVolumeSettingButton</tabstop>
+  <tabstop>NormalizeVolumeSettingInput</tabstop>
+  <tabstop>AudioBitrateInput</tabstop>
+  <tabstop>TrackNumberInput</tabstop>
   <tabstop>FileNameTagInput</tabstop>
   <tabstop>FileNameInput</tabstop>
   <tabstop>SubFoldersTagInput</tabstop>
   <tabstop>SubFoldersInput</tabstop>
   <tabstop>NotificationSettingButton</tabstop>
+  <tabstop>DownloaderThreadsInput</tabstop>
+  <tabstop>DownloadSpeedSettingInput</tabstop>
   <tabstop>DownloaderThreadUIInput</tabstop>
+  <tabstop>YoutubeCookiesClearButton</tabstop>
+  <tabstop>YoutubeCookiesPasteButton</tabstop>
+  <tabstop>YoutubeCookiesHelpButton</tabstop>
+  <tabstop>POTokenInput</tabstop>
+  <tabstop>POTokenClearButton</tabstop>
+  <tabstop>POTokenPasteButton</tabstop>
+  <tabstop>POTokenHelpButton</tabstop>
+  <tabstop>SpotifyClientIDInput</tabstop>
+  <tabstop>SpotifyAPIClientClearButton</tabstop>
+  <tabstop>SpotifyAPIClientPasteButton</tabstop>
+  <tabstop>SpotifyAPIClientHelpButton</tabstop>
+  <tabstop>SpotifyClientSecretInput</tabstop>
+  <tabstop>SpotifyAPISecretClearButton</tabstop>
+  <tabstop>SpotifyAPISecretPasteButton</tabstop>
+  <tabstop>SpotifyAPISecretHelpButton</tabstop>
   <tabstop>SidebarIconsColourButton</tabstop>
   <tabstop>CheckForUpdatesButton</tabstop>
   <tabstop>PauseButton</tabstop>
@@ -3684,6 +3867,8 @@ border: none;</string>
   <tabstop>UpdateButton</tabstop>
   <tabstop>SubmitBugButton</tabstop>
   <tabstop>HelpButton</tabstop>
+  <tabstop>DownloadingSettingsScrollArea</tabstop>
+  <tabstop>InterfaceSettingsScrollArea</tabstop>
  </tabstops>
  <resources>
   <include location="SpotifyDownloader.qrc"/>

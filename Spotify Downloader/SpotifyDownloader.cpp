@@ -91,9 +91,16 @@ void SpotifyDownloader::ResetDownloadingVariables() {
     // Reset UI
     _ui.GettingPlaylistDataLabel->show();
     _ui.PlaylistURLInput->setText("");
+
     _ui.DownloaderThreadsInput->setEnabled(true);
-    _ui.YoutubeCookiesInput->setEnabled(true);
+
+    _ui.YoutubeCookiesClearButton->setEnabled(true);
+    _ui.YoutubeCookiesPasteButton->setEnabled(true);
+
     _ui.POTokenInput->setEnabled(true);
+    _ui.POTokenClearButton->setEnabled(true);
+    _ui.POTokenPasteButton->setEnabled(true);
+
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
 

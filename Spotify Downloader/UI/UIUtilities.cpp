@@ -172,7 +172,7 @@ void SpotifyDownloader::HidePauseWarning(int threadIndex) {
 
 void SpotifyDownloader::UpdateBitrateInput(Codec::Extension codec) {
     // Check if cookies assigned, if so allow premium cookies
-    bool cookiesAssigned = !_ui.YoutubeCookiesInput->text().isEmpty();
+    bool cookiesAssigned = !Config::YouTubeCookies.isEmpty();
 
     // Get tooltip quality values
     int bitrateLowQuality = Codec::Data[codec].BitrateLowQuality;

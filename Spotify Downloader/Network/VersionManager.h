@@ -11,7 +11,7 @@
 
 class VersionManager {
 	public:
-		static inline const QString VERSION = "1.6.7";
+		static inline const QString VERSION = "1.7.0";
 	public:
 		static bool UpdateAvailable();
 		static QString LatestVersion();

@@ -206,31 +206,20 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.setValue("saveLocation", Config::SaveLocation);
             settings.endGroup();
 
-            settings.beginGroup("Downloading");
-
-            // Save youtube cookies and po token
-            QString youtubeCookies = _ui.YoutubeCookiesInput->text();
-            QString poToken = _ui.POTokenInput->text();
-
-            settings.setValue("youtubeCookies", youtubeCookies);
-            settings.setValue("poToken", poToken);
-
-            Config::YouTubeCookies = youtubeCookies;
-
             // Save spotify api keys
             QByteArray clientID = _ui.SpotifyClientIDInput->text().toUtf8();
             QByteArray clientSecret = _ui.SpotifyClientSecretInput->text().toUtf8();
 
+            settings.beginGroup("Downloading");
             settings.setValue("clientID", clientID);
             settings.setValue("clientSecret", clientSecret);
-            
             settings.endGroup();
 
             SpotifyAPI::ClientID = clientID;
             SpotifyAPI::ClientSecret = clientSecret;
 
             // Create cookies file if needed
-            if (!youtubeCookies.isEmpty()) {
+            if (!Config::YouTubeCookies.isEmpty()) {
                 // Access/Create file
                 QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
                 QString cookiesFilePath = QString("%1/cookies.txt").arg(tempFolder);
@@ -257,8 +246,13 @@ void SpotifyDownloader::SetupSetupScreen() {
             // Setup and Reset GUI
             ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
-            _ui.YoutubeCookiesInput->setEnabled(false);
+
+            _ui.YoutubeCookiesClearButton->setEnabled(false);
+            _ui.YoutubeCookiesPasteButton->setEnabled(false);
+
             _ui.POTokenInput->setEnabled(false);
+            _ui.POTokenClearButton->setEnabled(false);
+            _ui.POTokenPasteButton->setEnabled(false);
 
             _ui.PlayButton->hide();
             _ui.PauseButton->show();
@@ -441,10 +435,8 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
-    // Check if cookies changed, update bitrate input if empty or not
-    connect(_ui.YoutubeCookiesInput, &QLineEdit::textChanged, [=](QString text) {
-        UpdateBitrateInput(Config::Codec);
-    });
+    // Update PO Token on text change
+    connect(_ui.POTokenInput, &QLineEdit::textChanged, [=](QString text) { Config::POToken = text; });
 
     // Button Clicks (Using isChecked to help with loading settings)
     connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Config::Overwrite = _ui.OverwriteSettingButton->isChecked; });
@@ -473,15 +465,62 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
     connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
 
+    // Clear Buttons
+    connect(_ui.YoutubeCookiesClearButton, &QPushButton::clicked, [=] {
+        // Set Cookies Assigned Label
+        _ui.YoutubeCookiesAssignedLabel->setText(R"(<span style=" font-size:13pt; color:#ff6464;">No Cookies Assigned</span>)");
+
+        // Set YouTube Cookies
+        Config::YouTubeCookies = "";
+
+        UpdateBitrateInput(Config::Codec);
+    });
+
+    connect(_ui.POTokenClearButton, &QPushButton::clicked, [=] {
+        _ui.POTokenInput->setText("");
+        Config::POToken = "";
+    });
+
+    connect(_ui.SpotifyAPIClientClearButton, &QPushButton::clicked, [=] {
+        _ui.SpotifyClientIDInput->setText("");
+    });
+
+    connect(_ui.SpotifyAPISecretClearButton, &QPushButton::clicked, [=] {
+        _ui.SpotifyClientSecretInput->setText("");
+    });
+
     // Paste Buttons
     connect(_ui.YoutubeCookiesPasteButton, &QPushButton::clicked, [=] {
+        // Get clipboard text
         QClipboard* clipboard = qApp->clipboard();
-        _ui.YoutubeCookiesInput->setText(clipboard->text());
+        QString clipboardText = clipboard->text();
+
+        // Check if cokies are in a valid format
+        bool validFormat = true;
+        QString firstLine = clipboardText.split("\n")[0];
+        if (firstLine != "# HTTP Cookie File" && firstLine != "# Netscape HTTP Cookie File") {
+            validFormat = false;
+        }
+        
+        // Set Cookies Assigned Label
+        _ui.YoutubeCookiesAssignedLabel->setText(validFormat ?
+            R"(<span style=" font-size:13pt; color:#87D76D;">Cookies Assigned</span>)" : // If in valid format
+            R"(<span style=" font-size:13pt; color:#ff6464;">Cookies Invalid</span>)"    // If not in valid format
+        );
+
+        // Set YouTube Cookies
+        Config::YouTubeCookies = clipboardText;
+
+        // Only update bitrate input if valid
+        if(validFormat)
+            UpdateBitrateInput(Config::Codec);
     });
 
     connect(_ui.POTokenPasteButton, &QPushButton::clicked, [=] {
         QClipboard* clipboard = qApp->clipboard();
+
         _ui.POTokenInput->setText(clipboard->text());
+        Config::POToken = clipboard->text();
     });
 
     connect(_ui.SpotifyAPIClientPasteButton, &QPushButton::clicked, [=] {
@@ -623,7 +662,10 @@ void SpotifyDownloader::LoadSettingsUI() {
     _ui.DownloadSpeedSettingInput->setValue(Config::DownloadSpeed);
     
     // YouTube Cookies
-    _ui.YoutubeCookiesInput->setText(Config::YouTubeCookies);
+    _ui.YoutubeCookiesAssignedLabel->setText(Config::YouTubeCookies.isEmpty() ?
+        R"(<span style=" font-size:13pt; color:#ff6464;">No Cookies Assigned</span>)" :
+        R"(<span style=" font-size:13pt; color:#87D76D;">Cookies Assigned</span>)"
+    );
 
     // PO Token
     _ui.POTokenInput->setText(Config::POToken);
@@ -757,7 +799,7 @@ bool SpotifyDownloader::ValidateSettings() {
     }
 
     // Youtube Cookies / PO Token, return false if one is set without the other
-    if ((!_ui.YoutubeCookiesInput->text().isEmpty() && _ui.POTokenInput->text().isEmpty()) || (_ui.YoutubeCookiesInput->text().isEmpty() && !_ui.POTokenInput->text().isEmpty())) {
+    if ((!Config::YouTubeCookies.isEmpty() && Config::POToken.isEmpty()) || (Config::YouTubeCookies.isEmpty() && !Config::POToken.isEmpty())) {
         ShowMessageBox(
             "Invalid Youtube Cookies",
             "Both the Youtube Cookies and PO Token must be set",
@@ -767,8 +809,8 @@ bool SpotifyDownloader::ValidateSettings() {
     }
 
     // Youtube cookies must be in netscape format
-    if (!_ui.YoutubeCookiesInput->text().isEmpty()) {
-        QString firstLine = _ui.YoutubeCookiesInput->text().split("\n")[0];
+    if (!Config::YouTubeCookies.isEmpty()) {
+        QString firstLine = Config::YouTubeCookies.split("\n")[0];
         if (firstLine != "# HTTP Cookie File" && firstLine != "# Netscape HTTP Cookie File") {
             // Prompt user to fix
             ShowMessageBox(
