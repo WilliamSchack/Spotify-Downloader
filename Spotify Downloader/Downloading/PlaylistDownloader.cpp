@@ -198,12 +198,14 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		connect(worker->Downloader, &SongDownloader::ShowMessage, Main, &SpotifyDownloader::ShowMessage);
 		connect(worker->Downloader, &SongDownloader::ShowMessageBox, Main, &SpotifyDownloader::ShowMessageBox);
 		connect(worker->Downloader, &SongDownloader::ShowMessageBoxWithButtons, Main, &SpotifyDownloader::ShowMessageBoxWithButtons);
+		connect(worker->Downloader, &SongDownloader::SetDownloadStatus, Main, &SpotifyDownloader::SetDownloadStatus);
 		connect(worker->Downloader, &SongDownloader::SetProgressLabel, Main, &SpotifyDownloader::SetProgressLabel);
 		connect(worker->Downloader, &SongDownloader::SetProgressBar, Main, &SpotifyDownloader::SetProgressBar);
 		connect(worker->Downloader, &SongDownloader::SetSongCount, Main, &SpotifyDownloader::SetSongCount);
 		connect(worker->Downloader, &SongDownloader::SetSongImage, Main, &SpotifyDownloader::SetSongImage);
 		connect(worker->Downloader, &SongDownloader::SetSongDetails, Main, &SpotifyDownloader::SetSongDetails);
 		connect(worker->Downloader, &SongDownloader::SetErrorItems, Main, &SpotifyDownloader::SetErrorItems);
+		connect(worker->Downloader, &SongDownloader::LoadSettingsUI, Main, &SpotifyDownloader::LoadSettingsUI);
 		connect(worker->Downloader, &SongDownloader::HidePauseWarning, Main, &SpotifyDownloader::HidePauseWarning);
 
 		worker->Thread.start();

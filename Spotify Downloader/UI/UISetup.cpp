@@ -250,6 +250,10 @@ void SpotifyDownloader::SetupSetupScreen() {
             DownloadStarted = true;
             Paused = false;
 
+            // Reset HasPremium, will be set after first download
+            // Would check before download but that would require a preset video to test so I may aswell test the first download
+            Config::HasPremium = true;
+
             // Setup and Reset GUI
             ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);
@@ -436,6 +440,11 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
 
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
+
+    // Check if cookies changed, update bitrate input if empty or not
+    connect(_ui.YoutubeCookiesInput, &QLineEdit::textChanged, [=](QString text) {
+        UpdateBitrateInput(Config::Codec);
+    });
 
     // Button Clicks (Using isChecked to help with loading settings)
     connect(_ui.OverwriteSettingButton, &CheckBox::clicked, [=] { Config::Overwrite = _ui.OverwriteSettingButton->isChecked; });
@@ -751,10 +760,25 @@ bool SpotifyDownloader::ValidateSettings() {
     if ((!_ui.YoutubeCookiesInput->text().isEmpty() && _ui.POTokenInput->text().isEmpty()) || (_ui.YoutubeCookiesInput->text().isEmpty() && !_ui.POTokenInput->text().isEmpty())) {
         ShowMessageBox(
             "Invalid Youtube Cookies",
-            QString("Both the Youtube Cookies and PO Token must be set"),
+            "Both the Youtube Cookies and PO Token must be set",
             QMessageBox::Warning
         );
         return false;
+    }
+
+    // Youtube cookies must be in netscape format
+    if (!_ui.YoutubeCookiesInput->text().isEmpty()) {
+        QString firstLine = _ui.YoutubeCookiesInput->text().split("\n")[0];
+        if (firstLine != "# HTTP Cookie File" && firstLine != "# Netscape HTTP Cookie File") {
+            // Prompt user to fix
+            ShowMessageBox(
+                "Invalid Youtube Cookies",
+                "Youtube cookies must be in the netscape format",
+                QMessageBox::Warning
+            );
+
+            return false;
+        }
     }
 
     // Spotify API Keys, return false if one is set without the other

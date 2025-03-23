@@ -25,6 +25,8 @@ class YTMusicAPI {
 
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
+
+		bool IsAgeRestricted(QString videoId);
 	private:
 		QNetworkRequest GetRequest(QString endpoint);
 		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one

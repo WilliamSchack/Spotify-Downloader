@@ -962,7 +962,7 @@ selection-background-color: rgb(0, 120, 215);</string>
               <number>32</number>
              </property>
              <property name="value">
-              <number>192</number>
+              <number>128</number>
              </property>
             </widget>
            </item>
@@ -1536,7 +1536,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-62</y>
+          <y>0</y>
           <width>715</width>
           <height>373</height>
          </rect>
@@ -1751,6 +1751,9 @@ background-color: rgba(0, 0, 0, 0);</string>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="maximum">
+              <double>99999999.989999994635582</double>
              </property>
             </widget>
            </item>

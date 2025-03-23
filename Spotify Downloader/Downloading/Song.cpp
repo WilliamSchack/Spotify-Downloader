@@ -462,7 +462,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-QString Song::Download(QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning) {
+QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onPremiumDisabled) {
 	// Use downloading path without codec, will be changed after
 	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
 
@@ -486,11 +486,11 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 
 	// Get youtube cookies file path
 	QString cookiesFilePath = QString("%1/cookies.txt").arg(_tempPath);
-	bool usingCookies = !Config::YouTubeCookies.isEmpty();
+	bool cookiesAssigned = !Config::YouTubeCookies.isEmpty();
 
 	// Check if cookies file has been deleted during download and if so, re-create it
 	QFileInfo cookiesFileInfo(cookiesFilePath);
-	if (!cookiesFileInfo.exists() && usingCookies) {
+	if (!cookiesFileInfo.exists() && cookiesAssigned) {
 		// Create file
 		QFile cookiesFile(cookiesFilePath);
 		cookiesFile.open(QIODevice::WriteOnly);
@@ -500,24 +500,50 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 		out << Config::YouTubeCookies;
 	}
 
+	// Check if video is age restricted
+	// If so and not using cookies, cancel download
+	// If using cookies cannot download non-age restricted song with cookies if no premium, dont use cookies in that case)
+	bool ageRestricted = yt->IsAgeRestricted(_searchResult["videoId"].toString());
+	if (ageRestricted && !cookiesAssigned) {
+		return "Video is Age Restricted. Please assign cookies in the downloading settings";
+	}
+
+	// Only use cookies if: (Will cause error 403 otherwise)
+	// Cookies assigned, video is age restricted, and user does not have premium
+	// Cookies assigned, and user has premium
+	bool downloadingWithCookies = (cookiesAssigned && ageRestricted && !Config::HasPremium) || (cookiesAssigned && Config::HasPremium);
+
+	// Check current hasPremium, might change during download
+	bool startingHasPremium = Config::HasPremium;
+
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
+	// Get songs from music.youtube.com with cookies and www.youtube.com without, YT Music requires cookies but gives higher audio quality
+	// Use web client with cookies, ios without
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web,ios" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(usingCookies ? QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
+		.arg(downloadingWithCookies ? QString("--extractor-args \"youtube:po_token=web+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
+		//.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
+		.arg(QString("https://%1.youtube.com/watch?v=%2").arg(downloadingWithCookies ? "music" : "www").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
 	process->waitForFinished(-1);
 
 	// Check for any errors in the download
 	QString errorOutput = process->readAllStandardError();
 	if (!errorOutput.isEmpty()) {
 		// I would preferably check some of these when searching to skip the song but no way of checking there
+		QString lowerErrorOutput = errorOutput.toLower();
+
+		// If started download assuming premium then other thread assigned premium to false, restart download without cookies
+		// This usually happens when starting a download with multiple threads
+		if (startingHasPremium && !Config::HasPremium) {
+			return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onPremiumDisabled);
+		}
 
 		// Check if PO Token is invalid, dont cancel download just warn user
-		if (errorOutput.toLower().contains("invalid po_token configuration")) {
+		if (lowerErrorOutput.contains("invalid po_token configuration")) {
 			qWarning() << SpotifyId << "YT-DLP Returned warning:" << errorOutput;
 			qWarning() << "PO Token is invalid";
 
@@ -526,20 +552,48 @@ QString Song::Download(QProcess*& process, bool overwrite, std::function<void(fl
 				onPOTokenWarning();
 		}
 
-		// If video is age restricted, cannot download, requires cookies
-		if (errorOutput.toLower().contains("sign in to confirm your age")) {
+		// Check for error 403, means cookies have expired if set, otherwise forbidden
+		// This error also calls if we try to download a non-age restricted video without premium but with cookies assigned, check for that here
+		if (lowerErrorOutput.contains("http error 403: forbidden")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
-			return "Video is Age Restricted. Please assign cookies in the downloading settings";
+
+			// If video is not age restricted, cookies assigned, and user does not have premium
+			// Set premium to false and restart download
+			if (Config::HasPremium && cookiesAssigned && !ageRestricted) {
+				qInfo() << "User does not have premium, restarting download without";
+				
+				// Set premium to false
+				Config::HasPremium = false;
+
+				// Call Premium Disabled warning callback if assigned
+				if (onPremiumDisabled != nullptr)
+					onPremiumDisabled();
+
+				// Restart download without cookies
+				return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onPremiumDisabled);
+			}
+
+			if (cookiesAssigned)
+				return "Your cookies have expired. Please reset them and the PO Token";
+
+			// This shouldnt happen but return just incase
+			return "HTTP Error 403: Forbidden. Please set cookies";
+		}
+
+		// Check if IP was flagged
+		if (lowerErrorOutput.contains("sign in to confirm you’re not a bot")) {
+			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
+			return "IP was flagged. Try adding cookies or enabling/disabling a vpn";
 		}
 
 		// If video is drm protected, cannot be downloaded
-		if (errorOutput.toLower().contains("drm protected")) {
+		if (lowerErrorOutput.contains("drm protected")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video is DRM protected";
 		}
 
 		// If the video does not have a m4a file (majority should)
-		if (errorOutput.toLower().contains("requested format is not available")) {
+		if (lowerErrorOutput.contains("requested format is not available")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video does not have file to download";
 		}

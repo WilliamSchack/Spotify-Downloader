@@ -620,3 +620,41 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 	
 	return finalResults;
 }
+
+// If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
+bool YTMusicAPI::IsAgeRestricted(QString videoId) {
+	// Get the song details
+	QJsonObject body{
+		{"playbackContext", QJsonObject{
+			{"contentPlaybackContext", QJsonObject{
+				{"signatureTimestamp", QDateTime::currentSecsSinceEpoch() / 86400 - 1}
+			}}
+		}},
+		{"video_id", videoId},
+		{"context", GetContext()}
+	};
+
+	QByteArray postData = QJsonDocument(body).toJson();
+	QByteArray response = Network::Post(GetRequest("player"), postData);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	// Get the playability status, if not returned cannot check
+	if (!json.contains("playabilityStatus"))
+		return false;
+
+	QJsonObject playabiityStatus = json["playabilityStatus"].toObject();
+	QString status = playabiityStatus["status"].toString();
+
+	// No error
+	if (status == "OK")
+		return false;
+
+	QString reason = playabiityStatus["reason"].toString();
+
+	// Age restricted
+	if (status == "LOGIN_REQUIRED" && reason == "Sign in to confirm your age")
+		return true;
+
+	// Other error
+	return false;
+}

@@ -85,6 +85,7 @@ class SpotifyDownloader : public QDialog
         void SetSongImage(int threadIndex, QImage image);
         void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
+        void LoadSettingsUI();
         void HidePauseWarning(int threadIndex);
         void SetThreadFinished(int threadIndex);
     signals:
@@ -118,8 +119,6 @@ class SpotifyDownloader : public QDialog
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
-
-        void LoadSettingsUI();
 
         void UpdateBitrateInput(Codec::Extension codec);
 
@@ -196,6 +195,7 @@ class PlaylistDownloader : public QObject {
         void SetDownloadStatus(QString text);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetErrorItems(QJsonArray tracks);
+        void LoadSettingsUI();
         void SetThreadFinished(int threadIndex);
         void ResetDownloadingVariables();
 };
@@ -250,12 +250,14 @@ class SongDownloader : public QObject {
         void ShowMessage(QString title, QString message, int msecs = 5000);
         void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
         void ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
+        void SetDownloadStatus(QString text);
         void SetProgressLabel(int threadIndex, QString text);
         void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
         void SetSongCount(int threadIndex, int currentCount, int totalCount);
         void SetSongImage(int threadIndex, QImage image);
         void SetSongDetails(int threadIndex, QString title, QString artists);
         void SetErrorItems(QJsonArray tracks);
+        void LoadSettingsUI();
         void HidePauseWarning(int threadIndex);
         void SongDownloaded();
         void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);

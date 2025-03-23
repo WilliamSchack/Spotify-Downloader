@@ -143,18 +143,40 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	// Download song
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
-	QString downloadResult = song.Download(_currentProcess, Config::Overwrite,
+	QString downloadResult = song.Download(_yt, _currentProcess, Config::Overwrite,
 		[&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		},
 		[this]() {
-			emit ShowMessageBoxWithButtons("Invalid PO Token", "The assigned PO Token is invalid/expired. Download will continue but cookies will not be used. Please change your PO Token.", QMessageBox::Warning, QMessageBox::Ok);
+			emit ShowMessageBox("Invalid PO Token", "The assigned PO Token is invalid/expired. Download will continue but cookies will not be used. Please change your PO Token.", QMessageBox::Warning);
+		},
+		[&]() {
+			// Call warning and reset bitrate if higher than non-premium account
+			int maxBitrate = Codec::Data[Config::Codec].MaxBitrate;
+			if (Config::GetBitrate() <= maxBitrate)
+				return;
+
+			// Warn user bitrate has been modified
+			emit ShowMessageBox("Using Premium Bitrate", "You have assigned a premium bitrate without a YouTube premium account, lowering bitrate down to maximum Non-Premium rate.", QMessageBox::Warning);
+			
+			// Set max bitrate and reload UI
+			Config::SetBitrate(maxBitrate);
+			
+			emit LoadSettingsUI();
 		}
 	);
 
 	if (!downloadResult.isEmpty()) {
 		AddSongToErrors(song, downloadResult);
+
+		// Check for cookie errors and quit if any, cannot continue downloading if they have expired
+		// Not an elegant way to check for it but it works
+		if (downloadResult.contains("Your cookies have expired")) {
+			emit SetDownloadStatus("Your cookies have expired\nPlease reset them and the PO Token");
+			Manager->thread()->quit();
+		}
+
 		return;
 	}
 
@@ -243,6 +265,7 @@ void SongDownloader::AddSongToErrors(Song song, QString error) {
 	emit SetProgressBar(_threadIndex, 1);
 
 	_downloadErrors.append(QJsonObject{
+		{"id", song.SpotifyId},
 		{"title", song.Title},
 		{"album", song.AlbumName},
 		{"artists", song.ArtistNames},

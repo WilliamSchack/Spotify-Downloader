@@ -171,24 +171,56 @@ void SpotifyDownloader::HidePauseWarning(int threadIndex) {
 }
 
 void SpotifyDownloader::UpdateBitrateInput(Codec::Extension codec) {
+    // Check if cookies assigned, if so allow premium cookies
+    bool cookiesAssigned = !_ui.YoutubeCookiesInput->text().isEmpty();
+
     // Get tooltip quality values
     int bitrateLowQuality = Codec::Data[codec].BitrateLowQuality;
     int bitrateGoodQuality = Codec::Data[codec].BitrateGoodQuality;
     int bitrateHighQuality = Codec::Data[codec].BitrateHighQuality;
 
+    int bitrateLowQualityPremium = Codec::Data[codec].BitrateLowQualityPremium;
+    int bitrateGoodQualityPremium = Codec::Data[codec].BitrateGoodQualityPremium;
+    int bitrateHighQualityPremium = Codec::Data[codec].BitrateHighQualityPremium;
+
+    int maxBitrate = cookiesAssigned ? Codec::Data[codec].MaxBitratePremium : Codec::Data[codec].MaxBitrate;
+
     // Set tooltip
     QString tooltip = QString(
-        R"(<html><head/><body><p><span style="font-weight: 700;">Recommended Values</span></p>
-        <p><span style="font-weight: 700;">High Quality: </span>%1<br/>
-        <span style="font-weight: 700;">Good Quality: </span>%2<br/>
-        <span style="font-weight: 700;">Low Quality: </span>%3</p>
-        <p>Only accepts numbers within 33-%4 with a multiple of 32 (excluding 33)</p></body></html>)"
-    ).arg(bitrateHighQuality).arg(bitrateGoodQuality).arg(bitrateLowQuality).arg(bitrateHighQuality);
+        R"(<html><head/><body><p>
+            <span style="font-weight: 700;">Recommended Values</span>
+        </p>
+        %1
+        <p>
+            %2
+            <span style="font-weight: 700;">High Quality: </span>%3<br/>
+            <span style="font-weight: 700;">Good Quality: </span>%4<br/>
+            <span style="font-weight: 700;">Low Quality: </span>%5
+        </p>
+        <p>
+            Only accepts numbers within 33-%6 with a multiple of 32 (excluding 33)
+        </p>
+        %7
+        </body></html>)")
+            .arg(!cookiesAssigned ? "" : QString(R"(
+                        <p>
+                        <span style="font-weight: 700;">YouTube Premium</span><br/>
+                        <span style="font-weight: 700;">High Quality: </span>%1<br/>
+                        <span style="font-weight: 700;">Good Quality: </span>%2<br/>
+                        <span style="font-weight: 700;">Low Quality: </span>%3
+                        </p>
+                    )")
+                .arg(bitrateHighQualityPremium).arg(bitrateGoodQualityPremium).arg(bitrateLowQualityPremium)
+            )
+            .arg(cookiesAssigned ? R"(<span style="font-weight: 700;">No YouTube Premium</span><br/>)" : "")
+            .arg(bitrateHighQuality).arg(bitrateGoodQuality).arg(bitrateLowQuality)
+            .arg(maxBitrate)
+            .arg(!cookiesAssigned ? R"(<p><span style="font-weight: 700;">To use YouTube Premium, assign your cookies in the Downloading Settings</span></p>)" : "");
 
     _ui.AudioBitrateInput->setToolTip(tooltip);
 
     // Set maximum to highest quality
-    _ui.AudioBitrateInput->setMaximum(bitrateHighQuality);
+    _ui.AudioBitrateInput->setMaximum(maxBitrate);
 }
 
 void SpotifyDownloader::SetThreadFinished(int threadIndex) {

@@ -57,6 +57,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetDownloadStatus, this, &SpotifyDownloader::SetDownloadStatus);
     connect(_playlistDownloader, &PlaylistDownloader::SetSongCount, this, &SpotifyDownloader::SetSongCount);
     connect(_playlistDownloader, &PlaylistDownloader::SetErrorItems, this, &SpotifyDownloader::SetErrorItems);
+    connect(_playlistDownloader, &PlaylistDownloader::LoadSettingsUI, this, &SpotifyDownloader::LoadSettingsUI);
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
 

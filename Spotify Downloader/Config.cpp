@@ -87,7 +87,7 @@ void Config::LoadSettings() {
             }
 
             // If previous bitrate is null, set to default
-            AudioBitrate[currentExtension] = Codec::Data[currentExtension].DefaultBitrate;\
+            AudioBitrate[currentExtension] = Codec::Data[currentExtension].MaxBitrate;\
             continue;
         }
 
