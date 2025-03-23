@@ -10,6 +10,7 @@
 
 Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
 
+> [!CAUTION]
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
 ## Contents
@@ -88,10 +89,13 @@ You can open the program through the start menu or from the installed location t
 
 ## Usage
 
+> [!WARNING]
 > Please note that downloading too many songs in a short time span can lead to YouTube flagging your IP and preventing further downloads (Will not effect your YouTube experience). I have not experienced it personally and have downloaded a few thousand songs within a day on a few occasions when testing but there is a case where someone downloaded 5000 songs in one day which got their IP flagged so if you intend to download a large amount of songs it is safer to spread it out over a few days or limit your download speed in the settings.
 
+### User Interface
+
 <details>
-<summary><b>Side Panel</b></summary>
+<summary><b> Side Panel</b></summary>
 
 ---
 
@@ -187,8 +191,8 @@ You can open the program through the start menu or from the installed location t
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/017fee92-5f01-4553-8e1d-2194bbd2da4a" width="50%" height="50%">
-<img src="https://github.com/user-attachments/assets/ff53d6de-1dda-4f92-b528-9a5d435cd1e5" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/dc5546e5-a683-475a-949d-7f8dcbdc900d" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/e2867fa6-584b-4a30-9b9e-6bf772b0bb02" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -196,6 +200,11 @@ You can open the program through the start menu or from the installed location t
 **Codec - Recommended: M4A**
 - The format the each song will be output as
 - ***Note: All formats will be converted from M4A and as a result WAV & FLAC are lossy and only implemented for convenience***
+
+**Codec Details**
+- Displays conversion details to remind that it is converted from an M4A file
+- Shows what type of metadata is used for the selected format
+- Shows warnings in red when something is different (No cover art for example)
 
 **Normalize Volume - Recommended: ON, -14dB**
 - If enabled, changes the value of all songs to the same depending on its average volume.  
@@ -214,10 +223,11 @@ You can open the program through the start menu or from the installed location t
 - File Size (MB) = (bitrate(kbs) * duration(seconds)) / 8) / 1024
 - ***Does not take into account metadata, an extra ~0.9MB is added***
 
-**Codec Details**
-- Displays conversion details to remind that it is converted from an M4A file
-- Shows what type of metadata is used for the selected format
-- Shows warnings in red when something is different (No cover art for example)
+**Track Number**
+- The track number that will be assigned to the metadata
+  - **Playlist** - The playlist track number
+  - **Album** - The album track number
+  - **Disk** - The disk number
 
 **File Name**
 - Enclosing tag input sets the characters to open and close a tag
@@ -232,13 +242,18 @@ You can open the program through the start menu or from the installed location t
     - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
     - **Album Artist** - Name of the first artist of the songs album
     - **Album Artists** - Names of each artist of a songs album "Artist1, Artist2, Artist3, ..."
+    - **Codec** - The codec of the downloaded song
+    - **Track Number** - The currently assigned track number
+    - **Playlist Track Number** - Track number in the playlist (Only works when downloading a playlist)
+    - **Album Track Number** - Track number in the album
+    - **Disk Number** - Track disk number
     - **Song Time Seconds** - Time of the song in seconds
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
-	- **Year** - Release Year of the song
-	- **Month** - Release month of the song
-	- **Day** - Release day of the song
-	- **Codec** - The codec of the downloaded song
+    - **Year** - Release Year of the song
+    - **Month** - Release month of the song
+    - **Day** - Release day of the song
+    - **Codec** - The codec of the downloaded song
 
 **Sub Folders**
 - Enclosing tag input sets the characters to open and close a tag
@@ -253,6 +268,11 @@ You can open the program through the start menu or from the installed location t
     - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
     - **Album Artist** - Name of the first artist of the songs album
     - **Album Artists** - Names of each artist of a songs album "Artist1, Artist2, Artist3, ..."
+    - **Codec** - The codec of the downloaded song
+    - **Track Number** - The currently assigned track number
+    - **Playlist Track Number** - Track number in the playlist (Only works when downloading a playlist)
+    - **Album Track Number** - Track number in the album
+    - **Disk Number** - Track disk number
     - **Song Time Seconds** - Time of the song in seconds
     - **Song Time Minutes** - Time of the song in minutes "01.23"
     - **Song Time Hours** - Time of the song in hours "00.01.23"
@@ -263,7 +283,8 @@ You can open the program through the start menu or from the installed location t
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/f8ce98d5-070b-49ba-98e2-b2afb3a8d2ff" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/d3c5d278-5bab-4a7c-82f6-69c0128029d9" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/4bd4a04b-1b38-4dd2-8be4-af4a1cb43b3d" width="50%" height="50%">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -274,15 +295,27 @@ You can open the program through the start menu or from the installed location t
 **Download Speed Limit - Recommended: 0MB/s**
 - The speed limit to downloading songs in MB/s. A value of 0 is uncapped
 
+**YouTube Cookies**
+- The YouTube cookies used for downloading songs. Used to download songs with age restrictions and at a higher quality with YouTube Premium
+- Has Clear, Paste, & Help buttons
+
+**PO Token**
+- The PO Token used to authenticate your cookies and reduce the risk of your account being flagged
+- Has Clear, Paste, & Help buttons
+
+***For help inputting your own YouTube cookies, view the lower section titled "Inputting your YouTube Cookies""***
+
 **Spotify Client ID**
 - Spotify API Client ID used for fetching songs
+- Has Clear, Paste, & Help buttons
 - **If empty uses the default Spotify API Client ID**
 
 **Spotify Client Secret**
 - Spotify API Client Secret used for fetching songs
+- Has Clear, Paste, & Help buttons
 - **If empty uses the default Spotify API Client Secret**
 
-*For help creating your own spotify app and keys, view the lower section titled "Creating your own Spotify API keys"*
+***For help creating your own spotify app and keys, view the lower section titled "Creating your own Spotify API keys"***
 
 ### Interface
 
@@ -351,6 +384,90 @@ Shows all of the songs that failed to download due to various reasons that will 
     
 </details>
 
+### Assigning YouTube Cookies / Spotify API Keys
+
+> [!CAUTION]
+> By using your account with Spotify Downloader you risk your account being flagged or at worse banned. If using an account be cautious of the rate and amount of downloads you are doing. Adding an account is only used for downloading age restricted songs and using YouTube Premium higher quality audio so if you dont intend to use those features I advise you do not add your own cookies.
+
+> [!NOTE]
+> YouTube Cookies and PO Tokens are valid for a very short time usually being for at least 8 hours. It is recommended that you refresh both each time you use the program.
+
+<details>
+<summary><b> Inputting your YouTube Cookies</b></summary>
+
+---
+
+***YouTube Cookies are not required***
+
+**The way of retrieving cookies and PO Tokens will vary from browser to browser but I will put the general steps with some browser specific instructions below. There are also images in each of the dropdowns if needed**
+
+***It is recommended you do the following steps in a private/incognito window so the cookies are not effected by general use***
+
+### Retrieving Your YouTube Cookies
+
+First open [YouTube Music](https://music.youtube.com/) and sign in with the account you wish to use
+
+If you are using premium and want higher quality downloads you will first need to go to your settings and change the Audio Quality to High
+
+<details>
+<summary><b> How To Change YT Music Audio Quality</b></summary>
+	
+> <img src="https://github.com/user-attachments/assets/0f8fa4a8-0f25-4726-993c-1944fe10dd22" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/489980fc-e043-427a-8c06-e87ccd3ab31c" width="50%" height="50%">
+
+</details>
+
+Now retrieve your netscape formatted cookies from YouTube
+
+There are many ways to do this but I use the extension **Cookie-Editor** ([Firefox](https://addons.mozilla.org/en-US/firefox/addon/cookie-editor/)) ([Chrome](https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm)) ([Edge](https://microsoftedge.microsoft.com/addons/detail/cookieeditor/neaplmfkghagebokkhpjpoebhdledlfi))
+
+<details>
+<summary><b> Exporting cookies using Cookie-Editor</b></summary>
+
+Open the extension and export your cookies as netscape
+
+> <img src="https://github.com/user-attachments/assets/61ffae4c-cd2d-4c8a-b52b-9c23174e5d8e" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/b719478e-490c-4956-88a0-ea06de6166c6" width="50%" height="50%">
+
+</details>
+
+Now that you have got the cookies in your clipboard, paste them into the downloading settings in the Spotify Downloader
+> <img src="https://github.com/user-attachments/assets/1fe7e9d2-99f6-4579-ac3e-a5efb49b3ad1" width="50%" height="50%">
+
+### Retrieving Your PO Token
+
+Getting the PO Token is a bit more complicated but if you are having trouble view the browser specific images below
+
+Open your browsers developer console (Usually F12) and go to the network tab. In the filter section enter "googlevideo.com" to only show results under the googlevideo.com domain
+
+Now navigate to a song and start playing it. You will notice that some results now popup in the network tab. Click on any of them
+
+In the headers tab look for the POST Url and find the argument "pot". Copy everything to the right of the "=" and to the left of the "&" before the next argument
+
+<details>
+<summary><b> Firefox</b></summary>
+	
+> <img src="https://github.com/user-attachments/assets/e957ee3f-9346-456d-b8b2-323d456299e1" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/c0e48308-719e-461d-8a48-c309ac2bb70f" width="50%" height="50%">
+
+</details>
+
+<details>
+<summary><b> Chrome/Edge</b></summary>
+
+> <img src="https://github.com/user-attachments/assets/a571a6f5-0648-4f62-a4d7-bfd1742df6e5" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/871d9412-2ca5-4d67-99b9-b9e4bd869c2e" width="50%" height="50%">
+
+</details>
+
+Now take the copied PO Token and paste it into the downloading settings in the Spotify Downloader
+
+> <img src="https://github.com/user-attachments/assets/5b566303-6827-4604-bd8f-ed7de5e971d2" width="50%" height="50%">
+
+---
+
+</details>
+
 <details>
 <summary><b> Creating your own Spotify API keys </b></summary>
 
@@ -413,6 +530,7 @@ In this menu click the "View client secret" button to access the secret and now 
     - OGG Vorbis
     - WAV
     - FLAC
+- **Support for YouTube Premium Audio Quality**
 - **Automatic Cleanup**
 
 ## License

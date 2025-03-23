@@ -389,7 +389,7 @@ border: none;</string>
       <string notr="true">background-color: rgb(30, 30, 30);</string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="OutputSettings">
       <widget class="QWidget" name="OutputSettings_LineIndicator" native="true">
