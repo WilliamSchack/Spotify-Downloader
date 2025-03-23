@@ -535,7 +535,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
     // Help Buttons
     connect(_ui.YoutubeCookiesHelpButton, &QPushButton::clicked, [=]{
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Cookies are not required. It is used with the PO Token to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Cookies are not required. They must be in the netscape format. It is used with the PO Token to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
     });
 
     connect(_ui.POTokenHelpButton, &QPushButton::clicked, [=] {
