@@ -212,15 +212,26 @@ You can open the program through the start menu or from the installed location t
     - Normal: -14dB
     - Loud: -11dB
 
-**Audio Bitrate - Recommended: 192kb/s**
+**Audio Bitrate - Recommended: 128kb/s**
 - Sets the output quality of each song downloaded
-    - High Quality: 256kb/s
-    - Good Quality: 192kb/s
-    - Low Quality 128kb/s
+- The quality range will change depending on the codec and if you have YouTube Premium
+- **Non-MP3 (No Premium / Premium)**
+    - High Quality: 128kb/s, 256kb/s
+    - Good Quality: 92kb/s, 192kb/s
+    - Low Quality:  64kb/s, 128kb/s
+- **MP3 (No Premium / Premium)**
+	- High Quality: 192kb/s, 320kb/s
+    - Good Quality: 160kb/s, 256kb/s
+    - Low Quality:  128kb/s, 192kb/s
+	
 
 **Average File Size**
 - Displays a estimated file size based on the chosen bitrate
-- File Size (MB) = (bitrate(kbs) * duration(seconds)) / 8) / 1024
+- The file size is different for if you use a compressed or PCM file format
+- Compressed File Size (MB) = (bitrate(kbs) * duration seconds) / 8) / 1024
+- PCM File Size (MB) = (44.1 * (16 / 8) * 2 * duration seconds) / 1024
+  - PCM files use a preset 44.1kHz, 16 bits, & 2 channels
+  - Calculation without preset is (Sample Rate * (Bits Per Sample / 8) * Channels * Seconds) / 1024
 - ***Does not take into account metadata, an extra ~0.9MB is added***
 
 **Track Number**
@@ -235,8 +246,19 @@ You can open the program through the start menu or from the installed location t
     - Right character sets the closing input
 - File Name Input sets the output name of each song.
     - Each tag must be enclosed with the characters set in the left input field
-- Can only include these currently implemented tags:
-    - **Song Name** - Name of the song
+- Can only include the currently implemented tags listed below
+
+**Sub Folders**
+- Enclosing tag input sets the characters to open and close a tag
+    - Left character sets the opening input
+    - Right character sets the closing input
+- Sub Folders Input sets the sub folders within the chosen directory that each song will be saved to
+    - Each tag must be enclosed with the characters set in the left input field
+- Can only include the currently implemented tags listed below
+
+**Tags**
+- These are the tags that can be used by the File Name & Sub Folders settings
+	- **Song Name** - Name of the song
     - **Album Name** - Name of the album
     - **Song Artist** - Name of the first artist of a song
     - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
@@ -254,32 +276,6 @@ You can open the program through the start menu or from the installed location t
     - **Month** - Release month of the song
     - **Day** - Release day of the song
     - **Codec** - The codec of the downloaded song
-
-**Sub Folders**
-- Enclosing tag input sets the characters to open and close a tag
-    - Left character sets the opening input
-    - Right character sets the closing input
-- Sub Folders Input sets the sub folders within the chosen directory that each song will be saved to
-    - Each tag must be enclosed with the characters set in the left input field
-- Can only include these currently implemented tags:
-    - **Song Name** - Name of the song
-    - **Album Name** - Name of the album
-    - **Song Artist** - Name of the first artist of a song
-    - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
-    - **Album Artist** - Name of the first artist of the songs album
-    - **Album Artists** - Names of each artist of a songs album "Artist1, Artist2, Artist3, ..."
-    - **Codec** - The codec of the downloaded song
-    - **Track Number** - The currently assigned track number
-    - **Playlist Track Number** - Track number in the playlist (Only works when downloading a playlist)
-    - **Album Track Number** - Track number in the album
-    - **Disk Number** - Track disk number
-    - **Song Time Seconds** - Time of the song in seconds
-    - **Song Time Minutes** - Time of the song in minutes "01.23"
-    - **Song Time Hours** - Time of the song in hours "00.01.23"
-	- **Year** - Release Year of the song
-	- **Month** - Release month of the song
-	- **Day** - Release day of the song
-	- **Codec** - The codec of the downloaded song
 
 ### Downloading
 
