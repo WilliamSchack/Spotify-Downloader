@@ -512,23 +512,20 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	bool startingHasPremium = Config::HasPremium;
 
 	// Download song
-	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted, removed android from download as it always spits out an error
+	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	// Get songs from music.youtube.com with cookies and www.youtube.com without, YT Music requires cookies but gives higher audio quality
-	// Use web client with cookies, ios without
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		//.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
 		.arg(QString("https://%1.youtube.com/watch?v=%2").arg("music").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
 	process->waitForFinished(-1);
 
 	// Check for any errors in the download
+	// I would preferably check some of these when searching to skip the song but no way of checking there
 	QString errorOutput = process->readAllStandardError();
 	if (!errorOutput.isEmpty()) {
-		// I would preferably check some of these when searching to skip the song but no way of checking there
 		QString lowerErrorOutput = errorOutput.toLower();
 
 		// If started download assuming premium then other thread assigned premium to false, restart download without cookies
@@ -542,31 +539,17 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			qWarning() << SpotifyId << "YT-DLP Returned warning:" << errorOutput;
 			qWarning() << "PO Token is invalid";
 
+			// Disable premium as cookies are not being used
+			Config::HasPremium = false;
+
 			// Call PO Token warning callback if assigned
 			if (onPOTokenWarning != nullptr)
 				onPOTokenWarning();
 		}
 
 		// Check for error 403, means cookies have expired if set, otherwise forbidden
-		// This error also calls if we try to download a non-age restricted video without premium but with cookies assigned, check for that here
 		if (lowerErrorOutput.contains("http error 403: forbidden")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
-
-			// If video is not age restricted, cookies assigned, and user does not have premium
-			// Set premium to false and restart download
-			if (Config::HasPremium && cookiesAssigned && !ageRestricted) {
-				qInfo() << "User does not have premium, restarting download without cookies";
-				
-				// Set premium to false
-				Config::HasPremium = false;
-
-				// Call Premium Disabled warning callback if assigned
-				if (onPremiumDisabled != nullptr)
-					onPremiumDisabled();
-
-				// Restart download without cookies
-				return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onPremiumDisabled);
-			}
 
 			if (cookiesAssigned)
 				return "Your cookies have expired. Please reset them and the PO Token";
@@ -591,6 +574,46 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		if (lowerErrorOutput.contains("requested format is not available")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video does not have file to download";
+		}
+
+		// Check for invalid cookies, use the bitrate to check
+		if (cookiesAssigned) {
+			// Get bitrate by inputting the audio into ffmpeg and reading its output
+			process = new QProcess();
+			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+			process->startCommand(QString(R"("%1" -i "%2")")
+				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+				.arg(downloadingPathM4A));
+			process->waitForFinished(-1);
+
+			QString ffmpegOutput = process->readAllStandardError();
+			QStringList outputLines = ffmpegOutput.split("\n");
+
+			foreach(QString outputLine, outputLines) {
+				// Look for the first (and only) stream which is the audio
+				if (!outputLine.contains("Stream #0:0"))
+					continue;
+
+				// Check for after the last "," and before "kb/s"
+				// Example line:
+				// Stream #0:0[0x1](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)
+
+				int kbps = outputLine.split(",").last().split("kb/s")[0].replace(" ", "").toInt();
+
+				// If bitrate is ~128kb/s and premium is enabled, disable it
+				if (kbps < 200 && Config::HasPremium) {
+					qInfo() << "User does not have premium, disabling checks for later downloads";
+
+					Config::HasPremium = false;
+
+					// Call Premium Disabled warning callback if assigned
+					if (onPremiumDisabled != nullptr)
+						onPremiumDisabled();
+				}
+
+				// Exit loop, already found stream
+				break;
+			}
 		}
 	}
 
