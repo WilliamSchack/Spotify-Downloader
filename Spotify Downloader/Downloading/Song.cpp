@@ -514,9 +514,9 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web_music" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
+		.arg(QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(QString("https://%1.youtube.com/watch?v=%2").arg("music").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
