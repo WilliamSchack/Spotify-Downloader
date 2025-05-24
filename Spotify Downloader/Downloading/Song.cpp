@@ -521,9 +521,9 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
 	// Get songs from music.youtube.com with cookies and www.youtube.com without, YT Music requires cookies but gives higher audio quality
 	// Use web client with cookies, ios without
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web,ios" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(downloadingWithCookies ? QString("--extractor-args \"youtube:po_token=web+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
+		.arg(downloadingWithCookies ? QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		//.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
