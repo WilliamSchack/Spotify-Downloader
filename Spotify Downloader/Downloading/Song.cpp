@@ -508,11 +508,6 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		return "Video is Age Restricted. Please assign cookies in the downloading settings";
 	}
 
-	// Only use cookies if: (Will cause error 403 otherwise)
-	// Cookies assigned, video is age restricted, and user does not have premium
-	// Cookies assigned, and user has premium
-	bool downloadingWithCookies = (cookiesAssigned && ageRestricted && !Config::HasPremium) || (cookiesAssigned && Config::HasPremium);
-
 	// Check current hasPremium, might change during download
 	bool startingHasPremium = Config::HasPremium;
 
@@ -523,11 +518,11 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Use web client with cookies, ios without
 	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")// --audio - format % 4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(downloadingWithCookies ? QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "") // Only include Cookies & PO Token if set
+		.arg(QString("--extractor-args \"youtube:po_token=web.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
 		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		//.arg(QString("https://www.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
-		.arg(QString("https://%1.youtube.com/watch?v=%2").arg(downloadingWithCookies ? "music" : "www").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
+		.arg(QString("https://%1.youtube.com/watch?v=%2").arg("music").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
 	process->waitForFinished(-1);
 
 	// Check for any errors in the download
