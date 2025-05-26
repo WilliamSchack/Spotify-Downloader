@@ -247,6 +247,10 @@ int SpotifyDownloader::ShowMessageBoxWithButtons(QString title, QString message,
     return msg.exec();
 }
 
+void SpotifyDownloader::OpenURL(QUrl address) {
+    QDesktopServices::openUrl(address);
+}
+
 void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windowMessage) {
 
     int reply = ShowMessageBoxWithButtons(
@@ -257,5 +261,5 @@ void SpotifyDownloader::OpenURL(QUrl address, QString windowTitle, QString windo
     );
 
     if (reply == QMessageBox::Yes)
-        QDesktopServices::openUrl(address);
+        OpenURL(address);
 }

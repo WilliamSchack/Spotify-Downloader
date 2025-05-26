@@ -133,6 +133,7 @@ class SpotifyDownloader : public QDialog
 
         int CurrentScreen();
 
+        void OpenURL(QUrl address);
         void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
 
         void closeEvent(QCloseEvent* closeEvent);
