@@ -445,6 +445,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
         Config::NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
         _ui.NormalizeVolumeSettingInput->setEnabled(Config::NormalizeAudio);
     });
+    connect(_ui.AutoOpenFolderButton, &CheckBox::clicked, [=] { Config::AutoOpenDownloadFolder = _ui.AutoOpenFolderButton->isChecked; });
     connect(_ui.SidebarIconsColourButton, &CheckBox::clicked, [=] {
         Config::SidebarIconsColour = _ui.SidebarIconsColourButton->isChecked;
 
@@ -678,6 +679,10 @@ void SpotifyDownloader::LoadSettingsUI() {
 
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);
+
+    // Auto Open Download Folder
+    if (_ui.AutoOpenFolderButton->isChecked != Config::AutoOpenDownloadFolder)
+        _ui.AutoOpenFolderButton->click();
 
     // Sidebar Icons Colour
     if (_ui.SidebarIconsColourButton->isChecked != Config::SidebarIconsColour)
