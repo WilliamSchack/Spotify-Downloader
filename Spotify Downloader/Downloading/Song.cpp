@@ -565,7 +565,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		}
 
 		// If video is drm protected, cannot be downloaded
-		if (lowerErrorOutput.contains("drm protected")) {
+		if (lowerErrorOutput.contains("drm protected") && !lowerErrorOutput.contains("tv client https formats have been skipped as they are drm protected")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video is DRM protected";
 		}
@@ -602,7 +602,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 
 				// If bitrate is ~128kb/s and premium is enabled, disable it
 				if (kbps < 200 && Config::HasPremium) {
-					qInfo() << "User does not have premium, disabling checks for later downloads";
+					qInfo() << "User does not have premium or cookies are expired, disabling checks for later downloads";
 
 					Config::HasPremium = false;
 
@@ -915,7 +915,7 @@ void Song::Save(QString targetFolder, QString targetPath, bool overwrite) {
 	QString currentFolder = QString("%1/%2").arg(folders[0]).arg(folders[1]);
 	for (int i = 1; i < folders.count(); i++) {
 		if (!QDir(currentFolder).exists())
-			qDebug() << "Making Dir:" << QDir().mkdir(currentFolder);
+			QDir().mkdir(currentFolder);
 
 		if (i + 1 < folders.count())
 			currentFolder = QString("%1/%2").arg(currentFolder).arg(folders[i + 1]);
