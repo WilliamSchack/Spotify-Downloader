@@ -85,6 +85,9 @@ class Config {
         };
 
         // Output
+        static inline QString PlaylistURL;
+        static inline QString SaveLocation;
+
         static inline bool Overwrite;
     
         static inline Codec::Extension Codec;
@@ -96,10 +99,9 @@ class Config {
         static inline float NormalizeAudioVolume;
     
         static inline QMap<Codec::Extension, int> AudioBitrate;
-
-        static inline QString PlaylistURL;
-        static inline QString SaveLocation;
     
+        static inline QString ArtistSeparator;
+
         static inline QString FileNameTag;
         static inline QString FileName;
     

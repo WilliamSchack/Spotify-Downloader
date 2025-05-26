@@ -102,6 +102,9 @@ void SpotifyDownloader::SetupSideBar() {
         if (CurrentScreen() == Config::SETUP_SCREEN_INDEX)
             return;
 
+        // Set Artist Seperator
+        Config::ArtistSeparator = _ui.ArtistSeparatorInput->text();
+
         // Set output format
         Config::FileNameTag = _ui.FileNameTagInput->text();
         Config::FileName = _ui.FileNameInput->text();
@@ -630,6 +633,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(Config::GetBitrate(), 60);
     QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
     _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
+
+    // Artist Seperator
+    _ui.ArtistSeparatorInput->setText(Config::ArtistSeparator);
 
     // Track Number
     _ui.TrackNumberInput->setCurrentIndex(Config::TrackNumberIndex);

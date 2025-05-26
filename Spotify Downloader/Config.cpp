@@ -24,6 +24,7 @@ void Config::SaveSettings() {
         settings.setValue(codecBitrateKey, AudioBitrate[currentExtension]);
     }
 
+    settings.setValue("artistSeparator", ArtistSeparator);
     settings.setValue("songOutputFormatTag", FileNameTag);
     settings.setValue("songOutputFormat", FileName);
     settings.setValue("subFoldersTag", SubFoldersTag);
@@ -97,6 +98,7 @@ void Config::LoadSettings() {
     }
 
     SaveLocation = settings.value("saveLocation", "").toString();
+    ArtistSeparator = settings.value("artistSeparator", ";").toString();
     FileNameTag = settings.value("songOutputFormatTag", "<>").toString();
     FileName = settings.value("songOutputFormat", "<Song Name> - <Song Artist>").toString();
 
@@ -166,6 +168,7 @@ QJsonObject Config::SettingsLog() {
         {"Track Number Index", TrackNumberIndex},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
+        {"Artist Separator", ArtistSeparator},
         {"File Name Tag", FileNameTag},
         {"File Name Format", FileName},
         {"Sub Folders Tag", SubFoldersTag},
