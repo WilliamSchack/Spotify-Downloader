@@ -42,6 +42,7 @@ void Config::SaveSettings() {
 
     settings.beginGroup("Interface");
     settings.setValue("downloaderThreadUIIndex", DownloaderThreadUIIndex);
+    settings.setValue("autoOpenDownloadFolder", AutoOpenDownloadFolder);
     settings.setValue("sidebarIconsColour", SidebarIconsColour);
     settings.setValue("checkForUpdates", CheckForUpdates);
     settings.endGroup();
@@ -148,6 +149,7 @@ void Config::LoadSettings() {
 
     settings.beginGroup("Interface");
     DownloaderThreadUIIndex = settings.value("downloaderThreadUIIndex", 0).toInt();
+    AutoOpenDownloadFolder = settings.value("autoOpenDownloadFolder", true).toBool();
     SidebarIconsColour = settings.value("sidebarIconsColour", true).toBool();
     CheckForUpdates = settings.value("checkForUpdates", true).toBool();
     settings.endGroup();
@@ -174,11 +176,12 @@ QJsonObject Config::SettingsLog() {
         {"YouTube Cookies Assigned", !YouTubeCookies.isEmpty()},
         {"PO Token Assigned", !POToken.isEmpty()},
         {"Downloader Thread UI Index", DownloaderThreadUIIndex},
+        {"Auto Open Download Folder", AutoOpenDownloadFolder},
         {"Sidebar Icons Colour", SidebarIconsColour},
         {"Check For Updates", CheckForUpdates}
     };
 
-    // add bitrate to log
+    // Add bitrate to log
     for (int i = 0; i < Codec::Data.count(); i++) {
         Codec::Extension currentExtension = (Codec::Extension)i;
         if (Codec::Data[currentExtension].LockedBitrate)

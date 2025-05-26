@@ -123,6 +123,8 @@ class Config {
         // Interface
         static inline int DownloaderThreadUIIndex;
 
+        static inline bool AutoOpenDownloadFolder;
+
         static inline bool SidebarIconsColour;
 
         static inline bool CheckForUpdates;
