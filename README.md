@@ -232,7 +232,7 @@ If the unzipped folder does not include "Spotify Downloader.exe", it was blocked
 ### Output
 
 <img src="https://github.com/user-attachments/assets/dc5546e5-a683-475a-949d-7f8dcbdc900d" width="50%" height="50%">
-<img src="https://github.com/user-attachments/assets/e2867fa6-584b-4a30-9b9e-6bf772b0bb02" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/a4deb2a5-fefb-46cd-9b37-865b4b41fa19" width="50%" height="50%">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -264,7 +264,6 @@ If the unzipped folder does not include "Spotify Downloader.exe", it was blocked
     - Good Quality: 160kb/s, 256kb/s
     - Low Quality:  128kb/s, 192kb/s
 	
-
 **Average File Size**
 - Displays a estimated file size based on the chosen bitrate
 - The file size is different for if you use a compressed or PCM file format
@@ -273,6 +272,9 @@ If the unzipped folder does not include "Spotify Downloader.exe", it was blocked
   - PCM files use a preset 44.1kHz, 16 bits, & 2 channels
   - Calculation without preset is (Sample Rate * (Bits Per Sample / 8) * Channels * Seconds) / 1024
 - ***Does not take into account metadata, an extra ~0.9MB is added***
+
+**Artist Separator - Recommended: ;**
+- Sets the seperator between artists in the metadata
 
 **Track Number**
 - The track number that will be assigned to the metadata
@@ -355,13 +357,16 @@ If the unzipped folder does not include "Spotify Downloader.exe", it was blocked
 
 ### Interface
 
-<img src="https://github.com/user-attachments/assets/299655c8-acd1-4b83-9a0b-32f38ab401b2" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/45b495b1-f31b-4ec0-a8b3-b0af93e4f19a" width="50%" height="50%">
 
 **Downloader Thread UI - Recommended: Compact**
 - Changes the style of each thread UI while downloading
 - **Compact:** Newer compact and smaller design
 - **Original:** Older larger design, spaces out details
 - **Dynamic:** Switches between compact and original depending on threads used to fit the screen
+
+**Auto Open Download Folder - Default: ON**
+- Toggles if the application automatically opens the target folder after a finished download
 
 **Sidebar Icons Colour - Default: ON**
 - Enables colour for the sidebar icons
