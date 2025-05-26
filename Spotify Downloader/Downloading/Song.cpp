@@ -806,8 +806,9 @@ void Song::AssignMetadata() {
 
 		TagLib::String compressedComment = QString("%1\n%2\n%3").arg(copyrightText.toWString()).arg(publisherText.toWString()).arg(commentText.toWString()).toUtf8().data();
 
-		unsigned int releaseYear = ReleaseDate.year();
+		TagLib::String releaseDate = QString("%1-%2-%3").arg(ReleaseDate.year()).arg(ReleaseDate.month()).arg(ReleaseDate.day()).toUtf8().data();
 		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();
+		TagLib::String discNumber = QString::number(DiscNumber).toUtf8().data();
 
 		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {
@@ -815,34 +816,51 @@ void Song::AssignMetadata() {
 			{
 				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
+				// Use preset functions for basic values
 				tag->setTitle(title);
 				tag->setArtist(artists);
 				tag->setAlbum(album);
-				tag->setYear(releaseYear);
+
 				// Below work on specific systems where the above dont (#33) need to look further into it
 				// tag->setTitle(Title.trimmed().toUtf8().data());
 				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
 				// tag->setAlbum(AlbumName.trimmed().toUtf8().data());
 
+				// Create extra frames
 				TagLib::ID3v2::TextIdentificationFrame* albumArtistFrame = new TagLib::ID3v2::TextIdentificationFrame("TPE2");
 				TagLib::ID3v2::TextIdentificationFrame* trackNumberFrame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
+				TagLib::ID3v2::TextIdentificationFrame* discNumberFrame = new TagLib::ID3v2::TextIdentificationFrame("TPOS");
 				TagLib::ID3v2::TextIdentificationFrame* publisherFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copyrightFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
+				TagLib::ID3v2::TextIdentificationFrame* releaseDateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRL");
+				TagLib::ID3v2::TextIdentificationFrame* dateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRC");
 				TagLib::ID3v2::CommentsFrame* commentFrame = new TagLib::ID3v2::CommentsFrame();
+
+				// Set frame values
 				albumArtistFrame->setText(albumArtists);
 				trackNumberFrame->setText(trackNumber);
+				discNumberFrame->setText(discNumber);
 				publisherFrame->setText(publisherText);
 				copyrightFrame->setText(copyrightText);
 				commentFrame->setText(commentText);
+				releaseDateFrame->setText(releaseDate);
+				dateFrame->setText(releaseDate);
+
+				// Add frames to the tag
 				tag->addFrame(albumArtistFrame);
 				tag->addFrame(trackNumberFrame);
+				tag->addFrame(discNumberFrame);
 				tag->addFrame(publisherFrame);
 				tag->addFrame(copyrightFrame);
 				tag->addFrame(commentFrame);
+				tag->addFrame(releaseDateFrame);
+				tag->addFrame(dateFrame);
 				
+				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
 					break;
 
+				// Set cover art
 				TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
 				picFrame->setPicture(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				picFrame->setMimeType("image/png");
@@ -855,18 +873,23 @@ void Song::AssignMetadata() {
 			{
 				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
+				// Use preset functions for basic values 
 				tag->setTitle(title);
 				tag->setArtist(artists);
 				tag->setAlbum(album);
-				tag->setYear(releaseYear);
 				tag->setComment(compressedComment);
 				tag->setTrack(TrackNumber());
 
+				// Extra values
 				tag->setItem("aART", TagLib::StringList(albumArtists)); // Album Artists
+				tag->setItem("\251day", TagLib::StringList(releaseDate)); // Date
+				tag->setItem("disc", TagLib::StringList(discNumber)); // Disc Number
 
+				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
 					break;
 
+				// Set cover art
 				TagLib::MP4::CoverArt coverArt(TagLib::MP4::CoverArt::Format::PNG, TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				TagLib::MP4::CoverArtList coverArtList;
 				coverArtList.append(coverArt);
@@ -880,12 +903,15 @@ void Song::AssignMetadata() {
 			{
 				TagLib::RIFF::Info::Tag* tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
+				// Use preset functions for basic values 
 				tag->setTitle(title);
 				tag->setArtist(artists);
 				tag->setAlbum(album);
-				tag->setYear(releaseYear);
 				tag->setTrack(TrackNumber());
 				tag->setComment(compressedComment);
+
+				// Extra values
+				tag->setFieldText("ICRD", releaseDate); // Date
 
 				// RIFF doesnt support:
 				// - Album Artist
@@ -897,18 +923,24 @@ void Song::AssignMetadata() {
 			{
 				TagLib::Ogg::XiphComment* tag = dynamic_cast<TagLib::Ogg::XiphComment*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
+				// Use preset functions for basic values 
 				tag->setTitle(title);
 				tag->setArtist(artists);
 				tag->setAlbum(album);
-				tag->setYear(releaseYear);
 				tag->setTrack(TrackNumber());
 				tag->setComment(compressedComment);
 
+				// Extra values
 				tag->addField("ALBUMARTIST", albumArtists);
+				tag->addField("RELEASEDATE", releaseDate);
+				tag->addField("DATE", releaseDate);
+				tag->addField("DISCNUMBER", discNumber);
 
+				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
 					break;
 
+				// Set cover art
 				TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
 				coverArt->setData(TagLib::ByteVector(imageBytes.data(), imageBytes.count()));
 				coverArt->setMimeType("image/png");
