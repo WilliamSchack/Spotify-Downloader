@@ -394,8 +394,12 @@ PlaylistDownloader::~PlaylistDownloader() {
 	QString cookieFilePath = QString("%1/cookies.txt").arg(tempFolder);
 	QFile(cookieFilePath).remove();
 
-	// Change Screen
 	if (!Main->ExitingApplication) {
+		// Open download folder
+		if (Config::AutoOpenDownloadFolder)
+			emit OpenURL(Config::SaveLocation);
+
+		// Change Screen
 		if (_downloadErrors.count() == 0) {
 			emit ChangeScreen(Config::SETUP_SCREEN_INDEX);
 			qInfo() << "Downloads complete with no errors";
