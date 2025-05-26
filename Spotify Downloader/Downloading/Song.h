@@ -26,6 +26,7 @@
 #include <QDate>
 
 #include <taglib/fileref.h>
+#include <taglib/tstringlist.h>
 
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2frame.h>

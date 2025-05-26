@@ -809,18 +809,21 @@ void Song::AssignMetadata() {
 				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
 				// tag->setAlbum(AlbumName.trimmed().toUtf8().data());
 
-				TagLib::ID3v2::TextIdentificationFrame* numFrame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
-				TagLib::ID3v2::TextIdentificationFrame* pubFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
-				TagLib::ID3v2::TextIdentificationFrame* copFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
-				TagLib::ID3v2::CommentsFrame* comFrame = new TagLib::ID3v2::CommentsFrame();
-				numFrame->setText(QString::number(TrackNumber()).toUtf8().data());
-				pubFrame->setText("William S - Spotify Downloader");
-				copFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
-				comFrame->setText("Thanks for using my program! :)\n- William S");
-				tag->addFrame(numFrame);
-				tag->addFrame(pubFrame);
-				tag->addFrame(copFrame);
-				tag->addFrame(comFrame);
+				TagLib::ID3v2::TextIdentificationFrame* albumArtistFrame = new TagLib::ID3v2::TextIdentificationFrame("TPE2");
+				TagLib::ID3v2::TextIdentificationFrame* trackNumberFrame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
+				TagLib::ID3v2::TextIdentificationFrame* publisherFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
+				TagLib::ID3v2::TextIdentificationFrame* copyrightFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
+				TagLib::ID3v2::CommentsFrame* commentFrame = new TagLib::ID3v2::CommentsFrame();
+				albumArtistFrame->setText(reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()));
+				trackNumberFrame->setText(QString::number(TrackNumber()).toUtf8().data());
+				publisherFrame->setText("William S - Spotify Downloader");
+				copyrightFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+				commentFrame->setText("Thanks for using my program! :)\n- William S");
+				tag->addFrame(albumArtistFrame);
+				tag->addFrame(trackNumberFrame);
+				tag->addFrame(publisherFrame);
+				tag->addFrame(copyrightFrame);
+				tag->addFrame(commentFrame);
 				
 				if (coverArtOverride || CoverImage.isNull())
 					break;
@@ -843,6 +846,8 @@ void Song::AssignMetadata() {
 				tag->setYear(ReleaseDate.year());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 				tag->setTrack(TrackNumber());
+
+				tag->setItem("aART", TagLib::StringList(reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()))); // Album Artist
 
 				if (coverArtOverride || CoverImage.isNull())
 					break;
@@ -867,7 +872,9 @@ void Song::AssignMetadata() {
 				tag->setTrack(TrackNumber());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
 
-				// RIFF only supports text metadata, no cover art
+				// RIFF doesnt support:
+				// - Album Artist
+				// - Cover Art
 
 				break;
 			}
@@ -881,6 +888,8 @@ void Song::AssignMetadata() {
 				tag->setYear(ReleaseDate.year());
 				tag->setTrack(TrackNumber());
 				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+
+				tag->addField("ALBUMARTIST", reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()));
 
 				if (coverArtOverride || CoverImage.isNull())
 					break;
