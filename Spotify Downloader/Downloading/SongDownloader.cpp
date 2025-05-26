@@ -74,7 +74,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, codec, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
-	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames.replace(";", ","));
+	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNames);
 	emit SetSongCount(_threadIndex, count + 1, _totalSongCount);
 	emit SetProgressBar(_threadIndex, 0, 0);
 

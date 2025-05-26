@@ -78,7 +78,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		foreach(QJsonValue artist, ArtistsList) {
 			ArtistNamesList.append(artist["name"].toString());
 		}
-		ArtistNames = ArtistNamesList.join("; ");
+		ArtistNames = ArtistNamesList.join(Config::ArtistSeparator);
 
 		// Album
 		AlbumName = album["name"].toString();
@@ -94,7 +94,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		foreach(QJsonValue artist, AlbumArtistsList) {
 			AlbumArtistNamesList.append(artist["name"].toString());
 		}
-		AlbumArtistNames = AlbumArtistNamesList.join("; ");
+		AlbumArtistNames = AlbumArtistNamesList.join(Config::ArtistSeparator);
 
 		// Release Date
 		QStringList dates = album["release_date"].toString().split("-");
