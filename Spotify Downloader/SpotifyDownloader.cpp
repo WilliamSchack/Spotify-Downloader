@@ -60,6 +60,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::LoadSettingsUI, this, &SpotifyDownloader::LoadSettingsUI);
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
+    connect(_playlistDownloader, &PlaylistDownloader::OpenURL, this, QOverload<QUrl>::of(& SpotifyDownloader::OpenURL));
 
     qInfo() << "Successfully Setup Playlist Worker Thread";
 }

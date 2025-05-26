@@ -88,6 +88,7 @@ class SpotifyDownloader : public QDialog
         void LoadSettingsUI();
         void HidePauseWarning(int threadIndex);
         void SetThreadFinished(int threadIndex);
+        void OpenURL(QUrl address);
     signals:
         void operate(const SpotifyDownloader* main);
         void RequestQuit();
@@ -132,8 +133,6 @@ class SpotifyDownloader : public QDialog
         void CheckForUpdate();
 
         int CurrentScreen();
-
-        void OpenURL(QUrl address);
         void OpenURL(QUrl address, QString windowTitle, QString windowMessage);
 
         void closeEvent(QCloseEvent* closeEvent);
@@ -199,6 +198,7 @@ class PlaylistDownloader : public QObject {
         void LoadSettingsUI();
         void SetThreadFinished(int threadIndex);
         void ResetDownloadingVariables();
+        void OpenURL(QUrl address);
 };
 
 #include "Downloading/Song.h"
