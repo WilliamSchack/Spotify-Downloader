@@ -794,16 +794,31 @@ void Song::AssignMetadata() {
 		// Check if the cover art is handled differently
 		bool coverArtOverride = Codec::Data[Codec].CoverArtOverride != NULL;
 
+		// Set variables
+		TagLib::String title = reinterpret_cast<const wchar_t*>(Title.constData());
+		TagLib::String artists = reinterpret_cast<const wchar_t*>(ArtistNames.constData());
+		TagLib::String albumArtists = reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData());
+		TagLib::String album = reinterpret_cast<const wchar_t*>(AlbumName.constData());
+
+		TagLib::String publisherText = "Downloaded through Spotify Downloader by William S";
+		TagLib::String copyrightText = QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data();
+		TagLib::String commentText = "Thanks for using my program! :) - William S";
+
+		TagLib::String compressedComment = QString("%1\n%2\n%3").arg(copyrightText.toWString()).arg(publisherText.toWString()).arg(commentText.toWString()).toUtf8().data();
+
+		unsigned int releaseYear = ReleaseDate.year();
+		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();
+
 		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {
 			case Codec::MetadataType::ID3V2:
 			{
 				TagLib::ID3v2::Tag* tag = dynamic_cast<TagLib::ID3v2::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
-				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
-				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
-				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setYear(ReleaseDate.year());
+				tag->setTitle(title);
+				tag->setArtist(artists);
+				tag->setAlbum(album);
+				tag->setYear(releaseYear);
 				// Below work on specific systems where the above dont (#33) need to look further into it
 				// tag->setTitle(Title.trimmed().toUtf8().data());
 				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
@@ -814,11 +829,11 @@ void Song::AssignMetadata() {
 				TagLib::ID3v2::TextIdentificationFrame* publisherFrame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
 				TagLib::ID3v2::TextIdentificationFrame* copyrightFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::CommentsFrame* commentFrame = new TagLib::ID3v2::CommentsFrame();
-				albumArtistFrame->setText(reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()));
-				trackNumberFrame->setText(QString::number(TrackNumber()).toUtf8().data());
-				publisherFrame->setText("William S - Spotify Downloader");
-				copyrightFrame->setText(QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
-				commentFrame->setText("Thanks for using my program! :)\n- William S");
+				albumArtistFrame->setText(albumArtists);
+				trackNumberFrame->setText(trackNumber);
+				publisherFrame->setText(publisherText);
+				copyrightFrame->setText(copyrightText);
+				commentFrame->setText(commentText);
 				tag->addFrame(albumArtistFrame);
 				tag->addFrame(trackNumberFrame);
 				tag->addFrame(publisherFrame);
@@ -840,14 +855,14 @@ void Song::AssignMetadata() {
 			{
 				TagLib::MP4::Tag* tag = dynamic_cast<TagLib::MP4::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
-				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
-				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
-				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setYear(ReleaseDate.year());
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+				tag->setTitle(title);
+				tag->setArtist(artists);
+				tag->setAlbum(album);
+				tag->setYear(releaseYear);
+				tag->setComment(compressedComment);
 				tag->setTrack(TrackNumber());
 
-				tag->setItem("aART", TagLib::StringList(reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()))); // Album Artist
+				tag->setItem("aART", TagLib::StringList(albumArtists)); // Album Artists
 
 				if (coverArtOverride || CoverImage.isNull())
 					break;
@@ -865,12 +880,12 @@ void Song::AssignMetadata() {
 			{
 				TagLib::RIFF::Info::Tag* tag = dynamic_cast<TagLib::RIFF::Info::Tag*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
-				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
-				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
-				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setYear(ReleaseDate.year());
+				tag->setTitle(title);
+				tag->setArtist(artists);
+				tag->setAlbum(album);
+				tag->setYear(releaseYear);
 				tag->setTrack(TrackNumber());
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+				tag->setComment(compressedComment);
 
 				// RIFF doesnt support:
 				// - Album Artist
@@ -882,14 +897,14 @@ void Song::AssignMetadata() {
 			{
 				TagLib::Ogg::XiphComment* tag = dynamic_cast<TagLib::Ogg::XiphComment*>(Codec::Data[Codec].GetFileTag(tagFileRef));
 
-				tag->setTitle(reinterpret_cast<const wchar_t*>(Title.constData()));
-				tag->setArtist(reinterpret_cast<const wchar_t*>(ArtistNames.constData()));
-				tag->setAlbum(reinterpret_cast<const wchar_t*>(AlbumName.constData()));
-				tag->setYear(ReleaseDate.year());
+				tag->setTitle(title);
+				tag->setArtist(artists);
+				tag->setAlbum(album);
+				tag->setYear(releaseYear);
 				tag->setTrack(TrackNumber());
-				tag->setComment(QString("Spotify ID (%1), Youtube ID (%2)\nDownloaded through Spotify Downloader by William S\nThanks for using my program! :)").arg(SpotifyId).arg(YoutubeId).toUtf8().data());
+				tag->setComment(compressedComment);
 
-				tag->addField("ALBUMARTIST", reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData()));
+				tag->addField("ALBUMARTIST", albumArtists);
 
 				if (coverArtOverride || CoverImage.isNull())
 					break;
