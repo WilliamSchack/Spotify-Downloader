@@ -362,101 +362,123 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 
 QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	QJsonArray finalResults = QJsonArray();
+
+	// Some song IDs can show up multiple times with different durations
+	// If this happens, if any of them show a longer than permitted time, add it to this list
+	QStringList bannedIDs;
+
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
 
 		// If song is explicit only allow explicit results
-		if (IsExplicit && !result["isExplicit"].toBool()) {
+		if (IsExplicit && !result["isExplicit"].toBool())
 			continue;
-		}
+
+		// If song in banned IDs, skip
+		if (bannedIDs.contains(result["videoId"].toString()))
+			continue;
 
 		int seconds = result["durationSeconds"].toInt();
 
-		if (seconds != 0 && seconds > Time - 15 && seconds < Time + 15) {
-			float totalScore = 0;
-
-			// Title score
-			float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
-			totalScore += titleScore;
-
-			// Time score
-			float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - Time)) / 15);
-			totalScore += timeScore;
-
-			// Check if time and title are similar enough combined
-			if (timeScore < 0.75 && titleScore < 0.5) continue;
-
-			// Artists score
-			if (result.contains("artists")) {
-				foreach(QJsonValue artist, result["artists"].toArray()) {
-					if (ArtistNamesList.contains(artist.toObject()["name"].toString())) {
-						totalScore += 1.0;
-						break;
-					}
-				}
-			}
-			else continue;
-
-			// Album score
-			if (result.contains("album")) {
-				if (!result["album"].toObject().isEmpty() && result["album"].toObject()["name"].toString().contains(AlbumName)) {
-					if (result["album"].toObject()["name"].toString() == AlbumName) totalScore += 0.4;
-					else totalScore += 0.3;
-				}
-			}
-
-			// Title score
-			if (result.contains("title")) {
-				bool hasTitle = false;
-				QString title = result["title"].toString();
-				if (title.contains(Title) || Title.contains(title)) {
-					if (title == Title) totalScore += 0.5;
-					else totalScore += 0.3;
-					hasTitle = true;
-				}
-
-				// Keywords that are not allowed unless they are in the spotify song title as well
-				// Will only work in english titled songs
-				QStringList bannedKeywords = {
-					"reverse", "instrumental"
-				};
-				QStringList bannedKeywordsAdditions = {
-					" %1 ", "(%1", "%1)", "%1"
-				};
-
-				bool banned = false;
-				foreach(QString keyword, bannedKeywords) {
-					foreach(QString addition, bannedKeywordsAdditions) {
-						QString word = addition.arg(keyword);
-						if (title.toLower().contains(word) && !Title.toLower().contains(word)) {
-							banned = true;
-							break;
-						}
-					}
-
-					if (banned) break;
-				}
-				if (banned) continue;
-
-				foreach(QString artist, ArtistNamesList) {
-					if (title.contains(artist)) {
-						totalScore += 0.2;
-						break;
-					}
-				}
-			}
-
-			int viewCount = 0;
-			if (result["resultType"].toString() == "video" && result.contains("views")) {
-				viewCount = StringUtils::StringNumberToInt(result["views"].toString());
-			}
-
-			finalResults.append(QJsonObject{
-				{"result", result},
-				{"score", totalScore},
-				{"views", viewCount}
-			});
+		// If outside the time range, add to banned IDs and skip
+		if (seconds == 0 || seconds < Time - 15 || seconds > Time + 15) {
+			bannedIDs.append(result["videoId"].toString());
+			continue;
 		}
+
+		// Score the song
+
+		float totalScore = 0;
+
+		// Title score
+		float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
+		totalScore += titleScore;
+
+		// Time score
+		float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - Time)) / 15);
+		totalScore += timeScore;
+
+		// Check if time and title are similar enough combined
+		if (timeScore < 0.75 && titleScore < 0.5) continue;
+
+		// Artists score
+		if (result.contains("artists")) {
+			foreach(QJsonValue artist, result["artists"].toArray()) {
+				if (ArtistNamesList.contains(artist.toObject()["name"].toString())) {
+					totalScore += 1.0;
+					break;
+				}
+			}
+		}
+		else continue;
+
+		// Album score
+		if (result.contains("album")) {
+			if (!result["album"].toObject().isEmpty() && result["album"].toObject()["name"].toString().contains(AlbumName)) {
+				if (result["album"].toObject()["name"].toString() == AlbumName) totalScore += 0.4;
+				else totalScore += 0.3;
+			}
+		}
+
+		// Title score
+		if (result.contains("title")) {
+			bool hasTitle = false;
+			QString title = result["title"].toString();
+			if (title.contains(Title) || Title.contains(title)) {
+				if (title == Title) totalScore += 0.5;
+				else totalScore += 0.3;
+				hasTitle = true;
+			}
+
+			// Keywords that are not allowed unless they are in the spotify song title as well
+			// Will only work in english titled songs
+			QStringList bannedKeywords = {
+				"reverse", "instrumental"
+			};
+			QStringList bannedKeywordsAdditions = {
+				" %1 ", "(%1", "%1)", "%1"
+			};
+
+			bool banned = false;
+			foreach(QString keyword, bannedKeywords) {
+				foreach(QString addition, bannedKeywordsAdditions) {
+					QString word = addition.arg(keyword);
+					if (title.toLower().contains(word) && !Title.toLower().contains(word)) {
+						banned = true;
+						break;
+					}
+				}
+
+				if (banned) break;
+			}
+			if (banned) continue;
+
+			foreach(QString artist, ArtistNamesList) {
+				if (title.contains(artist)) {
+					totalScore += 0.2;
+					break;
+				}
+			}
+		}
+
+		int viewCount = 0;
+		if (result["resultType"].toString() == "video" && result.contains("views")) {
+			viewCount = StringUtils::StringNumberToInt(result["views"].toString());
+		}
+
+		finalResults.append(QJsonObject{
+			{"result", result},
+			{"score", totalScore},
+			{"views", viewCount}
+		});
+	}
+
+	// Double check banned IDs, songs may have scored with a lower time before it was added
+	for (int i = finalResults.count() - 1; i >= 0; i--) {
+		QJsonObject result = finalResults[i].toObject();
+
+		if (bannedIDs.contains(result["videoId"].toString()))
+			finalResults.removeAt(i);
 	}
 
 	return finalResults;
