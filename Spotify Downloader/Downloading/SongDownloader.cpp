@@ -149,7 +149,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		},
 		[this]() {
-			emit ShowMessageBox("Invalid PO Token", "The assigned PO Token is invalid/expired. Download will continue but cookies will not be used. Please change your PO Token.", QMessageBox::Warning);
+			emit ShowPOTokenError();
 		},
 		[&]() {
 			// Call warning and reset bitrate if higher than non-premium account

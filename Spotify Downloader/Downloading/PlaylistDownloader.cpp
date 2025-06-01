@@ -188,6 +188,7 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 		connect(this, &PlaylistDownloader::DownloadOnThread, worker->Downloader, &SongDownloader::DownloadSongs);
 
 		connect(worker->Downloader, &SongDownloader::SongDownloaded, this, &PlaylistDownloader::SongDownloaded);
+		connect(worker->Downloader, &SongDownloader::ShowPOTokenError, this, &PlaylistDownloader::ShowPOTokenError);
 		connect(worker->Downloader, &SongDownloader::Finish, this, &PlaylistDownloader::FinishThread);
 		connect(worker->Downloader, &SongDownloader::CleanedUp, this, &PlaylistDownloader::CleanedUp);
 		connect(worker->Downloader, &SongDownloader::AddDownloadErrors, this, &PlaylistDownloader::AddDownloadErrors);
@@ -228,6 +229,15 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 void PlaylistDownloader::SongDownloaded() {
 	_songsDownloaded++;
 	emit SetSongCount(-1, _songsDownloaded, _totalSongCount);
+}
+
+void PlaylistDownloader::ShowPOTokenError() {
+	// Dont show error if shown before
+	if (_poTokenErrorShown)
+		return;
+
+	emit ShowMessageBox("Invalid PO Token", "The assigned PO Token is invalid/expired. Download will continue but cookies will not be used. Please change your PO Token.", QMessageBox::Warning);
+	_poTokenErrorShown = true;
 }
 
 void PlaylistDownloader::AddDownloadErrors(int threadIndex, QJsonArray downloadErrors) {

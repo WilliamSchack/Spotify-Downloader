@@ -158,6 +158,7 @@ class PlaylistDownloader : public QObject {
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
         void SongDownloaded();
+        void ShowPOTokenError();
         void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);
         void FinishThread(int threadIndex, QJsonArray dowwnloadErrors);
         void Quit();
@@ -171,6 +172,7 @@ class PlaylistDownloader : public QObject {
         SpotifyAPI* _sp;
 
         bool _quitting = false;
+        bool _poTokenErrorShown = false;
 
         QJsonArray _downloadErrors;
         int _totalSongCount = 0;
@@ -251,6 +253,7 @@ class SongDownloader : public QObject {
         void ShowMessage(QString title, QString message, int msecs = 5000);
         void ShowMessageBox(QString title, QString message, QMessageBox::Icon icon);
         void ShowMessageBoxWithButtons(QString title, QString message, QMessageBox::Icon icon, QMessageBox::StandardButtons standardButtons);
+        void ShowPOTokenError();
         void SetDownloadStatus(QString text);
         void SetProgressLabel(int threadIndex, QString text);
         void SetProgressBar(int threadIndex, float percentage, int durationMs = 1000);
