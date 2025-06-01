@@ -141,16 +141,29 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	// Download song
+	int bitrateOverride = -1;
+
 	qInfo() << _threadIndex << "Downloading song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Downloading Track...");
+
 	QString downloadResult = song.Download(_yt, _currentProcess, Config::Overwrite,
+		// On Progress Update
 		[&](float percentComplete) {
 			float progressBarPercent = MathUtils::Lerp(0.3, 0.7, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		},
+		// On PO Token Warning
 		[this]() {
 			emit ShowPOTokenError();
 		},
+		// On Low Quality Warning
+		[&]() {
+			AddSongToErrors(song, "Song is not uploaded at 256kb/s, downloaded at 128kb/s", true);
+
+			// Premium already verified, set bitrate override to non-premium max to not waste storage
+			bitrateOverride = Codec::Data[Config::Codec].MaxBitrate;
+		},
+		// On Premium Disabled
 		[&]() {
 			// Call warning and reset bitrate if higher than non-premium account
 			int maxBitrate = Codec::Data[Config::Codec].MaxBitrate;
@@ -193,7 +206,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (_quitting) return;
 
 	// If normalising, normalise audio, includes setting bitrate of audio
-	int bitrate = Config::AudioBitrate[codec]; // Get current bitrate
+	int bitrate = bitrateOverride != -1 ? bitrateOverride : Config::AudioBitrate[codec]; // Get current bitrate
 	if (Config::NormalizeAudio) {
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
@@ -266,10 +279,7 @@ void SongDownloader::FinishedDownloading(bool finished) {
 	_finishedDownloading = finished;
 }
 
-void SongDownloader::AddSongToErrors(Song song, QString error) {
-	emit SetProgressLabel(_threadIndex, "CANNOT DOWNLOAD");
-	emit SetProgressBar(_threadIndex, 1);
-
+void SongDownloader::AddSongToErrors(Song song, QString error, bool silent) {
 	_downloadErrors.append(QJsonObject{
 		{"id", song.SpotifyId},
 		{"title", song.Title},
@@ -279,9 +289,14 @@ void SongDownloader::AddSongToErrors(Song song, QString error) {
 		{"error", error }
 	});
 
-	qWarning() << _threadIndex << "Could not find search result for" << song.SpotifyId << "with the error:" << error;
+	if (!silent) {
+		qWarning() << _threadIndex << "Could not find search result for" << song.SpotifyId << "with the error:" << error;
 
-	QThread::msleep(500);
+		emit SetProgressLabel(_threadIndex, "CANNOT DOWNLOAD");
+		emit SetProgressBar(_threadIndex, 1);
+
+		QThread::msleep(500);
+	}
 }
 
 void SongDownloader::CheckForStop() {

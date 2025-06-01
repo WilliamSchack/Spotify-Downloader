@@ -90,7 +90,7 @@ class Song {
 
 		void DownloadCoverImage();
 		QString SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate);
-		QString Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning = nullptr, std::function<void()> onPremiumDisabled = nullptr);
+		QString Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning = nullptr, std::function<void()> onLowQualityWarning = nullptr, std::function<void()> onPremiumDisabled = nullptr);
 		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
 		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
 		void AssignMetadata();

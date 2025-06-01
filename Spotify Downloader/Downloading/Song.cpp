@@ -484,7 +484,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onPremiumDisabled) {
+QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onLowQualityWarning, std::function<void()> onPremiumDisabled) {
 	// Use downloading path without codec, will be changed after
 	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
 
@@ -553,7 +553,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		// If started download assuming premium then other thread assigned premium to false, restart download without cookies
 		// This usually happens when starting a download with multiple threads
 		if (startingHasPremium && !Config::HasPremium) {
-			return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onPremiumDisabled);
+			return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onLowQualityWarning, onPremiumDisabled);
 		}
 
 		// Check if PO Token is invalid, dont cancel download just warn user
@@ -624,6 +624,18 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 
 				// If bitrate is ~128kb/s and premium is enabled, disable it
 				if (kbps < 200 && Config::HasPremium) {
+					// Check that song has a 256kb/s version
+					// If cookies assigned, "Decrypted nsig" will be shown 3 times, if less the video only has a 128kb/s version
+					if (lowerErrorOutput.count("decrypted nsig") < 3) {
+						qInfo() << SpotifyId << "YT-DLP Response:" << errorOutput;
+						qInfo() << SpotifyId << "Cannot be downloaded at 256kb/s with the YouTube ID:" << YoutubeId;
+
+						onLowQualityWarning();
+
+						break;
+					}
+
+					qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 					qInfo() << "User does not have premium or cookies are expired, disabling checks for later downloads";
 
 					Config::HasPremium = false;
