@@ -90,38 +90,11 @@ The popup should not open again after the first time running the app. It most li
 
 ### Windows Defender detecting the app
 
-$${\color{red}Do \space not \space do \space this \space with \space apps \space you \space do \space not \space trust!}$$
+This has been fixed and the app has been excluded from windows defender scans, if the app is still getting blocked, updating your malware definitions should fix it:
 
-Allowing any app that shows up as a virus to run on your PC will cause harm and can lead to damages or complete loss of personal data if a virus is allowed
-
-In saying that, $${\color{red}if \space you \space do \space not \space trust \space this \space app, \space do \space not \space allow \space it \space to \space run!}$$ This is false positive caused by the app not being signed and verified but if you do not believe this for any reason, **uninstall the app immediately.**
-
-If you see any of the following popups after opening the app, windows defender is blocking it.
-
-<img src="https://github.com/user-attachments/assets/6e448219-10d1-4f3c-a8f3-c33e2692aa77" width="40%" height="40%">
-<img src="https://github.com/user-attachments/assets/349e4133-4122-48de-9d37-ac3a6106f1b4" width="30%" height="30%">
-
-**To allow the app:**
-- Right click the zip folder and click "Scan with microsoft defender..."
-- It should popup with a threat along the lines of "Program:Win32/Wacapew.C!ml" but it may be different on your system
-- Click Allow on device, then start actions
-- Now unzip the spotify downloader folder and it should work fine
-
-If the unzipped folder does not include "Spotify Downloader.exe", it was blocked and deleted inside the zip file and you will need to reinstall the app from [the release page](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest)
-
-<img src="https://github.com/user-attachments/assets/80e955c2-9bce-4e19-88b7-891423e2e89e" width="40%" height="40%">
-<img src="https://github.com/user-attachments/assets/c8aece76-cf5b-46a4-af69-492cac82f2ea" width="29%" height="29%">
-
-**If you want to block the app again:**
-- Open the windows security settings > Virus & threat protection
-- Go to Allowed Threats
-- Click on the one with the threat that was labelled when allowing the app
-  > There is no way to check that this is the Spotify Downloader if there are other entries here but to be safe you should block everything shown unless you know what you are doing
-- Click Don't allow
-
-<img src="https://github.com/user-attachments/assets/dd46db54-caa9-4a6d-8e27-82af1d05323c" width="30%" height="30%">
-<img src="https://github.com/user-attachments/assets/735ec99d-0c64-4def-9002-111bb1c18961" width="30%" height="30%">
-<img src="https://github.com/user-attachments/assets/902d5185-3c66-4924-b5c7-8a1e50c6e5cc" width="40%" height="40%">
+1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
+2. Run “MpCmdRun.exe -removedefinitions -dynamicsignatures”
+3. Run "MpCmdRun.exe -SignatureUpdate"
 
 ---
 
