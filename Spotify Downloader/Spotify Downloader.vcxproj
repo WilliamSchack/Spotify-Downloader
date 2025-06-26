@@ -29,6 +29,7 @@
     <ClCompile Include="Network\YTMusicAPI.cpp" />
     <ClCompile Include="Playlist\M3UFile.cpp" />
     <ClCompile Include="Playlist\PlaylistFile.cpp" />
+    <ClCompile Include="Playlist\PLSFile.cpp" />
     <ClCompile Include="Playlist\XSPFFile.cpp" />
     <ClCompile Include="SpotifyDownloader.cpp" />
     <ClCompile Include="UI\CustomWidgets\CheckBox.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="Playlist\M3UFile.h" />
     <ClInclude Include="Playlist\PlaylistFile.h" />
     <ClInclude Include="Playlist\PlaylistFileTrack.h" />
+    <ClInclude Include="Playlist\PLSFile.h" />
     <ClInclude Include="Playlist\XSPFFile.h" />
     <ClInclude Include="Utilities\Animation.h" />
     <ClInclude Include="Utilities\ImageUtils.h" />
