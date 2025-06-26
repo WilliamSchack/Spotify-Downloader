@@ -407,7 +407,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 	if (!Main->ExitingApplication) {
 		// Open download folder
 		if (Config::AutoOpenDownloadFolder)
-			emit OpenURL(Config::SaveLocation);
+			emit OpenURL(QUrl::fromLocalFile(Config::SaveLocation));
 
 		// Change Screen
 		if (_downloadErrors.count() == 0) {
