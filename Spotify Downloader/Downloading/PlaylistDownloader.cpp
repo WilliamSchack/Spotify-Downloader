@@ -492,7 +492,7 @@ void PlaylistDownloader::ClearDirFiles(const QString& path)
 		delete timer;
 	}
 
-	qInfo() << "Cleaned directory:" << StringUtils::Anonymize(path);
+	qInfo() << "Cleaned directory:" << StringUtils::AnonymizeFilePath(path);
 }
 
 int PlaylistDownloader::DownloadErrors() {

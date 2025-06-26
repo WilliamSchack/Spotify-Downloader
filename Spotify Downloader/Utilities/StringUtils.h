@@ -10,7 +10,8 @@ class StringUtils {
 		static QString ValidateFileName(QString string);
 		static QString ValidateFolderName(QString string);
 
-		static QString Anonymize(QString string);
+		static QString AnonymizeFilePath(QString string);
+		static QString EncodeFilePath(QString string);
 
 		static int StringNumberToInt(QString string);
 

@@ -1,37 +1,44 @@
 #include "StringUtils.h"
 
 QString StringUtils::ValidateFileName(QString string) {
+    QString copiedString = QString(string);
 	QString invalidChars = R"(<>:"/\|?*)";
 	foreach(QChar c, invalidChars) {
-		string.remove(c);
+        copiedString.remove(c);
 	}
-	return string;
+	return copiedString;
 }
 
 QString StringUtils::ValidateFolderName(QString string) {
+    QString copiedString = QString(string);
     QString invalidChars = R"(<>:"|?*)";
     foreach(QChar c, invalidChars) {
-        string.remove(c);
+        copiedString.remove(c);
     }
-    return string;
+    return copiedString;
 }
 
 // Remove user name from file path
-QString StringUtils::Anonymize(QString string) {
-    return string.replace(QRegularExpression("/Users/[^/]+/"), "/Users/Anonymous/");
+QString StringUtils::AnonymizeFilePath(QString string) {
+    return QString(string).replace(QRegularExpression("/Users/[^/]+/"), "/Users/Anonymous/");
+}
+
+// Use over QUrl::toPercentEncoding as that also encodes "/"
+QString StringUtils::EncodeFilePath(QString string) {
+    return QString(string).replace(QRegularExpression("[\\s]+"), "%20");
 }
 
 // Bit of a brute force but I doubt views will exceed the trillions 
 int StringUtils::StringNumberToInt(QString string) {
 	if (string.contains("K"))
-		return string.replace("K", "").toInt() * 1000;
+		return QString(string).replace("K", "").toInt() * 1000;
 	if (string.contains("M"))
-		return string.replace("M", "").toInt() * 1000000;
+		return QString(string).replace("M", "").toInt() * 1000000;
 	if (string.contains("B"))
-		return string.replace("B", "").toInt() * 1000000000;
+		return QString(string).replace("B", "").toInt() * 1000000000;
 	if (string.contains("T"))
-		return string.replace("T", "").toInt() * 1000000000000;
-	return string.toInt(); // Just incase not returned before
+		return QString(string).replace("T", "").toInt() * 1000000000000;
+	return QString(string).toInt(); // Just incase not returned before
 }
 
 // Levenshtein Distance Algorithim From Geeks For Geeks
