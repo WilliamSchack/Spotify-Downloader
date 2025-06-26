@@ -12,9 +12,6 @@ void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWi
 	// Write header to the playlist
 	out << WriteHeader();
 
-	// Iterate through the parent folder and look for valid songs
-	// ^ REMOVE
-
 	// Get all the files in the given directory and add to a list
 	QList<PlaylistFileTrack> tracks;
 	QDirIterator iterator(parentFolder, GetFilters(), QDir::Files, QDirIterator::Subdirectories);
@@ -50,10 +47,6 @@ void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWi
 
 		// Add file to the list
 		tracks.append(track);
-
-		// Write file to the playlist
-		//QFileInfo fileInfo(iterator.next());
-		//out << WriteFile(fileInfo);
 	}
 
 	// Sort files by their track number
@@ -65,7 +58,6 @@ void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWi
 	foreach(PlaylistFileTrack track, tracks) {
 		out << WriteFile(track);
 	}
-
 
 	// Write footer to the playlist
 	out << WriteFooter();
