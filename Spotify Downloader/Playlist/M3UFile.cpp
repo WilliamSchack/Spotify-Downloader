@@ -9,7 +9,7 @@ QString M3UFile::WriteFile(QFileInfo fileInfo) {
 	QString absolutePath = fileInfo.absoluteFilePath();
 	QString encodedPath = StringUtils::EncodeFilePath(QUrl::fromLocalFile(absolutePath).toString());
 
-	// Get duration in seconds
+	// Get file details
 	TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(absolutePath.constData()));
 	TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
 

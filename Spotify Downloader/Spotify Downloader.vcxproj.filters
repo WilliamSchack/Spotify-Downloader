@@ -54,6 +54,12 @@
     <Filter Include="Dependencies">
       <UniqueIdentifier>{2fb372a9-e191-4f82-bc9f-13bcc7488763}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Playlist">
+      <UniqueIdentifier>{500576ee-29f0-413c-b528-66cc882e2b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Playlist">
+      <UniqueIdentifier>{fddfe536-90a5-4812-a510-33588793a914}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Downloading\PlaylistDownloader.cpp">
@@ -125,6 +131,15 @@
     <ClCompile Include="Network\VersionManager.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Playlist\M3UFile.cpp">
+      <Filter>Source Files\Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="Playlist\PlaylistFile.cpp">
+      <Filter>Source Files\Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="Playlist\XSPFFile.cpp">
+      <Filter>Source Files\Playlist</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -165,6 +180,15 @@
     </ClInclude>
     <ClInclude Include="Downloading\Song.h">
       <Filter>Header Files\Downloading</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist\M3UFile.h">
+      <Filter>Header Files\Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist\PlaylistFile.h">
+      <Filter>Header Files\Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="Playlist\XSPFFile.h">
+      <Filter>Header Files\Playlist</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
