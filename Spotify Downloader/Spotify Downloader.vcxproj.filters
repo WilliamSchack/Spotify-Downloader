@@ -190,6 +190,9 @@
     <ClInclude Include="Playlist\XSPFFile.h">
       <Filter>Header Files\Playlist</Filter>
     </ClInclude>
+    <ClInclude Include="Playlist\PlaylistFileTrack.h">
+      <Filter>Header Files\Playlist</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Utilities\ObjectHoverWatcher.h">

@@ -1,12 +1,18 @@
 #ifndef PLAYLISTFILE_H
 #define PLAYLISTFILE_H
 
+#include "PlaylistFileTrack.h"
+
 #include "Downloading/Codec.h"
+#include "Utilities/StringUtils.h"
 
 #include <QString>
 
+#include <QUrl>
 #include <QFile>
 #include <QDirIterator>
+
+#include <taglib/fileref.h>
 
 class PlaylistFile {
 	public:
@@ -15,7 +21,7 @@ class PlaylistFile {
 	protected:
 		virtual QString Extension() = 0;
 		virtual QString WriteHeader() = 0;
-		virtual QString WriteFile(QFileInfo fileInfo) = 0;
+		virtual QString WriteFile(PlaylistFileTrack track) = 0;
 		virtual QString WriteFooter() = 0;
 	private:
 		inline static QStringList _filtersCache;

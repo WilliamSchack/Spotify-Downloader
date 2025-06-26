@@ -59,6 +59,7 @@
     <QtMoc Include="SpotifyDownloader.h" />
     <ClInclude Include="Playlist\M3UFile.h" />
     <ClInclude Include="Playlist\PlaylistFile.h" />
+    <ClInclude Include="Playlist\PlaylistFileTrack.h" />
     <ClInclude Include="Playlist\XSPFFile.h" />
     <ClInclude Include="Utilities\Animation.h" />
     <ClInclude Include="Utilities\ImageUtils.h" />
