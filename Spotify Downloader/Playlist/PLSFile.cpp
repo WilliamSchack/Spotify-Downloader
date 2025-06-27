@@ -7,10 +7,13 @@ QString PLSFile::WriteHeader() {
 
 QString PLSFile::WriteFile(PlaylistFileTrack track) {
 	QString fileOutput = QString(
-		R"(File%1=%2)" "\n"
-		R"(Title%1=%3)" "\n"
+		"File%1=%2\n"
+		"Title%1=%3\n"
 		"Length%1=%4\n\n"
-	).arg(_currentFile).arg(track.EncodedPath).arg(track.Title).arg(track.DurationSeconds);
+	).arg(_currentFile)
+		.arg(track.EncodedPath)
+		.arg(track.Title)
+		.arg(track.DurationSeconds);
 
 	_currentFile++;
 	return fileOutput;

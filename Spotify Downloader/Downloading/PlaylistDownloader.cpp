@@ -1,8 +1,9 @@
 #include "SpotifyDownloader.h"
 
 #include "Downloading/Song.h"
-
 #include "Utilities/StringUtils.h"
+
+#include "Playlist/M3UFile.h"
 
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
@@ -49,10 +50,27 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 	// Get tracks from spotify
 	QJsonArray searchTracks = QJsonArray();
-	if (url.contains("playlist")) 
+	if (url.contains("playlist")) {
+		// Get Playlist Details
+		QJsonObject playlist = _sp->GetPlaylist(spotifyId);
+		_playlistName = playlist["name"].toString();
+		_playlistOwner = playlist["owner"].toObject()["display_name"].toString();
+
+		// Get Tracks
 		searchTracks = _sp->GetPlaylistTracks(spotifyId);
-	else if (url.contains("album")) {
+	}  else if (url.contains("album")) {
+		// Get Album Details
 		album = _sp->GetAlbum(spotifyId);
+		_playlistName = album["name"].toString();
+		
+		// Get all artists in the album for _playlistOwner
+		QStringList artists = QStringList();
+		foreach(QJsonValue artist, album["artists"].toArray()) {
+			artists.append(artist["name"].toString());
+		}
+		_playlistOwner = artists.join(Config::ArtistSeparator);
+
+		// Get Tracks
 		searchTracks = _sp->GetAlbumTracks(album);
 	}
 	else if (url.contains("episode"))
@@ -405,6 +423,16 @@ PlaylistDownloader::~PlaylistDownloader() {
 	QFile(cookieFilePath).remove();
 
 	if (!Main->ExitingApplication) {
+		// Create a playlist file ADD EXTRA CONDITION HERE WHEN SETTING IMPLEMENTED
+		if (_playlistName != "" && _playlistOwner != "") {
+			PlaylistFile* playlistFile = new M3UFile();
+
+			QString outputPath = QString("%1/%2 - %3").arg("").arg(_playlistName).arg(_playlistOwner);
+			playlistFile->CreatePlaylistFile(Config::SaveLocation, outputPath);
+
+			delete playlistFile;
+		}
+
 		// Open download folder
 		if (Config::AutoOpenDownloadFolder)
 			emit OpenURL(QUrl::fromLocalFile(Config::SaveLocation));

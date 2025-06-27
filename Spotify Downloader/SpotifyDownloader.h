@@ -174,6 +174,9 @@ class PlaylistDownloader : public QObject {
         bool _quitting = false;
         bool _poTokenErrorShown = false;
 
+        QString _playlistName = "";
+        QString _playlistOwner = "";
+
         QJsonArray _downloadErrors;
         int _totalSongCount = 0;
 

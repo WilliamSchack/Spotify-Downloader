@@ -31,6 +31,20 @@ bool SpotifyAPI::CheckConnection() {
 	return Network::Ping(url);
 }
 
+QJsonObject SpotifyAPI::GetPlaylist(QString id) {
+	QNetworkAccessManager* manager = new QNetworkAccessManager();
+	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id);
+
+	QNetworkRequest req(url);
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+	req.setRawHeader("Authorization", "Bearer " + _auth);
+
+	QByteArray response = Network::Get(req);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	return json;
+}
+
 QJsonArray SpotifyAPI::GetPlaylistTracks(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id + "/tracks");
