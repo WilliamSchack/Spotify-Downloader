@@ -721,102 +721,139 @@ bool SpotifyDownloader::ValidateSettings() {
     QStringList namingTags = Config::NAMING_TAGS;
 
     // Output Format
-    std::tuple<QString, Config::NamingError> formattedOutputName = Config::FormatStringWithTags(Config::FileNameTag, Config::FileName, [&namingTags](QString tag) -> std::tuple<QString, bool> {
-        if (!namingTags.contains(tag.toLower())) {
-            return std::make_tuple("", false);
-        }
-        else
-            return std::make_tuple("", true);
-    });
-
+    std::tuple<QString, Config::NamingError> formattedOutputName = Config::ValidateTagsInString(Config::FileNameTag, Config::FileName, Config::NAMING_TAGS);
     QString formattedOutputNameString = std::get<0>(formattedOutputName);
     Config::NamingError outputNameNamingError = std::get<1>(formattedOutputName);
 
-    if (outputNameNamingError == Config::NamingError::EnclosingTagsInvalid) {
-        ShowMessageBox(
-            "Invalid Naming Format Tag",
-            QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString),
-            QMessageBox::Warning
-        );
-        return false;
-    } else if (outputNameNamingError == Config::NamingError::TagInvalid) {
-        ShowMessageBox(
-            "Invalid Naming Format",
-            QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString),
-            QMessageBox::Warning
-        );
-        return false;
+    switch (outputNameNamingError) {
+        case Config::NamingError::EnclosingTagsInvalid:
+            ShowMessageBox(
+                "Invalid Naming Format Tag",
+                QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedOutputNameString),
+                QMessageBox::Warning
+            );
+            return false;
+        case Config::NamingError::TagInvalid:
+            ShowMessageBox(
+                "Invalid Naming Format",
+                QString("Invalid Tag Detected:\n%1").arg(formattedOutputNameString),
+                QMessageBox::Warning
+            );
+            return false;
     }
 
     // Sub Folders
 
-    // Cannot start with directory
-    if (Config::SubFolders.startsWith("/") || Config::SubFolders.startsWith("\\")) {
-        ShowMessageBox(
-            "Invalid Sub Folders",
-            R"(Sub Folders cannot start with "/" or "\")",
-            QMessageBox::Warning
-        );
-        return false;
-    }
-    
-    // Cannot end with directory
-    if (Config::SubFolders.endsWith("/") || Config::SubFolders.endsWith("\\")) {
-        ShowMessageBox(
-            "Invalid Sub Folders",
-            R"(Sub Folders cannot end with "/" or "\")",
-            QMessageBox::Warning
-        );
-        return false;
-    }
-
-    // Cannot contain double slashes
-    if (Config::SubFolders.contains("//") || Config::SubFolders.contains("\\\\")) {
-        ShowMessageBox(
-            "Invalid Sub Folders",
-            R"(Sub Folders cannot contain "//" or "\\")",
-            QMessageBox::Warning
-        );
-        return false;
-    }
-
-    // Cannot contain /\ or \/
-    if (Config::SubFolders.contains("/\\") || Config::SubFolders.contains("\\/")) {
-        ShowMessageBox(
-            "Invalid Sub Folders",
-            R"(Sub Folders cannot contain "/\" or "\/")",
-            QMessageBox::Warning
-        );
-        return false;
+    // Check path for errors
+    StringUtils::FilePathError subFolderPathError = StringUtils::CheckInputtedFilePathErrors(Config::SubFolders);
+    switch (subFolderPathError) {
+        case StringUtils::FilePathError::StartsWithDirectory:
+            ShowMessageBox(
+                "Invalid Sub Folders",
+                R"(Sub Folders cannot start with "/" or "\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::EndsWithDirectory:
+            ShowMessageBox(
+                "Invalid Sub Folders",
+                R"(Sub Folders cannot end with "/" or "\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::ContainsDoubleSlashes:
+            ShowMessageBox(
+                "Invalid Sub Folders",
+                R"(Sub Folders cannot contain "//" or "\\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::InvalidSlashes:
+            ShowMessageBox(
+                "Invalid Sub Folders",
+                R"(Sub Folders cannot contain "/\" or "\/")",
+                QMessageBox::Warning
+            );
+            return false;
     }
 
     // Check tags
-    std::tuple<QString, Config::NamingError> formattedSubFolders = Config::FormatStringWithTags(Config::SubFoldersTag, Config::SubFolders, [&namingTags](QString tag) -> std::tuple<QString, bool> {
-        if (!namingTags.contains(tag.toLower())) {
-            return std::make_tuple("", false);
-        }
-        else
-            return std::make_tuple("", true);
-    });
-
+    std::tuple<QString, Config::NamingError> formattedSubFolders = Config::ValidateTagsInString(Config::SubFoldersTag, Config::SubFolders, Config::NAMING_TAGS);
     QString formattedSubFoldersString = std::get<0>(formattedSubFolders);
     Config::NamingError subFoldersNamingError = std::get<1>(formattedSubFolders);
 
-    if (subFoldersNamingError == Config::NamingError::EnclosingTagsInvalid) {
-        ShowMessageBox(
-            "Invalid Sub Folders Tag",
-            QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedSubFoldersString),
-            QMessageBox::Warning
-        );
-        return false;
+    switch (subFoldersNamingError) {
+        case Config::NamingError::EnclosingTagsInvalid:
+            ShowMessageBox(
+                "Invalid Sub Folders Tag",
+                QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedSubFoldersString),
+                QMessageBox::Warning
+            );
+            return false;
+        case Config::NamingError::TagInvalid:
+            ShowMessageBox(
+                "Invalid Sub Folders",
+                QString("Invalid Tag Detected:\n%1").arg(formattedSubFoldersString),
+                QMessageBox::Warning
+            );
+            return false;
     }
-    else if (subFoldersNamingError == Config::NamingError::TagInvalid) {
-        ShowMessageBox(
-            "Invalid Sub Folders",
-            QString("Invalid Tag Detected:\n%1").arg(formattedSubFoldersString),
-            QMessageBox::Warning
-        );
-        return false;
+
+    // Playlist File
+
+    // Check path for errors
+    StringUtils::FilePathError playlistFilePathError = StringUtils::CheckInputtedFilePathErrors(Config::PlaylistFileName);
+    switch (playlistFilePathError) {
+        case StringUtils::FilePathError::StartsWithDirectory:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                R"(Playlist File Name cannot start with "/" or "\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::EndsWithDirectory:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                R"(Playlist File Name cannot end with "/" or "\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::ContainsDoubleSlashes:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                R"(Playlist File Name cannot contain "//" or "\\")",
+                QMessageBox::Warning
+            );
+            return false;
+        case StringUtils::FilePathError::InvalidSlashes:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                R"(Playlist File Name cannot contain "/\" or "\/")",
+                QMessageBox::Warning
+            );
+            return false;
+    }
+
+    // Check tags
+    std::tuple<QString, Config::NamingError> formattedPlaylistFileName = Config::ValidateTagsInString(Config::PlaylistFileNameTag, Config::PlaylistFileName, Config::PLAYLIST_NAMING_TAGS);
+    QString formattedPlaylistFileNameString = std::get<0>(formattedPlaylistFileName);
+    Config::NamingError PlaylistFileNameNamingError = std::get<1>(formattedPlaylistFileName);
+
+    switch (PlaylistFileNameNamingError) {
+        case Config::NamingError::EnclosingTagsInvalid:
+            ShowMessageBox(
+                "Invalid Playlist File Name Tag",
+                QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedPlaylistFileNameString),
+                QMessageBox::Warning
+            );
+            return false;
+        case Config::NamingError::TagInvalid:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                QString("Invalid Tag Detected:\n%1").arg(formattedPlaylistFileNameString),
+                QMessageBox::Warning
+            );
+            return false;
     }
 
     // Youtube Cookies / PO Token, return false if one is set without the other

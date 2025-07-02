@@ -142,7 +142,7 @@ void Config::LoadSettings() {
 
     PlaylistFileTypeIndex = settings.value("playlistFileTypeIndex", 0).toInt();
     PlaylistFileNameTag = settings.value("playlistFileNameTag", "<>").toString();
-    PlaylistFileName = settings.value("playlistFileName", "<Download Path>/<Playlist Name>").toString();
+    PlaylistFileName = settings.value("playlistFileName", "<Save Location>/<Playlist Name> - <Playlist Creator>").toString();
 
     settings.endGroup();
 
@@ -248,4 +248,16 @@ std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString st
     }
 
     return std::make_tuple(newString, NamingError::None);
+}
+
+std::tuple<QString, Config::NamingError> Config::ValidateTagsInString(QString stringTag, QString string, QStringList validTags) {
+    std::tuple<QString, Config::NamingError> formattedString = Config::FormatStringWithTags(stringTag, string, [&validTags](QString tag) -> std::tuple<QString, bool> {
+        if (!validTags.contains(tag.toLower())) {
+            return std::make_tuple("", false);
+        }
+        else
+            return std::make_tuple("", true);
+    });
+
+    return formattedString;
 }

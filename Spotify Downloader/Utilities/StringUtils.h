@@ -10,8 +10,18 @@
 
 class StringUtils {
 	public:
+		enum class FilePathError {
+			None,
+			StartsWithDirectory,
+			EndsWithDirectory,
+			ContainsDoubleSlashes,
+			InvalidSlashes
+		};
+
 		static QString ValidateFileName(QString string);
 		static QString ValidateFolderName(QString string);
+
+		static FilePathError CheckInputtedFilePathErrors(QString string);
 
 		static QString AnonymizeFilePath(QString string);
 		static QString EncodeFilePath(QString string);

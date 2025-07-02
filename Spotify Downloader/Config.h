@@ -84,6 +84,12 @@ class Config {
             "day"
         };
 
+        static inline const QStringList PLAYLIST_NAMING_TAGS {
+            "save location",
+            "playlist name",
+            "playlist owner"
+        };
+
         // Output
         static inline QString PlaylistURL;
         static inline QString SaveLocation;
@@ -140,7 +146,8 @@ class Config {
         static void SetBitrate(int bitrate) { AudioBitrate[Codec] = bitrate; }
         static int GetBitrate() { return AudioBitrate[Codec]; }
 
-        static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error), Input: (Tag Replacement, Replacement Is Set)
+        static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error)
+        static std::tuple<QString, Config::NamingError> ValidateTagsInString(QString stringTag, QString string, QStringList validTags); // Output: (Output, Error)
 
         static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }
         static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }
@@ -162,8 +169,6 @@ class Config {
         static void LoadSettings();
     private:
         static QJsonObject SettingsLog();
-
-        static inline QStringList Q_NAMING_TAGS_CACHE;
 
         static inline int _codecIndex;
 };

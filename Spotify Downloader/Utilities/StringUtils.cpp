@@ -18,6 +18,14 @@ QString StringUtils::ValidateFolderName(QString string) {
     return copiedString;
 }
 
+StringUtils::FilePathError StringUtils::CheckInputtedFilePathErrors(QString string) {
+    if (string.startsWith("/") || string.startsWith("\\")) return StringUtils::FilePathError::StartsWithDirectory;
+    if (string.endsWith("/") || string.endsWith("\\"))     return StringUtils::FilePathError::EndsWithDirectory;
+    if (string.contains("//") || string.contains("\\\\"))  return StringUtils::FilePathError::ContainsDoubleSlashes;
+    if (string.contains("/\\") || string.contains("\\/"))  return StringUtils::FilePathError::InvalidSlashes;
+    return StringUtils::FilePathError::None;
+}
+
 // Remove user name from file path
 QString StringUtils::AnonymizeFilePath(QString string) {
     return QString(string).replace(QRegularExpression("/Users/[^/]+/"), "/Users/Anonymous/");
