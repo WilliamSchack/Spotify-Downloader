@@ -517,9 +517,9 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
+          <y>-370</y>
           <width>715</width>
-          <height>577</height>
+          <height>681</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1251,6 +1251,201 @@ margin-right: 40px;</string>
             <number>0</number>
            </property>
           </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="PlaylistFileTypeSettingLayout">
+           <item>
+            <widget class="QLabel" name="PlaylistFileTypeLabel">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Playlist File Type</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="PlaylistFileTypeInput">
+             <property name="minimumSize">
+              <size>
+               <width>471</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>471</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The type of playlist file to be outputted, &amp;quot;None&amp;quot; will disable ouputting a playlist file&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;* Does not output a file for single tracks&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;M3U Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>None</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>M3U</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>XSPF</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PLS</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="PlaylistFileNameSettingLayout">
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="PlaylistFileNameLabel">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Playlist File Name</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="PlaylistFileNameTagInput">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Tag Start/End&lt;br/&gt;&lt;/span&gt;Specify the start and end characters of a tag&lt;/p&gt;&lt;p&gt;eg. &amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;br/&gt;&amp;lt; to enter the tag,&lt;br/&gt;&amp;gt; to exit the tag &lt;/p&gt;&lt;p&gt;Tag examples:&lt;br/&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt;, &amp;lt;Artist Name&amp;gt;&amp;quot;&lt;br/&gt;&amp;quot;##&amp;quot; : &amp;quot;#Song Name#, #Artist Name#&amp;quot;&lt;br/&gt;&amp;quot;!$&amp;quot;: &amp;quot;!Song Name$&amp;quot;, !Artist Name$&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="text">
+              <string>&lt;&gt;</string>
+             </property>
+             <property name="maxLength">
+              <number>2</number>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Song Naming Format</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="PlaylistFileNameInput">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>421</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Playlist File Name&lt;br/&gt;&lt;/span&gt;Specify the way the playlist file will be named&lt;/p&gt;&lt;p&gt;eg. If an m3u playlist is called &amp;quot;Playlist&amp;quot; downloaded at &amp;quot;C:/Songs&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Download Path&amp;gt;/&amp;lt;Playlist Name&amp;gt;&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;C:/Songs/Playlist.m3u&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Codec&lt;/span&gt; - The codec of the downloaded song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - The currently assigned track number&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Playlist Track Number &lt;/span&gt;- Track number in the playlist (Only works when downloading a playlist)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Track Number &lt;/span&gt;- Track number in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Disk Number &lt;/span&gt;- Track disk number&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Year &lt;/span&gt;- Release Year of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Month &lt;/span&gt;- Release month of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Day &lt;/span&gt;- Release day of the song&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="text">
+              <string>&lt;Download Path&gt;/&lt;Playlist Name&gt;</string>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>Enter File Name</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="FileNameSettingLayout">
