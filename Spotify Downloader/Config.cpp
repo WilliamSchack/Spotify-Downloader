@@ -29,6 +29,9 @@ void Config::SaveSettings() {
     settings.setValue("songOutputFormat", FileName);
     settings.setValue("subFoldersTag", SubFoldersTag);
     settings.setValue("subFolders", SubFolders);
+    settings.setValue("playlistFileTypeIndex", PlaylistFileTypeIndex);
+    settings.setValue("playlistFileNameTag", PlaylistFileNameTag);
+    settings.setValue("playlistFileName", PlaylistFileName);
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -137,6 +140,10 @@ void Config::LoadSettings() {
 
     SubFolders = subFolders;
 
+    PlaylistFileTypeIndex = settings.value("playlistFileTypeIndex", 0).toInt();
+    PlaylistFileNameTag = settings.value("playlistFileNameTag", "<>").toString();
+    PlaylistFileName = settings.value("playlistFileName", "<Download Path>/<Playlist Name>").toString();
+
     settings.endGroup();
 
     settings.beginGroup("Downloading");
@@ -173,6 +180,9 @@ QJsonObject Config::SettingsLog() {
         {"File Name Format", FileName},
         {"Sub Folders Tag", SubFoldersTag},
         {"Sub Folders", SubFolders},
+        {"Playlist File Type Index", PlaylistFileTypeIndex},
+        {"Playlist File Name Tag", PlaylistFileNameTag},
+        {"Playlist File Name", PlaylistFileName},
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},

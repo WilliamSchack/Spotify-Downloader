@@ -113,6 +113,10 @@ void SpotifyDownloader::SetupSideBar() {
         Config::SubFoldersTag = _ui.SubFoldersTagInput->text();
         Config::SubFolders = _ui.SubFoldersInput->text();
 
+        // Set playlist file
+        Config::PlaylistFileNameTag = _ui.PlaylistFileNameTagInput->text();
+        Config::PlaylistFileName = _ui.PlaylistFileNameInput->text();
+
         // Check if audio naming & sub folders are valid
         if (!ValidateSettings())
             return;
@@ -436,6 +440,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
         }
     });
 
+    connect(_ui.PlaylistFileTypeInput, &QComboBox::currentIndexChanged, [=](int index) { Config::PlaylistFileTypeIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Update PO Token on text change
@@ -657,6 +662,11 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Folder Sorting
     _ui.SubFoldersTagInput->setText(Config::SubFoldersTag);
     _ui.SubFoldersInput->setText(Config::SubFolders);
+
+    // Playlist File
+    _ui.PlaylistFileTypeInput->setCurrentIndex(Config::PlaylistFileTypeIndex);
+    _ui.PlaylistFileNameTagInput->setText(Config::PlaylistFileNameTag);
+    _ui.PlaylistFileNameInput->setText(Config::PlaylistFileName);
 
     // Status Notifications
     if (_ui.NotificationSettingButton->isChecked != Config::Notifications)

@@ -108,6 +108,10 @@ class Config {
         static inline QString SubFoldersTag;
         static inline QString SubFolders;
     
+        static inline int PlaylistFileTypeIndex;
+        static inline QString PlaylistFileNameTag;
+        static inline QString PlaylistFileName;
+
         // Downloading
         static inline bool Notifications;
     
