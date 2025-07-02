@@ -104,6 +104,9 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		return;
 	}
 
+	// Reset downloaded song paths
+	_downloadedSongFilePaths.clear();
+
 	// Dont add tracks that shouldnt be added
 	QJsonArray tracks = QJsonArray();
 	foreach(QJsonValue trackVal, searchTracks) {
@@ -126,15 +129,18 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			// Get sub directories
 			QString targetFolderName = "/";
 			if (!Config::SubFolders.isEmpty()) {
-				targetFolderName = QString("/%1").arg(std::get<0>(Song::SubFoldersWithTags(song)));
+				targetFolderName = QString("/%1/").arg(std::get<0>(Song::SubFoldersWithTags(song)));
 				targetFolderName.replace("\\", "/");
 				targetFolderName = FileUtils::ValidateFolderName(targetFolderName);
 			}
 
-			targetPath = QString("%1/%2/%3.%4").arg(targetPath).arg(targetFolderName).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
+			targetPath = QString("%1%2%3.%4").arg(targetPath).arg(targetFolderName).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
 
 			if (!QFile::exists(targetPath))
 				tracks.append(trackVal);
+			else
+				// If the file already exists, add it to the downloaded paths
+				_downloadedSongFilePaths.append(targetPath);
 		} else {
 			tracks.append(trackVal);
 		}
@@ -150,6 +156,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 		qWarning() << "0 Songs passed check from spotify playlist. Songs are probably already downloaded";
 
+		_earlyQuit = true;
 		Quit();
 		return;
 	}
@@ -161,6 +168,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	_songsDownloaded = 0;
 	_threadsFinished = 0;
 	_threadCount = 0;
+	_earlyQuit = false;
 
 	// Get amount of threads and songs assigned to each
 	int targetThreadCount = Config::ThreadCount;
@@ -247,8 +255,12 @@ void PlaylistDownloader::SetupThreads(QList<QJsonArray> tracks, QJsonObject albu
 	}
 }
 
-void PlaylistDownloader::SongDownloaded() {
+void PlaylistDownloader::SongDownloaded(QString filePath) {
 	_songsDownloaded++;
+
+	if(!filePath.isEmpty())
+		_downloadedSongFilePaths.append(filePath);
+
 	emit SetSongCount(-1, _songsDownloaded, _totalSongCount);
 }
 
@@ -427,39 +439,37 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	if (!Main->ExitingApplication) {
 		// Create a playlist file if settings are set
-		if (Config::PlaylistFileTypeIndex != 0) {
-			if (_playlistName != "" && _playlistOwner != "") {
-				// Add tags to output path, no need to check error, already validated on download start
-				std::tuple<QString, Config::NamingError> formattedOutputPath = Config::FormatStringWithTags(Config::PlaylistFileNameTag, Config::PlaylistFileName, false, [this](QString tag) -> std::tuple<QString, bool> { return PlaylistFileNameTagHandler(tag); });
-				QString outputPath = std::get<0>(formattedOutputPath);
+		if (!_earlyQuit && Config::PlaylistFileTypeIndex != 0 && _playlistName != "" && _playlistOwner != "") {
+			// Add tags to output path, no need to check error, already validated on download start
+			std::tuple<QString, Config::NamingError> formattedOutputPath = Config::FormatStringWithTags(Config::PlaylistFileNameTag, Config::PlaylistFileName, false, [this](QString tag) -> std::tuple<QString, bool> { return PlaylistFileNameTagHandler(tag); });
+			QString outputPath = std::get<0>(formattedOutputPath);
 
-				// Add backspaces in the path
-				outputPath = FileUtils::AddDirectoryBackspaces(outputPath);
+			// Add backspaces in the path
+			outputPath = FileUtils::AddDirectoryBackspaces(outputPath);
 
-				// Create the playlist file
-				PlaylistFile* playlistFile = nullptr;
-				switch (Config::PlaylistFileTypeIndex) {
-					case 1: // M3U
-						playlistFile = new M3UFile();
-						break;
-					case 2: // XSPF
-						playlistFile = new XSPFFile();
-						break;
-					case 3: // PLS
-						playlistFile = new PLSFile();
-						break;
-				}
-
-				// Create the file
-				playlistFile->CreatePlaylistFileFromDirectory(Config::SaveLocation, outputPath);
-
-				// Clean up
-				delete playlistFile;
+			// Create the playlist file
+			PlaylistFile* playlistFile = nullptr;
+			switch (Config::PlaylistFileTypeIndex) {
+				case 1: // M3U
+					playlistFile = new M3UFile();
+					break;
+				case 2: // XSPF
+					playlistFile = new XSPFFile();
+					break;
+				case 3: // PLS
+					playlistFile = new PLSFile();
+					break;
 			}
+
+			// Create the file
+			playlistFile->CreatePlaylistFileFromTracks(_downloadedSongFilePaths, outputPath);
+
+			// Clean up
+			delete playlistFile;
 		}
 
 		// Open download folder
-		if (Config::AutoOpenDownloadFolder)
+		if (!_earlyQuit && Config::AutoOpenDownloadFolder)
 			emit OpenURL(QUrl::fromLocalFile(Config::SaveLocation));
 
 		// Change Screen

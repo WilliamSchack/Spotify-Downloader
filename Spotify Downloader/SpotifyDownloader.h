@@ -157,7 +157,7 @@ class PlaylistDownloader : public QObject {
         int DownloadErrors();
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
-        void SongDownloaded();
+        void SongDownloaded(QString filePath);
         void ShowPOTokenError();
         void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);
         void FinishThread(int threadIndex, QJsonArray dowwnloadErrors);
@@ -171,6 +171,7 @@ class PlaylistDownloader : public QObject {
         YTMusicAPI* _yt;
         SpotifyAPI* _sp;
 
+        bool _earlyQuit = false;
         bool _quitting = false;
         bool _poTokenErrorShown = false;
 
@@ -184,6 +185,8 @@ class PlaylistDownloader : public QObject {
         int _songsDownloaded = 0;
         int _threadsFinished = 0;
         int _threadsCleaned = 0;
+
+        QStringList _downloadedSongFilePaths;
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
         bool DistributeTracks();
@@ -250,7 +253,7 @@ class SongDownloader : public QObject {
         int _totalSongCount = 0;
     private:
         void StartDownload(int startIndex);
-        void DownloadSong(QJsonObject track, int count, QJsonObject album);
+        QString DownloadSong(QJsonObject track, int count, QJsonObject album);
         void AddSongToErrors(Song song, QString error, bool silent = false);
         void CheckForStop();
     signals:
@@ -268,7 +271,7 @@ class SongDownloader : public QObject {
         void SetErrorItems(QJsonArray tracks);
         void LoadSettingsUI();
         void HidePauseWarning(int threadIndex);
-        void SongDownloaded();
+        void SongDownloaded(QString filePath);
         void AddDownloadErrors(int threadIndex, QJsonArray downloadErrors);
         void Finish(int threadIndex, QJsonArray downloadErrors);
         void RequestQuit();
