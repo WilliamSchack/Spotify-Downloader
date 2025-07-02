@@ -875,7 +875,7 @@ bool SpotifyDownloader::ValidateURL() {
 
 bool SpotifyDownloader::ValidateDirectory() {
     // Check if Directory is valid
-    if (!std::filesystem::exists(reinterpret_cast<const wchar_t*>(Config::SaveLocation.constData()))) {
+    if (!std::filesystem::exists(StringUtils::ToNativePath(Config::SaveLocation))) {
         ShowMessageBox(
             "Invalid Directory",
             "Please Input A Valid Directory",

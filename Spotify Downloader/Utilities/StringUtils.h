@@ -1,9 +1,12 @@
 #ifndef STRINGUTILS_H
 #define STRINGUTILS_H
 
-#include <QString>
+#include <filesystem>
 
+#include <QString>
 #include <QRegularExpression>
+
+#include <taglib/tfile.h>
 
 class StringUtils {
 	public:
@@ -12,6 +15,9 @@ class StringUtils {
 
 		static QString AnonymizeFilePath(QString string);
 		static QString EncodeFilePath(QString string);
+
+		static std::filesystem::path ToNativeFilePath(QString string);
+		static TagLib::FileName ToNativeFilePathTagLib(QString string);
 
 		static int StringNumberToInt(QString string);
 

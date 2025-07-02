@@ -28,6 +28,26 @@ QString StringUtils::EncodeFilePath(QString string) {
     return QString(string).replace(QRegularExpression("[\\s]+"), "%20");
 }
 
+std::filesystem::path StringUtils::ToNativeFilePath(QString string) {
+#if _WIN32
+    // Return wstring on windows
+    return string.toStdWString();
+#else
+    // Return string on unix
+    return string.toUtf8().toStdString();
+#endif
+}
+
+TagLib::FileName StringUtils::ToNativeFilePathTagLib(QString string) {
+#if _WIN32
+    // Return wstring on windows
+    return string.toStdWString().c_str();
+#else
+    // Return string on unix
+    return string.toUtf8().toStdString().c_str();
+#endif
+}
+
 // Bit of a brute force but I doubt views will exceed the trillions 
 int StringUtils::StringNumberToInt(QString string) {
 	if (string.contains("K"))

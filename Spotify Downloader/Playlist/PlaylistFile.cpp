@@ -25,8 +25,7 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 			continue;
 
 		// Get the file details
-		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(absolutePath.constData()));
-		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
+		TagLib::FileRef tagFileRef(StringUtils::ToNativeFilePathTagLib(absolutePath), true, TagLib::AudioProperties::Accurate);
 
 		std::string title = tagFileRef.tag()->title().to8Bit(true).c_str();
 		std::string artist = tagFileRef.tag()->artist().to8Bit(true).c_str();

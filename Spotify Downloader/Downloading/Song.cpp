@@ -813,8 +813,7 @@ void Song::AssignMetadata() {
 
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
-		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(_downloadingPath.constData()));
-		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
+		TagLib::FileRef tagFileRef(StringUtils::ToNativeFilePathTagLib(_downloadingPath), true, TagLib::AudioProperties::Accurate);
 
 		// Only load cover art if image found
 		QByteArray imageBytes;
