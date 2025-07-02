@@ -829,10 +829,10 @@ void Song::AssignMetadata() {
 		bool coverArtOverride = Codec::Data[Codec].CoverArtOverride != NULL;
 
 		// Set variables
-		TagLib::String title = reinterpret_cast<const wchar_t*>(Title.constData());
-		TagLib::String artists = reinterpret_cast<const wchar_t*>(ArtistNames.constData());
-		TagLib::String albumArtists = reinterpret_cast<const wchar_t*>(AlbumArtistNames.constData());
-		TagLib::String album = reinterpret_cast<const wchar_t*>(AlbumName.constData());
+		TagLib::String title(Title.toUtf8().constData(), TagLib::String::UTF8);
+		TagLib::String artists(ArtistNames.toUtf8().constData(), TagLib::String::UTF8);
+		TagLib::String albumArtists(AlbumArtistNames.toUtf8().constData(), TagLib::String::UTF8);
+		TagLib::String album(AlbumName.toUtf8().constData(), TagLib::String::UTF8);
 
 		TagLib::String publisherText = "Downloaded through Spotify Downloader by William S";
 		TagLib::String copyrightText = QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data();
