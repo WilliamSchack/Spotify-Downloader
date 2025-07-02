@@ -4,7 +4,7 @@
 #include "PlaylistFileTrack.h"
 
 #include "Downloading/Codec.h"
-#include "Utilities/StringUtils.h"
+#include "Utilities/FileUtils.h"
 
 #include <QString>
 

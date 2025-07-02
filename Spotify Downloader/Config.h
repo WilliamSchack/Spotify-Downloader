@@ -6,7 +6,7 @@
 
 #include "Downloading/Codec.h"
 
-#include "Utilities/StringUtils.h"
+#include "Utilities/FileUtils.h"
 
 #include "Network/SpotifyAPI.h"
 

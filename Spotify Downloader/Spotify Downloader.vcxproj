@@ -38,6 +38,7 @@
     <ClCompile Include="UI\UISetup.cpp" />
     <ClCompile Include="UI\UIUtilities.cpp" />
     <ClCompile Include="Utilities\Animation.cpp" />
+    <ClCompile Include="Utilities\FileUtils.cpp" />
     <ClCompile Include="Utilities\ImageUtils.cpp" />
     <ClCompile Include="Utilities\JSONUtils.cpp" />
     <ClCompile Include="Utilities\Logger.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Playlist\PLSFile.h" />
     <ClInclude Include="Playlist\XSPFFile.h" />
     <ClInclude Include="Utilities\Animation.h" />
+    <ClInclude Include="Utilities\FileUtils.h" />
     <ClInclude Include="Utilities\ImageUtils.h" />
     <ClInclude Include="Utilities\JSONUtils.h" />
     <ClInclude Include="Utilities\Logger.h" />

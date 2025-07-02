@@ -12,6 +12,7 @@
 #include "Utilities/StringUtils.h"
 #include "Utilities/MathUtils.h"
 #include "Utilities/ImageUtils.h"
+#include "Utilities/FileUtils.h"
 
 #include "Codec.h"
 

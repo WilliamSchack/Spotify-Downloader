@@ -143,6 +143,9 @@
     <ClCompile Include="Playlist\PLSFile.cpp">
       <Filter>Source Files\Playlist</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\FileUtils.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -198,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="Playlist\PLSFile.h">
       <Filter>Header Files\Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\FileUtils.h">
+      <Filter>Header Files\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

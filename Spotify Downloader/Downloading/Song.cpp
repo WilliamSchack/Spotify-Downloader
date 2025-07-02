@@ -223,7 +223,7 @@ void Song::GenerateFileName(const SpotifyDownloader* main) {
 
 	// No need to check error, was already checked in setup
 	FileName = std::get<0>(filenameData);
-	FileName = StringUtils::ValidateFileName(FileName);
+	FileName = FileUtils::ValidateFileName(FileName);
 }
 
 void Song::GenerateDownloadingPath() {
@@ -246,7 +246,7 @@ void Song::DownloadCoverImage() {
 	}
 
 	QString coverFilename = QString("%1(%2)_Cover").arg(AlbumName).arg(AlbumArtistNames);
-	coverFilename = StringUtils::ValidateFileName(coverFilename);
+	coverFilename = FileUtils::ValidateFileName(coverFilename);
 	QString imageTempPath = QString("%1/Cover Art").arg(_tempPath);
 	QString imageFileDir = QString("%1/%2.png").arg(imageTempPath).arg(coverFilename);
 
@@ -813,7 +813,7 @@ void Song::AssignMetadata() {
 
 	// FileRef destroys when leaving scope, give it a scope to do its thing
 	{
-		TagLib::FileRef tagFileRef(StringUtils::ToNativeFilePathTagLib(_downloadingPath), true, TagLib::AudioProperties::Accurate);
+		TagLib::FileRef tagFileRef(FileUtils::ToNativeFilePathTagLib(_downloadingPath), true, TagLib::AudioProperties::Accurate);
 
 		// Only load cover art if image found
 		QByteArray imageBytes;

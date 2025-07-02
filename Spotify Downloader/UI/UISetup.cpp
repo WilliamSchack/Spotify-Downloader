@@ -745,30 +745,30 @@ bool SpotifyDownloader::ValidateSettings() {
     // Sub Folders
 
     // Check path for errors
-    StringUtils::FilePathError subFolderPathError = StringUtils::CheckInputtedFilePathErrors(Config::SubFolders);
+    FileUtils::FilePathError subFolderPathError = FileUtils::CheckInputtedFilePathErrors(Config::SubFolders);
     switch (subFolderPathError) {
-        case StringUtils::FilePathError::StartsWithDirectory:
+        case FileUtils::FilePathError::StartsWithDirectory:
             ShowMessageBox(
                 "Invalid Sub Folders",
                 R"(Sub Folders cannot start with "/" or "\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::EndsWithDirectory:
+        case FileUtils::FilePathError::EndsWithDirectory:
             ShowMessageBox(
                 "Invalid Sub Folders",
                 R"(Sub Folders cannot end with "/" or "\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::ContainsDoubleSlashes:
+        case FileUtils::FilePathError::ContainsDoubleSlashes:
             ShowMessageBox(
                 "Invalid Sub Folders",
                 R"(Sub Folders cannot contain "//" or "\\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::InvalidSlashes:
+        case FileUtils::FilePathError::InvalidSlashes:
             ShowMessageBox(
                 "Invalid Sub Folders",
                 R"(Sub Folders cannot contain "/\" or "\/")",
@@ -802,30 +802,30 @@ bool SpotifyDownloader::ValidateSettings() {
     // Playlist File
 
     // Check path for errors
-    StringUtils::FilePathError playlistFilePathError = StringUtils::CheckInputtedFilePathErrors(Config::PlaylistFileName);
+    FileUtils::FilePathError playlistFilePathError = FileUtils::CheckInputtedFilePathErrors(Config::PlaylistFileName);
     switch (playlistFilePathError) {
-        case StringUtils::FilePathError::StartsWithDirectory:
+        case FileUtils::FilePathError::StartsWithDirectory:
             ShowMessageBox(
                 "Invalid Playlist File Name",
                 R"(Playlist File Name cannot start with "/" or "\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::EndsWithDirectory:
+        case FileUtils::FilePathError::EndsWithDirectory:
             ShowMessageBox(
                 "Invalid Playlist File Name",
                 R"(Playlist File Name cannot end with "/" or "\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::ContainsDoubleSlashes:
+        case FileUtils::FilePathError::ContainsDoubleSlashes:
             ShowMessageBox(
                 "Invalid Playlist File Name",
                 R"(Playlist File Name cannot contain "//" or "\\")",
                 QMessageBox::Warning
             );
             return false;
-        case StringUtils::FilePathError::InvalidSlashes:
+        case FileUtils::FilePathError::InvalidSlashes:
             ShowMessageBox(
                 "Invalid Playlist File Name",
                 R"(Playlist File Name cannot contain "/\" or "\/")",
@@ -922,7 +922,7 @@ bool SpotifyDownloader::ValidateURL() {
 
 bool SpotifyDownloader::ValidateDirectory() {
     // Check if Directory is valid
-    if (!std::filesystem::exists(StringUtils::ToNativeFilePath(Config::SaveLocation))) {
+    if (!std::filesystem::exists(FileUtils::ToNativeFilePath(Config::SaveLocation))) {
         ShowMessageBox(
             "Invalid Directory",
             "Please Input A Valid Directory",

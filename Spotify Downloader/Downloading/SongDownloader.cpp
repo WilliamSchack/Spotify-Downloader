@@ -83,7 +83,7 @@ void SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject albu
 	if (!Config::SubFolders.isEmpty()) {
 		targetFolderName = QString("/%1").arg(std::get<0>(Song::SubFoldersWithTags(song)));
 		targetFolderName.replace("\\", "/");
-		targetFolderName = StringUtils::ValidateFolderName(targetFolderName);
+		targetFolderName = FileUtils::ValidateFolderName(targetFolderName);
 	}
 	
 	// Set target path

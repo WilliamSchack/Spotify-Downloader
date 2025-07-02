@@ -1,7 +1,7 @@
 #include "SpotifyDownloader.h"
 
 #include "Downloading/Song.h"
-#include "Utilities/StringUtils.h"
+#include "Utilities/FileUtils.h"
 
 #include "Playlist/M3UFile.h"
 
@@ -126,7 +126,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			if (!Config::SubFolders.isEmpty()) {
 				targetFolderName = QString("/%1").arg(std::get<0>(Song::SubFoldersWithTags(song)));
 				targetFolderName.replace("\\", "/");
-				targetFolderName = StringUtils::ValidateFolderName(targetFolderName);
+				targetFolderName = FileUtils::ValidateFolderName(targetFolderName);
 			}
 
 			targetPath = QString("%1/%2/%3.%4").arg(targetPath).arg(targetFolderName).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
@@ -524,7 +524,7 @@ void PlaylistDownloader::ClearDirFiles(const QString& path)
 		delete timer;
 	}
 
-	qInfo() << "Cleaned directory:" << StringUtils::AnonymizeFilePath(path);
+	qInfo() << "Cleaned directory:" << FileUtils::AnonymizeFilePath(path);
 }
 
 int PlaylistDownloader::DownloadErrors() {

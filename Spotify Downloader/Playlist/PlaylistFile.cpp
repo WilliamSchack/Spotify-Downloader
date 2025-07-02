@@ -17,7 +17,7 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 	foreach(QString trackFilePath, trackFilePaths) {
 		// Get the file path
 		QString absolutePath = trackFilePath;
-		QString encodedPath = StringUtils::EncodeFilePath(QUrl::fromLocalFile(absolutePath).toString());
+		QString encodedPath = FileUtils::EncodeFilePath(QUrl::fromLocalFile(absolutePath).toString());
 
 		// Skip if the file doesnt exist
 		QFileInfo trackFileInfo(absolutePath);
@@ -25,7 +25,7 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 			continue;
 
 		// Get the file details
-		TagLib::FileRef tagFileRef(StringUtils::ToNativeFilePathTagLib(absolutePath), true, TagLib::AudioProperties::Accurate);
+		TagLib::FileRef tagFileRef(FileUtils::ToNativeFilePathTagLib(absolutePath), true, TagLib::AudioProperties::Accurate);
 
 		std::string title = tagFileRef.tag()->title().to8Bit(true).c_str();
 		std::string artist = tagFileRef.tag()->artist().to8Bit(true).c_str();
