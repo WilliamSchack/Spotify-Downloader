@@ -424,15 +424,15 @@ PlaylistDownloader::~PlaylistDownloader() {
 	QFile(cookieFilePath).remove();
 
 	if (!Main->ExitingApplication) {
-		// Create a playlist file ADD EXTRA CONDITION HERE WHEN SETTING IMPLEMENTED
-		if (_playlistName != "" && _playlistOwner != "") {
-			PlaylistFile* playlistFile = new M3UFile();
-
-			QString outputPath = QString("%1/%2 - %3").arg("").arg(_playlistName).arg(_playlistOwner);
-			playlistFile->CreatePlaylistFile(Config::SaveLocation, outputPath);
-
-			delete playlistFile;
-		}
+		//// Create a playlist file ADD EXTRA CONDITION HERE WHEN SETTING IMPLEMENTED
+		//if (_playlistName != "" && _playlistOwner != "") {
+		//	PlaylistFile* playlistFile = new M3UFile();
+		//
+		//	QString outputPath = QString("%1/%2 - %3").arg("").arg(_playlistName).arg(_playlistOwner);
+		//	playlistFile->CreatePlaylistFileFromDirectory(Config::SaveLocation, outputPath);
+		//
+		//	delete playlistFile;
+		//}
 
 		// Open download folder
 		if (Config::AutoOpenDownloadFolder)

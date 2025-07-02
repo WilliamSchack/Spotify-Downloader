@@ -17,7 +17,8 @@
 class PlaylistFile {
 	public:
 		// Creates a playlist file using all the valid songs within the parent folder
-		void CreatePlaylistFile(QString parentFolder, QString outputPathWithoutExtension);
+		void CreatePlaylistFileFromTracks(QStringList trackFilePaths, QString outputPathWithoutExtension);
+		void CreatePlaylistFileFromDirectory(QString tracksFolder, QString outputPathWithoutExtension);
 	protected:
 		virtual QString Extension() = 0;
 		virtual QString WriteHeader() = 0;

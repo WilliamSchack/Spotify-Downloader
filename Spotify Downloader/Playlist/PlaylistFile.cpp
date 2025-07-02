@@ -1,45 +1,49 @@
 #include "PlaylistFile.h"
 
-void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWithoutExtension) {
+void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QString outputPathWithoutExtension) {
 	// Create file
 	QString fullOutputPath = QString("%1.%2").arg(outputPathWithoutExtension).arg(Extension());
 	QFile outputFile(fullOutputPath);
 	outputFile.open(QIODevice::WriteOnly | QIODevice::Text);
-	
+
 	// Create stream
 	QTextStream out(&outputFile);
 
 	// Write header to the playlist
 	out << WriteHeader();
 
-	// Get all the files in the given directory and add to a list
+	// Get all the tracks from the given paths
 	QList<PlaylistFileTrack> tracks;
-	QDirIterator iterator(parentFolder, GetFilters(), QDir::Files, QDirIterator::Subdirectories);
-	while (iterator.hasNext()) {
+	foreach(QString trackFilePath, trackFilePaths) {
 		// Get the file path
-		QString absolutePath = iterator.next();
+		QString absolutePath = trackFilePath;
 		QString encodedPath = StringUtils::EncodeFilePath(QUrl::fromLocalFile(absolutePath).toString());
+
+		// Skip if the file doesnt exist
+		QFileInfo trackFileInfo(absolutePath);
+		if (!trackFileInfo.exists() || !trackFileInfo.isFile())
+			continue;
 
 		// Get the file details
 		TagLib::FileName tagFileName(reinterpret_cast<const wchar_t*>(absolutePath.constData()));
 		TagLib::FileRef tagFileRef(tagFileName, true, TagLib::AudioProperties::Accurate);
 
-		std::string title = tagFileRef.tag()->title().toCString();
-		std::string artist = tagFileRef.tag()->artist().toCString();
-		std::string album = tagFileRef.tag()->album().toCString();
-		std::string comment = tagFileRef.tag()->comment().toCString();
+		std::string title = tagFileRef.tag()->title().to8Bit(true).c_str();
+		std::string artist = tagFileRef.tag()->artist().to8Bit(true).c_str();
+		std::string album = tagFileRef.tag()->album().to8Bit(true).c_str();
+		std::string comment = tagFileRef.tag()->comment().to8Bit(true).c_str();
 		unsigned int trackNum = tagFileRef.tag()->track();
 		int durationSeconds = tagFileRef.audioProperties()->lengthInSeconds();
 		int durationMilliseconds = tagFileRef.audioProperties()->lengthInMilliseconds();
-		
+
 		// Create a PlaylistFileTrack
-		PlaylistFileTrack track {
+		PlaylistFileTrack track{
 			absolutePath,
 			encodedPath,
-			QString::fromLocal8Bit(title.c_str()),
-			QString::fromLocal8Bit(artist.c_str()),
-			QString::fromLocal8Bit(album.c_str()),
-			QString::fromLocal8Bit(comment.c_str()),
+			QString::fromUtf8(title),
+			QString::fromUtf8(artist),
+			QString::fromUtf8(album),
+			QString::fromUtf8(comment),
 			trackNum,
 			durationSeconds,
 			durationMilliseconds
@@ -52,7 +56,7 @@ void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWi
 	// Sort files by their track number
 	std::sort(tracks.begin(), tracks.end(), [](const PlaylistFileTrack t1, const PlaylistFileTrack t2) -> bool {
 		return (t1.TrackNumber < t2.TrackNumber);
-	});
+		});
 
 	// Write sorted files
 	foreach(PlaylistFileTrack track, tracks) {
@@ -65,6 +69,18 @@ void PlaylistFile::CreatePlaylistFile(QString parentFolder, QString outputPathWi
 	// Save and close file
 	out.flush();
 	outputFile.close();
+}
+
+void PlaylistFile::CreatePlaylistFileFromDirectory(QString tracksFolder, QString outputPathWithoutExtension) {
+	// Get all the files in the given directory and add to a list
+	QStringList filePaths;
+	QDirIterator iterator(tracksFolder, GetFilters(), QDir::Files, QDirIterator::Subdirectories);
+	while (iterator.hasNext()) {
+		filePaths.append(iterator.next());
+	}
+
+	// Create the playlist file
+	CreatePlaylistFileFromTracks(filePaths, outputPathWithoutExtension);
 }
 
 QStringList PlaylistFile::GetFilters() {
