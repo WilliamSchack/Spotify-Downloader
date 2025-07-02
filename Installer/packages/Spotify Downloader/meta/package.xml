@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Spotify Downloader</DisplayName>
+    <Description>A program that downloads songs from Spotify</Description>
+    <Version>1.7.3</Version>
+    <ReleaseDate>2025-06-01</ReleaseDate>
+    <Default>true</Default>
+    <Required>true</Required>
+    <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>targetwidget.ui</UserInterface>
+    </UserInterfaces>
+</Package>
