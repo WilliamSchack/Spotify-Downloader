@@ -18,16 +18,18 @@ class FileUtils {
 			InvalidSlashes
 		};
 
-		static QString ValidateFileName(QString string);
-		static QString ValidateFolderName(QString string);
+		static QString ValidateFileName(QString fileName);
+		static QString ValidateFolderName(QString folderName);
 
-		static FilePathError CheckInputtedFilePathErrors(QString string);
+		static FilePathError CheckInputtedFilePathErrors(QString filePath);
 
-		static QString AnonymizeFilePath(QString string);
-		static QString EncodeFilePath(QString string);
+		static QString AnonymizeFilePath(QString filePath);
+		static QString EncodeFilePath(QString filePath);
 
-		static std::filesystem::path ToNativeFilePath(QString string);
-		static TagLib::FileName ToNativeFilePathTagLib(QString string);
+		static std::filesystem::path ToNativeFilePath(QString filePath);
+		static TagLib::FileName ToNativeFilePathTagLib(QString filePath);
+
+		static QString AddDirectoryBackspaces(QString filePath);
 };
 
 #endif

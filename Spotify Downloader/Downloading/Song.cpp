@@ -209,11 +209,11 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 }
 
 std::tuple<QString, Config::NamingError> Song::OutputNameWithTags(Song song) {
-	return Config::FormatStringWithTags(Config::FileNameTag, Config::FileName, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
+	return Config::FormatStringWithTags(Config::FileNameTag, Config::FileName, true, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
 }
 
 std::tuple<QString, Config::NamingError> Song::SubFoldersWithTags(Song song) {
-	return Config::FormatStringWithTags(Config::SubFoldersTag, Config::SubFolders, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
+	return Config::FormatStringWithTags(Config::SubFoldersTag, Config::SubFolders, true, [=](QString tag) -> std::tuple<QString, bool> { return TagHandler(song, tag); });
 }
 
 void Song::GenerateFileName(const SpotifyDownloader* main) {

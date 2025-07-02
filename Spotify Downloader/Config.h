@@ -146,7 +146,7 @@ class Config {
         static void SetBitrate(int bitrate) { AudioBitrate[Codec] = bitrate; }
         static int GetBitrate() { return AudioBitrate[Codec]; }
 
-        static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error)
+        static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, bool validateTags, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error)
         static std::tuple<QString, Config::NamingError> ValidateTagsInString(QString stringTag, QString string, QStringList validTags); // Output: (Output, Error)
 
         static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }

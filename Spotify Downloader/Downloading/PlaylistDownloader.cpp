@@ -4,6 +4,8 @@
 #include "Utilities/FileUtils.h"
 
 #include "Playlist/M3UFile.h"
+#include "Playlist/XSPFFile.h"
+#include "Playlist/PLSFile.h"
 
 #include <QFileSystemWatcher>
 #include <QElapsedTimer>
@@ -425,14 +427,33 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 	if (!Main->ExitingApplication) {
 		// Create a playlist file if settings are set
-		// STILL IMPLEMENTING
 		if (Config::PlaylistFileTypeIndex != 0) {
 			if (_playlistName != "" && _playlistOwner != "") {
-				PlaylistFile* playlistFile = new M3UFile();
+				// Add tags to output path, no need to check error, already validated on download start
+				std::tuple<QString, Config::NamingError> formattedOutputPath = Config::FormatStringWithTags(Config::PlaylistFileNameTag, Config::PlaylistFileName, false, [this](QString tag) -> std::tuple<QString, bool> { return PlaylistFileNameTagHandler(tag); });
+				QString outputPath = std::get<0>(formattedOutputPath);
 
-				QString outputPath = QString("%1/%2 - %3").arg("").arg(_playlistName).arg(_playlistOwner);
+				// Add backspaces in the path
+				outputPath = FileUtils::AddDirectoryBackspaces(outputPath);
+
+				// Create the playlist file
+				PlaylistFile* playlistFile = nullptr;
+				switch (Config::PlaylistFileTypeIndex) {
+					case 1: // M3U
+						playlistFile = new M3UFile();
+						break;
+					case 2: // XSPF
+						playlistFile = new XSPFFile();
+						break;
+					case 3: // PLS
+						playlistFile = new PLSFile();
+						break;
+				}
+
+				// Create the file
 				playlistFile->CreatePlaylistFileFromDirectory(Config::SaveLocation, outputPath);
 
+				// Clean up
 				delete playlistFile;
 			}
 		}
@@ -525,6 +546,28 @@ void PlaylistDownloader::ClearDirFiles(const QString& path)
 	}
 
 	qInfo() << "Cleaned directory:" << FileUtils::AnonymizeFilePath(path);
+}
+
+std::tuple<QString, bool> PlaylistDownloader::PlaylistFileNameTagHandler(QString tag) {
+	QString tagReplacement = QString();
+	int indexOfTag = Config::PLAYLIST_NAMING_TAGS.indexOf(tag.toLower());
+
+	switch (indexOfTag) {
+		case 0: // Save Location
+			tagReplacement = Config::SaveLocation;
+			break;
+		case 1: // Playlist Name
+			tagReplacement = FileUtils::ValidateFileName(_playlistName);
+			break;
+		case 2: // Playlist Owner
+			tagReplacement = FileUtils::ValidateFileName(_playlistOwner);
+			break;
+	}
+
+	// Value was set if index is from 0-tag length
+	bool valueSet = indexOfTag >= 0 && indexOfTag <= Config::PLAYLIST_NAMING_TAGS.length();
+
+	return std::make_tuple(tagReplacement, valueSet);
 }
 
 int PlaylistDownloader::DownloadErrors() {

@@ -4,7 +4,22 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 	// Create file
 	QString fullOutputPath = QString("%1.%2").arg(outputPathWithoutExtension).arg(Extension());
 	QFile outputFile(fullOutputPath);
-	outputFile.open(QIODevice::WriteOnly | QIODevice::Text);
+
+	// Check the directory exists
+	QString outputWithForwardSlashes = QString(outputPathWithoutExtension).replace("\\", "/");
+	QString parentOutputDirectoryString = outputWithForwardSlashes.mid(0, outputWithForwardSlashes.lastIndexOf("/"));
+
+	// If the directory doesnt exist, create it
+	if (!QDir(parentOutputDirectoryString).exists()) {
+		QDir().mkpath(parentOutputDirectoryString);
+	}
+
+	// Create the file
+	if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		// If could not create the playlist file, log error
+		qWarning() << "Failed to create playlist file at the path:" << FileUtils::AnonymizeFilePath(fullOutputPath);
+		return;
+	}
 
 	// Create stream
 	QTextStream out(&outputFile);

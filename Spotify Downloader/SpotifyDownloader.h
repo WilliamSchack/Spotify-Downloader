@@ -188,6 +188,8 @@ class PlaylistDownloader : public QObject {
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
         bool DistributeTracks();
         void ClearDirFiles(const QString& path);
+
+        std::tuple<QString, bool> PlaylistFileNameTagHandler(QString tag);
     signals:
         void SetupUI(int count);
         void DownloadOnThread(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex);

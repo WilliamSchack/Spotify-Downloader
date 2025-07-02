@@ -206,7 +206,7 @@ QJsonObject Config::SettingsLog() {
     return settingsLog;
 }
 
-std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString stringTag, QString string, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
+std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString stringTag, QString string, bool validateTags, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc) {
     if (stringTag.length() != 2) {
         return std::make_tuple(stringTag, NamingError::EnclosingTagsInvalid);
     }
@@ -240,7 +240,10 @@ std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString st
         }
 
         QString tagReplacement = std::get<0>(tagReplacementReturn);
-        tagReplacement = FileUtils::ValidateFileName(tagReplacement);
+
+        // Validate as file if set, otherwise as directory
+        if (validateTags)
+            tagReplacement = FileUtils::ValidateFileName(tagReplacement);
 
         newString.append(tagReplacement);
 
@@ -251,7 +254,7 @@ std::tuple<QString, Config::NamingError> Config::FormatStringWithTags(QString st
 }
 
 std::tuple<QString, Config::NamingError> Config::ValidateTagsInString(QString stringTag, QString string, QStringList validTags) {
-    std::tuple<QString, Config::NamingError> formattedString = Config::FormatStringWithTags(stringTag, string, [&validTags](QString tag) -> std::tuple<QString, bool> {
+    std::tuple<QString, Config::NamingError> formattedString = Config::FormatStringWithTags(stringTag, string, true, [&validTags](QString tag) -> std::tuple<QString, bool> {
         if (!validTags.contains(tag.toLower())) {
             return std::make_tuple("", false);
         }
