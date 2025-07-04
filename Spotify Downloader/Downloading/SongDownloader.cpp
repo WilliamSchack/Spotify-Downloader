@@ -213,6 +213,10 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	// If normalising, normalise audio, includes setting bitrate of audio
 	int bitrate = bitrateOverride != -1 ? bitrateOverride : Config::AudioBitrate[codec]; // Get current bitrate
 	if (Config::NormalizeAudio) {
+		// If using highest quality, dont set bitrate
+		if (Config::AutomaticBestQuality)
+			bitrate = -1;
+
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, bitrate, &_quitting, [&](float percentComplete) {
@@ -221,8 +225,8 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		});
 		qInfo() << _threadIndex << "Successfully normalised audio for song" << song.SpotifyId;
 	}
-	// Otherwise set the bitrate
-	else {
+	// Otherwise set the bitrate if set to manual
+	else if (!Config::AutomaticBestQuality) {
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
 		song.SetBitrate(_currentProcess, bitrate, [&](float percentComplete) {

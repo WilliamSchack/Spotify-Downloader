@@ -790,7 +790,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
-				.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not wav file
+				.arg((Codec::Data[Codec].LockedBitrate || bitrate <= 0) ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not locked and valid bitrate is passed in
 				.arg(volumeApply)
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
