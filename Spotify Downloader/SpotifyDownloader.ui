@@ -519,7 +519,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <x>0</x>
           <y>0</y>
           <width>715</width>
-          <height>681</height>
+          <height>733</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -875,6 +875,65 @@ color: rgb(255, 255, 255);</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="AutoBestQualitySettingLayout">
+           <property name="rightMargin">
+            <number>48</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="AutoBestQualitySettingLabel">
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Auto Best Quality</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="CheckBox" name="AutoBestQualitySettingButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>

@@ -104,6 +104,7 @@ class Config {
         static inline bool NormalizeAudio;
         static inline float NormalizeAudioVolume;
     
+        static inline bool AutomaticBestQuality;
         static inline QMap<Codec::Extension, int> AudioBitrate;
     
         static inline QString ArtistSeparator;

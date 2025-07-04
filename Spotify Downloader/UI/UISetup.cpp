@@ -357,18 +357,21 @@ void SpotifyDownloader::SetupSettingsScreen() {
         if (_ui.AudioBitrateInput->text() != "") {
             int audioBitrate = _ui.AudioBitrateInput->value();
 
-            // Snap value to closest multiple of 32
-            if (audioBitrate % 32 != 0) {
-                int remainder = audioBitrate % 32;
-                if (remainder < 16)
-                    audioBitrate -= remainder;
-                else
-                    audioBitrate += 32 - remainder;
+            // Dont update the saved setting if using highest quality bitrate
+            if (!Config::AutomaticBestQuality) {
+                // Snap value to closest multiple of 32
+                if (audioBitrate % 32 != 0) {
+                    int remainder = audioBitrate % 32;
+                    if (remainder < 16)
+                        audioBitrate -= remainder;
+                    else
+                        audioBitrate += 32 - remainder;
 
-                _ui.AudioBitrateInput->setValue(audioBitrate);
+                    _ui.AudioBitrateInput->setValue(audioBitrate);
+                }
+
+                Config::SetBitrate(audioBitrate);
             }
-
-            Config::SetBitrate(audioBitrate);
 
             float estimatedFileSize = Codec::Data[Config::Codec].CalculateFileSize(audioBitrate, 60);
             QString fileSizeText = QString("%1MB/min").arg(QString::number(estimatedFileSize, 'f', 2));
@@ -400,11 +403,16 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
         // Disable bitrate input if it cannot be changed
         bool bitrateLocked = Codec::Data[Config::Codec].LockedBitrate;
-        _ui.AudioBitrateInput->setEnabled(!Codec::Data[Config::Codec].LockedBitrate);
+        _ui.AudioBitrateInput->setEnabled(!Codec::Data[Config::Codec].LockedBitrate && !Config::AutomaticBestQuality);
 
         // Set bitrate input if it can be changed
-        if (!bitrateLocked)
-            _ui.AudioBitrateInput->setValue(Config::GetBitrate());
+        if (!bitrateLocked) {
+            if (Config::AutomaticBestQuality) {
+                Codec::ExtensionData currentCodecData = Codec::Data[Config::Codec];
+                _ui.AudioBitrateInput->setValue(Config::YouTubeCookies.isEmpty() ? currentCodecData.BitrateHighQuality : currentCodecData.BitrateHighQualityPremium);
+            } else
+                _ui.AudioBitrateInput->setValue(Config::GetBitrate());
+        }
 
         // Update codec details
         QString codecDetails = Codec::Data[Config::Codec].CodecDetails;
@@ -452,6 +460,22 @@ void SpotifyDownloader::SetupSettingsScreen() {
     connect(_ui.NormalizeVolumeSettingButton, &CheckBox::clicked, [=] {
         Config::NormalizeAudio = _ui.NormalizeVolumeSettingButton->isChecked;
         _ui.NormalizeVolumeSettingInput->setEnabled(Config::NormalizeAudio);
+    });
+    connect(_ui.AutoBestQualitySettingButton, &CheckBox::clicked, [=] {
+        Config::AutomaticBestQuality = _ui.AutoBestQualitySettingButton->isChecked;
+
+        // Disable bitrate input if setting to highest quality
+        _ui.AudioBitrateInput->setEnabled(!Config::AutomaticBestQuality && !Codec::Data[Config::Codec].LockedBitrate);
+
+        // Set bitrate input to the highest possible if set to highest qualty
+        if (Config::AutomaticBestQuality) {
+            Codec::ExtensionData currentCodecData = Codec::Data[Config::Codec];
+            _ui.AudioBitrateInput->setValue(Config::YouTubeCookies.isEmpty() ? currentCodecData.BitrateHighQuality : currentCodecData.BitrateHighQualityPremium);
+        }
+        // Otherwise set back to manual input
+        else {
+            _ui.AudioBitrateInput->setValue(Config::GetBitrate());
+        }
     });
     connect(_ui.AutoOpenFolderButton, &CheckBox::clicked, [=] { Config::AutoOpenDownloadFolder = _ui.AutoOpenFolderButton->isChecked; });
     connect(_ui.SidebarIconsColourButton, &CheckBox::clicked, [=] {
@@ -521,8 +545,13 @@ void SpotifyDownloader::SetupSettingsScreen() {
         Config::YouTubeCookies = clipboardText;
 
         // Only update bitrate input if valid
-        if(validFormat)
+        if (validFormat) {
             UpdateBitrateInput(Config::Codec);
+
+            // If using high quality bitrate type, update input to show the highest bitrate
+            _ui.AudioBitrateInput->setValue(Codec::Data[Config::Codec].BitrateHighQualityPremium);
+        }
+
     });
 
     connect(_ui.POTokenPasteButton, &QPushButton::clicked, [=] {
@@ -630,6 +659,11 @@ void SpotifyDownloader::LoadSettingsUI() {
     
     _ui.NormalizeVolumeSettingInput->setValue(Config::NormalizeAudioVolume);
     
+    // Bitrate Type
+    if (_ui.AutoBestQualitySettingButton->isChecked != Config::AutomaticBestQuality)
+        _ui.AutoBestQualitySettingButton->click();
+    _ui.AudioBitrateInput->setEnabled(!Config::AutomaticBestQuality && !Codec::Data[Config::Codec].LockedBitrate);
+
     // Audio Bitrate
     UpdateBitrateInput(Config::Codec);
     _ui.AudioBitrateInput->setValue(Config::GetBitrate());
