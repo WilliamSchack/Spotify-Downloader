@@ -177,10 +177,13 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	int extraCount = _totalSongCount % _threadCount;
 
 	QList<QJsonArray> trackList = QList<QJsonArray>();
+
+	int currentStart = 0;
 	for (int i = 0; i < _threadCount; i++) {
-		int currentStart = i * baseCount;
 		int currentCount = extraCount == 0 ? baseCount : baseCount + 1;
-		extraCount--;
+
+		if(extraCount > 0)
+			extraCount--;
 
 		QJsonArray currentArray = QJsonArray();
 		for (int x = 0; x < currentCount; x++) {
@@ -193,6 +196,8 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		}
 
 		trackList.append(currentArray);
+
+		currentStart += currentCount;
 	}
 
 	emit SetupUI(trackList.count());

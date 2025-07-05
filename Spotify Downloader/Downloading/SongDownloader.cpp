@@ -249,7 +249,15 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 
 	song.Save(targetFolder, targetPath, Config::Overwrite);
 
-	qInfo() << _threadIndex << "Successfully saved song" << song.SpotifyId;
+	// Check if song saved, if not add to errors
+	if (QFile::exists(targetPath))
+		qInfo() << _threadIndex << "Successfully saved song" << song.SpotifyId;
+	else {
+		qWarning() << _threadIndex << "Unknown error saving song" << song.SpotifyId;
+
+		AddSongToErrors(song, searchResult);
+		return "";
+	}
 
 	return targetPath;
 }

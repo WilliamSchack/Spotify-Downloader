@@ -998,16 +998,9 @@ void Song::Save(QString targetFolder, QString targetPath, bool overwrite) {
 	if (overwrite && QFile::exists(targetPath))
 		QFile::remove(targetPath);
 
-	// Check each folder in target folder and create them if they doesnt exist
-	// Start with second folder (Drive/Folder), dont check for drive
-	QStringList folders = targetFolder.split("/");
-	QString currentFolder = QString("%1/%2").arg(folders[0]).arg(folders[1]);
-	for (int i = 1; i < folders.count(); i++) {
-		if (!QDir(currentFolder).exists())
-			QDir().mkdir(currentFolder);
-
-		if (i + 1 < folders.count())
-			currentFolder = QString("%1/%2").arg(currentFolder).arg(folders[i + 1]);
+	// If the directory doesnt exist, create it
+	if (!QDir(targetFolder).exists()) {
+		QDir().mkpath(targetFolder);
 	}
 
 	// Move from downloading path to target path
