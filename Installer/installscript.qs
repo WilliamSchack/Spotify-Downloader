@@ -4,6 +4,10 @@ function Controller()
     var defaultPath = "@ApplicationsDir@/Spotify Downloader";
     installer.setValue("TargetDir", defaultPath);
 
+    // Remove unused pages
+    installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
+    installer.setDefaultPageVisible(QInstaller.LicenseCheck, false);
+
     // Connect the after install logic
     installer.finishButtonClicked.connect(this, this.installationFinished);
 }
