@@ -38,7 +38,10 @@
      <item>
       <widget class="QLineEdit" name="targetDirectory">
        <property name="readOnly">
-        <bool>true</bool>
+        <bool>false</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Input an install directory...</string>
        </property>
       </widget>
      </item>
@@ -57,7 +60,7 @@
         </size>
        </property>
        <property name="text">
-        <string>...</string>
+        <string>Browse...</string>
        </property>
       </widget>
      </item>
@@ -73,8 +76,11 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color: red;</string>
+       </property>
        <property name="text">
-        <string>TextLabel</string>
+        <string/>
        </property>
       </widget>
      </item>

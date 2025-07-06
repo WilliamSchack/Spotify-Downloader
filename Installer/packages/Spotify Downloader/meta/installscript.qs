@@ -1,31 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2017 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the FOO module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:GPL-EXCEPT$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 as published by the Free Software
-** Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 /**
  * Powershell script to check for previous uninstall registry keys and delete them
  * Installer not deleting these automatically so have to do it manually
@@ -46,10 +18,11 @@ var targetDirectoryPage = null;
 
 function Component()
 {
-    var defaultPath = "@ApplicationsDir@/Spotify Downloader";
-    installer.setValue("TargetDir", defaultPath);
+    // Get admin perms
+    installer.gainAdminRights();
 
-    component.loaded.connect(this, this.installerLoaded);
+    // Setup the target directory page
+    this.setupTargetDirectoryPage();
 }
 
 Component.prototype.createOperations = function()
@@ -77,43 +50,65 @@ Component.prototype.createOperations = function()
         component.addOperation("CreateShortcut", "@TargetDir@/Spotify Downloader.exe", "@StartMenuDir@/Spotify Downloader.lnk",
             "workingDirectory=@TargetDir@", "iconPath=@TargetDir@/Icon.ico");
     }
-}
+};
 
-Component.prototype.installerLoaded = function()
+Component.prototype.setupTargetDirectoryPage = function()
 {
+    // Disable the default TargetDirectory page with a custom one
     installer.setDefaultPageVisible(QInstaller.TargetDirectory, false);
     installer.addWizardPage(component, "TargetWidget", QInstaller.TargetDirectory);
-
     targetDirectoryPage = gui.pageWidgetByObjectName("DynamicTargetWidget");
-    targetDirectoryPage.windowTitle = "Choose Installation Directory";
+
+    // Update text
+    targetDirectoryPage.windowTitle = "Installation Folder";
     targetDirectoryPage.description.setText("Please select where the Spotify Downloader will be installed:");
+
+    // Update and connect to directory path
     targetDirectoryPage.targetDirectory.textChanged.connect(this, this.targetDirectoryChanged);
     targetDirectoryPage.targetDirectory.setText(installer.value("TargetDir"));
+
+    // Connect to browse button
     targetDirectoryPage.targetChooser.released.connect(this, this.targetChooserClicked);
-
-    var admin = installer.gainAdminRights();
-}
-
-Component.prototype.targetChooserClicked = function()
-{
-    var dir = QFileDialog.getExistingDirectory("", targetDirectoryPage.targetDirectory.text);
-    if(dir == "") return;
-
-    dir += "/Spotify Downloader";
-    targetDirectoryPage.targetDirectory.setText(dir);
-}
+};
 
 Component.prototype.targetDirectoryChanged = function()
 {
+    var page = gui.currentPageWidget();
+
+    // Get the inputted directory and set the TargetDir
     var dir = targetDirectoryPage.targetDirectory.text;
-    if (installer.fileExists(dir) && installer.fileExists(dir + "/maintenancetool.exe")) {
-        targetDirectoryPage.warning.setText("<p style=\"color: red\">Existing installation detected and will be overwritten.</p>");
-    }
-    else if (installer.fileExists(dir)) {
-        targetDirectoryPage.warning.setText("<p style=\"color: red\">Installing in existing directory. It will be wiped on uninstallation.</p>");
-    }
-    else {
-        targetDirectoryPage.warning.setText("");
-    }
     installer.setValue("TargetDir", dir);
-}
+
+    // No value inputted
+    if (dir == "") {
+        targetDirectoryPage.warning.setText("The installation path cannot be empty, please specify a valid directory.");
+        page.complete = false;
+        return;
+    }
+
+    // Previous install found
+    if (installer.fileExists(dir) && installer.fileExists(dir + "/maintenancetool.exe")) {
+        targetDirectoryPage.warning.setText("Existing installation detected and will be overwritten.");
+        return;
+    }
+
+    // Directory set to an occupied location
+    if (installer.fileExists(dir)) {
+        targetDirectoryPage.warning.setText("Installing in existing directory. It will be wiped on uninstallation.");
+        return;
+    }
+
+    page.complete = true;
+    targetDirectoryPage.warning.setText("");
+};
+
+Component.prototype.targetChooserClicked = function()
+{
+    // Popup a directory choose input
+    var dir = QFileDialog.getExistingDirectory("", targetDirectoryPage.targetDirectory.text);
+    if(dir == "") return;
+
+    // Add the Spotify Downloader folder to the directory
+    dir += "/Spotify Downloader";
+    targetDirectoryPage.targetDirectory.setText(dir);
+};

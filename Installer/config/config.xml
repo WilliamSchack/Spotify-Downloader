@@ -6,4 +6,5 @@
     <Publisher>William Schack</Publisher>
     <!-- Directory name is used in component.xml -->
     <StartMenuDir>Spotify Downloader</StartMenuDir>
+    <ControlScript>../installscript.qs</ControlScript>
 </Installer>
