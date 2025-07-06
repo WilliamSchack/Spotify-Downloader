@@ -3,7 +3,6 @@
  * Installer not deleting these automatically so have to do it manually
  * Cannot browse registry through QtIFW so use powershell to do it
 */
-
 var psRemovePreviousUninstallerKeys = `
     Get-ItemProperty    HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*,
                         HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* |
@@ -40,7 +39,7 @@ Component.prototype.createOperations = function()
     }
 
     // Clear all previous version registry keys, requires elevation
-    installer.execute("powershell.exe", ["NoProfile", "-ExecutionPolicy", "bypass"], true)
+    installer.execute("powershell.exe", ["NoProfile", "-ExecutionPolicy", "bypass", psRemovePreviousUninstallerKeys], true)
 
     // Default operations
     component.createOperations();
