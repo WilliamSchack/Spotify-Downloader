@@ -29,7 +29,7 @@ Component.prototype.createOperations = function()
     // Uninstall previous installation
     var dir = installer.value("TargetDir");
     if (installer.fileExists(dir) && installer.fileExists(dir + "/maintenancetool.exe")) {
-        installer.execute(dir + "/maintenancetool.exe", ["purge", "-c"], true);
+        installer.execute(dir + "/maintenancetool.exe", ["purge", "-c"]);
 
         // Wait for file uninstall through a while loop, cannot sleep or delay or anything in this script its stupid
         console.log("Wait for uninstall...");
@@ -39,7 +39,7 @@ Component.prototype.createOperations = function()
     }
 
     // Clear all previous version registry keys, requires elevation
-    installer.execute("powershell.exe", ["NoProfile", "-ExecutionPolicy", "bypass", psRemovePreviousUninstallerKeys], true)
+    installer.execute("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "bypass", psRemovePreviousUninstallerKeys])
 
     // Default operations
     component.createOperations();
