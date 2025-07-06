@@ -2,7 +2,7 @@
 <Installer>
     <Name>Spotify Downloader</Name>
     <Version>1.7.3</Version>
-    <Title>Spotify Downloader Setup</Title>
+    <Title>Spotify Downloader</Title>
     <Publisher>William Schack</Publisher>
     <!-- Directory name is used in component.xml -->
     <StartMenuDir>Spotify Downloader</StartMenuDir>
