@@ -535,8 +535,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
-	// I would use --audio-format here but some formats give "Sign in to confirm you are not a bot" errors
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web_music" %2 -f m4a/bestaudio/best -o "%3" --ffmpeg-location "%4" -x --audio-quality 0 "%5")")
+	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web_music" %2 -f bestaudio[ext=m4a]/best -o "%3" --ffmpeg-location "%4" -x --audio-format m4a --audio-quality 0 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
 		.arg(downloadingPathM4A)
@@ -596,6 +595,17 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		if (lowerErrorOutput.contains("requested format is not available")) {
 			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
 			return "Video does not have file to download";
+		}
+
+		// Video Unavailable
+		if (lowerErrorOutput.contains("video unavailable. this content")) {
+			qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
+
+			QString errorOutput = "Video is unavailable, try downloading again";
+			if (cookiesAssigned)
+				errorOutput += " or resetting/removing cookies";
+
+			return errorOutput;
 		}
 
 		// Check for invalid cookies, use the bitrate to check
@@ -718,6 +728,10 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 	if (Codec::Data[Codec].LockedBitrate)
 		return;
 
+	// Dont set bitrate if input is not valid
+	if (bitrate <= 0)
+		return;
+
 	// Get duration for progress bar calculations
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
@@ -776,6 +790,14 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 
 			float volumeApply = (normalisedAudioVolume - meanVolume) + 0.4; // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why (ffmpeg all over the place)
 
+			// If bitrate is invalid, set it to the same as the input file
+			int normaliseBitrate = bitrate;
+			if (bitrate <= 0) {
+				// Get the bitrate string from the output
+				QString bitrateString = audioOutput.split("bitrate: ")[1].split(" kb/s")[0];
+				normaliseBitrate = bitrateString.toInt();
+			}
+
 			process = new QProcess();
 			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
 			QObject::connect(process, &QProcess::readyRead, process, [&]() {
@@ -790,7 +812,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
 				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 				.arg(_downloadingPath)
-				.arg((Codec::Data[Codec].LockedBitrate || bitrate <= 0) ? "" : QString("-b:a %1k").arg(bitrate)) // Only set bitrate if not locked and valid bitrate is passed in
+				.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(normaliseBitrate))
 				.arg(volumeApply)
 				.arg(normalizedFullPath));
 			process->waitForFinished(-1);
@@ -803,7 +825,8 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 	}
 
 	// Set bitrate if song doesn't need to be normalised
-	SetBitrate(process, bitrate, onProgressUpdate);
+	if (bitrate > 0)
+		SetBitrate(process, bitrate, onProgressUpdate);
 }
 
 void Song::AssignMetadata() {
