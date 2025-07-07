@@ -658,11 +658,6 @@ void SpotifyDownloader::LoadSettingsUI() {
         _ui.NormalizeVolumeSettingButton->click();
     
     _ui.NormalizeVolumeSettingInput->setValue(Config::NormalizeAudioVolume);
-    
-    // Bitrate Type
-    if (_ui.AutoBestQualitySettingButton->isChecked != Config::AutomaticBestQuality)
-        _ui.AutoBestQualitySettingButton->click();
-    _ui.AudioBitrateInput->setEnabled(!Config::AutomaticBestQuality && !Codec::Data[Config::Codec].LockedBitrate);
 
     // Audio Bitrate
     UpdateBitrateInput(Config::Codec);
@@ -717,6 +712,11 @@ void SpotifyDownloader::LoadSettingsUI() {
         R"(<span style=" font-size:13pt; color:#ff6464;">No Cookies Assigned</span>)" :
         R"(<span style=" font-size:13pt; color:#87D76D;">Cookies Assigned</span>)"
     );
+
+    // Bitrate Type (Setup after cookies to correctly set bitrate input)
+    if (_ui.AutoBestQualitySettingButton->isChecked != Config::AutomaticBestQuality)
+        _ui.AutoBestQualitySettingButton->click();
+    _ui.AudioBitrateInput->setEnabled(!Config::AutomaticBestQuality && !Codec::Data[Config::Codec].LockedBitrate);
 
     // PO Token
     _ui.POTokenInput->setText(Config::POToken);
