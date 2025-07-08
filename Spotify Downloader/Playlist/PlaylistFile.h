@@ -1,6 +1,9 @@
 #ifndef PLAYLISTFILE_H
 #define PLAYLISTFILE_H
 
+#define QT_MESSAGELOGCONTEXT
+#include "Utilities/Logger.h"
+
 #include "PlaylistFileTrack.h"
 
 #include "Downloading/Codec.h"
