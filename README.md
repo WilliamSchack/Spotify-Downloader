@@ -17,6 +17,7 @@ Spotify Downloader is an application that allows you to easily download spotify 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
+- [Roadmap](#roadmap)
 - [License](#license)
 - [FAQ](#faq)
 - [Credits](#credits)
@@ -30,6 +31,9 @@ Follow the instructions below depending on your chosen install type.
 
 <details>
 <summary><b> Installer </b></summary>
+
+---
+ 
 **Choose your install location. Default is "C:/Program Files/Spotify Downloader" but you can change this to anywhere you like.**
 
 *Note: If the program is already installed in the chosen location, it will overwrite and update the old install*
@@ -546,6 +550,33 @@ In this menu click the "View client secret" button to access the secret and now 
     - FLAC
 - **Support for YouTube Premium Audio Quality**
 - **Automatic Cleanup**
+
+## Roadmap
+
+The next few updates will take a fair amount of work and time so figured I would put this here so you all know what is going on. No time frames because I dont know how long everything will take and im doing this project on the side so I dont have much time to put into it, but hopefully at least v2.0.0 will be out by the end of this year
+
+- **v1.9.0 Lyric Support**
+   - Adds support to get the lyrics of a song and add it to the metadata
+- **v1.10.0 YouTube link support for not found songs**
+   - Will add an extra option in the errors screen to manually input a link and re-download songs that couldnt be found
+- **Complete refactor**
+   - Doing this because the codebase has become a mess, this will make it much easier to work on and add new features
+   - Not going to release it as its own update as there will be no new features, will be released with v2.0.0
+- **v2.0.0 Complete UI Overhaul**
+   - This has been planned for a fair while now, the current ui was only meant to be temporary
+   - The settings menu is also becoming a mess so it needs to be redone
+   - Some of the UI could also be reworked to better present things
+   - Also I just want to make the app look better
+   - Since this update will be the first with the refactor as well, expect more issues then other updates but I will try to find and fix as many as I can before release
+- **v2.0.0 - v3.0.0 Feature Reworks**
+   - There are a few features that are poorly implemented and could be much better so I for those I want to go through a proper process to implement them
+   - From v2.0.0 I will start properly planning out features and I will re-do some that are currently implemented to make them better to use
+- **v3.0.0 Linux Support** 
+   - This will take a fair while to release since:
+   - I have never used linux and need to learn how to release on it properly
+   - I am using a few windows specific features so those would need to be changed
+   - I would need to change the dependency files to support linux
+   - Honestly same real process anyone else would go through but I havent done this before so it will take some time to learn
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
