@@ -1,5 +1,10 @@
 #include "MusixmatchAPI.h"
 
+void MusixmatchAPI::AddHeaders(QNetworkRequest& request) {
+	request.setRawHeader("user-agent", "Mozilla/5.0");
+	request.setRawHeader("cookie", "mxm_bab=AB");
+}
+
 QString MusixmatchAPI::GetLatestAppURL() {
 	// If already called, return cache
 	if (!_latestAppURLCache.isEmpty())
@@ -9,8 +14,7 @@ QString MusixmatchAPI::GetLatestAppURL() {
 	QUrl url("https://www.musixmatch.com/search");
 
 	QNetworkRequest request(url);
-	request.setRawHeader("user-agent", "Mozilla/5.0");
-	request.setRawHeader("cookie", "mxm_bab=AB");
+	AddHeaders(request);
 
 	QByteArray response = Network::Get(request);
 
@@ -43,8 +47,7 @@ QByteArray MusixmatchAPI::GetSecret() {
 
 	// Get the app url javascript
 	QNetworkRequest request(url);
-	request.setRawHeader("user-agent", "Mozilla/5.0");
-	request.setRawHeader("cookie", "mxm_bab=AB");
+	AddHeaders(request);
 
 	QByteArray response = Network::Get(request);
 
@@ -88,6 +91,47 @@ QString MusixmatchAPI::GenerateSignature(QString url) {
 	QByteArray hashOutputBase64 = hashOutput.toBase64();
 	QByteArray urlEncodedHash = QUrl::toPercentEncoding(hashOutputBase64);
 
-	// Return the signature url part
+	// Return the signature url params
 	return QString("&signature=%1&signature_protocol=sha256").arg(urlEncodedHash);
+}
+
+QJsonObject MusixmatchAPI::Request(QString urlParams) {
+	// Create the url
+	QString urlString = BASE_URL;
+	urlString += QString(urlParams).replace("%20", "+").replace(" ", "+");
+	urlString = urlString + GenerateSignature(urlString);
+
+	// Get the data from musixmatch
+	QUrl url(urlString);
+
+	QNetworkRequest request(url);
+	AddHeaders(request);
+
+	QByteArray response = Network::Get(request);
+	return QJsonDocument::fromJson(response).object();
+}
+
+QString MusixmatchAPI::GetStatusCodeLog(int statusCode) {
+	return QString("(%1) %2").arg(statusCode).arg(STATUS_CODE_DESCRIPTIONS[statusCode]);
+}
+
+QString MusixmatchAPI::GetLyrics(QString isrc) {
+	// Get the lyrics from musixmatch
+	QString urlParams = QString("track.lyrics.get?app_id=web-desktop-app-v1.0&format=json&track_isrc=%1").arg(isrc);
+	QJsonObject response = Request(urlParams);
+
+	// Check if any lyrics where returned
+	QJsonObject message = response["message"].toObject();
+	QJsonObject header = message["header"].toObject();
+	int statusCode = header["status_code"].toInt();
+
+	// If an error occured, return nothing
+	if (statusCode != 200) {
+		qWarning() << isrc << "Failed to get lyrics with the error:" << GetStatusCodeLog(statusCode);
+		return "";
+	}
+
+	// Return the lyrics from the response
+	QJsonObject lyrics = message["body"].toObject()["lyrics"].toObject();
+	return lyrics["lyrics_body"].toString();
 }
