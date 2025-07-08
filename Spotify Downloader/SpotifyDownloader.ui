@@ -1591,7 +1591,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The type of playlist file to be outputted, &amp;quot;None&amp;quot; will disable ouputting a playlist file&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;* Does not output a file for single tracks&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;M3U Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The type of playlist that will be outputted when the download is finished&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;None: &lt;/span&gt;Doesn't output a playlist file&lt;span style=&quot; font-weight:700;&quot;&gt;&lt;br/&gt;M3U, XSPF, PLS: &lt;/span&gt;The type of playlist file that will be outputted&lt;span style=&quot; font-weight:700;&quot;&gt;&lt;br/&gt;&lt;br/&gt;* Does not output a file for single tracks&lt;br/&gt;&lt;br/&gt;M3U Recommended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);</string>
