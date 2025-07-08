@@ -23,6 +23,7 @@
     <ClCompile Include="Downloading\Song.cpp" />
     <ClCompile Include="Downloading\SongDownloader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\MusixmatchAPI.cpp" />
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Network\SpotifyAPI.cpp" />
     <ClCompile Include="Network\VersionManager.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Downloading\Codec.h" />
     <ClInclude Include="Downloading\Song.h" />
+    <ClInclude Include="Network\MusixmatchAPI.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />
     <ClInclude Include="Network\VersionManager.h" />

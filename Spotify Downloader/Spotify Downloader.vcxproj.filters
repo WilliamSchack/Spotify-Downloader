@@ -146,6 +146,9 @@
     <ClCompile Include="Utilities\FileUtils.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="Network\MusixmatchAPI.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -205,6 +208,9 @@
     <ClInclude Include="Utilities\FileUtils.h">
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Network\MusixmatchAPI.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Utilities\ObjectHoverWatcher.h">
@@ -260,5 +266,7 @@
     <CopyFileToFolders Include="tag.dll">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="tagd.dll" />
+    <CopyFileToFolders Include="zlibd1.dll" />
   </ItemGroup>
 </Project>

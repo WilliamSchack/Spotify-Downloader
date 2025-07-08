@@ -1,6 +1,5 @@
 // Translation from https://github.com/sigma67/ytmusicapi
 // Only contains things relevant to this project
-// A lot has been cut out of it so dont expect everything to be here
 
 #ifndef YTMUSICAPI_H
 #define YTMUSICAPI_H
