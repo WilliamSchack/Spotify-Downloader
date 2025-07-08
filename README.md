@@ -1,4 +1,4 @@
-<img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" width="12%" height="12%">
+<img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
 
 # Spotify Downloader
 [![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
@@ -33,19 +33,19 @@ Follow the instructions below depending on your chosen install type.
 **Choose your install location. Default is "C:/Program Files/Spotify Downloader" but you can change this to anywhere you like.**
 
 *Note: If the program is already installed in the chosen location, it will overwrite and update the old install*
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/ed720dd2-1862-4247-8714-b1ba9f8b3c4c" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/ed720dd2-1862-4247-8714-b1ba9f8b3c4c" style="width: 50%; height: 50%;">
 
 **Select the Spotify Downloader component (selected by default)**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/8d64c8a9-1453-4b2d-b2ee-cf40742f31d3" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/8d64c8a9-1453-4b2d-b2ee-cf40742f31d3" style="width: 50%; height: 50%;">
 
 **The program will add a shortcut to the start menu and the name can be changed here**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/0a8b4ec7-8fd1-41ea-a522-0182c0f0ebca" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/0a8b4ec7-8fd1-41ea-a522-0182c0f0ebca" style="width: 50%; height: 50%;">
 
 **Click install and wait for the installer to finish**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/d4e1628a-031a-4735-b454-ecb5b2cea886" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/d4e1628a-031a-4735-b454-ecb5b2cea886" style="width: 50%; height: 50%;">
 
 **Now click Finish and the program is ready to be ran**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/563d6a7a-2c8c-47ab-b45e-00d4c8939ab9" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/563d6a7a-2c8c-47ab-b45e-00d4c8939ab9" style="width: 50%; height: 50%;">
 
 You can open the program through the start menu or from the installed location through "Spotify Downloader.exe"
 
@@ -59,10 +59,10 @@ You can open the program through the start menu or from the installed location t
 ---
 
 **Unzip the file to any location through your chosen unzipping software.**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/acdfb267-7f91-49be-8c93-aca623b8749f" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/acdfb267-7f91-49be-8c93-aca623b8749f" style="width: 50%; height: 50%;">
 
 **The program can now be ran through "Spotify Downloader.exe"**
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/2e7771fe-1ab3-4e7f-a040-befb0fc6f8da" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/2e7771fe-1ab3-4e7f-a040-befb0fc6f8da" style="width: 50%; height: 50%;">
 
 ---
 
@@ -85,8 +85,8 @@ Click:
 
 The popup should not open again after the first time running the app. It most likely will happen after updating the app though
 
-<img src="https://github.com/user-attachments/assets/1ea63731-380e-4d18-b2c7-c2c99fe95cc6" width="40%" height="40%">
-<img src="https://github.com/user-attachments/assets/55148d8c-ebd9-4828-8775-d765bf5f4246" width="40%" height="40%">
+<img src="https://github.com/user-attachments/assets/1ea63731-380e-4d18-b2c7-c2c99fe95cc6" style="width: 40%; height: 40%;">
+<img src="https://github.com/user-attachments/assets/55148d8c-ebd9-4828-8775-d765bf5f4246" style="width: 40%; height: 40%;">
 
 ### Windows Defender detecting the app
 
@@ -114,7 +114,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ***Note: Icon colour can be toggled to white by changing the Sidebar Icons Colour setting***
 
-<img src="https://github.com/user-attachments/assets/17c8f5bf-f438-4837-9786-4c141784748c" width="4%" height="4%">
+<img src="https://github.com/user-attachments/assets/17c8f5bf-f438-4837-9786-4c141784748c" style="width: 4%; height: 4%;">
 
 <br/>
 
@@ -155,7 +155,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ---
 
-<img src="https://github.com/user-attachments/assets/35c16d15-a3fb-474d-8719-7be92f97171c" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/35c16d15-a3fb-474d-8719-7be92f97171c" style="width: 50%; height: 50%;">
 
 **Download Status**
 - Shows the result of the last download
@@ -177,12 +177,12 @@ This has been fixed and the app has been excluded from windows defender scans, i
 - Right click Your chosen song or playlist
 - Share
 - Copy link to playlist
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/7114f20e-9176-4e5b-990b-421f59ff8343" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/7114f20e-9176-4e5b-990b-421f59ff8343" style="width: 50%; height: 50%;">
 
 **In Browser**
 - Click on your playlist or song
 - Copy the URL
-> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/409a2b15-1c9a-48d7-a9a1-3b505b699b5a" width="50%" height="50%">
+> <img src="https://github.com/WilliamSchack/Spotify-Downloader/assets/54973797/409a2b15-1c9a-48d7-a9a1-3b505b699b5a" style="width: 50%; height: 50%;">
 
 </details>
 
@@ -204,8 +204,8 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/dc5546e5-a683-475a-949d-7f8dcbdc900d" width="50%" height="50%">
-<img src="https://github.com/user-attachments/assets/a4deb2a5-fefb-46cd-9b37-865b4b41fa19" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/dc5546e5-a683-475a-949d-7f8dcbdc900d" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/a4deb2a5-fefb-46cd-9b37-865b4b41fa19" style="width: 50%; height: 50%;">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -294,8 +294,8 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/d3c5d278-5bab-4a7c-82f6-69c0128029d9" width="50%" height="50%">
-<img src="https://github.com/user-attachments/assets/4bd4a04b-1b38-4dd2-8be4-af4a1cb43b3d" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/d3c5d278-5bab-4a7c-82f6-69c0128029d9" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/4bd4a04b-1b38-4dd2-8be4-af4a1cb43b3d" style="width: 50%; height: 50%;">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -330,7 +330,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Interface
 
-<img src="https://github.com/user-attachments/assets/45b495b1-f31b-4ec0-a8b3-b0af93e4f19a" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/45b495b1-f31b-4ec0-a8b3-b0af93e4f19a" style="width: 50%; height: 50%;">
 
 **Downloader Thread UI - Recommended: Compact**
 - Changes the style of each thread UI while downloading
@@ -356,7 +356,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
     
 ---
 
-<img src="https://github.com/user-attachments/assets/f5ba738f-8fa4-4bdd-a697-fb802c544e97" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/f5ba738f-8fa4-4bdd-a697-fb802c544e97" style="width: 50%; height: 50%;">
 
 Each track downloading will show its:
 - Cover image
@@ -390,7 +390,7 @@ You can see your total download progress on the counter at the bottom left.
     
 ---
 
-<img src="https://github.com/user-attachments/assets/ff63eee3-9a3a-4912-a288-52f2576b504d" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/ff63eee3-9a3a-4912-a288-52f2576b504d" style="width: 50%; height: 50%;">
 
 Shows all of the songs that failed to download due to various reasons that will be listed below each song
 
@@ -426,8 +426,8 @@ If you are using premium and want higher quality downloads you will first need t
 <details>
 <summary><b> How To Change YT Music Audio Quality</b></summary>
 	
-> <img src="https://github.com/user-attachments/assets/0f8fa4a8-0f25-4726-993c-1944fe10dd22" width="50%" height="50%">
-> <img src="https://github.com/user-attachments/assets/489980fc-e043-427a-8c06-e87ccd3ab31c" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/0f8fa4a8-0f25-4726-993c-1944fe10dd22" style="width: 50%; height: 50%;">
+> <img src="https://github.com/user-attachments/assets/489980fc-e043-427a-8c06-e87ccd3ab31c" style="width: 50%; height: 50%;">
 
 </details>
 
@@ -440,13 +440,13 @@ There are many ways to do this but I use the extension **Cookie-Editor** ([Firef
 
 Open the extension and export your cookies as netscape
 
-> <img src="https://github.com/user-attachments/assets/61ffae4c-cd2d-4c8a-b52b-9c23174e5d8e" width="50%" height="50%">
-> <img src="https://github.com/user-attachments/assets/b719478e-490c-4956-88a0-ea06de6166c6" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/61ffae4c-cd2d-4c8a-b52b-9c23174e5d8e" style="width: 50%; height: 50%;">
+> <img src="https://github.com/user-attachments/assets/b719478e-490c-4956-88a0-ea06de6166c6" style="width: 50%; height: 50%;">
 
 </details>
 
 Now that you have got the cookies in your clipboard, paste them into the downloading settings in the Spotify Downloader
-> <img src="https://github.com/user-attachments/assets/1fe7e9d2-99f6-4579-ac3e-a5efb49b3ad1" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/1fe7e9d2-99f6-4579-ac3e-a5efb49b3ad1" style="width: 50%; height: 50%;">
 
 ### Retrieving Your PO Token
 
@@ -461,22 +461,22 @@ In the headers tab look for the POST Url and find the argument "pot". Copy every
 <details>
 <summary><b> Firefox</b></summary>
 	
-> <img src="https://github.com/user-attachments/assets/e957ee3f-9346-456d-b8b2-323d456299e1" width="50%" height="50%">
-> <img src="https://github.com/user-attachments/assets/c0e48308-719e-461d-8a48-c309ac2bb70f" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/e957ee3f-9346-456d-b8b2-323d456299e1" style="width: 50%; height: 50%;">
+> <img src="https://github.com/user-attachments/assets/c0e48308-719e-461d-8a48-c309ac2bb70f" style="width: 50%; height: 50%;">
 
 </details>
 
 <details>
 <summary><b> Chrome/Edge</b></summary>
 
-> <img src="https://github.com/user-attachments/assets/a571a6f5-0648-4f62-a4d7-bfd1742df6e5" width="50%" height="50%">
-> <img src="https://github.com/user-attachments/assets/871d9412-2ca5-4d67-99b9-b9e4bd869c2e" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/a571a6f5-0648-4f62-a4d7-bfd1742df6e5" style="width: 50%; height: 50%;">
+> <img src="https://github.com/user-attachments/assets/871d9412-2ca5-4d67-99b9-b9e4bd869c2e" style="width: 50%; height: 50%;">
 
 </details>
 
 Now take the copied PO Token and paste it into the downloading settings in the Spotify Downloader
 
-> <img src="https://github.com/user-attachments/assets/5b566303-6827-4604-bd8f-ed7de5e971d2" width="50%" height="50%">
+> <img src="https://github.com/user-attachments/assets/5b566303-6827-4604-bd8f-ed7de5e971d2" style="width: 50%; height: 50%;">
 
 ---
 
@@ -493,7 +493,7 @@ Go to the [spotify developer dashboard](https://developer.spotify.com/dashboard)
 
 Click the "Create app" button and input the following fields:
 
-<img src="https://github.com/user-attachments/assets/5d999095-874d-4929-a40a-9ebdce8501c0" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/5d999095-874d-4929-a40a-9ebdce8501c0" style="width: 50%; height: 50%;">
 
 - **App Name:** Anything you like
 - **App Description:** Anything you like
@@ -508,7 +508,7 @@ Now in the app page, click the "Settings" button at the top right
 
 In this menu click the "View client secret" button to access the secret and now you have both the Client ID and Client Secret. Copy these both into the respective fields in the Spotify Downloader and it will now use your keys
 
-<img src="https://github.com/user-attachments/assets/8a46ffde-38cd-4486-bccd-303775746c89" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/8a46ffde-38cd-4486-bccd-303775746c89" style="width: 50%; height: 50%;">
 
 ---
 
