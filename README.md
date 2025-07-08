@@ -208,8 +208,9 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/dc5546e5-a683-475a-949d-7f8dcbdc900d" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/a4deb2a5-fefb-46cd-9b37-865b4b41fa19" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/ed4b52bf-63d9-497b-8998-dde561c24a84" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/b37333a1-67e6-4eb9-88a4-a9596a6ff671" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/4bd72402-8dbd-4f49-8b71-8a541be3993a" style="width: 50%; height: 50%;">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -228,6 +229,10 @@ This has been fixed and the app has been excluded from windows defender scans, i
     - Quite: -17dB
     - Normal: -14dB
     - Loud: -11dB
+
+**Auto Best Quality - Recommended: ON**
+- If enabled, the bitrate will not be modified and the download will use the bitrate from the youtube video
+- Only disable if you want to manually set the bitrate yourself
 
 **Audio Bitrate - Recommended: 128kb/s**
 - Sets the output quality of each song downloaded
@@ -275,9 +280,9 @@ This has been fixed and the app has been excluded from windows defender scans, i
     - Each tag must be enclosed with the characters set in the left input field
 - Can only include the currently implemented tags listed below
 
-**Tags**
+**File Name, Sub Folders Tags**
 - These are the tags that can be used by the File Name & Sub Folders settings
-	- **Song Name** - Name of the song
+    - **Song Name** - Name of the song
     - **Album Name** - Name of the album
     - **Song Artist** - Name of the first artist of a song
     - **Song Artists** - Names of each artist of a song "Artist1, Artist2, Artist3, ..."
@@ -295,6 +300,21 @@ This has been fixed and the app has been excluded from windows defender scans, i
     - **Month** - Release month of the song
     - **Day** - Release day of the song
     - **Codec** - The codec of the downloaded song
+
+**Playlist File Type - Recommended M3U if using, None if not**
+- The type of playlist that will be outputted when the download is finished
+   - **None** - Doesn't output a playlist file
+   - **M3U, XSPF, PLS** The type of playlist file that will be outputted
+
+**Playlist File Name**
+- Specify the way the playlist file will be named. This must be an **ABSOLUTE FILE PATH** using <Download Path> will make it relative to the download path
+- "../" is also valid, it will go back a folder
+
+**Playlist File Name Tags**
+- These are the tags that can be used by the Playlist File Name setting
+   - **Save Location** - The save location set in the main screen
+   - **Playlist Name** - The name of the playlist being downloaded from (When using an album, uses album name)
+   - **Playlist Owner** - The owner of the playlist being downloaded from (When using an album, uses album artists)
 
 ### Downloading
 
