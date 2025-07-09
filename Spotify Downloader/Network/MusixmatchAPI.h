@@ -1,4 +1,4 @@
-// Translation from github.com/Strvm/musicxmatch-api
+// Translation from https://github.com/Strvm/musicxmatch-api
 // Only contains things relevant to this project
 
 #ifndef MUSIXMATCHAPI_H
@@ -11,6 +11,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
 #include <QRegularExpression>
 
@@ -18,7 +19,30 @@
 
 class MusixmatchAPI {
 	public:
+		class SynchronisedLyric {
+			public:
+				int StartMs;
+				int EndMs;
+				QString Lyric;
+			public:
+				SynchronisedLyric(int startMs, int endMs, QString lyric) {
+					StartMs = startMs;
+					EndMs = endMs;
+					Lyric = lyric;
+				}
+		};
+
+		enum LyricType {
+			None,
+			Unsynced,
+			Synced
+		};
+	public:
+		static QJsonObject GetTrack(QString isrc);
+
+		static LyricType GetLyricType(QString isrc);
 		static QString GetLyrics(QString isrc);
+		static QList<SynchronisedLyric> GetSyncedLyrics(QString isrc);
 	private:
 		// Status code descriptions from "https://docs.musixmatch.com/lyrics-api/api-methods"
 		static inline const QMap<int, QString> STATUS_CODE_DESCRIPTIONS = {
@@ -44,7 +68,7 @@ class MusixmatchAPI {
 		static QByteArray GetSecret();
 		static QString GenerateSignature(QString url);
 
-		static QJsonObject Request(QString urlParams);
+		static QJsonObject Request(QString endpoint, QString isrc);
 		static QString GetStatusCodeLog(int statusCode);
 };
 

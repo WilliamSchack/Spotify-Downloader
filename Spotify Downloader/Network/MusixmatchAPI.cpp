@@ -95,10 +95,9 @@ QString MusixmatchAPI::GenerateSignature(QString url) {
 	return QString("&signature=%1&signature_protocol=sha256").arg(urlEncodedHash);
 }
 
-QJsonObject MusixmatchAPI::Request(QString urlParams) {
+QJsonObject MusixmatchAPI::Request(QString endpoint, QString isrc) {
 	// Create the url
-	QString urlString = BASE_URL;
-	urlString += QString(urlParams).replace("%20", "+").replace(" ", "+");
+	QString urlString = QString("%1%2?app_id=web-desktop-app-v1.0&format=json&track_isrc=%3").arg(BASE_URL).arg(endpoint).arg(isrc);
 	urlString = urlString + GenerateSignature(urlString);
 
 	// Get the data from musixmatch
@@ -115,23 +114,95 @@ QString MusixmatchAPI::GetStatusCodeLog(int statusCode) {
 	return QString("(%1) %2").arg(statusCode).arg(STATUS_CODE_DESCRIPTIONS[statusCode]);
 }
 
-QString MusixmatchAPI::GetLyrics(QString isrc) {
-	// Get the lyrics from musixmatch
-	QString urlParams = QString("track.lyrics.get?app_id=web-desktop-app-v1.0&format=json&track_isrc=%1").arg(isrc);
-	QJsonObject response = Request(urlParams);
+QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
+	// Get the track from musixmatch
+	QJsonObject response = Request("track.get", isrc);
 
-	// Check if any lyrics where returned
+	// Check for any errors
 	QJsonObject message = response["message"].toObject();
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	// If an error occured, return nothing
+	if (statusCode != 200) {
+		qWarning() << isrc << "Failed to get track with the error:" << GetStatusCodeLog(statusCode);
+		return QJsonObject();
+	}
+
+	// Return the track
+	return message["body"].toObject()["track"].toObject();
+}
+
+MusixmatchAPI::LyricType MusixmatchAPI::GetLyricType(QString isrc) {
+	// Get the track
+	QJsonObject track = GetTrack(isrc);
+
+	// Return the type of lyrics available
+	bool hasLyrics = track["has_lyrics"].toInt() == 1;
+	bool hasSyncedLyrics = track["has_richsync"].toInt() == 1;
+
+	qDebug() << track;
+	qDebug() << hasLyrics;
+	qDebug() << hasSyncedLyrics;
+
+	if (hasSyncedLyrics)
+		return LyricType::Synced;
+
+	if (hasLyrics)
+		return LyricType::Unsynced;
+
+	return LyricType::None;
+}
+
+QString MusixmatchAPI::GetLyrics(QString isrc) {
+	// Get the lyrics from musixmatch
+	QJsonObject response = Request("track.lyrics.get", isrc);
+
+	// Check for any errors
+	QJsonObject message = response["message"].toObject();
+	QJsonObject header = message["header"].toObject();
+	int statusCode = header["status_code"].toInt();
+
 	if (statusCode != 200) {
 		qWarning() << isrc << "Failed to get lyrics with the error:" << GetStatusCodeLog(statusCode);
 		return "";
 	}
 
-	// Return the lyrics from the response
+	// Return the lyrics
 	QJsonObject lyrics = message["body"].toObject()["lyrics"].toObject();
 	return lyrics["lyrics_body"].toString();
+}
+
+QList<MusixmatchAPI::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString isrc) {
+	// Get the synced lyrics from musixmatch
+	QJsonObject response = Request("track.richsync.get", isrc);
+
+	// Check for any errors
+	QJsonObject message = response["message"].toObject();
+	QJsonObject header = message["header"].toObject();
+	int statusCode = header["status_code"].toInt();
+
+	if (statusCode != 200) {
+		qWarning() << isrc << "Failed to get synced lyrics with the error:" << GetStatusCodeLog(statusCode);
+		return QList<SynchronisedLyric>();
+	}
+
+	// Get the lyrics from the response
+	QJsonObject richSync = message["body"].toObject()["richsync"].toObject();
+	QString lyricsString = richSync["richsync_body"].toString();
+	QJsonArray lyricsArray = QJsonDocument::fromJson(lyricsString.toUtf8()).array();
+
+	QList<SynchronisedLyric> lyricsList;
+	foreach (QJsonValue lyricDataValue, lyricsArray) {
+		QJsonObject lyricData = lyricDataValue.toObject();
+
+		// Get the sentences rather than specific words
+		int startMs = lyricData["ts"].toDouble() * 1000;
+		int endMs = lyricData["te"].toDouble() * 1000;
+		QString sentence = lyricData["x"].toString();
+
+		SynchronisedLyric lyric(startMs, endMs, sentence);
+		lyricsList.append(lyric);
+	}
+
+	return lyricsList;
 }
