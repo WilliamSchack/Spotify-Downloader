@@ -243,6 +243,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	if (_quitting) return "";
 
 	// Get lyrics
+	qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
 	song.GetLyrics();
 

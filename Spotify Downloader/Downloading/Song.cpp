@@ -837,13 +837,20 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 		SetBitrate(process, bitrate, onProgressUpdate);
 }
 
-QString Song::GetLyrics() {
-	// If previously called, return lyrics
-	if (!Lyrics.isEmpty())
-		return Lyrics;
-
-	Lyrics = MusixmatchAPI::GetLyrics(Isrc);
-	return Lyrics;
+void Song::GetLyrics() {
+	// Get the appropriate lyric type
+	LyricType = MusixmatchAPI::GetLyricType(Isrc);
+	
+	switch (LyricType) {
+		case MusixmatchAPI::LyricType::None:
+			return; // No lyrics to retrieve
+		case MusixmatchAPI::LyricType::Unsynced:
+			Lyrics = MusixmatchAPI::GetLyrics(Isrc);
+			break;
+		case MusixmatchAPI::LyricType::Synced:
+			SyncedLyrics = MusixmatchAPI::GetSyncedLyrics(Isrc);
+			break;
+	}
 }
 
 void Song::AssignMetadata() {

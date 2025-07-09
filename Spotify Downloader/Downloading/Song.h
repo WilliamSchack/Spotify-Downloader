@@ -61,12 +61,13 @@ class Song {
 		int AlbumTrackNumber = 0;
 		int DiscNumber = 0;
 
+		MusixmatchAPI::LyricType LyricType = MusixmatchAPI::LyricType::None;
 		QString Lyrics = "";
+		QList<MusixmatchAPI::SynchronisedLyric> SyncedLyrics;
 
 		bool InPlaylist;
 
 		QImage CoverImage;
-
 
 		// --- Album Properties ---
 		QString AlbumName;
@@ -100,7 +101,7 @@ class Song {
 		QString Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning = nullptr, std::function<void()> onLowQualityWarning = nullptr, std::function<void()> onPremiumDisabled = nullptr);
 		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
 		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
-		QString GetLyrics();
+		void GetLyrics();
 		void AssignMetadata();
 
 		void Save(QString targetFolder, QString targetPath, bool overwrite);
