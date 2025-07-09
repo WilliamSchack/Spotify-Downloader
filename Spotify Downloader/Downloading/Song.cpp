@@ -14,6 +14,14 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	InPlaylist = song.contains("playlist_track_number");
 	PlaylistTrackNumber = song["playlist_track_number"].toInt();
 
+	// If the song has external ids, look for the isrc
+	if (song.contains("external_ids")) {
+		QJsonObject externalIds = song["external_ids"].toObject();
+		if (externalIds.contains("isrc")) {
+			Isrc = externalIds["isrc"].toString();
+		}
+	}
+
 	// Handle episode, details are different (If song is episode and contains show object or album object that is a show
 	if (song["type"].toString() == "episode" && (song.contains("show") || (song.contains("album") && song["album"].toObject()["type"].toString() == "show"))) {
 		QJsonObject show;
@@ -829,6 +837,15 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 		SetBitrate(process, bitrate, onProgressUpdate);
 }
 
+QString Song::GetLyrics() {
+	// If previously called, return lyrics
+	if (!Lyrics.isEmpty())
+		return Lyrics;
+
+	Lyrics = MusixmatchAPI::GetLyrics(Isrc);
+	return Lyrics;
+}
+
 void Song::AssignMetadata() {
 	// Only assign metadata if required
 	if (Codec::Data[Codec].Type == Codec::MetadataType::NONE)
@@ -865,6 +882,7 @@ void Song::AssignMetadata() {
 		TagLib::String releaseDate = QString("%1-%2-%3").arg(ReleaseDate.year()).arg(ReleaseDate.month()).arg(ReleaseDate.day()).toUtf8().data();
 		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();
 		TagLib::String discNumber = QString::number(DiscNumber).toUtf8().data();
+		TagLib::String lyrics = Lyrics.toUtf8().data();
 
 		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {
@@ -890,6 +908,7 @@ void Song::AssignMetadata() {
 				TagLib::ID3v2::TextIdentificationFrame* copyrightFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::TextIdentificationFrame* releaseDateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRL");
 				TagLib::ID3v2::TextIdentificationFrame* dateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRC");
+				TagLib::ID3v2::UnsynchronizedLyricsFrame* lyricsFrame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
 				TagLib::ID3v2::CommentsFrame* commentFrame = new TagLib::ID3v2::CommentsFrame();
 
 				// Set frame values
@@ -898,9 +917,10 @@ void Song::AssignMetadata() {
 				discNumberFrame->setText(discNumber);
 				publisherFrame->setText(publisherText);
 				copyrightFrame->setText(copyrightText);
-				commentFrame->setText(commentText);
 				releaseDateFrame->setText(releaseDate);
 				dateFrame->setText(releaseDate);
+				lyricsFrame->setText(lyrics);
+				commentFrame->setText(commentText);
 
 				// Add frames to the tag
 				tag->addFrame(albumArtistFrame);
@@ -908,9 +928,10 @@ void Song::AssignMetadata() {
 				tag->addFrame(discNumberFrame);
 				tag->addFrame(publisherFrame);
 				tag->addFrame(copyrightFrame);
-				tag->addFrame(commentFrame);
 				tag->addFrame(releaseDateFrame);
+				tag->addFrame(lyricsFrame);
 				tag->addFrame(dateFrame);
+				tag->addFrame(commentFrame);
 				
 				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
@@ -940,6 +961,9 @@ void Song::AssignMetadata() {
 				tag->setItem("aART", TagLib::StringList(albumArtists)); // Album Artists
 				tag->setItem("\251day", TagLib::StringList(releaseDate)); // Date
 				tag->setItem("disc", TagLib::StringList(discNumber)); // Disc Number
+				
+				if (!Lyrics.isEmpty())
+					tag->setItem("\251lyr", TagLib::StringList(lyrics)); // Lyrics
 
 				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
@@ -972,6 +996,7 @@ void Song::AssignMetadata() {
 				// RIFF doesnt support:
 				// - Album Artist
 				// - Cover Art
+				// - Lyrics
 
 				break;
 			}
@@ -991,6 +1016,7 @@ void Song::AssignMetadata() {
 				tag->addField("RELEASEDATE", releaseDate);
 				tag->addField("DATE", releaseDate);
 				tag->addField("DISCNUMBER", discNumber);
+				tag->addField("LYRICS", lyrics);
 
 				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())

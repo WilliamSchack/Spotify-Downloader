@@ -242,6 +242,14 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	CheckForStop();
 	if (_quitting) return "";
 
+	// Get lyrics
+	emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
+	song.GetLyrics();
+
+	// Check for quit/pause
+	CheckForStop();
+	if (_quitting) return "";
+
 	// Assign metadata, too quick for progress bar
 	qInfo() << _threadIndex << "Assigning metadata for song" << song.SpotifyId;
 	emit SetProgressLabel(_threadIndex, "Assigning Metadata...");

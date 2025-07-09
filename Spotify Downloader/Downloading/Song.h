@@ -7,6 +7,7 @@
 #include "SpotifyDownloader.h"
 
 #include "Network/Network.h"
+#include "Network/MusixmatchAPI.h"
 #include "Network/YTMusicAPI.h"
 
 #include "Utilities/StringUtils.h"
@@ -34,6 +35,7 @@
 #include <taglib/commentsframe.h>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
+#include <taglib/unsynchronizedlyricsframe.h>
 
 #include <taglib/mp4file.h>
 #include <taglib/mp4tag.h>
@@ -50,6 +52,7 @@ class Song {
 		QString Title = "";
 		QString SpotifyId = "";
 		QString YoutubeId = "";
+		QString Isrc = "";
 		float Time = 0;
 		bool IsExplicit;
 		QDate ReleaseDate;
@@ -58,9 +61,12 @@ class Song {
 		int AlbumTrackNumber = 0;
 		int DiscNumber = 0;
 
+		QString Lyrics = "";
+
 		bool InPlaylist;
 
 		QImage CoverImage;
+
 
 		// --- Album Properties ---
 		QString AlbumName;
@@ -94,6 +100,7 @@ class Song {
 		QString Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning = nullptr, std::function<void()> onLowQualityWarning = nullptr, std::function<void()> onPremiumDisabled = nullptr);
 		void SetBitrate(QProcess*& process, int bitrate, std::function<void(float)> onProgressUpdate);
 		void NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate);
+		QString GetLyrics();
 		void AssignMetadata();
 
 		void Save(QString targetFolder, QString targetPath, bool overwrite);
