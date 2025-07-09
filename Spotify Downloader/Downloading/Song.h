@@ -122,6 +122,7 @@ class Song {
 		QString _downloadingPath;
 	private:
 		int TrackNumber();
+		QString GetLyricsString();
 
 		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 };
