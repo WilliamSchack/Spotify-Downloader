@@ -132,7 +132,7 @@ QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
 	return message["body"].toObject()["track"].toObject();
 }
 
-MusixmatchAPI::LyricType MusixmatchAPI::GetLyricType(QString isrc) {
+MusixmatchAPI::LyricsType MusixmatchAPI::GetLyricType(QString isrc) {
 	// Get the track
 	QJsonObject track = GetTrack(isrc);
 
@@ -145,12 +145,12 @@ MusixmatchAPI::LyricType MusixmatchAPI::GetLyricType(QString isrc) {
 	qDebug() << hasSyncedLyrics;
 
 	if (hasSyncedLyrics)
-		return LyricType::Synced;
+		return LyricsType::Synced;
 
 	if (hasLyrics)
-		return LyricType::Unsynced;
+		return LyricsType::Unsynced;
 
-	return LyricType::None;
+	return LyricsType::None;
 }
 
 QString MusixmatchAPI::GetLyrics(QString isrc) {
@@ -192,7 +192,7 @@ QList<MusixmatchAPI::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString i
 	QJsonArray lyricsArray = QJsonDocument::fromJson(lyricsString.toUtf8()).array();
 
 	QList<SynchronisedLyric> lyricsList;
-	foreach (QJsonValue lyricDataValue, lyricsArray) {
+	foreach(QJsonValue lyricDataValue, lyricsArray) {
 		QJsonObject lyricData = lyricDataValue.toObject();
 
 		// Get the sentences rather than specific words

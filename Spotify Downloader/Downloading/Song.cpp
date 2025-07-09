@@ -839,15 +839,15 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 
 void Song::GetLyrics() {
 	// Get the appropriate lyric type
-	LyricType = MusixmatchAPI::GetLyricType(Isrc);
+	LyricsType = MusixmatchAPI::GetLyricType(Isrc);
 	
-	switch (LyricType) {
-		case MusixmatchAPI::LyricType::None:
+	switch (LyricsType) {
+		case MusixmatchAPI::LyricsType::None:
 			return; // No lyrics to retrieve
-		case MusixmatchAPI::LyricType::Unsynced:
+		case MusixmatchAPI::LyricsType::Unsynced:
 			Lyrics = MusixmatchAPI::GetLyrics(Isrc);
 			break;
-		case MusixmatchAPI::LyricType::Synced:
+		case MusixmatchAPI::LyricsType::Synced:
 			SyncedLyrics = MusixmatchAPI::GetSyncedLyrics(Isrc);
 			break;
 	}
@@ -915,7 +915,6 @@ void Song::AssignMetadata() {
 				TagLib::ID3v2::TextIdentificationFrame* copyrightFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
 				TagLib::ID3v2::TextIdentificationFrame* releaseDateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRL");
 				TagLib::ID3v2::TextIdentificationFrame* dateFrame = new TagLib::ID3v2::TextIdentificationFrame("TDRC");
-				TagLib::ID3v2::UnsynchronizedLyricsFrame* lyricsFrame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
 				TagLib::ID3v2::CommentsFrame* commentFrame = new TagLib::ID3v2::CommentsFrame();
 
 				// Set frame values
@@ -926,7 +925,6 @@ void Song::AssignMetadata() {
 				copyrightFrame->setText(copyrightText);
 				releaseDateFrame->setText(releaseDate);
 				dateFrame->setText(releaseDate);
-				lyricsFrame->setText(lyrics);
 				commentFrame->setText(commentText);
 
 				// Add frames to the tag
@@ -936,10 +934,63 @@ void Song::AssignMetadata() {
 				tag->addFrame(publisherFrame);
 				tag->addFrame(copyrightFrame);
 				tag->addFrame(releaseDateFrame);
-				tag->addFrame(lyricsFrame);
 				tag->addFrame(dateFrame);
 				tag->addFrame(commentFrame);
-				
+
+				// Set lyrics based on type
+				switch (LyricsType) {
+					case MusixmatchAPI::LyricsType::Unsynced:
+					{
+						TagLib::ID3v2::UnsynchronizedLyricsFrame* lyricsFrame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
+						lyricsFrame->setText(lyrics);
+						tag->addFrame(lyricsFrame);
+						break;
+					}
+					case MusixmatchAPI::LyricsType::Synced:
+					{
+						// Add to unsynched frame as the majority of apps dont support the synced frame
+						TagLib::ID3v2::UnsynchronizedLyricsFrame* lyricsFrame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
+
+						// Translate synced lyrics to valid simple LRC line
+						TagLib::String syncedLyrics;
+						foreach(MusixmatchAPI::SynchronisedLyric lyric, SyncedLyrics) {
+							int minutes = lyric.StartMs / 60000;
+							int seconds = (lyric.StartMs % 60000) / 1000;
+							int hundredths = (lyric.StartMs % 1000) / 10;
+
+							QString timestamp = QString("[%1:%2.%3]")
+								.arg(QString::number(minutes).rightJustified(2, '0'))
+								.arg(QString::number(seconds).rightJustified(2, '0'))
+								.arg(QString::number(hundredths).rightJustified(2, '0'));
+
+							QString line = timestamp + lyric.Lyric + "\n";
+							syncedLyrics += line.toUtf8().data();
+						}
+
+						lyricsFrame->setText(syncedLyrics);
+						tag->addFrame(lyricsFrame);
+
+						//// Translate the synced lyrics into a SynchedTextList
+						//TagLib::ID3v2::SynchronizedLyricsFrame::SynchedTextList lyricsList;
+						//foreach(MusixmatchAPI::SynchronisedLyric lyric, SyncedLyrics) {
+						//	TagLib::ID3v2::SynchronizedLyricsFrame::SynchedText synchedText(
+						//		lyric.StartMs,
+						//		lyric.Lyric.toUtf8().data()
+						//	);
+						//
+						//	lyricsList.append(synchedText);
+						//}
+						//
+						//TagLib::ID3v2::SynchronizedLyricsFrame* lyricsFrame = new TagLib::ID3v2::SynchronizedLyricsFrame();
+						//lyricsFrame->setType(TagLib::ID3v2::SynchronizedLyricsFrame::Lyrics);
+						//lyricsFrame->setTimestampFormat(TagLib::ID3v2::SynchronizedLyricsFrame::AbsoluteMilliseconds);
+						//lyricsFrame->setSynchedText(lyricsList);
+						//tag->addFrame(lyricsFrame);
+
+						break;
+					}
+				}
+
 				// Only set cover art if not being overriden
 				if (coverArtOverride || CoverImage.isNull())
 					break;

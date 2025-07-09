@@ -32,7 +32,7 @@ class MusixmatchAPI {
 				}
 		};
 
-		enum LyricType {
+		enum LyricsType {
 			None,
 			Unsynced,
 			Synced
@@ -40,7 +40,7 @@ class MusixmatchAPI {
 	public:
 		static QJsonObject GetTrack(QString isrc);
 
-		static LyricType GetLyricType(QString isrc);
+		static LyricsType GetLyricType(QString isrc);
 		static QString GetLyrics(QString isrc);
 		static QList<SynchronisedLyric> GetSyncedLyrics(QString isrc);
 	private:

@@ -36,6 +36,7 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/textidentificationframe.h>
 #include <taglib/unsynchronizedlyricsframe.h>
+#include <taglib/synchronizedlyricsframe.h>
 
 #include <taglib/mp4file.h>
 #include <taglib/mp4tag.h>
@@ -61,7 +62,7 @@ class Song {
 		int AlbumTrackNumber = 0;
 		int DiscNumber = 0;
 
-		MusixmatchAPI::LyricType LyricType = MusixmatchAPI::LyricType::None;
+		MusixmatchAPI::LyricsType LyricsType = MusixmatchAPI::LyricsType::None;
 		QString Lyrics = "";
 		QList<MusixmatchAPI::SynchronisedLyric> SyncedLyrics;
 
