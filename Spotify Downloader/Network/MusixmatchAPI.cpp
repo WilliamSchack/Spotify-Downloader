@@ -110,8 +110,35 @@ QJsonObject MusixmatchAPI::Request(QString endpoint, QString isrc) {
 	return QJsonDocument::fromJson(response).object();
 }
 
-QString MusixmatchAPI::GetStatusCodeLog(int statusCode) {
-	return QString("(%1) %2").arg(statusCode).arg(STATUS_CODE_DESCRIPTIONS[statusCode]);
+void MusixmatchAPI::LogStatusCode(int statusCode, QString prefixLog) {
+	ErrorSeverity severity = STATUS_CODE_DETAILS[statusCode].Severity;
+	QString description = QString("(%1) %2").arg(statusCode).arg(STATUS_CODE_DETAILS[statusCode].Description);
+
+	// Create print lambda for easier calling
+	auto printStatusCode = [&prefixLog, &severity, &description]() {
+		switch (severity) {
+			case ErrorSeverity::Warning:
+				qWarning() << prefixLog << description;
+				break;
+			case ErrorSeverity::Info:
+				qInfo() << prefixLog << description;
+				break;
+		}
+	};
+
+	switch (ErrorLoggingType) {
+		case LoggingType::All:
+			printStatusCode();
+			break;
+		case LoggingType::Warnings:
+			if(severity == ErrorSeverity::Warning)
+				printStatusCode();
+			break;
+		case LoggingType::Info:
+			if (severity == ErrorSeverity::Info)
+				printStatusCode();
+			break;
+	}
 }
 
 QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
@@ -123,10 +150,9 @@ QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	if (statusCode != 200) {
-		qWarning() << isrc << "Failed to get track with the error:" << GetStatusCodeLog(statusCode);
+	LogStatusCode(statusCode, QString("%1 Failed to get track with the error:").arg(isrc));
+	if (statusCode != 200)
 		return QJsonObject();
-	}
 
 	// Return the track
 	return message["body"].toObject()["track"].toObject();
@@ -158,10 +184,9 @@ QString MusixmatchAPI::GetLyrics(QString isrc) {
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	if (statusCode != 200) {
-		qWarning() << isrc << "Failed to get lyrics with the error:" << GetStatusCodeLog(statusCode);
+	LogStatusCode(statusCode, QString("%1 Failed to get lyrics with the error:").arg(isrc));
+	if (statusCode != 200)
 		return "";
-	}
 
 	// Return the lyrics
 	QJsonObject lyrics = message["body"].toObject()["lyrics"].toObject();
@@ -177,10 +202,9 @@ QList<MusixmatchAPI::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString i
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	if (statusCode != 200) {
-		qWarning() << isrc << "Failed to get synced lyrics with the error:" << GetStatusCodeLog(statusCode);
+	LogStatusCode(statusCode, QString("%1 Failed to get synced lyrics with the error:").arg(isrc));
+	if (statusCode != 200)
 		return QList<SynchronisedLyric>();
-	}
 
 	// Get the lyrics from the response
 	QJsonObject richSync = message["body"].toObject()["richsync"].toObject();

@@ -863,19 +863,32 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::GetLyrics() {
-	// Get the appropriate lyric type
-	LyricsType = MusixmatchAPI::GetLyricType(Isrc);
-	
-	switch (LyricsType) {
-		case MusixmatchAPI::LyricsType::None:
-			return; // No lyrics to retrieve
-		case MusixmatchAPI::LyricsType::Unsynced:
-			Lyrics = MusixmatchAPI::GetLyrics(Isrc);
-			break;
-		case MusixmatchAPI::LyricsType::Synced:
-			SyncedLyrics = MusixmatchAPI::GetSyncedLyrics(Isrc);
-			break;
+	// Was previously getting the lyric type then downloading the chosen lyrics with it but that was changed
+	// since the musixmatch track.get has seemingly random bot protection where the lyric functions do not
+	// Instead get synced and unsynced lyrics and just use which is returned
+
+	// Only print warnings
+	MusixmatchAPI::LoggingType previousLoggingType = MusixmatchAPI::ErrorLoggingType;
+	MusixmatchAPI::ErrorLoggingType = MusixmatchAPI::LoggingType::Warnings;
+
+	// Get synced lyrics
+	SyncedLyrics = MusixmatchAPI::GetSyncedLyrics(Isrc);
+	if (SyncedLyrics.count() > 0) {
+		LyricsType = MusixmatchAPI::LyricsType::Synced;
+		MusixmatchAPI::ErrorLoggingType = previousLoggingType;
+		return;
 	}
+
+	// If no synced lyrics found, get regular lyrics
+	Lyrics = MusixmatchAPI::GetLyrics(Isrc);
+	if (!Lyrics.isEmpty()) {
+		LyricsType = MusixmatchAPI::LyricsType::Unsynced;
+		MusixmatchAPI::ErrorLoggingType = previousLoggingType;
+		return;
+	}
+
+	LyricsType = MusixmatchAPI::LyricsType::None;
+	MusixmatchAPI::ErrorLoggingType = previousLoggingType;
 }
 
 QString Song::GetLyricsString() {
