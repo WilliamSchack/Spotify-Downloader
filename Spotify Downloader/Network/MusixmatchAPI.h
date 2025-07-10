@@ -32,20 +32,20 @@ class MusixmatchAPI {
 				}
 		};
 
-		enum LyricsType {
+		enum class LyricsType {
 			None,
 			Unsynced,
 			Synced
 		};
 
-		enum LoggingType {
+		enum class LoggingType {
 			All,
 			Warnings,
 			Info,
 			None
 		};
 
-		enum ErrorSeverity {
+		enum class ErrorSeverity {
 			Warning,
 			Info
 		};
