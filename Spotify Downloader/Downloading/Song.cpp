@@ -920,7 +920,8 @@ void Song::AssignMetadata() {
 		TagLib::String releaseDate = QString("%1-%2-%3").arg(ReleaseDate.year()).arg(ReleaseDate.month()).arg(ReleaseDate.day()).toUtf8().data();
 		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();
 		TagLib::String discNumber = QString::number(DiscNumber).toUtf8().data();
-		TagLib::String lyrics = GetLyricsString().toUtf8().data();
+
+		TagLib::String lyrics(GetLyricsString().toUtf8().constData(), TagLib::String::UTF8);
 
 		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {
