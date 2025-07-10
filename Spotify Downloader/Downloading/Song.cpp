@@ -573,7 +573,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
-	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part  --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
+	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(cookiesAssigned ? "web_music" : "default")
@@ -583,7 +583,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	process->waitForFinished(-1);
 
 	// Get the downloadpath from the errorOutput
-	QString downloadPath = "";
+	QString downloadedPath = "";
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
@@ -710,18 +710,18 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			return "Could not find download path from YT-DLP";
 		}
 
-		downloadPath = matches[1];
+		downloadedPath = matches[1];
 	}
 
 	// Check if song downloaded incase error wasn't previously picked up
-	if (!QFile::exists(downloadPath)) {
+	if (!QFile::exists(downloadedPath)) {
 		qWarning() << SpotifyId << "Download Failed. YT-DLP Output:" << errorOutput;
 		return "Download failed with an unknown error, try downloading again";
 	}
 
 	// Get the extension from the download path
-	int extensionStartIndex = downloadPath.lastIndexOf(".") + 1;
-	QString extension = downloadPath.mid(extensionStartIndex, downloadPath.length() - extensionStartIndex);
+	int extensionStartIndex = downloadedPath.lastIndexOf(".") + 1;
+	QString extension = downloadedPath.mid(extensionStartIndex, downloadedPath.length() - extensionStartIndex);
 
 	// No need to convert if codec is set to the extension
 	if (Codec::Data[Codec].String == extension) {
@@ -730,41 +730,30 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	}
 
 	onProgressUpdate(0.7);
-
-	// Get duration for progress bar calculations
-	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-	process->startCommand(QString(R"("%1" -i "%2" -f null -)")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(_downloadingPath));
-	process->waitForFinished(-1);
-
-	QString audioOutput = process->readAllStandardError();
-	QString timeString = audioOutput.split("time=").last().split(" bitrate")[0];
-	int ms = QDateTime::fromString(QString("0001-01-01T%1").arg(timeString), Qt::ISODateWithMs).time().msecsSinceStartOfDay();
 	
-	// Convert m4a to desired codec
+	// Convert downloaded format to desired format
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
 	QObject::connect(process, &QProcess::readyRead, process, [&]() {
 		QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
 		int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
-		float progress = float(msProgress) / float(ms);
+		float progress = float(msProgress) / float(durationMs);
 		progress = MathUtils::Lerp(0.7, 1, progress);
 		onProgressUpdate(progress);
 	});
 
-	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -q:a 0 %3 "%4")")
+	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 %4 "%5")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(downloadingPathM4A)
+		.arg(downloadedPath)
+		.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate))
 		.arg(Codec::Data[Codec].FFMPEGConversionParams)
 		.arg(_downloadingPath));
 	process->waitForFinished(-1);
 
 	onProgressUpdate(1);
 
-	// Remove temp m4a file
-	QFile::remove(downloadingPathM4A);
+	// Remove temp downloading file
+	QFile::remove(downloadedPath);
 
 	return "";
 }
