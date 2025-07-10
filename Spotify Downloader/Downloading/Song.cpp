@@ -516,8 +516,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		if (output.contains("[download]") && !output.contains(FileName)) { // Make sure that it is a download status output and not another file related thing
 			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
 			float percent = progress.toFloat() / 100;
-			// 0-1 if not converting, 0-0.7 otherwise
-			percent = Codec == Codec::Extension::M4A ? MathUtils::Lerp(0, 1, percent) : MathUtils::Lerp(0, 0.7, percent);
+			percent = MathUtils::Lerp(0, 0.7, percent);
 			onProgressUpdate(percent);
 			return;
 		}
@@ -570,6 +569,9 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
 		.arg(QString("https://music.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
+
+	// Get the downloadpath from the errorOutput
+	QString downloadPath = "";
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
@@ -687,23 +689,30 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 				break;
 			}
 		}
+
+		// Get the download path
+		QRegularExpression downloadPathRegex("\\[download\\]\\sdestination:\\s(.+)");
+		QStringList matches = downloadPathRegex.match(lowerErrorOutput).capturedTexts();
+		if (matches.count() < 2) {
+			qWarning() << "Could not find download path from YT-DLP:" << errorOutput;
+			return "Could not find download path from YT-DLP";
+		}
+
+		downloadPath = matches[1];
 	}
 
-	// New yt-dlp version sometimes adds extra .m4a to the end, check for that here
-	// Bit of a workaround but couldn't find anything about it on the github page
-	QString downloadingPathExtraM4A = QString("%1.m4a").arg(downloadingPathM4A);
-	if (QFile::exists(downloadingPathExtraM4A))
-		QFile::rename(downloadingPathExtraM4A, downloadingPathM4A);
-
 	// Check if song downloaded incase error wasn't previously picked up
-	if (!QFile::exists(downloadingPathM4A)) {
+	if (!QFile::exists(downloadPath)) {
 		qWarning() << SpotifyId << "Download Failed. YT-DLP Output:" << errorOutput;
-
 		return "Download failed with an unknown error, try downloading again";
 	}
 
-	// No need to convert
-	if (Codec == Codec::Extension::M4A) {
+	// Get the extension from the download path
+	int extensionStartIndex = downloadPath.lastIndexOf(".") + 1;
+	QString extension = downloadPath.mid(extensionStartIndex, downloadPath.length() - extensionStartIndex);
+
+	// No need to convert if codec is set to the extension
+	if (Codec::Data[Codec].String == extension) {
 		onProgressUpdate(1);
 		return "";
 	}
