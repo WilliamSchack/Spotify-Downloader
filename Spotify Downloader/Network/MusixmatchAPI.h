@@ -48,7 +48,7 @@ class MusixmatchAPI {
 		static inline const QMap<int, QString> STATUS_CODE_DESCRIPTIONS = {
 			{200, "The request was successful."},
 			{400, "The request had bad syntax or was inherently impossible to be satisfied."},
-			{401, "Authentication failed, probably because of invalid/missing API key."},
+			{401, "Authentication failed, probably because of invalid/missing API key. (Most likely rate limited)"},
 			{402, "The usage limit has been reached, either you exceeded per day requests limits or your balance is insufficient."},
 			{403, "You are not authorized to perform this operation."},
 			{404, "The requested resource was not found."},
