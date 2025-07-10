@@ -626,7 +626,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 				return "Your cookies have expired. Please reset them and the PO Token";
 
 			// This shouldnt happen but return just incase
-			return "HTTP Error 403: Forbidden. Please set cookies";
+			return "HTTP Error 403: Forbidden. Please try downloading again or setting cookies";
 		}
 
 		// Check if IP was flagged
