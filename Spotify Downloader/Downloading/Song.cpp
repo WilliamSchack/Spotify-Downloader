@@ -507,6 +507,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Get video details later from ytdlp stout
 	int bitrate = 0;
 	int durationMs = 0;
+	QString extension = "";
+	QString downloadedPath = downloadingPathNoExtension;
 
 	// Setup Process
 	process = new QProcess();
@@ -529,7 +531,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			QRegularExpression bitrateRegex("\\[bitrate\\](\\d+)");
 			QStringList bitrateMatches = bitrateRegex.match(output).capturedTexts();
 			if (bitrateMatches.count() > 1) {
-				bitrate = bitrateMatches[1].toInt(); // Get the group
+				bitrate = bitrateMatches[1].toInt();
 			}
 
 			// Get duration and convert to ms
@@ -540,6 +542,14 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 				int durationSecs = durationMatches[2].toInt();
 				durationSecs += durationMins * 60;
 				durationMs = durationSecs * 1000;
+			}
+
+			// Get the extension
+			QRegularExpression extensionRegex("\\[extension\\](\\w+)");
+			QStringList extensionMatches = extensionRegex.match(output).capturedTexts();
+			if (extensionMatches.count() > 1) {
+				extension = extensionMatches[1];
+				downloadedPath += QString(".%1").arg(extension);
 			}
 		}
 	});
@@ -574,7 +584,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
-	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
+	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(cookiesAssigned ? "web_music" : "default")
@@ -582,10 +592,6 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
 		.arg(QString("https://music.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
-
-	// Get the downloadpath from the errorOutput
-	QString downloadedPath = downloadingPathNoExtension;
-	QString extension = "";
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
@@ -703,17 +709,6 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 				break;
 			}
 		}
-
-		// Get the download extension
-		QRegularExpression extensionRegex("\\[download\\]\\sdestination:\\s.+(?=\\.(\\w+))");
-		QStringList matches = extensionRegex.match(lowerErrorOutput).capturedTexts();
-		if (matches.count() < 2) {
-			qWarning() << "Could not find file extension from YT-DLP:" << errorOutput;
-			return "Could not find file extension path from YT-DLP";
-		}
-
-		extension = matches[1];
-		downloadedPath += QString(".%1").arg(extension);
 	}
 
 
