@@ -573,7 +573,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
-	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
+	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
 		.arg(cookiesAssigned ? "web_music" : "default")
