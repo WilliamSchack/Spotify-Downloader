@@ -494,8 +494,9 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onLowQualityWarning, std::function<void()> onPremiumDisabled) {
 	// Create paths for m4a, webm, these are the only possible codecs
-	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
-	QString downloadingPathWEBM = QString("%1/%2.webm").arg(_downloadingFolder).arg(FileName);
+	QString downloadingPathNoExtension = QString("%1/%2").arg(_downloadingFolder).arg(FileName);
+	QString downloadingPathM4A = QString("%1.m4a").arg(downloadingPathNoExtension);
+	QString downloadingPathWEBM = QString("%1.webm").arg(downloadingPathNoExtension);
 
 	// Remove from temp folder if exists
 	if (overwrite && QFile::exists(downloadingPathM4A))
@@ -583,7 +584,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	process->waitForFinished(-1);
 
 	// Get the downloadpath from the errorOutput
-	QString downloadedPath = "";
+	QString downloadedPath = downloadingPathNoExtension;
+	QString extension = "";
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
@@ -702,26 +704,24 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			}
 		}
 
-		// Get the download path
-		QRegularExpression downloadPathRegex("\\[download\\]\\sdestination:\\s(.+)");
-		QStringList matches = downloadPathRegex.match(lowerErrorOutput).capturedTexts();
+		// Get the download extension
+		QRegularExpression extensionRegex("\\[download\\]\\sdestination:\\s.+(?=\\.(\\w+))");
+		QStringList matches = extensionRegex.match(lowerErrorOutput).capturedTexts();
 		if (matches.count() < 2) {
-			qWarning() << "Could not find download path from YT-DLP:" << errorOutput;
-			return "Could not find download path from YT-DLP";
+			qWarning() << "Could not find file extension from YT-DLP:" << errorOutput;
+			return "Could not find file extension path from YT-DLP";
 		}
 
-		downloadedPath = matches[1];
+		extension = matches[1];
+		downloadedPath += QString(".%1").arg(extension);
 	}
+
 
 	// Check if song downloaded incase error wasn't previously picked up
 	if (!QFile::exists(downloadedPath)) {
 		qWarning() << SpotifyId << "Download Failed. YT-DLP Output:" << errorOutput;
 		return "Download failed with an unknown error, try downloading again";
 	}
-
-	// Get the extension from the download path
-	int extensionStartIndex = downloadedPath.lastIndexOf(".") + 1;
-	QString extension = downloadedPath.mid(extensionStartIndex, downloadedPath.length() - extensionStartIndex);
 
 	// No need to convert if codec is set to the extension
 	if (Codec::Data[Codec].String == extension) {
