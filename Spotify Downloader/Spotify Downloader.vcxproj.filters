@@ -266,7 +266,11 @@
     <CopyFileToFolders Include="tag.dll">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="tagd.dll" />
-    <CopyFileToFolders Include="zlibd1.dll" />
+    <CopyFileToFolders Include="tagd.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="zlibd1.dll">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
