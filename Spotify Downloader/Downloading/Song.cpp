@@ -493,24 +493,42 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 }
 
 QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onLowQualityWarning, std::function<void()> onPremiumDisabled) {
-	// Use downloading path without codec, will be changed after
+	// Create paths for m4a, webm, these are the only possible codecs
 	QString downloadingPathM4A = QString("%1/%2.m4a").arg(_downloadingFolder).arg(FileName);
+	QString downloadingPathWEBM = QString("%1/%2.webm").arg(_downloadingFolder).arg(FileName);
 
 	// Remove from temp folder if exists
 	if (overwrite && QFile::exists(downloadingPathM4A))
 		QFile::remove(downloadingPathM4A);
+	if (overwrite && QFile::exists(downloadingPathWEBM))
+		QFile::remove(downloadingPathWEBM);
+
+	// Get bitrate from ytdlp stout
+	int bitrate = 0;
 
 	// Setup Process
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
 	QObject::connect(process, &QProcess::readyRead, process, [&]() {
 		QString output = process->readAll();
+
+		// Get the download progress
 		if (output.contains("[download]") && !output.contains(FileName)) { // Make sure that it is a download status output and not another file related thing
 			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
 			float percent = progress.toFloat() / 100;
 			// 0-1 if not converting, 0-0.7 otherwise
 			percent = Codec == Codec::Extension::M4A ? MathUtils::Lerp(0, 1, percent) : MathUtils::Lerp(0, 0.7, percent);
 			onProgressUpdate(percent);
+			return;
+		}
+
+		// Get the bitrate without decimals
+		if (output.contains("[bitrate]")) {
+			QRegularExpression bitrateRegex("\\[bitrate\\]\\s(\\d+)");
+			QStringList matches = bitrateRegex.match(output).capturedTexts();
+			if (matches.count() > 1) {
+				bitrate = matches[1].toInt(); // Get the group
+			}
 		}
 	});
 
