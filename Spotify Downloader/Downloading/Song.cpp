@@ -543,12 +543,14 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
-	process->startCommand(QString(R"("%1" --no-part -v --extractor-args "youtube:player_client=web_music" %2 -f bestaudio[ext=m4a]/best -o "%3" --ffmpeg-location "%4" -x --audio-format m4a --audio-quality 0 "%5")")
+	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
+	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" -v --no-part  --no-simulate --print "[bitrate] %(abr)s" --extractor-args "youtube:player_client=%3" %4 -f ba/b --audio-quality 0 -o "%5" "%6")")
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath))
-		.arg(downloadingPathM4A)
 		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(QString("https://%1.youtube.com/watch?v=%2").arg("music").arg(_searchResult["videoId"].toString()))); // YT Music with cookies, YT without
+		.arg(cookiesAssigned ? "web_music" : "default")
+		.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "")
+		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
+		.arg(QString("https://music.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
 	process->waitForFinished(-1);
 
 	// Check for any errors in the download
@@ -930,11 +932,6 @@ void Song::AssignMetadata() {
 				tag->setTitle(title);
 				tag->setArtist(artists);
 				tag->setAlbum(album);
-
-				// Below work on specific systems where the above dont (#33) need to look further into it
-				// tag->setTitle(Title.trimmed().toUtf8().data());
-				// tag->setArtist(ArtistNames.trimmed().toUtf8().data());
-				// tag->setAlbum(AlbumName.trimmed().toUtf8().data());
 
 				// Create extra frames
 				TagLib::ID3v2::TextIdentificationFrame* albumArtistFrame = new TagLib::ID3v2::TextIdentificationFrame("TPE2");
