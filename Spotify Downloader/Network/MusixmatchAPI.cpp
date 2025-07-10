@@ -140,10 +140,6 @@ MusixmatchAPI::LyricsType MusixmatchAPI::GetLyricType(QString isrc) {
 	bool hasLyrics = track["has_lyrics"].toInt() == 1;
 	bool hasSyncedLyrics = track["has_richsync"].toInt() == 1;
 
-	qDebug() << track;
-	qDebug() << hasLyrics;
-	qDebug() << hasSyncedLyrics;
-
 	if (hasSyncedLyrics)
 		return LyricsType::Synced;
 

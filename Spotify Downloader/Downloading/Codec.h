@@ -101,12 +101,12 @@ class Codec {
 		};
 
 		static inline const QMap<Extension, ExtensionData> Data {
-			{ Extension::M4A,  { MetadataType::MP4, NULL, "m4a", "", 128, 256, false, 64, 96, 128, 128, 192, 256, "", CalculateBitrateFileSize, GetM4AFileTag}},
-			{ Extension::AAC,  { MetadataType::NONE, NULL, "aac", "-c:a copy", 128, 256, false, 64, 96, 128, 128, 192, 256, R"(Converting M4A > AAC || Audio Only, <span style="color:rgb(255, 0, 0); ">No Metadata</span>)", CalculateBitrateFileSize, NULL}},
-			{ Extension::MP3,  { MetadataType::ID3V2, NULL, "mp3", "-c:v copy", 192, 320, false, 128, 160, 192, 192, 256, 320, "Converting M4A > MP3 || ID3v2 Tags", CalculateBitrateFileSize, GetMP3FileTag}},
+			{ Extension::M4A,  { MetadataType::MP4, NULL, "m4a", "-acodec aac", 128, 256, false, 64, 96, 128, 128, 192, 256, "", CalculateBitrateFileSize, GetM4AFileTag}},
+			{ Extension::AAC,  { MetadataType::NONE, NULL, "aac", "-acodec aac", 128, 256, false, 64, 96, 128, 128, 192, 256, R"(Converting M4A > AAC || Audio Only, <span style="color:rgb(255, 0, 0); ">No Metadata</span>)", CalculateBitrateFileSize, NULL}},
+			{ Extension::MP3,  { MetadataType::ID3V2, NULL, "mp3", "-acodec libmp3lame", 192, 320, false, 128, 160, 192, 192, 256, 320, "Converting M4A > MP3 || ID3v2 Tags", CalculateBitrateFileSize, GetMP3FileTag}},
 			{ Extension::OGG,  { MetadataType::XIPH, NULL, "ogg", "-acodec libvorbis", 128, 256, false, 64, 96, 128, 128, 192, 256, R"(Converting M4A > OGG Vorbis || XIPH Tags, <span style="color:rgb(255, 0, 0); ">Minimal Cover Art Support</span>)", CalculateBitrateFileSize, GetOGGFileTag } },
-			{ Extension::WAV,  { MetadataType::RIFF, NULL, "wav", "-acodec pcm_s16le -ar 44100 -ac 2", 0, 0, true, 0, 0, 0, 0, 0, 0, R"(Converting M4A > WAV <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || RIFF Tags, <span style="color:rgb(255, 0, 0);">No Cover Art</span>)", CalculatePCMFileSize, GetWAVFileTag } },
-			{ Extension::FLAC, { MetadataType::XIPH, SetFLACCoverArt, "flac", "-c:a flac -af aformat=s16:44100 -ac 2", 0, 0, true, 0, 0, 0, 0, 0, 0, R"(Converting M4A > FLAC <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || XIPH Tags)", CalculatePCMFileSize, GetFLACFileTag }}
+			{ Extension::WAV,  { MetadataType::RIFF, NULL, "wav", "-acodec pcm_s16le -af aformat=s16:44100 -ac 2", 0, 0, true, 0, 0, 0, 0, 0, 0, R"(Converting M4A > WAV <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || RIFF Tags, <span style="color:rgb(255, 0, 0);">No Cover Art</span>)", CalculatePCMFileSize, GetWAVFileTag } },
+			{ Extension::FLAC, { MetadataType::XIPH, SetFLACCoverArt, "flac", "-acodec flac -af aformat=s16:44100 -ac 2", 0, 0, true, 0, 0, 0, 0, 0, 0, R"(Converting M4A > FLAC <span style="color:rgb(255, 0, 0);">(Lossy)</span> || 44.1kHz, 16-bit || XIPH Tags)", CalculatePCMFileSize, GetFLACFileTag }}
 		};
 };
 
