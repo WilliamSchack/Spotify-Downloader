@@ -621,6 +621,75 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 	return finalResults;
 }
 
+QJsonObject YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
+	QString lyricsBrowseId = GetLyricsBrowseId(videoId);
+
+	if (lyricsBrowseId.isEmpty())
+		return QJsonObject();
+
+	QJsonObject context = GetContext();
+
+	// Modify context to act as android to get timestamps
+	if (timestamps) {
+		QJsonObject clientContext = context["client"].toObject();
+		clientContext["clientName"] = "ANDROID_MUSIC";
+		clientContext["clientVersion"] = "7.21.50";
+		context["client"] = clientContext;
+	}
+
+	QJsonObject body{
+		{"browseId", lyricsBrowseId},
+		{"context", context}
+	};
+
+	QNetworkRequest request = GetRequest("browse");
+
+	QByteArray postData = QJsonDocument(body).toJson();
+	QByteArray response = Network::Post(request, postData);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	QJsonObject data = json["contents"].toObject()["elementRenderer"].toObject()["newElement"].toObject()["type"].toObject()["componentType"].toObject()["model"].toObject()["timedLyricsModel"].toObject()["lyricsData"].toObject();
+
+	qDebug() << data;
+
+	return QJsonObject();
+}
+
+QString YTMusicAPI::GetLyricsBrowseId(QString videoId) {
+	QJsonObject body{
+		{"enablePersistentPlaylistPanel", true},
+		{"isAudioOnly", true},
+		{"tunerSettingValue", "AUTOMIX_SETTING_NORMAL"},
+		{"videoId", videoId},
+		{"playlistId", QString("RDAMVM%1").arg(videoId)},
+		{"watchEndpointMusicSupportedConfigs", QJsonObject {
+			{"watchEndpointMusicConfig", QJsonObject {
+				{"hasPersistentPlaylistPanel", true},
+				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
+			}}
+		}},
+		{"context", GetContext()}
+	};
+
+	QByteArray postData = QJsonDocument(body).toJson();
+	QByteArray response = Network::Post(GetRequest("next"), postData);
+	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	QJsonObject watchNextRenderer = json["contents"].toObject()["singleColumnMusicWatchNextResultsRenderer"].toObject()["tabbedRenderer"].toObject()["watchNextTabbedResultsRenderer"].toObject();
+	QString lyricsBrowseId = GetTabBrowseId(watchNextRenderer, 1);
+	
+	return lyricsBrowseId;
+}
+
+QString YTMusicAPI::GetTabBrowseId(QJsonObject watchNextRenderer, int tabId) {
+	QJsonObject tabRenderer = watchNextRenderer["tabs"].toArray()[tabId].toObject()["tabRenderer"].toObject();
+	
+	if (tabRenderer.contains("unselectable"))
+		return "";
+
+	return tabRenderer["endpoint"].toObject()["browseEndpoint"].toObject()["browseId"].toString();
+}
+
 // If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
 bool YTMusicAPI::IsAgeRestricted(QString videoId) {
 	// Get the song details

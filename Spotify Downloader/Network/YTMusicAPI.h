@@ -25,6 +25,8 @@ class YTMusicAPI {
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
 
+		QJsonObject GetLyrics(QString videoId, bool timestamps = true);
+
 		bool IsAgeRestricted(QString videoId);
 	private:
 		QNetworkRequest GetRequest(QString endpoint);
@@ -43,6 +45,9 @@ class YTMusicAPI {
 		QString GetItemText(QJsonObject item, int index = 0, int runIndex = 0);
 		QJsonObject GetFlexColumnItem(QJsonObject item, int index);
 		QJsonObject GetFixedColumnItem(QJsonObject item, int index);
+
+		QString GetLyricsBrowseId(QString videoId);
+		QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
 
 		int TimeToSeconds(QString time);
 };
