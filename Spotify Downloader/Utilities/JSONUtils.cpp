@@ -1,5 +1,42 @@
 #include "JSONUtils.h"
 
+QJsonValue JSONUtils::Navigate(const QJsonValue& json, const QVariantList& searchKeys) {
+	QJsonValue currentValue = json;
+	foreach(QVariant key, searchKeys) {
+		switch (key.type()) {
+			case QVariant::String:
+			{
+				if (!currentValue.isObject())
+					return QJsonValue();
+
+				QJsonObject object = currentValue.toObject();
+				QString keyString = key.toString();
+
+				currentValue = object[keyString];
+				break;
+			}
+			case QVariant::Int:
+			{
+				if (!currentValue.isArray())
+					return QJsonValue();
+
+				QJsonArray array = currentValue.toArray();
+				int index = key.toInt();
+
+				if (index < 0 || index >= array.size())
+					return QJsonValue();
+
+				currentValue = array[index];
+				break;
+			}
+			default:
+				return QJsonValue();
+		}
+	}
+
+	return currentValue;
+}
+
 QJsonObject JSONUtils::Merge(QJsonObject src, QJsonObject other) {
 	for (int i = 0; i < other.count(); i++) {
 		QString key = other.keys()[i];

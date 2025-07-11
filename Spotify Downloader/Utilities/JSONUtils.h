@@ -12,6 +12,8 @@
 
 class JSONUtils {
 	public:
+		static QJsonValue Navigate(const QJsonValue& json, const QVariantList& searchKeys);
+
 		static QJsonObject Merge(QJsonObject src, QJsonObject other);
 		static QJsonArray Extend(QJsonArray src, QJsonArray other);
 

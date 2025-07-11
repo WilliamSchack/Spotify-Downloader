@@ -650,8 +650,6 @@ QJsonObject YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 
 	QJsonObject data = json["contents"].toObject()["elementRenderer"].toObject()["newElement"].toObject()["type"].toObject()["componentType"].toObject()["model"].toObject()["timedLyricsModel"].toObject()["lyricsData"].toObject();
 
-	qDebug() << data;
-
 	return QJsonObject();
 }
 
