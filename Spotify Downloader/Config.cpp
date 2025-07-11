@@ -144,7 +144,11 @@ void Config::LoadSettings() {
 
     PlaylistFileTypeIndex = settings.value("playlistFileTypeIndex", 0).toInt();
     PlaylistFileNameTag = settings.value("playlistFileNameTag", "<>").toString();
-    PlaylistFileName = settings.value("playlistFileName", "<Save Location>/<Playlist Name> - <Playlist Creator>").toString();
+    PlaylistFileName = settings.value("playlistFileName", "<Save Location>/<Playlist Name> - <Playlist Owner>").toString();
+
+    // Accidentally left playlistFileName with Playlist Creator as a tag (the previous version), this fixes it if not changed
+    if (PlaylistFileName == "<Save Location>/<Playlist Name> - <Playlist Creator>")
+        PlaylistFileName = "<Save Location>/<Playlist Name> - <Playlist Owner>";
 
     settings.endGroup();
 
