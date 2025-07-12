@@ -26,7 +26,7 @@ void LRCFile::CreateLRCFile(const QString& outputPathWithoutExtension, const Son
 
 	// Write header
 	out << CreateHeader(song);
-	out << "\n\n";
+	out << "\n";
 
 	// Write lyrics
 	out << QString::fromStdString(lyrics.GetString());
