@@ -220,7 +220,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, bitrate, &_quitting, [&](float percentComplete) {
-			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
+			float progressBarPercent = MathUtils::Lerp(0.7, 0.9, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
 		qInfo() << _threadIndex << "Successfully normalised audio for song" << song.SpotifyId;
@@ -230,13 +230,13 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
 		song.SetBitrate(_currentProcess, bitrate, [&](float percentComplete) {
-			float progressBarPercent = MathUtils::Lerp(0.7, 1, percentComplete);
+			float progressBarPercent = MathUtils::Lerp(0.7, 0.9, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
 		qInfo() << _threadIndex << "Successfully set bitrate for song" << song.SpotifyId;
 	}
 
-	emit SetProgressBar(_threadIndex, 1);
+	emit SetProgressBar(_threadIndex, 0.9);
 
 	// Check for quit/pause
 	CheckForStop();
@@ -258,6 +258,8 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 			qInfo() << _threadIndex << "Found synced lyrics for song" << song.SpotifyId;
 			break;
 	}
+
+	emit SetProgressBar(_threadIndex, 1);
 
 	// Check for quit/pause
 	CheckForStop();
