@@ -15,7 +15,7 @@
 #include "Utilities/ImageUtils.h"
 #include "Utilities/FileUtils.h"
 
-#include "Lyrics.h"
+#include "Lyrics/Lyrics.h"
 
 #include "Codec.h"
 

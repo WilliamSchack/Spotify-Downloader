@@ -60,6 +60,12 @@
     <Filter Include="Source Files\Playlist">
       <UniqueIdentifier>{fddfe536-90a5-4812-a510-33588793a914}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lyrics">
+      <UniqueIdentifier>{ba086748-7f1f-4c38-89f6-e689b7b47a8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lyrics">
+      <UniqueIdentifier>{3b90ada8-3882-401e-a017-a2256aa25458}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Downloading\PlaylistDownloader.cpp">
@@ -149,8 +155,11 @@
     <ClCompile Include="Network\MusixmatchAPI.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="Lyrics.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Lyrics\LRCFile.cpp">
+      <Filter>Source Files\Lyrics</Filter>
+    </ClCompile>
+    <ClCompile Include="Lyrics\Lyrics.cpp">
+      <Filter>Source Files\Lyrics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,8 +223,11 @@
     <ClInclude Include="Network\MusixmatchAPI.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Lyrics.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Lyrics\Lyrics.h">
+      <Filter>Header Files\Lyrics</Filter>
+    </ClInclude>
+    <ClInclude Include="Lyrics\LRCFile.h">
+      <Filter>Header Files\Lyrics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

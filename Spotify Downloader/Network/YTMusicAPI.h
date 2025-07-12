@@ -10,7 +10,7 @@
 #include "Utilities/JSONUtils.h"
 #include "Network/Network.h"
 
-#include "Lyrics.h"
+#include "Lyrics/Lyrics.h"
 
 #include <time.h>
 #include <regex>

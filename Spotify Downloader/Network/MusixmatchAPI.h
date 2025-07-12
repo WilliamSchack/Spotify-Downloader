@@ -8,7 +8,7 @@
 #include "Utilities/Logger.h"
 
 #include "Network/Network.h"
-#include "Lyrics.h"
+#include "Lyrics/Lyrics.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>

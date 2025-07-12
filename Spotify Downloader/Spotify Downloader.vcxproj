@@ -22,7 +22,8 @@
     <ClCompile Include="Downloading\PlaylistDownloader.cpp" />
     <ClCompile Include="Downloading\Song.cpp" />
     <ClCompile Include="Downloading\SongDownloader.cpp" />
-    <ClCompile Include="Lyrics.cpp" />
+    <ClCompile Include="Lyrics\LRCFile.cpp" />
+    <ClCompile Include="Lyrics\Lyrics.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\MusixmatchAPI.cpp" />
     <ClCompile Include="Network\Network.cpp" />
@@ -53,7 +54,8 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Downloading\Codec.h" />
     <ClInclude Include="Downloading\Song.h" />
-    <ClInclude Include="Lyrics.h" />
+    <ClInclude Include="Lyrics\LRCFile.h" />
+    <ClInclude Include="Lyrics\Lyrics.h" />
     <ClInclude Include="Network\MusixmatchAPI.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />
