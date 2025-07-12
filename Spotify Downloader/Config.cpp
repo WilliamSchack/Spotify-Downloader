@@ -10,6 +10,7 @@ void Config::SaveSettings() {
     settings.setValue("trackNumberIndex", TrackNumberIndex);
     settings.setValue("normalizeEnabled", NormalizeAudio);
     settings.setValue("normalizeVolume", NormalizeAudioVolume);
+    settings.setValue("getLyrics", GetLyrics);
     settings.setValue("automaticBestQuality", AutomaticBestQuality);
 
     // Audio Bitrate
@@ -67,6 +68,7 @@ void Config::LoadSettings() {
     TrackNumberIndex = settings.value("trackNumberIndex", 0).toInt();
     NormalizeAudio = settings.value("normalizeEnabled", true).toBool();
     NormalizeAudioVolume = settings.value("normalizeVolume", -14.0).toFloat();
+    GetLyrics = settings.value("getLyrics", true).toBool();
     AutomaticBestQuality = settings.value("automaticBestQuality", true).toBool();
     
     // Audio Bitrate
@@ -181,6 +183,7 @@ QJsonObject Config::SettingsLog() {
         {"Track Number Index", TrackNumberIndex},
         {"Normalise Enabled", NormalizeAudio},
         {"Normalise Volume", NormalizeAudioVolume},
+        {"Get Lyrics", GetLyrics},
         {"Automatic Best Quality", AutomaticBestQuality},
         {"Artist Separator", ArtistSeparator},
         {"File Name Tag", FileNameTag},
