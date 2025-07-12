@@ -1,5 +1,7 @@
 #include "SpotifyDownloader.h"
 
+#include "Lyrics/LRCFile.h"
+
 void SongDownloader::DownloadSongs(const SpotifyDownloader* main, const PlaylistDownloader* manager, YTMusicAPI* yt, QJsonArray tracks, QJsonObject album, int threadIndex) {
 	Main = main;
 	Manager = manager;
@@ -252,18 +254,45 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		song.GetLyrics();
 
 		switch (song.LyricsData.Type) {
-		case Lyrics::LyricsType::None:
-			qInfo() << _threadIndex << "Could not find any lyrics for song" << song.SpotifyId;
-			break;
-		case Lyrics::LyricsType::Unsynced:
-			qInfo() << _threadIndex << "Found unsynced lyrics for song" << song.SpotifyId;
-			break;
-		case Lyrics::LyricsType::Synced:
-			qInfo() << _threadIndex << "Found synced lyrics for song" << song.SpotifyId;
-			break;
+			case Lyrics::LyricsType::None:
+				qInfo() << _threadIndex << "Could not find any lyrics for song" << song.SpotifyId;
+				break;
+			case Lyrics::LyricsType::Unsynced:
+				qInfo() << _threadIndex << "Found unsynced lyrics for song" << song.SpotifyId;
+				break;
+			case Lyrics::LyricsType::Synced:
+				qInfo() << _threadIndex << "Found synced lyrics for song" << song.SpotifyId;
+				break;
 		}
 
 		emit SetProgressBar(_threadIndex, 1);
+	}
+
+	if (Config::CreateLRCFile && song.LyricsData.Type != Lyrics::LyricsType::None) {
+		qInfo() << _threadIndex << "Creating LRC file for song" << song.SpotifyId;
+		emit SetProgressLabel(_threadIndex, "Creating LRC File...");
+
+		// Add tags to output path, no need to check error, already validated on download start
+		std::tuple<QString, Config::NamingError> formattedLRCOutputPath = Config::FormatStringWithTags(Config::LRCFileNameTag, Config::LRCFileName, false,
+			[this, &song](QString tag) -> std::tuple<QString, bool> {
+				return Config::SaveLocationTagHandler(tag, Config::SaveLocation, Song::TagHandler(song, tag));
+			}
+		);
+
+		QString lrcOutputPath = std::get<0>(formattedLRCOutputPath);
+
+		// Add backspaces in the path
+		lrcOutputPath = FileUtils::AddDirectoryBackspaces(lrcOutputPath);
+
+		// Create the LRC file
+		LRCFile::CreateLRCFile(lrcOutputPath, song, song.LyricsData);
+
+		// Check if the file was created
+		lrcOutputPath += ".lrc";
+		if (QFile::exists(lrcOutputPath))
+			qInfo() << _threadIndex << "Successfully saved lrc file for song" << song.SpotifyId;
+		else
+			qWarning() << _threadIndex << "Unknown error saving lrc file for song" << song.SpotifyId;
 	}
 
 	// Check for quit/pause
