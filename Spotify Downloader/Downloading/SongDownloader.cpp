@@ -243,9 +243,21 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	if (_quitting) return "";
 
 	// Get lyrics
-	qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId;
+	qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId << "with isrc" << song.Isrc;
 	emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
 	song.GetLyrics();
+
+	switch (song.LyricsData.Type) {
+		case Lyrics::LyricsType::None:
+			qInfo() << _threadIndex << "Could not find any lyrics for song" << song.SpotifyId;
+			break;
+		case Lyrics::LyricsType::Unsynced:
+			qInfo() << _threadIndex << "Found unsynced lyrics for song" << song.SpotifyId;
+			break;
+		case Lyrics::LyricsType::Synced:
+			qInfo() << _threadIndex << "Found synced lyrics for song" << song.SpotifyId;
+			break;
+	}
 
 	// Check for quit/pause
 	CheckForStop();
