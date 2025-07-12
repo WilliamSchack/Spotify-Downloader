@@ -158,7 +158,24 @@ QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
 	return message["body"].toObject()["track"].toObject();
 }
 
-MusixmatchAPI::LyricsType MusixmatchAPI::GetLyricType(QString isrc) {
+Lyrics MusixmatchAPI::GetLyrics(QString isrc) {
+	Lyrics lyrics;
+
+	lyrics.Type = GetLyricType(isrc);
+
+	switch (lyrics.Type) {
+		case Lyrics::LyricsType::Unsynced:
+			lyrics.UnsyncedLyrics = GetUnsyncedLyrics(isrc);
+			break;
+		case Lyrics::LyricsType::Synced:
+			lyrics.SyncedLyrics = GetSyncedLyrics(isrc);
+			break;
+	}
+
+	return lyrics;
+}
+
+Lyrics::LyricsType MusixmatchAPI::GetLyricType(QString isrc) {
 	// Get the track
 	QJsonObject track = GetTrack(isrc);
 
@@ -167,15 +184,15 @@ MusixmatchAPI::LyricsType MusixmatchAPI::GetLyricType(QString isrc) {
 	bool hasSyncedLyrics = track["has_richsync"].toInt() == 1;
 
 	if (hasSyncedLyrics)
-		return LyricsType::Synced;
+		return Lyrics::LyricsType::Synced;
 
 	if (hasLyrics)
-		return LyricsType::Unsynced;
+		return Lyrics::LyricsType::Unsynced;
 
-	return LyricsType::None;
+	return Lyrics::LyricsType::None;
 }
 
-QString MusixmatchAPI::GetLyrics(QString isrc) {
+std::string MusixmatchAPI::GetUnsyncedLyrics(QString isrc) {
 	// Get the lyrics from musixmatch
 	QJsonObject response = Request("track.lyrics.get", isrc);
 
@@ -190,10 +207,10 @@ QString MusixmatchAPI::GetLyrics(QString isrc) {
 
 	// Return the lyrics
 	QJsonObject lyrics = message["body"].toObject()["lyrics"].toObject();
-	return lyrics["lyrics_body"].toString();
+	return lyrics["lyrics_body"].toString().toStdString();
 }
 
-QList<MusixmatchAPI::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString isrc) {
+std::list<Lyrics::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString isrc) {
 	// Get the synced lyrics from musixmatch
 	QJsonObject response = Request("track.richsync.get", isrc);
 
@@ -204,24 +221,24 @@ QList<MusixmatchAPI::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString i
 
 	LogStatusCode(statusCode, QString("%1 Failed to get synced lyrics with the error:").arg(isrc));
 	if (statusCode != 200)
-		return QList<SynchronisedLyric>();
+		return std::list<Lyrics::SynchronisedLyric>();
 
 	// Get the lyrics from the response
 	QJsonObject richSync = message["body"].toObject()["richsync"].toObject();
 	QString lyricsString = richSync["richsync_body"].toString();
 	QJsonArray lyricsArray = QJsonDocument::fromJson(lyricsString.toUtf8()).array();
 
-	QList<SynchronisedLyric> lyricsList;
+	std::list<Lyrics::SynchronisedLyric> lyricsList;
 	foreach(QJsonValue lyricDataValue, lyricsArray) {
 		QJsonObject lyricData = lyricDataValue.toObject();
 
 		// Get the sentences rather than specific words
 		int startMs = lyricData["ts"].toDouble() * 1000;
 		int endMs = lyricData["te"].toDouble() * 1000;
-		QString sentence = lyricData["x"].toString();
+		std::string sentence = lyricData["x"].toString().toStdString();
 
-		SynchronisedLyric lyric(startMs, endMs, sentence);
-		lyricsList.append(lyric);
+		Lyrics::SynchronisedLyric lyric(startMs, endMs, sentence);
+		lyricsList.push_back(lyric);
 	}
 
 	return lyricsList;

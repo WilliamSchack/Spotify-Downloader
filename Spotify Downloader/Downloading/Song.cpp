@@ -871,53 +871,24 @@ void Song::GetLyrics() {
 	MusixmatchAPI::LoggingType previousLoggingType = MusixmatchAPI::ErrorLoggingType;
 	MusixmatchAPI::ErrorLoggingType = MusixmatchAPI::LoggingType::Warnings;
 
-	// Get synced lyrics
-	SyncedLyrics = MusixmatchAPI::GetSyncedLyrics(Isrc);
-	if (SyncedLyrics.count() > 0) {
-		LyricsType = MusixmatchAPI::LyricsType::Synced;
-		MusixmatchAPI::ErrorLoggingType = previousLoggingType;
-		return;
-	}
-
-	// If no synced lyrics found, get regular lyrics
-	Lyrics = MusixmatchAPI::GetLyrics(Isrc);
-	if (!Lyrics.isEmpty()) {
-		LyricsType = MusixmatchAPI::LyricsType::Unsynced;
-		MusixmatchAPI::ErrorLoggingType = previousLoggingType;
-		return;
-	}
-
-	LyricsType = MusixmatchAPI::LyricsType::None;
+	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc);
 	MusixmatchAPI::ErrorLoggingType = previousLoggingType;
-}
 
-QString Song::GetLyricsString() {
-	if (LyricsType == MusixmatchAPI::LyricsType::None)
-		return "";
+	// Even if type is found, musixmatch can still have bot prevention in getting the lyrics, check for that also
+	switch (musixmatchLyrics.Type) {
+		case Lyrics::LyricsType::Unsynced:
+			if (musixmatchLyrics.UnsyncedLyrics.empty())
+				break;
 
-	QString lyricsString = "";
-	switch (LyricsType) {
-		case MusixmatchAPI::LyricsType::Unsynced:
-			lyricsString = Lyrics;
-			break;
-		case MusixmatchAPI::LyricsType::Synced:
-			// Translate synced lyrics to simple LRC
-			foreach(MusixmatchAPI::SynchronisedLyric lyric, SyncedLyrics) {
-				int minutes = lyric.StartMs / 60000;
-				int seconds = (lyric.StartMs % 60000) / 1000;
-				int hundredths = (lyric.StartMs % 1000) / 10;
+			LyricsData = musixmatchLyrics;
+			return;
+		case Lyrics::LyricsType::Synced:
+			if (musixmatchLyrics.SyncedLyrics.empty())
+				break;
 
-				QString timestamp = QString("[%1:%2.%3]")
-					.arg(QString::number(minutes).rightJustified(2, '0'))
-					.arg(QString::number(seconds).rightJustified(2, '0'))
-					.arg(QString::number(hundredths).rightJustified(2, '0'));
-
-				lyricsString += QString("%1%2\n").arg(timestamp).arg(lyric.Lyric);
-			}
-			break;
+			LyricsData = musixmatchLyrics;
+			return;
 	}
-
-	return lyricsString;
 }
 
 void Song::AssignMetadata() {
@@ -957,7 +928,7 @@ void Song::AssignMetadata() {
 		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();
 		TagLib::String discNumber = QString::number(DiscNumber).toUtf8().data();
 
-		TagLib::String lyrics(GetLyricsString().toUtf8().constData(), TagLib::String::UTF8);
+		TagLib::String lyrics(LyricsData.GetString().c_str(), TagLib::String::UTF8);
 
 		// Handle each metadata type
 		switch (Codec::Data[Codec].Type) {

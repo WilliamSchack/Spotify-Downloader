@@ -15,6 +15,8 @@
 #include "Utilities/ImageUtils.h"
 #include "Utilities/FileUtils.h"
 
+#include "Lyrics.h"
+
 #include "Codec.h"
 
 #include <QObject>
@@ -62,9 +64,7 @@ class Song {
 		int AlbumTrackNumber = 0;
 		int DiscNumber = 0;
 
-		MusixmatchAPI::LyricsType LyricsType = MusixmatchAPI::LyricsType::None;
-		QString Lyrics = "";
-		QList<MusixmatchAPI::SynchronisedLyric> SyncedLyrics;
+		Lyrics LyricsData;
 
 		bool InPlaylist;
 
@@ -122,7 +122,6 @@ class Song {
 		QString _downloadingPath;
 	private:
 		int TrackNumber();
-		QString GetLyricsString();
 
 		QJsonArray ScoreSearchResults(QJsonArray searchResults);
 };

@@ -8,6 +8,7 @@
 #include "Utilities/Logger.h"
 
 #include "Network/Network.h"
+#include "Lyrics.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -19,25 +20,6 @@
 
 class MusixmatchAPI {
 	public:
-		class SynchronisedLyric {
-			public:
-				int StartMs;
-				int EndMs;
-				QString Lyric;
-			public:
-				SynchronisedLyric(int startMs, int endMs, QString lyric) {
-					StartMs = startMs;
-					EndMs = endMs;
-					Lyric = lyric;
-				}
-		};
-
-		enum class LyricsType {
-			None,
-			Unsynced,
-			Synced
-		};
-
 		enum class LoggingType {
 			All,
 			Warnings,
@@ -59,9 +41,10 @@ class MusixmatchAPI {
 	public:
 		static QJsonObject GetTrack(QString isrc);
 
-		static LyricsType GetLyricType(QString isrc);
-		static QString GetLyrics(QString isrc);
-		static QList<SynchronisedLyric> GetSyncedLyrics(QString isrc);
+		static Lyrics GetLyrics(QString isrc);
+		static Lyrics::LyricsType GetLyricType(QString isrc);
+		static std::string GetUnsyncedLyrics(QString isrc);
+		static std::list<Lyrics::SynchronisedLyric> GetSyncedLyrics(QString isrc);
 	private:
 		// Status code descriptions from "https://docs.musixmatch.com/lyrics-api/api-methods"
 		static inline const QMap<int, StatusCodeDetails> STATUS_CODE_DETAILS = {

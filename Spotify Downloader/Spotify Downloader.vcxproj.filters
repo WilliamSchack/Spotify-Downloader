@@ -149,6 +149,9 @@
     <ClCompile Include="Network\MusixmatchAPI.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Lyrics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -210,6 +213,9 @@
     </ClInclude>
     <ClInclude Include="Network\MusixmatchAPI.h">
       <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Lyrics.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
