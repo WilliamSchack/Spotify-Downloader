@@ -863,10 +863,6 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::GetLyrics() {
-	// Was previously getting the lyric type then downloading the chosen lyrics with it but that was changed
-	// since the musixmatch track.get has seemingly random bot protection where the lyric functions do not
-	// Instead get synced and unsynced lyrics and just use which is returned
-
 	// Only print warnings
 	MusixmatchAPI::LoggingType previousLoggingType = MusixmatchAPI::ErrorLoggingType;
 	MusixmatchAPI::ErrorLoggingType = MusixmatchAPI::LoggingType::Warnings;
@@ -874,7 +870,7 @@ void Song::GetLyrics() {
 	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc);
 	MusixmatchAPI::ErrorLoggingType = previousLoggingType;
 
-	// Even if type is found, musixmatch can still have bot prevention in getting the lyrics, check for that also
+	// Even if type is found, musixmatch can still have bot prevention when getting the lyrics, check for that as well
 	switch (musixmatchLyrics.Type) {
 		case Lyrics::LyricsType::Unsynced:
 			if (musixmatchLyrics.UnsyncedLyrics.empty())
@@ -889,6 +885,10 @@ void Song::GetLyrics() {
 			LyricsData = musixmatchLyrics;
 			return;
 	}
+
+	// If lyrics not found on musixmatch, get from YouTube
+	Lyrics youtubeLyrics = YTMusicAPI().GetLyrics(YoutubeId);
+	LyricsData = youtubeLyrics;
 }
 
 void Song::AssignMetadata() {

@@ -619,7 +619,7 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 	QString lyricsBrowseId = GetLyricsBrowseId(videoId);
 
 	if (lyricsBrowseId.isEmpty())
-		return QJsonObject();
+		return Lyrics();
 
 	QJsonObject context = GetContext();
 
