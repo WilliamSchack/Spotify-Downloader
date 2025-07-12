@@ -655,8 +655,9 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 			QJsonObject lyricsObject = lyricsValue.toObject();
 			QJsonObject cueRange = lyricsObject["cueRange"].toObject();
 
-			int startMs = cueRange["startTimeMilliseconds"].toInt();
-			int endMs = cueRange["endTimeMilliseconds"].toInt();
+			// Cant do QJsonValue.toInt(), have to convert to string first (for some reason)
+			int startMs = cueRange["startTimeMilliseconds"].toString().toInt();
+			int endMs = cueRange["endTimeMilliseconds"].toString().toInt();
 			std::string sentence = lyricsObject["lyricLine"].toString().toStdString();
 
 			Lyrics::SynchronisedLyric lyric(startMs, endMs, sentence);
