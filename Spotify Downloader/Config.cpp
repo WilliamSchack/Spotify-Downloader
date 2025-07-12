@@ -31,6 +31,9 @@ void Config::SaveSettings() {
     settings.setValue("songOutputFormat", FileName);
     settings.setValue("subFoldersTag", SubFoldersTag);
     settings.setValue("subFolders", SubFolders);
+    settings.setValue("createLRCFile", CreateLRCFile);
+    settings.setValue("lrcFileNameTag", LRCFileNameTag);
+    settings.setValue("lrcFileName", LRCFileName);
     settings.setValue("playlistFileTypeIndex", PlaylistFileTypeIndex);
     settings.setValue("playlistFileNameTag", PlaylistFileNameTag);
     settings.setValue("playlistFileName", PlaylistFileName);
@@ -144,6 +147,9 @@ void Config::LoadSettings() {
 
     SubFolders = subFolders;
 
+    CreateLRCFile = settings.value("createLRCFile", false).toBool();
+    LRCFileNameTag = settings.value("lrcFileNameTag", "<>").toString();
+    LRCFileName = settings.value("lrcFileName", "<Save Location>/<Song Name> - <Song Artist>").toString();
     PlaylistFileTypeIndex = settings.value("playlistFileTypeIndex", 0).toInt();
     PlaylistFileNameTag = settings.value("playlistFileNameTag", "<>").toString();
     PlaylistFileName = settings.value("playlistFileName", "<Save Location>/<Playlist Name> - <Playlist Owner>").toString();
@@ -190,6 +196,9 @@ QJsonObject Config::SettingsLog() {
         {"File Name Format", FileName},
         {"Sub Folders Tag", SubFoldersTag},
         {"Sub Folders", SubFolders},
+        {"Create LRC File", CreateLRCFile},
+        {"LRC File Name Tag", LRCFileNameTag},
+        {"LRC File Name", LRCFileName},
         {"Playlist File Type Index", PlaylistFileTypeIndex},
         {"Playlist File Name Tag", PlaylistFileNameTag},
         {"Playlist File Name", PlaylistFileName},

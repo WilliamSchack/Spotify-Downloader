@@ -119,6 +119,10 @@ class Config {
         static inline QString SubFoldersTag;
         static inline QString SubFolders;
     
+        static inline bool CreateLRCFile;
+        static inline QString LRCFileNameTag;
+        static inline QString LRCFileName;
+
         static inline int PlaylistFileTypeIndex;
         static inline QString PlaylistFileNameTag;
         static inline QString PlaylistFileName;
