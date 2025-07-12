@@ -651,17 +651,37 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 		QJsonArray timedLyricsData = data["timedLyricsData"].toArray();
 		std::list<Lyrics::SynchronisedLyric> lyricsList;
 
+		bool unsyncedTimedLyrics = false;
+
 		foreach(QJsonValue lyricsValue, timedLyricsData) {
 			QJsonObject lyricsObject = lyricsValue.toObject();
 			QJsonObject cueRange = lyricsObject["cueRange"].toObject();
 
-			// Cant do QJsonValue.toInt(), have to convert to string first (for some reason)
+			if (cueRange.isEmpty())
+				unsyncedTimedLyrics = true;
+
+			// Cant do QJsonValue.toInt(), times are stored as strings convert to them first
 			int startMs = cueRange["startTimeMilliseconds"].toString().toInt();
 			int endMs = cueRange["endTimeMilliseconds"].toString().toInt();
 			std::string sentence = lyricsObject["lyricLine"].toString().toStdString();
 
 			Lyrics::SynchronisedLyric lyric(startMs, endMs, sentence);
 			lyricsList.push_back(lyric);
+		}
+
+		// If cue range is empty for any timed lyric, it will be for all of them
+		// in this case loop through the timed lyrics and return as an unsynced 
+		if (unsyncedTimedLyrics) {
+			std::string unsyncedTimedLyricsString = "";
+			foreach(Lyrics::SynchronisedLyric syncedLyric, lyricsList) {
+				unsyncedTimedLyricsString += std::format("{}\n", syncedLyric.Lyric);
+			}
+
+			Lyrics lyrics;
+			lyrics.Type = Lyrics::LyricsType::Unsynced;
+			lyrics.UnsyncedLyrics = unsyncedTimedLyricsString;
+
+			return lyrics;
 		}
 
 		Lyrics lyrics;
