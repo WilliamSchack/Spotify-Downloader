@@ -59,7 +59,7 @@
     <string notr="true">background-color: rgb(44, 44, 44);</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
+    <enum>QFrame::Shape::NoFrame</enum>
    </property>
    <property name="currentIndex">
     <number>0</number>
@@ -149,7 +149,7 @@ background-color: rgb(55, 55, 55);</string>
       <string>© 2024-2025 William Schack</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLineEdit" name="PlaylistURLInput">
@@ -232,7 +232,7 @@ background-color: rgb(55, 55, 55);</string>
       <string>v0.0.0</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QPushButton" name="PasteButton">
@@ -348,7 +348,7 @@ border: none;</string>
       <string>Download Status</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
     <widget class="QWidget" name="widget" native="true">
@@ -496,19 +496,19 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="lineWidth">
         <number>1</number>
        </property>
        <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="sizeAdjustPolicy">
-        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+        <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -519,7 +519,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <x>0</x>
           <y>0</y>
           <width>715</width>
-          <height>733</height>
+          <height>785</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -530,7 +530,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <number>9</number>
          </property>
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <item>
           <layout class="QHBoxLayout" name="OverwriteSettingLayout">
@@ -538,7 +538,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <number>6</number>
            </property>
            <property name="sizeConstraint">
-            <enum>QLayout::SetDefaultConstraint</enum>
+            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -578,7 +578,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Overwrite Existing Files</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -634,7 +634,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Codec</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -724,7 +724,7 @@ margin-right: 40px;</string>
             <string>Codec Details</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
            <property name="margin">
             <number>0</number>
@@ -756,7 +756,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Normalize Volume</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -822,7 +822,7 @@ color: rgb(0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Quite: &lt;/span&gt;-17.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Normal: &lt;/span&gt;-14.0&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Loud: &lt;/span&gt;-11.0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -874,7 +874,66 @@ color: rgb(255, 255, 255);</string>
               <string>dB</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="LyricsSettingLayout">
+           <property name="rightMargin">
+            <number>48</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="LyricsSettingLabel">
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Get Lyrics</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="CheckBox" name="LyricsSettingButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
@@ -902,7 +961,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Auto Best Quality</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -964,7 +1023,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Audio Bitrate</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -999,7 +1058,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Recommended Values&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;High Quality: &lt;/span&gt;256&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Good Quality: &lt;/span&gt;192&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Low Quality: &lt;/span&gt;128&lt;/p&gt;&lt;p&gt;Only accepts numbers within 33-256 with a multiple of 32 (excluding 33)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1054,7 +1113,7 @@ color: rgb(255, 255, 255);</string>
               <string>kb/s</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1088,7 +1147,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Average File Size</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1124,7 +1183,7 @@ color: rgb(255, 255, 255);</string>
               <string>0MB/min</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1158,7 +1217,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Artist Separator</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1229,7 +1288,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Track Number</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1304,7 +1363,7 @@ margin-right: 40px;</string>
             <string>Will resort to Album Track Number if not downloading a playlist</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
            <property name="margin">
             <number>0</number>
@@ -1339,7 +1398,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>File Name</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1453,7 +1512,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Sub Folders</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1567,7 +1626,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Playlist File Type</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1648,7 +1707,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Playlist File Name</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1843,19 +1902,19 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="lineWidth">
         <number>1</number>
        </property>
        <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="sizeAdjustPolicy">
-        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+        <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -1877,7 +1936,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <number>9</number>
          </property>
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <item>
           <layout class="QHBoxLayout" name="NotificationSettingLayout">
@@ -1901,7 +1960,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Show Status Notifications</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1960,7 +2019,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Downloader Threads</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -1995,7 +2054,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How many songs can simultaneously download at once.&lt;/p&gt;&lt;p&gt;Effects CPU performance&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;6 Recomended&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2036,7 +2095,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Download Speed Limit</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2071,7 +2130,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <bool>true</bool>
              </property>
              <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
+              <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="toolTip">
               <string>0 Is Uncapped</string>
@@ -2114,7 +2173,7 @@ color: rgb(255, 255, 255);</string>
               <string>MB/s</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2145,7 +2204,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>YouTube Cookies</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2184,10 +2243,10 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;No Cookies Assigned&lt;/span&gt;</string>
              </property>
              <property name="textFormat">
-              <enum>Qt::RichText</enum>
+              <enum>Qt::TextFormat::RichText</enum>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2341,7 +2400,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>PO Token</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2538,7 +2597,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Spotify Client ID</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -2732,7 +2791,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Spotify Client Secret</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -3007,19 +3066,19 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="lineWidth">
         <number>1</number>
        </property>
        <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAsNeeded</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
        </property>
        <property name="sizeAdjustPolicy">
-        <enum>QAbstractScrollArea::AdjustIgnored</enum>
+        <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -3041,7 +3100,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <number>9</number>
          </property>
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <item>
           <layout class="QHBoxLayout" name="DownloaderThreadUISettingLayout">
@@ -3062,7 +3121,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Downloader Thread UI</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -3132,7 +3191,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Auto Open Download Folder</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -3194,7 +3253,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Sidebar Icons Colour</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -3253,7 +3312,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Check For Updates</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -3416,7 +3475,7 @@ background-color: rgb(30, 30, 30);</string>
       <string>FINISHING CURRENT TASKS</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
     <widget class="QPushButton" name="PlayButton">
@@ -3487,7 +3546,7 @@ color: rgb(255, 255, 255);</string>
       <string>0/0</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
      </property>
      <property name="margin">
       <number>5</number>
@@ -3547,7 +3606,7 @@ color: rgb(255, 255, 255);</string>
       <string notr="true">background-color: rgb(30, 30, 30);</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
     </widget>
     <widget class="QScrollArea" name="DownloadingScrollArea">
@@ -3644,19 +3703,19 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
      </property>
      <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -3675,7 +3734,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </property>
       <layout class="QVBoxLayout" name="ScrollLayout_2">
        <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
+        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
        </property>
        <item>
         <layout class="QVBoxLayout" name="DownloadingSpaceFillerLayout">
@@ -3685,7 +3744,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
          <item>
           <widget class="QFrame" name="DownloadingSpaceFillerFrame">
            <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
           </widget>
          </item>
@@ -3765,7 +3824,7 @@ color: rgb(255, 255, 255);</string>
       <string>Getting Playlist Data...</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
     <zorder>DownloadingScrollArea</zorder>
@@ -3801,10 +3860,10 @@ color: rgb(255, 255, 255);</string>
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Download Errors&lt;br/&gt;&lt;span style=&quot; font-size:13pt; color:#ff6464;&quot;&gt;Songs here cannot be downloaded for reasons listed below each song&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
-      <enum>Qt::RichText</enum>
+      <enum>Qt::TextFormat::RichText</enum>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
     <widget class="QScrollArea" name="ErrorScrollArea">
@@ -3901,19 +3960,19 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
      </property>
      <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -3932,14 +3991,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       </property>
       <layout class="QVBoxLayout" name="ScrollLayout">
        <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
+        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
        </property>
        <item>
         <layout class="QVBoxLayout" name="ErrorSpaceFillerLayout">
          <item>
           <widget class="QFrame" name="ErrorSpaceFillerFrame">
            <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
           </widget>
          </item>
