@@ -211,6 +211,9 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	if (_quitting) return "";
 
 	// If normalising, normalise audio, includes setting bitrate of audio
+	float progressStartPercentage = 0.7;
+	float progressEndPercentage = Config::GetLyrics ? 0.9 : 1;
+
 	int bitrate = bitrateOverride != -1 ? bitrateOverride : Config::AudioBitrate[codec]; // Get current bitrate
 	if (Config::NormalizeAudio) {
 		// If using highest quality, dont set bitrate
@@ -220,7 +223,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		qInfo() << _threadIndex << "Normalising audio for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Normalizing Audio...");
 		song.NormaliseAudio(_currentProcess, Config::NormalizeAudioVolume, bitrate, &_quitting, [&](float percentComplete) {
-			float progressBarPercent = MathUtils::Lerp(0.7, 0.9, percentComplete);
+			float progressBarPercent = MathUtils::Lerp(progressStartPercentage, progressEndPercentage, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
 		qInfo() << _threadIndex << "Successfully normalised audio for song" << song.SpotifyId;
@@ -230,24 +233,25 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		qInfo() << _threadIndex << "Setting bitrate for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Setting Bitrate...");
 		song.SetBitrate(_currentProcess, bitrate, [&](float percentComplete) {
-			float progressBarPercent = MathUtils::Lerp(0.7, 0.9, percentComplete);
+			float progressBarPercent = MathUtils::Lerp(progressStartPercentage, progressEndPercentage, percentComplete);
 			emit SetProgressBar(_threadIndex, progressBarPercent);
 		});
 		qInfo() << _threadIndex << "Successfully set bitrate for song" << song.SpotifyId;
 	}
 
-	emit SetProgressBar(_threadIndex, 0.9);
+	emit SetProgressBar(_threadIndex, progressEndPercentage);
 
 	// Check for quit/pause
 	CheckForStop();
 	if (_quitting) return "";
 
-	// Get lyrics
-	qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId << "with isrc" << song.Isrc;
-	emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
-	song.GetLyrics();
+	// Get lyrics if setting enabled
+	if (Config::GetLyrics) {
+		qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId << "with isrc" << song.Isrc;
+		emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
+		song.GetLyrics();
 
-	switch (song.LyricsData.Type) {
+		switch (song.LyricsData.Type) {
 		case Lyrics::LyricsType::None:
 			qInfo() << _threadIndex << "Could not find any lyrics for song" << song.SpotifyId;
 			break;
@@ -257,9 +261,10 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		case Lyrics::LyricsType::Synced:
 			qInfo() << _threadIndex << "Found synced lyrics for song" << song.SpotifyId;
 			break;
-	}
+		}
 
-	emit SetProgressBar(_threadIndex, 1);
+		emit SetProgressBar(_threadIndex, 1);
+	}
 
 	// Check for quit/pause
 	CheckForStop();
