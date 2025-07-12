@@ -446,7 +446,11 @@ PlaylistDownloader::~PlaylistDownloader() {
 		// Create a playlist file if settings are set
 		if (!_earlyQuit && Config::PlaylistFileTypeIndex != 0 && _playlistName != "" && _playlistOwner != "") {
 			// Add tags to output path, no need to check error, already validated on download start
-			std::tuple<QString, Config::NamingError> formattedOutputPath = Config::FormatStringWithTags(Config::PlaylistFileNameTag, Config::PlaylistFileName, false, [this](QString tag) -> std::tuple<QString, bool> { return PlaylistFileNameTagHandler(tag); });
+			std::tuple<QString, Config::NamingError> formattedOutputPath = Config::FormatStringWithTags(Config::PlaylistFileNameTag, Config::PlaylistFileName, false,
+				[this](QString tag) -> std::tuple<QString, bool> {
+					return Config::SaveLocationTagHandler(tag, Config::SaveLocation, PlaylistFileNameTagHandler(tag));
+				}
+			);
 			QString outputPath = std::get<0>(formattedOutputPath);
 
 			// Add backspaces in the path
@@ -568,13 +572,10 @@ std::tuple<QString, bool> PlaylistDownloader::PlaylistFileNameTagHandler(QString
 	int indexOfTag = Config::PLAYLIST_NAMING_TAGS.indexOf(tag.toLower());
 
 	switch (indexOfTag) {
-		case 0: // Save Location
-			tagReplacement = Config::SaveLocation;
-			break;
-		case 1: // Playlist Name
+		case 0: // Playlist Name
 			tagReplacement = FileUtils::ValidateFileName(_playlistName);
 			break;
-		case 2: // Playlist Owner
+		case 1: // Playlist Owner
 			tagReplacement = FileUtils::ValidateFileName(_playlistOwner);
 			break;
 	}

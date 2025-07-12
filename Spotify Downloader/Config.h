@@ -64,6 +64,9 @@ class Config {
         static inline const QString HELP_ICON_WHITE = ":/SpotifyDownloader/Icons/Help_Icon_W.png";
         static inline const QString HELP_ICON_COLOUR = ":/SpotifyDownloader/Icons/Help_Icon_Colour.png";
 
+
+        static inline const QString SAVE_LOCATION_TAG = "save location";
+
         static inline const QStringList NAMING_TAGS {
             "song name",
             "album name",
@@ -85,7 +88,6 @@ class Config {
         };
 
         static inline const QStringList PLAYLIST_NAMING_TAGS {
-            "save location",
             "playlist name",
             "playlist owner"
         };
@@ -151,6 +153,7 @@ class Config {
 
         static std::tuple<QString, NamingError> FormatStringWithTags(QString stringTag, QString string, bool validateTags, std::function<std::tuple<QString, bool>(QString)> tagHandlerFunc); // Output: (Output, Error)
         static std::tuple<QString, Config::NamingError> ValidateTagsInString(QString stringTag, QString string, QStringList validTags); // Output: (Output, Error)
+        static std::tuple<QString, bool> SaveLocationTagHandler(QString tag, QString saveLocation, std::tuple<QString, bool> regularTagHandlerResult);
 
         static QIcon DownloadIconFilled() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_FILLED_COLOUR : DOWNLOAD_ICON_FILLED_WHITE); }
         static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }

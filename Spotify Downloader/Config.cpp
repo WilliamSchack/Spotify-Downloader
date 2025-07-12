@@ -274,3 +274,13 @@ std::tuple<QString, Config::NamingError> Config::ValidateTagsInString(QString st
 
     return formattedString;
 }
+
+std::tuple<QString, bool> Config::SaveLocationTagHandler(QString tag, QString saveLocation, std::tuple<QString, bool> regularTagHandlerResult) {
+    // Check for the save location tag
+    bool isSaveLocationTag = tag == SAVE_LOCATION_TAG;
+    if (isSaveLocationTag)
+        return std::make_tuple(saveLocation, true);
+
+    // If not the save location tag, use the regular tag handlers
+    return regularTagHandlerResult;
+}
