@@ -277,7 +277,7 @@ std::tuple<QString, Config::NamingError> Config::ValidateTagsInString(QString st
 
 std::tuple<QString, bool> Config::SaveLocationTagHandler(QString tag, QString saveLocation, std::tuple<QString, bool> regularTagHandlerResult) {
     // Check for the save location tag
-    bool isSaveLocationTag = tag == SAVE_LOCATION_TAG;
+    bool isSaveLocationTag = tag.toLower() == SAVE_LOCATION_TAG;
     if (isSaveLocationTag)
         return std::make_tuple(saveLocation, true);
 

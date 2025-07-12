@@ -874,7 +874,9 @@ bool SpotifyDownloader::ValidateSettings() {
     }
 
     // Check tags
-    std::tuple<QString, Config::NamingError> formattedPlaylistFileName = Config::ValidateTagsInString(Config::PlaylistFileNameTag, Config::PlaylistFileName, Config::PLAYLIST_NAMING_TAGS);
+    QStringList validPlaylistFileNameTags = Config::PLAYLIST_NAMING_TAGS;
+    validPlaylistFileNameTags.append(Config::SAVE_LOCATION_TAG);
+    std::tuple<QString, Config::NamingError> formattedPlaylistFileName = Config::ValidateTagsInString(Config::PlaylistFileNameTag, Config::PlaylistFileName, validPlaylistFileNameTags);
     QString formattedPlaylistFileNameString = std::get<0>(formattedPlaylistFileName);
     Config::NamingError PlaylistFileNameNamingError = std::get<1>(formattedPlaylistFileName);
 
