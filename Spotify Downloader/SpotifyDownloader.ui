@@ -881,12 +881,12 @@ color: rgb(255, 255, 255);</string>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="LyricsSettingLayout">
+          <layout class="QHBoxLayout" name="GetLyricsSettingLayout">
            <property name="rightMargin">
             <number>48</number>
            </property>
            <item>
-            <widget class="QLabel" name="LyricsSettingLabel">
+            <widget class="QLabel" name="GetLyricsSettingLabel">
              <property name="font">
               <font>
                <family>Segoe UI</family>
@@ -907,7 +907,7 @@ background-color: rgba(0, 0, 0, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="CheckBox" name="LyricsSettingButton">
+            <widget class="CheckBox" name="GetLyricsSettingButton">
              <property name="enabled">
               <bool>true</bool>
              </property>
