@@ -113,6 +113,10 @@ void SpotifyDownloader::SetupSideBar() {
         Config::SubFoldersTag = _ui.SubFoldersTagInput->text();
         Config::SubFolders = _ui.SubFoldersInput->text();
 
+        // Set lrc file
+        Config::LRCFileNameTag = _ui.LRCFileNameTagInput->text();
+        Config::LRCFileName = _ui.LRCFileNameInput->text();
+
         // Set playlist file
         Config::PlaylistFileNameTag = _ui.PlaylistFileNameTagInput->text();
         Config::PlaylistFileName = _ui.PlaylistFileNameInput->text();
@@ -478,6 +482,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
             _ui.AudioBitrateInput->setValue(Config::GetBitrate());
         }
     });
+    connect(_ui.CreateLRCFileSettingButton, &CheckBox::clicked, [=] {Config::CreateLRCFile = _ui.CreateLRCFileSettingButton->isChecked; });
     connect(_ui.AutoOpenFolderButton, &CheckBox::clicked, [=] { Config::AutoOpenDownloadFolder = _ui.AutoOpenFolderButton->isChecked; });
     connect(_ui.SidebarIconsColourButton, &CheckBox::clicked, [=] {
         Config::SidebarIconsColour = _ui.SidebarIconsColourButton->isChecked;
@@ -696,7 +701,13 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Folder Sorting
     _ui.SubFoldersTagInput->setText(Config::SubFoldersTag);
     _ui.SubFoldersInput->setText(Config::SubFolders);
-
+    
+    // LRC File
+    if (_ui.CreateLRCFileSettingButton->isChecked != Config::CreateLRCFile)
+        _ui.CreateLRCFileSettingButton->click();
+    _ui.LRCFileNameTagInput->setText(Config::LRCFileNameTag);
+    _ui.LRCFileNameInput->setText(Config::LRCFileName);
+    
     // Playlist File
     _ui.PlaylistFileTypeInput->setCurrentIndex(Config::PlaylistFileTypeIndex);
     _ui.PlaylistFileNameTagInput->setText(Config::PlaylistFileNameTag);
@@ -833,6 +844,65 @@ bool SpotifyDownloader::ValidateSettings() {
             ShowMessageBox(
                 "Invalid Sub Folders",
                 QString("Invalid Tag Detected:\n%1").arg(formattedSubFoldersString),
+                QMessageBox::Warning
+            );
+            return false;
+    }
+
+    // LRC File
+
+    // Check path for errors
+    FileUtils::FilePathError lrcFilePathError = FileUtils::CheckInputtedFilePathErrors(Config::LRCFileName);
+    switch (lrcFilePathError) {
+    case FileUtils::FilePathError::StartsWithDirectory:
+        ShowMessageBox(
+            "Invalid LRC File Name",
+            R"(LRC File Name cannot start with "/" or "\")",
+            QMessageBox::Warning
+        );
+        return false;
+    case FileUtils::FilePathError::EndsWithDirectory:
+        ShowMessageBox(
+            "Invalid LRC File Name",
+            R"(LRC File Name cannot end with "/" or "\")",
+            QMessageBox::Warning
+        );
+        return false;
+    case FileUtils::FilePathError::ContainsDoubleSlashes:
+        ShowMessageBox(
+            "Invalid LRC File Name",
+            R"(LRC File Name cannot contain "//" or "\\")",
+            QMessageBox::Warning
+        );
+        return false;
+    case FileUtils::FilePathError::InvalidSlashes:
+        ShowMessageBox(
+            "Invalid LRC File Name",
+            R"(LRC File Name cannot contain "/\" or "\/")",
+            QMessageBox::Warning
+        );
+        return false;
+    }
+
+    // Check tags
+    QStringList validLRCFileNameTags = Config::NAMING_TAGS;
+    validLRCFileNameTags.append(Config::SAVE_LOCATION_TAG);
+    std::tuple<QString, Config::NamingError> formattedLRCFileName = Config::ValidateTagsInString(Config::LRCFileNameTag, Config::LRCFileName, validLRCFileNameTags);
+    QString formattedLRCFileNameString = std::get<0>(formattedLRCFileName);
+    Config::NamingError LRCFileNameNamingError = std::get<1>(formattedLRCFileName);
+
+    switch (LRCFileNameNamingError) {
+        case Config::NamingError::EnclosingTagsInvalid:
+            ShowMessageBox(
+                "Invalid Playlist File Name Tag",
+                QString("Formatting tag must have 2 characters (Opening, Closing)\n%1 is invalid.").arg(formattedLRCFileNameString),
+                QMessageBox::Warning
+            );
+            return false;
+        case Config::NamingError::TagInvalid:
+            ShowMessageBox(
+                "Invalid Playlist File Name",
+                QString("Invalid Tag Detected:\n%1").arg(formattedLRCFileNameString),
                 QMessageBox::Warning
             );
             return false;
