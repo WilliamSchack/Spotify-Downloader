@@ -10,6 +10,8 @@
 #include "Utilities/JSONUtils.h"
 #include "Network/Network.h"
 
+#include "Lyrics.h"
+
 #include <time.h>
 #include <regex>
 
@@ -25,7 +27,7 @@ class YTMusicAPI {
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
 
-		QJsonObject GetLyrics(QString videoId, bool timestamps = true);
+		Lyrics GetLyrics(QString videoId, bool timestamps = true);
 
 		bool IsAgeRestricted(QString videoId);
 	private:

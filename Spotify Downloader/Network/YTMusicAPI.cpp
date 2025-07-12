@@ -615,7 +615,7 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 	return finalResults;
 }
 
-QJsonObject YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
+Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 	QString lyricsBrowseId = GetLyricsBrowseId(videoId);
 
 	if (lyricsBrowseId.isEmpty())
@@ -642,12 +642,45 @@ QJsonObject YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 	QByteArray response = Network::Post(request, postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
+	// Look for synced lyrics
 	QJsonObject data = JSONUtils::Navigate(json, { "contents", "elementRenderer", "newElement", "type", "componentType", "model", "timedLyricsModel", "lyricsData" }).toObject();
+	if (timestamps && !data.isEmpty()) {
+		if (!data.contains("timedLyricsData"))
+			return Lyrics();
 
-	qDebug() << data;
-	qDebug() << JSONUtils::Navigate(json, { "contents", "elementRenderer", "newElement", "type", "componentType", "model", "timedLyricsModel", "lyricsData" });
+		QJsonArray timedLyricsData = data["timedLyricsData"].toArray();
+		std::list<Lyrics::SynchronisedLyric> lyricsList;
 
-	return QJsonObject();
+		foreach(QJsonValue lyricsValue, timedLyricsData) {
+			QJsonObject lyricsObject = lyricsValue.toObject();
+			QJsonObject cueRange = lyricsObject["cueRange"].toObject();
+
+			int startMs = cueRange["startTimeMilliseconds"].toInt();
+			int endMs = cueRange["endTimeMilliseconds"].toInt();
+			std::string sentence = lyricsObject["lyricLine"].toString().toStdString();
+
+			Lyrics::SynchronisedLyric lyric(startMs, endMs, sentence);
+			lyricsList.push_back(lyric);
+		}
+
+		Lyrics lyrics;
+		lyrics.Type = Lyrics::LyricsType::Synced;
+		lyrics.SyncedLyrics = lyricsList;
+
+		return lyrics;
+	}
+
+	// If no synced lyrics found, look for regular lyrics
+	std::string lyricsString = JSONUtils::Navigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0, "text" }).toString().toStdString();
+
+	if (lyricsString.empty())
+		return Lyrics();
+
+	Lyrics lyrics;
+	lyrics.Type = Lyrics::LyricsType::Unsynced;
+	lyrics.UnsyncedLyrics = lyricsString;
+
+	return lyrics;
 }
 
 QString YTMusicAPI::GetLyricsBrowseId(QString videoId) {
