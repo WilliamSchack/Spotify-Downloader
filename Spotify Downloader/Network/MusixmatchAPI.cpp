@@ -150,7 +150,7 @@ QJsonObject MusixmatchAPI::GetTrack(QString isrc) {
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	LogStatusCode(statusCode, QString("%1 Failed to get track with the error:").arg(isrc));
+	LogStatusCode(statusCode, QString("(%1) Musixmatch failed to get track with the error:").arg(isrc));
 	if (statusCode != 200)
 		return QJsonObject();
 
@@ -201,7 +201,7 @@ std::string MusixmatchAPI::GetUnsyncedLyrics(QString isrc) {
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	LogStatusCode(statusCode, QString("%1 Failed to get lyrics with the error:").arg(isrc));
+	LogStatusCode(statusCode, QString("(%1) Musixmatch failed to get lyrics with the error:").arg(isrc));
 	if (statusCode != 200)
 		return "";
 
@@ -219,7 +219,7 @@ std::list<Lyrics::SynchronisedLyric> MusixmatchAPI::GetSyncedLyrics(QString isrc
 	QJsonObject header = message["header"].toObject();
 	int statusCode = header["status_code"].toInt();
 
-	LogStatusCode(statusCode, QString("%1 Failed to get synced lyrics with the error:").arg(isrc));
+	LogStatusCode(statusCode, QString("(%1) Musixmatch failed to get synced lyrics with the error:").arg(isrc));
 	if (statusCode != 200)
 		return std::list<Lyrics::SynchronisedLyric>();
 
