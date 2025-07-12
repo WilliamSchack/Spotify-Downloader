@@ -519,7 +519,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <x>0</x>
           <y>0</y>
           <width>715</width>
-          <height>785</height>
+          <height>889</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1596,6 +1596,182 @@ selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="placeholderText">
               <string>Enter Sub Folders</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="LRCFileSettingLayout">
+           <property name="rightMargin">
+            <number>48</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="LRCFileSettingLabel">
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Create LRC File</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="CheckBox" name="LRCFileSettingButton">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="LRCFileNameSettingLayout">
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="LRCFileNameLabel">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>LRC File Name</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LRCFileNameTagInput">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Tag Start/End&lt;br/&gt;&lt;/span&gt;Specify the start and end characters of a tag&lt;/p&gt;&lt;p&gt;eg. &amp;quot;&amp;lt;&amp;gt;&amp;quot;&lt;br/&gt;&amp;lt; to enter the tag,&lt;br/&gt;&amp;gt; to exit the tag &lt;/p&gt;&lt;p&gt;Tag examples:&lt;br/&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Song Name&amp;gt;, &amp;lt;Artist Name&amp;gt;&amp;quot;&lt;br/&gt;&amp;quot;##&amp;quot; : &amp;quot;#Song Name#, #Artist Name#&amp;quot;&lt;br/&gt;&amp;quot;!$&amp;quot;: &amp;quot;!Song Name$&amp;quot;, !Artist Name$&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="text">
+              <string>&lt;&gt;</string>
+             </property>
+             <property name="maxLength">
+              <number>2</number>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>Enter Song Naming Format</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LRCFileNameInput">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>421</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="mouseTracking">
+              <bool>false</bool>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;LRC File Name&lt;br/&gt;&lt;/span&gt;Specify the way the LRC file will be named. This must be an &lt;span style=&quot; font-weight:700;&quot;&gt;ABSOLUTE FILE PATH&lt;/span&gt; using &amp;lt;Download Path&amp;gt; will make it relative to the download path&lt;/p&gt;&lt;p&gt;eg. A song called &amp;quot;Song&amp;quot; by &amp;quot;Artist&amp;quot; downloaded at &amp;quot;C:/Songs&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Format: &lt;/span&gt;&amp;quot;&amp;lt;&amp;gt;&amp;quot; : &amp;quot;&amp;lt;Save Location&amp;gt;/&amp;lt;Song Name&amp;gt; - &amp;lt;Song Artist&amp;gt;&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Output: &lt;/span&gt;&amp;quot;C:/Songs/Song - Artist.lrc&amp;quot;&lt;/p&gt;&lt;p&gt;&amp;quot;../&amp;quot; is also valid here, it will go back a folder&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Available Tags&lt;br/&gt;Save Location&lt;/span&gt; - The save location set in the main screen&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Name&lt;/span&gt; - Name of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Name&lt;/span&gt; - Name of the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artist &lt;/span&gt;- Name of the first artist of a song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Artists &lt;/span&gt;- Names of each artist of a song &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artist &lt;/span&gt;- Name of the first artist of the songs album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Artists &lt;/span&gt;- Names of each artist of a songs album &amp;quot;Artist1, Artist2, Artist3, ...&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Codec&lt;/span&gt; - The codec of the downloaded song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Track Number&lt;/span&gt; - The currently assigned track number&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Playlist Name &lt;/span&gt;- The name of the playlist being downloaded from (Doesnt work for single tracks, when using an album, uses album name)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Playlist Owner&lt;/span&gt; - The owner of the playlist being downloaded from (Doesnt work for single tracks, when using an album, uses album artists)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Playlist Track Number &lt;/span&gt;- Track number in the playlist (Only works when downloading a playlist)&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Album Track Number &lt;/span&gt;- Track number in the album&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Disk Number &lt;/span&gt;- Track disk number&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Seconds &lt;/span&gt;- Time of the song in seconds&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Minutes&lt;/span&gt; - Time of the song in minutes &amp;quot;01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Song Time Hours&lt;/span&gt; - Time of the song in hours &amp;quot;00.01.23&amp;quot;&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Year &lt;/span&gt;- Release Year of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Month &lt;/span&gt;- Release month of the song&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Day &lt;/span&gt;- Release day of the song&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="text">
+              <string>&lt;Save Location&gt;/&lt;Song Name&gt; - &lt;Song Artist&gt;</string>
+             </property>
+             <property name="frame">
+              <bool>true</bool>
+             </property>
+             <property name="placeholderText">
+              <string>Enter File Name</string>
              </property>
             </widget>
            </item>
