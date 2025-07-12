@@ -24,7 +24,7 @@ std::string Lyrics::GetString() {
 				paddedHuntredthsStream << std::setw(2) << std::setfill('0') << hundredths;
 
 				std::string lyricTimestamped = std::format(
-					"[{}:{}:{}]{}\n",
+					"[{}:{}.{}]{}\n",
 					paddedMinutesStream.str(),
 					paddedSecondsStream.str(),
 					paddedHuntredthsStream.str(),
