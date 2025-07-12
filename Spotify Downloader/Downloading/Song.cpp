@@ -8,7 +8,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 	// Get universal details
 	Title = song["name"].toString();
-	Time = song["duration_ms"].toDouble() / 1000;
+	TimeSeconds = song["duration_ms"].toDouble() / 1000;
 	SpotifyId = song["id"].toString();
 	IsExplicit = song["explicit"].toBool();
 	InPlaylist = song.contains("playlist_track_number");
@@ -189,14 +189,14 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 			tagReplacement = QString::number(song.DiscNumber);
 			break;
 		case 11: // Song Time Seconds
-			tagReplacement = QString::number((int)song.Time);
+			tagReplacement = QString::number((int)song.TimeSeconds);
 			break;
 		case 12: // Song Time Minutes
-			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("mm:ss");
+			tagReplacement = QDateTime::fromSecsSinceEpoch(song.TimeSeconds, Qt::UTC).toString("mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
 		case 13: // Song Time Hours
-			tagReplacement = QDateTime::fromSecsSinceEpoch(song.Time, Qt::UTC).toString("hh:mm:ss");
+			tagReplacement = QDateTime::fromSecsSinceEpoch(song.TimeSeconds, Qt::UTC).toString("hh:mm:ss");
 			tagReplacement = tagReplacement.replace(":", "."); // Cannot have colon in file name
 			break;
 		case 14: // Year
@@ -389,7 +389,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		int seconds = result["durationSeconds"].toInt();
 
 		// If outside the time range, add to banned IDs and skip
-		if (seconds == 0 || seconds < Time - 15 || seconds > Time + 15) {
+		if (seconds == 0 || seconds < TimeSeconds - 15 || seconds > TimeSeconds + 15) {
 			bannedIDs.append(result["videoId"].toString());
 			continue;
 		}
@@ -403,7 +403,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		totalScore += titleScore;
 
 		// Time score
-		float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - Time)) / 15);
+		float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - TimeSeconds)) / 15);
 		totalScore += timeScore;
 
 		// Check if time and title are similar enough combined
