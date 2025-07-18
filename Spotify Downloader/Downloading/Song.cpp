@@ -272,11 +272,17 @@ void Song::DownloadCoverImage() {
 }
 
 QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
+	// YouTube search doesnt like symbols, can result in random results, remove them from the query
+	QRegularExpression symbolRegex("[\\p{S}]");
+	QString ArtistNoSymbols = ArtistName.remove(symbolRegex);
+	QString TitleNoSymbols = Title.remove(symbolRegex);
+	QString AlbumNoSymbols = AlbumName.remove(symbolRegex);
+
 	// Multiple queries as some songs will only get picked up by no quotes, and others with
 	QStringList searchQueries{
-		QString("%1 - %2 - %3").arg(ArtistName).arg(Title).arg(AlbumName),
-		QString(R"(%1 - "%2" - %3)").arg(ArtistName).arg(Title).arg(AlbumName),
-		QString("%1 - %2").arg(Title).arg(AlbumName)
+		QString("%1 - %2 - %3").arg(ArtistNoSymbols).arg(TitleNoSymbols).arg(AlbumNoSymbols),
+		QString(R"(%1 - "%2" - %3)").arg(ArtistNoSymbols).arg(TitleNoSymbols).arg(AlbumNoSymbols),
+		QString("%1 - %2").arg(Title).arg(ArtistNoSymbols)
 	};
 
 	float totalSearches = searchQueries.count() * 3; // For progress bar, float for division
@@ -374,6 +380,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	// Some song IDs can show up multiple times with different durations
 	// If this happens, if any of them show a longer than permitted time, add it to this list
 	QStringList bannedIDs;
+	QStringList scoredIDs;
 
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
@@ -386,6 +393,10 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		if (bannedIDs.contains(result["videoId"].toString()))
 			continue;
 
+		// If song already scored before, skip
+		if (scoredIDs.contains(result["videoId"].toString()))
+			continue;
+
 		int seconds = result["durationSeconds"].toInt();
 
 		// If outside the time range, add to banned IDs and skip
@@ -395,7 +406,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		}
 
 		// Score the song
-
 		float totalScore = 0;
 
 		// Title score
@@ -411,9 +421,10 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 		// Artists score
 		if (result.contains("artists")) {
+			// Increase score if any artist created is found
 			foreach(QJsonValue artist, result["artists"].toArray()) {
 				if (ArtistNamesList.contains(artist.toObject()["name"].toString())) {
-					totalScore += 1.0;
+					totalScore += 1.5;
 					break;
 				}
 			}
@@ -423,20 +434,20 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		// Album score
 		if (result.contains("album")) {
 			if (!result["album"].toObject().isEmpty() && result["album"].toObject()["name"].toString().contains(AlbumName)) {
-				if (result["album"].toObject()["name"].toString() == AlbumName) totalScore += 0.4;
-				else totalScore += 0.3;
+				if (result["album"].toObject()["name"].toString() == AlbumName) totalScore += 0.6;
+				else totalScore += 0.4;
 			}
 		}
 
 		// Title score
 		if (result.contains("title")) {
-			bool hasTitle = false;
-			QString title = result["title"].toString();
-			if (title.contains(Title) || Title.contains(title)) {
-				if (title == Title) totalScore += 0.5;
-				else totalScore += 0.3;
-				hasTitle = true;
-			}
+			//bool hasTitle = false;
+			//QString title = result["title"].toString();
+			//if (title.contains(Title) || Title.contains(title)) {
+			//	if (title == Title) totalScore += 0.5;
+			//	else totalScore += 0.3;
+			//	hasTitle = true;
+			//}
 
 			// Keywords that are not allowed unless they are in the spotify song title as well
 			// Will only work in english titled songs
@@ -448,6 +459,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			};
 
 			bool banned = false;
+
+			QString title = result["title"].toString();
 			foreach(QString keyword, bannedKeywords) {
 				foreach(QString addition, bannedKeywordsAdditions) {
 					QString word = addition.arg(keyword);
@@ -479,6 +492,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			{"score", totalScore},
 			{"views", viewCount}
 		});
+
+		scoredIDs.append(result["videoId"].toString());
 	}
 
 	// Double check banned IDs, songs may have scored with a lower time before it was added
