@@ -648,6 +648,11 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 		if (!data.contains("timedLyricsData"))
 			return Lyrics();
 
+		// Setup lyrics source message
+		Lyrics lyrics;
+		lyrics.SourceMessage = std::format("YouTube: {}", data["sourceMessage"].toString().split("Source: ")[1].toStdString());
+
+		// Get lyrics
 		QJsonArray timedLyricsData = data["timedLyricsData"].toArray();
 		std::list<Lyrics::SynchronisedLyric> lyricsList;
 
@@ -677,14 +682,12 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 				unsyncedTimedLyricsString += std::format("{}\n", syncedLyric.Lyric);
 			}
 
-			Lyrics lyrics;
 			lyrics.Type = Lyrics::LyricsType::Unsynced;
 			lyrics.UnsyncedLyrics = unsyncedTimedLyricsString;
 
 			return lyrics;
 		}
 
-		Lyrics lyrics;
 		lyrics.Type = Lyrics::LyricsType::Synced;
 		lyrics.SyncedLyrics = lyricsList;
 
@@ -699,6 +702,7 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 
 	Lyrics lyrics;
 	lyrics.Type = Lyrics::LyricsType::Unsynced;
+	lyrics.SourceMessage = "YouTube";
 	lyrics.UnsyncedLyrics = lyricsString;
 
 	return lyrics;

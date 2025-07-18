@@ -14,6 +14,7 @@
 
 #include <time.h>
 #include <regex>
+#include <format>
 
 #include <QObject>
 #include <QTime>

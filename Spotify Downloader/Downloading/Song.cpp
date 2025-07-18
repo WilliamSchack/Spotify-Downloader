@@ -866,22 +866,22 @@ void Song::GetLyrics() {
 	// Only print warnings
 	MusixmatchAPI::LoggingType previousLoggingType = MusixmatchAPI::ErrorLoggingType;
 	MusixmatchAPI::ErrorLoggingType = MusixmatchAPI::LoggingType::Warnings;
-
+	
 	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc);
 	MusixmatchAPI::ErrorLoggingType = previousLoggingType;
-
+	
 	// Even if type is found, musixmatch can still have bot prevention when getting the lyrics, check for that as well
 	switch (musixmatchLyrics.Type) {
 		case Lyrics::LyricsType::Unsynced:
 			if (musixmatchLyrics.UnsyncedLyrics.empty())
 				break;
-
+	
 			LyricsData = musixmatchLyrics;
 			return;
 		case Lyrics::LyricsType::Synced:
 			if (musixmatchLyrics.SyncedLyrics.empty())
 				break;
-
+	
 			LyricsData = musixmatchLyrics;
 			return;
 	}
@@ -919,7 +919,11 @@ void Song::AssignMetadata() {
 		TagLib::String album(AlbumName.toUtf8().constData(), TagLib::String::UTF8);
 
 		TagLib::String publisherText = "Downloaded through Spotify Downloader by William S";
-		TagLib::String copyrightText = QString("Spotify ID (%1), Youtube ID (%2)").arg(SpotifyId).arg(YoutubeId).toUtf8().data();
+		TagLib::String copyrightText = QString("Spotify ID (%1), Youtube ID (%2)%3")
+										.arg(SpotifyId)
+										.arg(YoutubeId)
+										.arg(LyricsData.SourceMessage.empty() ? "" : QString(", Lyrics Source (%1)").arg(QString::fromStdString(LyricsData.SourceMessage)))
+										.toUtf8().data();
 		TagLib::String commentText = "Thanks for using my program! :) - William S";
 
 		TagLib::String compressedComment = QString("%1\n%2\n%3").arg(copyrightText.toWString()).arg(publisherText.toWString()).arg(commentText.toWString()).toUtf8().data();

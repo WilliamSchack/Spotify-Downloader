@@ -162,6 +162,7 @@ Lyrics MusixmatchAPI::GetLyrics(QString isrc) {
 	Lyrics lyrics;
 
 	lyrics.Type = GetLyricType(isrc);
+	lyrics.SourceMessage = QString("Musixmatch: %1").arg(isrc).toStdString();
 
 	switch (lyrics.Type) {
 		case Lyrics::LyricsType::Unsynced:

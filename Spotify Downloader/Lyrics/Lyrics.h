@@ -31,6 +31,7 @@ class Lyrics {
 		LyricsType Type = LyricsType::None;
 		std::string UnsyncedLyrics;
 		std::list<SynchronisedLyric> SyncedLyrics;
+		std::string SourceMessage = "";
 	public:
 		std::string GetString();
 };

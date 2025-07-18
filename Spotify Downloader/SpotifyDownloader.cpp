@@ -4,9 +4,6 @@
 
 #include <qt_windows.h>
 
-// TESTING
-#include "Network/SpotifyAPI.h"
-
 // Ui Setup
 SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 {
@@ -38,10 +35,6 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
 
     qInfo() << "Successfully Initialised";
     Logger::Flush();
-
-    // TESTING
-    //qDebug() << QJsonValue().isNull();
-    YTMusicAPI().GetLyrics("8y3oP_vST2s");
 }
 
 void SpotifyDownloader::SetupDownloaderThread() {
