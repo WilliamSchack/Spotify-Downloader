@@ -37,14 +37,12 @@ class MusixmatchAPI {
 			QString Description;
 		};
 	public:
-		static inline LoggingType ErrorLoggingType = LoggingType::All;
-	public:
-		static QJsonObject GetTrack(QString isrc);
+		static QJsonObject GetTrack(QString isrc, LoggingType loggingType = LoggingType::All);
 
-		static Lyrics GetLyrics(QString isrc);
-		static Lyrics::LyricsType GetLyricType(QString isrc);
-		static std::string GetUnsyncedLyrics(QString isrc);
-		static std::list<Lyrics::SynchronisedLyric> GetSyncedLyrics(QString isrc);
+		static Lyrics GetLyrics(QString isrc, LoggingType loggingType = LoggingType::All);
+		static Lyrics::LyricsType GetLyricType(QString isrc, LoggingType loggingType = LoggingType::All);
+		static std::string GetUnsyncedLyrics(QString isrc, LoggingType loggingType = LoggingType::All);
+		static std::list<Lyrics::SynchronisedLyric> GetSyncedLyrics(QString isrc, LoggingType loggingType = LoggingType::All);
 	private:
 		// Status code descriptions from "https://docs.musixmatch.com/lyrics-api/api-methods"
 		static inline const QMap<int, StatusCodeDetails> STATUS_CODE_DETAILS = {
@@ -71,7 +69,7 @@ class MusixmatchAPI {
 		static QString GenerateSignature(QString url);
 
 		static QJsonObject Request(QString endpoint, QString isrc);
-		static void LogStatusCode(int statusCode, QString prefixLog);
+		static void LogStatusCode(int statusCode, QString prefixLog, LoggingType loggingType = LoggingType::All);
 };
 
 #endif

@@ -274,15 +274,20 @@ void Song::DownloadCoverImage() {
 QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
 	// YouTube search doesnt like symbols, can result in random results, remove them from the query
 	QRegularExpression symbolRegex("[\\p{S}]");
-	QString ArtistNoSymbols = ArtistName.remove(symbolRegex);
-	QString TitleNoSymbols = Title.remove(symbolRegex);
-	QString AlbumNoSymbols = AlbumName.remove(symbolRegex);
+	QString ArtistSearchTerm = ArtistName.remove(symbolRegex);
+	QString TitleSearchTerm = Title.remove(symbolRegex);
+	QString AlbumSearchTerm = AlbumName.remove(symbolRegex);
+
+	// If removing the symbols removes any string, set it back to the symbols, better than having nothing
+	if (ArtistSearchTerm.isEmpty()) ArtistSearchTerm = ArtistName;
+	if (TitleSearchTerm.isEmpty()) ArtistSearchTerm = Title;
+	if (AlbumSearchTerm.isEmpty()) ArtistSearchTerm = AlbumName;
 
 	// Multiple queries as some songs will only get picked up by no quotes, and others with
 	QStringList searchQueries{
-		QString("%1 - %2 - %3").arg(ArtistNoSymbols).arg(TitleNoSymbols).arg(AlbumNoSymbols),
-		QString(R"(%1 - "%2" - %3)").arg(ArtistNoSymbols).arg(TitleNoSymbols).arg(AlbumNoSymbols),
-		QString("%1 - %2").arg(Title).arg(ArtistNoSymbols)
+		QString("%1 - %2 - %3").arg(ArtistSearchTerm).arg(TitleSearchTerm).arg(AlbumSearchTerm),
+		QString(R"(%1 - "%2" - %3)").arg(ArtistSearchTerm).arg(TitleSearchTerm).arg(AlbumSearchTerm),
+		QString("%1 - %2").arg(Title).arg(ArtistSearchTerm)
 	};
 
 	float totalSearches = searchQueries.count() * 3; // For progress bar, float for division
@@ -878,12 +883,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::GetLyrics() {
-	// Only print warnings
-	MusixmatchAPI::LoggingType previousLoggingType = MusixmatchAPI::ErrorLoggingType;
-	MusixmatchAPI::ErrorLoggingType = MusixmatchAPI::LoggingType::Warnings;
-	
-	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc);
-	MusixmatchAPI::ErrorLoggingType = previousLoggingType;
+	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc, MusixmatchAPI::LoggingType::Warnings);
 	
 	// Even if type is found, musixmatch can still have bot prevention when getting the lyrics, check for that as well
 	switch (musixmatchLyrics.Type) {
