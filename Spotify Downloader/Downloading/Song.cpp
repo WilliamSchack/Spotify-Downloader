@@ -446,13 +446,13 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 		// Title score
 		if (result.contains("title")) {
-			//bool hasTitle = false;
-			//QString title = result["title"].toString();
-			//if (title.contains(Title) || Title.contains(title)) {
-			//	if (title == Title) totalScore += 0.5;
-			//	else totalScore += 0.3;
-			//	hasTitle = true;
-			//}
+			bool hasTitle = false;
+			QString title = result["title"].toString();
+			if (title.contains(Title) || Title.contains(title)) {
+				if (title == Title) totalScore += 0.5;
+				else totalScore += 0.3;
+				hasTitle = true;
+			}
 
 			// Keywords that are not allowed unless they are in the spotify song title as well
 			// Will only work in english titled songs
@@ -465,7 +465,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 			bool banned = false;
 
-			QString title = result["title"].toString();
 			foreach(QString keyword, bannedKeywords) {
 				foreach(QString addition, bannedKeywordsAdditions) {
 					QString word = addition.arg(keyword);
