@@ -274,9 +274,9 @@ void Song::DownloadCoverImage() {
 QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
 	// YouTube search doesnt like symbols, can result in random results, remove them from the query
 	QRegularExpression symbolRegex("[\\p{S}]");
-	QString ArtistSearchTerm = ArtistName.remove(symbolRegex);
-	QString TitleSearchTerm = Title.remove(symbolRegex);
-	QString AlbumSearchTerm = AlbumName.remove(symbolRegex);
+	QString ArtistSearchTerm = QString(ArtistName).remove(symbolRegex);
+	QString TitleSearchTerm = QString(Title).remove(symbolRegex);
+	QString AlbumSearchTerm = QString(AlbumName).remove(symbolRegex);
 
 	// If removing the symbols removes any string, set it back to the symbols, better than having nothing
 	if (ArtistSearchTerm.isEmpty()) ArtistSearchTerm = ArtistName;
