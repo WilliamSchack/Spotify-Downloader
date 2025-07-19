@@ -423,15 +423,17 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		totalScore += timeScore;
 
 		// If the title and time scores are low, no point continuing
-		if (titleScore < 0.5 && timeScore < 0.5)
+		if (titleScore < 0.5 && timeScore < 0.75)
 			continue;
 
 		// Score the artists individually and add their similarities to the total score
 		if (result.contains("artists")) {
 			QJsonArray foundArtistsArray = result["artists"].toArray();
 
-			int foundArtistsCount = foundArtistsArray.count();
-			float totalScoreInrease = 1.5;
+			// Use the most amount of artists to divide, this further decreses the score if the artist cound is not the same 
+			int highestArtistCount = std::max(ArtistNamesList.count(), foundArtistsArray.count());
+
+;			float totalScoreInrease = 1.5;
 			float currentArtistsScoreTotal = 0.0;
 
 			foreach(QString artist, ArtistNamesList) {
@@ -457,7 +459,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			}
 
 			// Divide the scores based on the amount of found artists, and max it out at the total available score
-			currentArtistsScoreTotal /= foundArtistsCount;
+			currentArtistsScoreTotal /= highestArtistCount;
 			currentArtistsScoreTotal *= totalScoreInrease;
 
 			totalScore += currentArtistsScoreTotal;
@@ -474,17 +476,14 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 				totalScore += albumScore * 0.6;
 			}
 		}
+		else {
+			// If no album found, compare the album name to the title with less of an impact
+			float albumScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
+			totalScore += albumScore * 0.3;
+		}
 
 		// Title score
 		if (result.contains("title")) {
-			bool hasTitle = false;
-			QString title = result["title"].toString();
-			if (title.contains(Title) || Title.contains(title)) {
-				if (title == Title) totalScore += 0.5;
-				else totalScore += 0.3;
-				hasTitle = true;
-			}
-
 			// Keywords that are not allowed unless they are in the spotify song title as well
 			// Will only work in english titled songs
 			QStringList bannedKeywords = {
@@ -496,6 +495,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 			bool banned = false;
 
+			QString title = result["title"].toString();
 			foreach(QString keyword, bannedKeywords) {
 				foreach(QString addition, bannedKeywordsAdditions) {
 					QString word = addition.arg(keyword);
