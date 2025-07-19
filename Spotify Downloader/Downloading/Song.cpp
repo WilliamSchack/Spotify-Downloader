@@ -405,7 +405,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		int seconds = result["durationSeconds"].toInt();
 
 		// If outside the time range, add to banned IDs and skip
-		if (seconds == 0 || seconds < TimeSeconds - 15 || seconds > TimeSeconds + 15) {
+		float secondsDifferenceAllowed = 15;
+		if (seconds == 0 || seconds < TimeSeconds - secondsDifferenceAllowed || seconds > TimeSeconds + secondsDifferenceAllowed) {
 			bannedIDs.append(result["videoId"].toString());
 			continue;
 		}
@@ -413,34 +414,64 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		// Score the song
 		float totalScore = 0;
 
-		// Title score
+		// Check the similarity of titles and add to score
 		float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
 		totalScore += titleScore;
 
 		// Time score
-		float timeScore = MathUtils::Lerp(0, 1, (15 - abs(seconds - TimeSeconds)) / 15);
+		float timeScore = MathUtils::Lerp(0, 1, (secondsDifferenceAllowed - abs(seconds - TimeSeconds)) / secondsDifferenceAllowed);
 		totalScore += timeScore;
 
-		// Check if time and title are similar enough combined
-		if (timeScore < 0.75 && titleScore < 0.5) continue;
+		// If the title and time scores are low, no point continuing
+		if (titleScore < 0.5 && timeScore < 0.5)
+			continue;
 
-		// Artists score
+		// Score the artists individually and add their similarities to the total score
 		if (result.contains("artists")) {
-			// Increase score if any artist created is found
-			foreach(QJsonValue artist, result["artists"].toArray()) {
-				if (ArtistNamesList.contains(artist.toObject()["name"].toString())) {
-					totalScore += 1.5;
+			QJsonArray foundArtistsArray = result["artists"].toArray();
+
+			int foundArtistsCount = foundArtistsArray.count();
+			float totalScoreInrease = 1.5;
+			float currentArtistsScoreTotal = 0.0;
+
+			foreach(QString artist, ArtistNamesList) {
+				// Cancel scoring if no more artists to score against
+				if (foundArtistsArray.count() == 0)
 					break;
+
+				// Check each found artist left to score and add the highest similarity to the artist score total
+				float highestArtistScore = 0.0;
+				int highestArtistIndex = 0;
+				for (int i = 0; i < foundArtistsArray.count(); i++) {
+					QString foundArtistName = foundArtistsArray[i].toObject()["name"].toString();
+					float artistScore = StringUtils::LevenshteinDistanceSimilarity(artist, foundArtistName);
+
+					if (artistScore > highestArtistScore) {
+						highestArtistScore = artistScore;
+						highestArtistIndex = i;
+					}
 				}
+
+				foundArtistsArray.removeAt(highestArtistIndex);
+				currentArtistsScoreTotal += highestArtistScore;
 			}
+
+			// Divide the scores based on the amount of found artists, and max it out at the total available score
+			currentArtistsScoreTotal /= foundArtistsCount;
+			currentArtistsScoreTotal *= totalScoreInrease;
+
+			totalScore += currentArtistsScoreTotal;
 		}
 		else continue;
 
 		// Album score
 		if (result.contains("album")) {
-			if (!result["album"].toObject().isEmpty() && result["album"].toObject()["name"].toString().contains(AlbumName)) {
-				if (result["album"].toObject()["name"].toString() == AlbumName) totalScore += 0.6;
-				else totalScore += 0.4;
+			QJsonObject albumObject = result["album"].toObject();
+
+			// Check the similarity of album names and add to score
+			if (!albumObject.isEmpty()) {
+				float albumScore = StringUtils::LevenshteinDistanceSimilarity(albumObject["name"].toString(), AlbumName);
+				totalScore += albumScore * 0.6;
 			}
 		}
 
