@@ -685,7 +685,7 @@ When I first created this project I has a lot of free time on my hands and was a
 - [Qt v6.5.3](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6.5/lgpl.html)
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT License](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
 - [ffmpeg 2025-05-19-essentials-www.gyan.dev](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
-- [yt-dlp 2025-06-30](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
+- [yt-dlp 2025-07-21](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 - [Taglib v2.0.2](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
 
 Thanks to you for using my program :)
