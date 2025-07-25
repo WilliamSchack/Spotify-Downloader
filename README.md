@@ -602,8 +602,6 @@ In this menu click the "View client secret" button to access the secret and now 
 
 The next few updates will take a fair amount of work and time so figured I would put this here so you all know what is going on. No time frames because I dont know how long everything will take and im doing this project on the side so I dont have much time to put into it, but hopefully at least v2.0.0 will be out by the end of this year
 
-- **v1.9.0 Lyric Support**
-   - Adds support to get the lyrics of a song and add it to the metadata
 - **v1.10.0 YouTube link support for not found songs**
    - Will add an extra option in the errors screen to manually input a link and re-download songs that couldnt be found
 - **Complete refactor**
