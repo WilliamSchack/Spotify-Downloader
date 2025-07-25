@@ -209,8 +209,8 @@ This has been fixed and the app has been excluded from windows defender scans, i
 ### Output
 
 <img src="https://github.com/user-attachments/assets/ed4b52bf-63d9-497b-8998-dde561c24a84" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/b37333a1-67e6-4eb9-88a4-a9596a6ff671" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/4bd72402-8dbd-4f49-8b71-8a541be3993a" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/d3a20d75-77b8-4c9c-9a9e-5097e2aa4e78" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/990d93df-28b6-43ad-84be-f2454d4285c6" style="width: 50%; height: 50%;">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -280,7 +280,18 @@ This has been fixed and the app has been excluded from windows defender scans, i
     - Each tag must be enclosed with the characters set in the left input field
 - Can only include the currently implemented tags listed below
 
-**File Name, Sub Folders Tags**
+**Create LRC File**
+- Creates a LRC file for each song downloaded
+
+**LRC File Type**
+- Enclosing tag input sets the characters to open and close a tag
+    - Left character sets the opening input
+    - Right character sets the closing input
+- Input specifies how the lrc file will be named. This must be an **ABSOLUTE FILE PATH** using &lt;Download Path&gt; will make it relative to the download path
+    - "../" is also valid, it will go back a folder
+    - **Save Location** is also a valid tag which will make the file relative to the download path
+
+**File Name, Sub Folders, LRC File Tags**
 - These are the tags that can be used by the File Name & Sub Folders settings
     - **Song Name** - Name of the song
     - **Album Name** - Name of the album
@@ -307,7 +318,10 @@ This has been fixed and the app has been excluded from windows defender scans, i
    - **M3U, XSPF, PLS** The type of playlist file that will be outputted
 
 **Playlist File Name**
-- Specify the way the playlist file will be named. This must be an **ABSOLUTE FILE PATH** using <Download Path> will make it relative to the download path
+- Enclosing tag input sets the characters to open and close a tag
+    - Left character sets the opening input
+    - Right character sets the closing input
+- Input specifies the way the playlist file will be named. This must be an **ABSOLUTE FILE PATH** using &lt;Download Path&gt; will make it relative to the download path
 - "../" is also valid, it will go back a folder
 
 **Playlist File Name Tags**
@@ -548,9 +562,13 @@ In this menu click the "View client secret" button to access the secret and now 
     - Automatically saves the following to each file:
     - Song Title
     - Artists
-    - Album Name & Cover
+    - Album Cover
+    - Album name & artists
     - Track Number
-    - Spotify & Youtube ID used to download the song
+    - Year
+    - Track Number
+    - Lyrics
+    - Spotify ID, Youtube ID, & Lyrics source used to download the song
 - **Many Downloading Settings**
     - Many settings for downloading including:
     - Overwriting
@@ -568,6 +586,15 @@ In this menu click the "View client secret" button to access the secret and now 
     - OGG Vorbis
     - WAV
     - FLAC
+- **Lyrics & LRC Files**
+    - Lyrics are automatically embedded into the song metadata
+    - LRC files can be created along with each song at a customisable location
+- **Playlist Files**
+    - Can create a playlist file with each download at a customisable location
+    - Supports the following types:
+    - M3U
+    - XSPF
+    - PLS
 - **Support for YouTube Premium Audio Quality**
 - **Automatic Cleanup**
 
