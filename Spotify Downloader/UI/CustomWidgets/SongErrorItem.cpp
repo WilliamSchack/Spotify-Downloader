@@ -71,3 +71,49 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 	Error->setFont(font3);
 	Error->setStyleSheet("color: #ff6464;\nbackground-color: rgb(40, 40, 40); padding-left: 10px; padding-right: 10px; padding-bottom: 3px;");
 }
+
+// Widget does not use a layout so buttons are placed where it is not cut off with multiple error items
+// Makes it look a bit weird but the UI is going to change the update after this so its no issue 
+void SongErrorItem::AddLinkInput(QString searchQuery) {
+	_searchQuery = searchQuery;
+
+	// Resize height
+	QRect geometry = this->geometry();
+	int width = geometry.width();
+	int oldHeight = geometry.height();
+	int newHeight = 150;
+	int heightDifference = newHeight - oldHeight;
+
+	geometry.setHeight(newHeight);
+
+	this->setGeometry(geometry); 
+	this->setMinimumSize(0, newHeight); 
+	this->setMaximumSize(16777215, newHeight);
+
+	// Add extra background
+	QWidget* background = new QWidget(this);
+	background->setGeometry(QRect(0, oldHeight, 1000, heightDifference));
+	background->setStyleSheet("background: rgb(40, 40, 40);");
+	background->raise();
+
+	// Add link input
+	QLineEdit* linkInput = new QLineEdit(this);
+	linkInput->setObjectName("ErrorItemLinkInput");
+	linkInput->setGeometry(QRect(10, 114, 607, 26));
+	linkInput->setStyleSheet("color: black; background-color: white; selection-background-color: rgb(0, 120, 215);");
+	linkInput->setPlaceholderText("Input YouTube URL");
+
+	// Add Search Button
+	QPushButton* searchButton = new QPushButton(this);
+	searchButton->setObjectName("ErrorItemSearchButton");
+	searchButton->setGeometry(QRect(622, 114, 26, 26));
+	searchButton->setStyleSheet("background-color: white;");
+	searchButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Search_Icon_B.png"));
+
+	// Add Download Button
+	QPushButton* downloadButton = new QPushButton(this);
+	downloadButton->setObjectName("ErrorItemDownloadButton");
+	downloadButton->setGeometry(QRect(653, 114, 26, 26));
+	downloadButton->setStyleSheet("background-color: white;");
+	downloadButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_B_Filled.png"));
+}

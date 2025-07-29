@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
 
 class SongErrorItem : public QWidget {
 	Q_OBJECT
@@ -16,6 +18,10 @@ class SongErrorItem : public QWidget {
 	public:
 		SongErrorItem(QWidget* parent = nullptr);
 		~SongErrorItem() {}
+
+		void AddLinkInput(QString searchQuery);
+	private:
+		QString _searchQuery = "";
 };
 
 #endif
