@@ -75,8 +75,6 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 // Widget does not use a layout so buttons are placed where it is not cut off with multiple error items
 // Makes it look a bit weird but the UI is going to change the update after this so its no issue 
 void SongErrorItem::AddLinkInput(QString searchQuery) {
-	_searchQuery = searchQuery;
-
 	// Resize height
 	QRect geometry = this->geometry();
 	int width = geometry.width();
@@ -109,6 +107,11 @@ void SongErrorItem::AddLinkInput(QString searchQuery) {
 	searchButton->setGeometry(QRect(622, 114, 26, 26));
 	searchButton->setStyleSheet("background-color: white;");
 	searchButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Search_Icon_B.png"));
+
+	QUrl searchUrl = QUrl(QString("https://music.youtube.com/search?q=%1").arg(searchQuery));
+	connect(searchButton, &QPushButton::clicked, [searchUrl] {
+		QDesktopServices::openUrl(searchUrl);
+	});
 
 	// Add Download Button
 	QPushButton* downloadButton = new QPushButton(this);
