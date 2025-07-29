@@ -36,5 +36,7 @@
         <file>Icons/UpdateAvailable_Colour.png</file>
         <file>Icons/UpdateRotating_Colour.gif</file>
         <file>Icons/UpdateUpToDate_Colour.png</file>
+        <file>Icons/Download_Icon_B_Filled.png</file>
+        <file>Icons/Search_Icon_B.png</file>
     </qresource>
 </RCC>
