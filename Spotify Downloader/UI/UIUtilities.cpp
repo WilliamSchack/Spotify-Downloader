@@ -46,7 +46,7 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
         case Config::SETUP_SCREEN_INDEX:
         case Config::PROCESSING_SCREEN_INDEX:
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled());
-            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
+            _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
             _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.DownloadingScreenButton->y() - 2), 500);
             break;
@@ -59,7 +59,7 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
         case Config::SETTINGS_SCREEN_INDEX:
             _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
-            if (_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
+            _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.SettingsScreenButton->y() - 2), 500);
             break;
     }
@@ -152,9 +152,40 @@ void SpotifyDownloader::SetErrorItems(QJsonArray tracks) {
         errorItem->Image->setPixmap(JSONUtils::PixmapFromJSON(track["image"]).scaled(errorItem->Image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         errorItem->Error->setText(track["error"].toString());
 
+        // If a search query was provided, add a re-download input
         QString searchQuery = track["searchQuery"].toString();
-        if (!searchQuery.isEmpty())
-            errorItem->AddLinkInput(searchQuery, nullptr);
+        if (!searchQuery.isEmpty()) {
+            errorItem->AddLinkInput(searchQuery, [this, track, errorItem](QString link) {
+                // Dont allow download if no link was inputted
+                if (link.isEmpty()) {
+                    ShowMessageBox("No Link Inputted", "Please input a link to download. You can get a link from YouTube by clicking the search button and pasting a song url into the field.", QMessageBox::Warning);
+                    return;
+                }
+
+                // Dont allow download if there is a download in progress
+                if (DownloadStarted) {
+                    ShowMessageBox("Download In Progress", "Please wait for the current download to finish", QMessageBox::Warning);
+                    return;
+                }
+                
+                // Remove this item from the error ui
+                _errorUI.removeOne(errorItem);
+                delete errorItem;
+
+                // Override the next song search to use this youtube id
+                // Not a great way of doing this but it works, only used for re-downloading errors anyway which will use 1 song
+                // Will be changed in the refactor
+                QString youtubeId = link.split("?v=").last();
+                Song::NextSongYTIDOverride = youtubeId;
+
+                // Start the download
+                // Instead of re-writing the start download code, just input the values into the setup screen and simulate a click on continue (Will change in the refactor, cant be bothered atm)
+                QString spotifyLink = QString("https://open.spotify.com/track/%1").arg(track["id"].toString());
+                _ui.PlaylistURLInput->setText(spotifyLink);
+                _ui.SaveLocationInput->setText(Config::SaveLocation); // Config::SaveLocation only updates at the start of a download, therefore its the last download path
+                _ui.ContinueButton->click();
+            });
+        }
 
         _ui.ScrollLayout->insertWidget(_ui.ScrollLayout->count() - 1, errorItem);
 
