@@ -319,8 +319,6 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 		onProgressUpdate(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
 	}
 
-	qDebug() << "SEARCH RESULTS" << searchResults;
-
 	// Score all songs
 	QJsonArray finalResults = ScoreSearchResults(searchResults);
 
@@ -413,8 +411,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			continue;
 		}
 
-		qDebug() << "SCORING" << result;
-
 		// Score the song
 		float totalScore = 0;
 
@@ -432,8 +428,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		// Time score
 		float timeScore = MathUtils::Lerp(0, 1, (secondsDifferenceAllowed - abs(seconds - TimeSeconds)) / secondsDifferenceAllowed);
 		totalScore += timeScore;
-
-		qDebug() << totalScore << titleScore << timeScore;
 
 		// If the title and time scores are low, no point continuing
 		if (titleScore < 0.5 && timeScore < 0.75)
@@ -479,8 +473,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		}
 		else continue;
 
-		qDebug() << "ARTISTS" << totalScore;
-
 		// Album score
 		if (result.contains("album")) {
 			QJsonObject albumObject = result["album"].toObject();
@@ -496,8 +488,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			float albumScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
 			totalScore += albumScore * 0.3;
 		}
-
-		qDebug() << "ALBUM" << totalScore;
 
 		// Title score
 		if (result.contains("title")) {
@@ -534,8 +524,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			}
 		}
 
-		qDebug() << "TITLE" << totalScore;
-
 		int viewCount = 0;
 		if (result["resultType"].toString() == "video" && result.contains("views")) {
 			viewCount = StringUtils::StringNumberToInt(result["views"].toString());
@@ -549,8 +537,6 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 		scoredIDs.append(result["videoId"].toString());
 	}
-
-	qDebug() << "PRE-FINAL" << finalResults;
 
 	// Double check banned IDs, songs may have scored with a lower time before it was added
 	for (int i = finalResults.count() - 1; i >= 0; i--) {
