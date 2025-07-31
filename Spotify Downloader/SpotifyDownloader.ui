@@ -4283,7 +4283,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>143</y>
+      <y>98</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4425,7 +4425,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>98</y>
+      <y>143</y>
       <width>50</width>
       <height>36</height>
      </rect>

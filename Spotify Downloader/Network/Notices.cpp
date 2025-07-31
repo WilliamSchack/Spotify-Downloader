@@ -19,7 +19,6 @@ void NoticesManager::UpdateNotices() {
 	_notices.clear();
 
 	int lastReadNoticeId = GetLastReadNotice();
-
 	for (QJsonValue noticeValue : json) {
 		QJsonObject noticeJson = noticeValue.toObject();
 		
