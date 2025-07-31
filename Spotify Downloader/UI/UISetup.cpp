@@ -64,14 +64,6 @@ void SpotifyDownloader::SetupSideBar() {
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
     });
 
-    _objectHoverWatcher->AddObjectFunctions(_ui.SettingsScreenButton, [=](QObject* object) {
-        _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
-    }, [=](QObject* object) {
-        // If not in settings screen, reset icon
-        if(CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
-            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
-    });
-
     _objectHoverWatcher->AddObjectFunctions(_ui.ErrorScreenButton, [=](QObject* object) {
         if(_errorUI.count() > 0)
             _ui.ErrorScreenButton->setIcon(Config::ErrorIconFilled());
@@ -79,6 +71,22 @@ void SpotifyDownloader::SetupSideBar() {
         // If not in error screen, reset icon
         if(_errorUI.count() > 0 && CurrentScreen() != Config::ERROR_SCREEN_INDEX)
             _ui.ErrorScreenButton->setIcon(Config::ErrorIcon());
+    });
+
+    _objectHoverWatcher->AddObjectFunctions(_ui.NoticesScreenButton, [=](QObject* object) {
+        _ui.NoticesScreenButton->setIcon(Config::NoticesIconFilled());
+    }, [=](QObject* object) {
+        // If not in notices screen, reset icon
+        if (CurrentScreen() != Config::NOTICES_SCREEN_INDEX)
+            _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
+    });
+
+    _objectHoverWatcher->AddObjectFunctions(_ui.SettingsScreenButton, [=](QObject* object) {
+        _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
+    }, [=](QObject* object) {
+        // If not in settings screen, reset icon
+        if(CurrentScreen() != Config::SETTINGS_SCREEN_INDEX)
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
     });
 
     // Lower buttons
@@ -139,6 +147,11 @@ void SpotifyDownloader::SetupSideBar() {
 
         // Change screen
         ChangeScreen(Config::ERROR_SCREEN_INDEX);
+    });
+
+    connect(_ui.NoticesScreenButton, &QPushButton::clicked, [=] {
+        // Change screen
+        ChangeScreen(Config::NOTICES_SCREEN_INDEX);
     });
 
     connect(_ui.SettingsScreenButton, &QPushButton::clicked, [=] {
@@ -485,7 +498,8 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
         // Set icons
         _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
-        if(_errorUI.count() > 0) _ui.ErrorScreenButton->setIcon(Config::ErrorIcon()); // Only set if error screen is active
+        _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
+        _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
         _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled()); // Set to filled, current screen will be settings, user clicked the button here
         _ui.DonateButton->setIcon(Config::DonateIcon());
         _ui.SubmitBugButton->setIcon(Config::BugIcon());
@@ -756,6 +770,7 @@ void SpotifyDownloader::LoadSettingsUI() {
 
     // Set icons colour
     _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled()); // Set to filled, current screen will be setup, LoadSettingsUI only called on startup
+    _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
     _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
     _ui.DonateButton->setIcon(Config::DonateIcon());
     _ui.UpdateImageLabel->setPixmap(Config::UpdateIcon());

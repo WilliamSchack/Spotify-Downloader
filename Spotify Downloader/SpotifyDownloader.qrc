@@ -38,5 +38,9 @@
         <file>Icons/UpdateUpToDate_Colour.png</file>
         <file>Icons/Download_Icon_B_Filled.png</file>
         <file>Icons/Search_Icon_B.png</file>
+        <file>Icons/Notices_Icon_Colour.png</file>
+        <file>Icons/Notices_Icon_Colour_Filled.png</file>
+        <file>Icons/Notices_Icon_W.png</file>
+        <file>Icons/Notices_Icon_W_Filled.png</file>
     </qresource>
 </RCC>

@@ -4184,6 +4184,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      </widget>
     </widget>
    </widget>
+   <widget class="QWidget" name="NoticesScreen"/>
   </widget>
   <widget class="QWidget" name="SideBar" native="true">
    <property name="geometry">
@@ -4201,7 +4202,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>275</y>
+      <y>278</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4282,7 +4283,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>102</y>
+      <y>143</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4322,7 +4323,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>55</y>
+      <y>53</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4349,7 +4350,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>189</y>
+      <y>198</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4376,7 +4377,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>232</y>
+      <y>238</y>
       <width>50</width>
       <height>36</height>
      </rect>
@@ -4399,7 +4400,7 @@ border: none;</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>235</y>
+      <y>241</y>
       <width>30</width>
       <height>30</height>
      </rect>
@@ -4420,6 +4421,33 @@ border: none;</string>
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="NoticesScreenButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>98</y>
+      <width>50</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(0, 0, 0, 0);
+border: none;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="SpotifyDownloader.qrc">
+      <normaloff>:/SpotifyDownloader/Icons/Notices_Icon_Colour.png</normaloff>:/SpotifyDownloader/Icons/Notices_Icon_Colour.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>28</width>
+      <height>28</height>
+     </size>
+    </property>
+   </widget>
    <zorder>SideBar_LineIndicator</zorder>
    <zorder>SubmitBugButton</zorder>
    <zorder>HelpButton</zorder>
@@ -4429,6 +4457,7 @@ border: none;</string>
    <zorder>DonateButton</zorder>
    <zorder>UpdateButton</zorder>
    <zorder>UpdateImageLabel</zorder>
+   <zorder>NoticesScreenButton</zorder>
   </widget>
  </widget>
  <customwidgets>

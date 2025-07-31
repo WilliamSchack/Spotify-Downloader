@@ -47,19 +47,29 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
         case Config::PROCESSING_SCREEN_INDEX:
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled());
             _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
+            _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
             _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.DownloadingScreenButton->y() - 2), 500);
             break;
         case Config::ERROR_SCREEN_INDEX:
-            _ui.ErrorScreenButton->setIcon(Config::ErrorIconFilled());
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
+            _ui.ErrorScreenButton->setIcon(Config::ErrorIconFilled());
+            _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
             _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.ErrorScreenButton->y() - 2), 500);
             break;
-        case Config::SETTINGS_SCREEN_INDEX:
-            _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
+        case Config::NOTICES_SCREEN_INDEX:
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
             _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
+            _ui.NoticesScreenButton->setIcon(Config::NoticesIconFilled());
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
+            Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.NoticesScreenButton->y() - 2), 500);
+            break;
+        case Config::SETTINGS_SCREEN_INDEX:
+            _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
+            _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
+            _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
+            _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled());
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.SettingsScreenButton->y() - 2), 500);
             break;
     }
