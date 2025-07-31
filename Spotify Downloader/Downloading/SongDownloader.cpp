@@ -162,7 +162,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		[&]() {
 			// Only show warning if bitrate set to premium quality
 			int maxNonPremiumBitrate = Codec::Data[Config::Codec].MaxBitrate;
-			if (Config::AudioBitrate[codec] <= maxNonPremiumBitrate)
+			if (Config::AudioBitrate[codec] <= maxNonPremiumBitrate && !Config::AutomaticBestQuality)
 				return;
 
 			AddSongToErrors(song, "Song does not have a 256kb/s version, downloaded at 128kb/s", true);
