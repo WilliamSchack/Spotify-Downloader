@@ -10,12 +10,17 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
+#include <QtNetwork/QNetworkCookieJar>
+#include <QtNetwork/QNetworkCookie>
+
 class Network {
 	public:
-		static QByteArray Get(QNetworkRequest request);
-		static QByteArray Post(QNetworkRequest request, QByteArray postData);
+		static QByteArray Get(QNetworkRequest request, QNetworkCookieJar* cookieJar = nullptr);
+		static QByteArray Post(QNetworkRequest request, QByteArray postData, QNetworkCookieJar* cookieJar = nullptr);
 
 		static bool Ping(QUrl serverAddress);
+
+		static QNetworkCookieJar* FromNetscapeCookies(QString netscapeCookies);
 };
 
 #endif
