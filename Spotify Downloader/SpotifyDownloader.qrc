@@ -42,5 +42,9 @@
         <file>Icons/Notices_Icon_Colour_Filled.png</file>
         <file>Icons/Notices_Icon_W.png</file>
         <file>Icons/Notices_Icon_W_Filled.png</file>
+        <file>Icons/Notices_Available_Icon_Colour.png</file>
+        <file>Icons/Notices_Available_Icon_Colour_Filled.png</file>
+        <file>Icons/Notices_Available_Icon_W.png</file>
+        <file>Icons/Notices_Available_Icon_W_Filled.png</file>
     </qresource>
 </RCC>

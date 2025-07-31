@@ -49,6 +49,10 @@ class Config {
         static inline const QString NOTICES_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Notices_Icon_Colour_Filled.png";
         static inline const QString NOTICES_ICON_WHITE = ":/SpotifyDownloader/Icons/Notices_Icon_W.png";
         static inline const QString NOTICES_ICON_COLOUR = ":/SpotifyDownloader/Icons/Notices_Icon_Colour.png";
+        static inline const QString NOTICES_AVAILABLE_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/Notices_Available_Icon_W_Filled.png";
+        static inline const QString NOTICES_AVAILABLE_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Notices_Available_Icon_Colour_Filled.png";
+        static inline const QString NOTICES_AVAILABLE_ICON_WHITE = ":/SpotifyDownloader/Icons/Notices_Available_Icon_W.png";
+        static inline const QString NOTICES_AVAILABLE_ICON_COLOUR = ":/SpotifyDownloader/Icons/Notices_Available_Icon_Colour.png";
         static inline const QString SETTINGS_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png";
         static inline const QString SETTINGS_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/SettingsCog_Colour_Filled.png";
         static inline const QString SETTINGS_ICON_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W.png";
@@ -167,6 +171,8 @@ class Config {
         static QIcon ErrorIconInactive() { return QIcon(ERROR_ICON_INACTIVE); }
         static QIcon NoticesIconFilled() { return QIcon(SidebarIconsColour ? NOTICES_ICON_FILLED_COLOUR : NOTICES_ICON_FILLED_WHITE); }
         static QIcon NoticesIcon() { return QIcon(SidebarIconsColour ? NOTICES_ICON_COLOUR : NOTICES_ICON_WHITE); }
+        static QIcon NoticesAvailableIconFilled() { return QIcon(SidebarIconsColour ? NOTICES_AVAILABLE_ICON_FILLED_COLOUR : NOTICES_AVAILABLE_ICON_FILLED_WHITE); }
+        static QIcon NoticesAvailableIcon() { return QIcon(SidebarIconsColour ? NOTICES_AVAILABLE_ICON_COLOUR : NOTICES_AVAILABLE_ICON_WHITE); }
         static QIcon SettingsIconFilled() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_FILLED_COLOUR : SETTINGS_ICON_FILLED_WHITE); }
         static QIcon SettingsIcon() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_COLOUR : SETTINGS_ICON_WHITE); }
 
