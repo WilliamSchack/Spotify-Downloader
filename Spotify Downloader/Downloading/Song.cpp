@@ -533,7 +533,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 	// Double check banned IDs, songs may have scored with a lower time before it was added
 	for (int i = finalResults.count() - 1; i >= 0; i--) {
-		QJsonObject result = finalResults[i].toObject();
+		QJsonObject result = finalResults[i].toObject()["result"].toObject();
 
 		if (bannedIDs.contains(result["videoId"].toString()))
 			finalResults.removeAt(i);
