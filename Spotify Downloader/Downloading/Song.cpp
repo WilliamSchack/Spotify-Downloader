@@ -319,6 +319,8 @@ QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgre
 		onProgressUpdate(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
 	}
 
+	qDebug() << "SEARCH RESULTS" << searchResults;
+
 	// Score all songs
 	QJsonArray finalResults = ScoreSearchResults(searchResults);
 
@@ -390,8 +392,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	foreach(QJsonValue val, searchResults) {
 		QJsonObject result = val.toObject();
 
-		// If song is explicit only allow explicit results
-		if (IsExplicit && !result["isExplicit"].toBool())
+		// If song is explicit only allow explicit results (Will only work for songs not videos)
+		if (result.contains("isExplicit") && !result["isExplicit"].toBool() && IsExplicit)
 			continue;
 
 		// If song in banned IDs, skip
@@ -411,16 +413,27 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			continue;
 		}
 
+		qDebug() << "SCORING" << result;
+
 		// Score the song
 		float totalScore = 0;
 
 		// Check the similarity of titles and add to score
-		float titleScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
+		// Score both the regular and lower versions and use the highest score
+		QString titleLower = Title.toLower();
+		QString resultTitle = result["title"].toString();
+		QString resultTitleLower = resultTitle.toLower();
+
+		float titleRegularScore = StringUtils::LevenshteinDistanceSimilarity(resultTitle, Title);
+		float titleLowerScore = StringUtils::LevenshteinDistanceSimilarity(resultTitleLower, titleLower);
+		float titleScore = std::max(titleRegularScore, titleLowerScore); // Use the higher score
 		totalScore += titleScore;
 
 		// Time score
 		float timeScore = MathUtils::Lerp(0, 1, (secondsDifferenceAllowed - abs(seconds - TimeSeconds)) / secondsDifferenceAllowed);
 		totalScore += timeScore;
+
+		qDebug() << totalScore << titleScore << timeScore;
 
 		// If the title and time scores are low, no point continuing
 		if (titleScore < 0.5 && timeScore < 0.75)
@@ -466,6 +479,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		}
 		else continue;
 
+		qDebug() << "ARTISTS" << totalScore;
+
 		// Album score
 		if (result.contains("album")) {
 			QJsonObject albumObject = result["album"].toObject();
@@ -481,6 +496,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			float albumScore = StringUtils::LevenshteinDistanceSimilarity(result["title"].toString(), Title);
 			totalScore += albumScore * 0.3;
 		}
+
+		qDebug() << "ALBUM" << totalScore;
 
 		// Title score
 		if (result.contains("title")) {
@@ -517,6 +534,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 			}
 		}
 
+		qDebug() << "TITLE" << totalScore;
+
 		int viewCount = 0;
 		if (result["resultType"].toString() == "video" && result.contains("views")) {
 			viewCount = StringUtils::StringNumberToInt(result["views"].toString());
@@ -530,6 +549,8 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 
 		scoredIDs.append(result["videoId"].toString());
 	}
+
+	qDebug() << "PRE-FINAL" << finalResults;
 
 	// Double check banned IDs, songs may have scored with a lower time before it was added
 	for (int i = finalResults.count() - 1; i >= 0; i--) {
