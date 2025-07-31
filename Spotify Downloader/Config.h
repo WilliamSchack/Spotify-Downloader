@@ -43,6 +43,7 @@ class Config {
         static inline const QString ERROR_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/Error_Icon_Colour_Filled.png";
         static inline const QString ERROR_ICON_WHITE = ":/SpotifyDownloader/Icons/Error_Icon_W.png";
         static inline const QString ERROR_ICON_COLOUR = ":/SpotifyDownloader/Icons/Error_Icon_Colour.png";
+        static inline const QString ERROR_ICON_INACTIVE = ":/SpotifyDownloader/Icons/Error_Icon_Inactive.png";
         static inline const QString SETTINGS_ICON_FILLED_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W_Filled.png";
         static inline const QString SETTINGS_ICON_FILLED_COLOUR = ":/SpotifyDownloader/Icons/SettingsCog_Colour_Filled.png";
         static inline const QString SETTINGS_ICON_WHITE = ":/SpotifyDownloader/Icons/SettingsCog_W.png";
@@ -158,6 +159,7 @@ class Config {
         static QIcon DownloadIcon() { return QIcon(SidebarIconsColour ? DOWNLOAD_ICON_COLOUR : DOWNLOAD_ICON_WHITE); }
         static QIcon ErrorIconFilled() { return QIcon(SidebarIconsColour ? ERROR_ICON_FILLED_COLOUR : ERROR_ICON_FILLED_WHITE); }
         static QIcon ErrorIcon() { return QIcon(SidebarIconsColour ? ERROR_ICON_COLOUR : ERROR_ICON_WHITE); }
+        static QIcon ErrorIconInactive() { return QIcon(ERROR_ICON_INACTIVE); }
         static QIcon SettingsIconFilled() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_FILLED_COLOUR : SETTINGS_ICON_FILLED_WHITE); }
         static QIcon SettingsIcon() { return QIcon(SidebarIconsColour ? SETTINGS_ICON_COLOUR : SETTINGS_ICON_WHITE); }
 
