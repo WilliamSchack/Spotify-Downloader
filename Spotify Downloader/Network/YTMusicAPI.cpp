@@ -743,6 +743,66 @@ QString YTMusicAPI::GetTabBrowseId(QJsonObject watchNextRenderer, int tabId) {
 	return JSONUtils::Navigate(tabRenderer, { "endpoint", "browseEndpoint", "browseId" }).toString();
 }
 
+bool YTMusicAPI::HasPremium(QString cookies) {
+	QUrl url = QUrl("https://www.youtube.com/paid_memberships");
+	QNetworkRequest request = QNetworkRequest(url);
+	request.setRawHeader("user-agent", "Mozilla/5.0");
+	request.setRawHeader("accept-language", "en-US,en;q=0.5");
+	request.setRawHeader("origin", "https://www.youtube.com");
+
+	QNetworkCookieJar* cookieJar = Network::FromNetscapeCookies(cookies);
+	QByteArray response = Network::Get(request, cookieJar);
+	QString responseString = QString(response);
+
+	if (responseString.isEmpty())
+		return false;
+
+	// Returns a mix of html, js, json. Get the json that has the page layout
+	QString jsonLine = responseString.split("\n")[21];
+	QRegularExpression regex(R"(ytInitialData\s=\s(.*}}}}}}});)");
+	QStringList matches = regex.match(jsonLine).capturedTexts();
+
+	if (matches.count() < 2)
+		return false;
+
+	QString jsonString = matches[1];
+	QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
+
+	QJsonArray pageSections = JSONUtils::Navigate(json, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents" }).toArray();
+
+	// Look for the memberships section
+	QJsonArray membershipsContents = QJsonArray();
+	for (QJsonValue sectionValue : pageSections) {
+		QJsonObject section = sectionValue.toObject();
+
+		// Check the section text
+		QJsonArray contents = JSONUtils::Navigate(section, { "itemSectionRenderer", "contents" }).toArray();
+		QString sectionText = JSONUtils::Navigate(contents, { 0, "cardItemRenderer", "headingRenderer", "cardItemTextCollectionRenderer", "textRenderers", 0, "cardItemTextRenderer", "text", "runs", 0, "text"}).toString();
+
+		if (sectionText == "Memberships") {
+			membershipsContents = contents;
+			break;
+		}
+	}
+
+	// No memberships found
+	if (membershipsContents.isEmpty())
+		return false;
+
+	// Check each section and look for either a valid premium image alt text
+	for (QJsonValue membershipValue : membershipsContents) {
+		QJsonObject membership = membershipValue.toObject();
+
+		QString imageAltText = JSONUtils::Navigate(membership, { "cardItemContainerRenderer", "baseRenderer", "cardItemRenderer", "headingRenderer", "cardItemTextWithImageRenderer", "imageRenderer", "themedImageRenderer", "imageLight", "accessibility", "accessibilityData", "label" }).toString();
+
+		// If any valid premium alt text found, return true
+		if (VALID_PREMIUM_IMAGE_ALT_TEXT.contains(imageAltText))
+			return true;
+	}
+
+	return false;
+}
+
 // If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
 bool YTMusicAPI::IsAgeRestricted(QString videoId) {
 	// Get the song details

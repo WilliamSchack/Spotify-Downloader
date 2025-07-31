@@ -18,6 +18,7 @@
 
 #include <QObject>
 #include <QTime>
+#include <QRegularExpression>
 
 class YTMusicAPI {
 	public:
@@ -30,7 +31,14 @@ class YTMusicAPI {
 
 		Lyrics GetLyrics(QString videoId, bool timestamps = true);
 
+		bool HasPremium(QString cookies);
+
 		bool IsAgeRestricted(QString videoId);
+	private:
+		static inline const QStringList VALID_PREMIUM_IMAGE_ALT_TEXT{
+			"YouTube Premium",
+			"YouTube Music Premium"
+		};
 	private:
 		QNetworkRequest GetRequest(QString endpoint);
 		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one
