@@ -542,7 +542,7 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 	return finalResults;
 }
 
-QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onLowQualityWarning, std::function<void()> onPremiumDisabled) {
+QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std::function<void(float)> onProgressUpdate, std::function<void()> onPOTokenWarning, std::function<void()> onLowQualityWarning) {
 	// Create paths for m4a, webm, these are the only possible codecs
 	QString downloadingPathNoExtension = QString("%1/%2").arg(_downloadingFolder).arg(FileName);
 	QString downloadingPathM4A = QString("%1.m4a").arg(downloadingPathNoExtension);
@@ -628,8 +628,9 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		return "Video is Age Restricted. Please assign cookies in the downloading settings";
 	}
 
-	// Check current hasPremium, might change during download
-	bool startingHasPremium = Config::HasPremium;
+	// Check if the user has premium
+	bool hasPremium = false;
+	if (cookiesAssigned) hasPremium = YTMusicAPI().HasPremium(Config::YouTubeCookies);
 
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
@@ -649,19 +650,10 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	if (!errorOutput.isEmpty()) {
 		QString lowerErrorOutput = errorOutput.toLower();
 
-		// If started download assuming premium then other thread assigned premium to false, restart download without cookies
-		// This usually happens when starting a download with multiple threads
-		if (startingHasPremium && !Config::HasPremium) {
-			return Download(yt, process, overwrite, onProgressUpdate, onPOTokenWarning, onLowQualityWarning, onPremiumDisabled);
-		}
-
 		// Check if PO Token is invalid, dont cancel download just warn user
 		if (lowerErrorOutput.contains("invalid po_token configuration")) {
 			qWarning() << SpotifyId << "YT-DLP Returned warning:" << errorOutput;
 			qWarning() << "PO Token is invalid";
-
-			// Disable premium as cookies are not being used
-			Config::HasPremium = false;
 
 			// Call PO Token warning callback if assigned
 			if (onPOTokenWarning != nullptr)
@@ -708,56 +700,12 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 			return errorOutput;
 		}
 
-		// Check for invalid cookies, use the bitrate to check
-		if (cookiesAssigned) {
-			// Get bitrate by inputting the audio into ffmpeg and reading its output
-			process = new QProcess();
-			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-			process->startCommand(QString(R"("%1" -i "%2")")
-				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-				.arg(downloadingPathM4A));
-			process->waitForFinished(-1);
+		// Check if a low quality version was downloaded with premium
+		if (hasPremium && bitrate < 200) {
+			qInfo() << SpotifyId << "Does not have a high quality version for the YouTube ID:" << YoutubeId;
 
-			QString ffmpegOutput = process->readAllStandardError();
-			QStringList outputLines = ffmpegOutput.split("\n");
-
-			foreach(QString outputLine, outputLines) {
-				// Look for the first (and only) stream which is the audio
-				if (!outputLine.contains("Stream #0:0"))
-					continue;
-
-				// Check for after the last "," and before "kb/s"
-				// Example line:
-				// Stream #0:0[0x1](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)
-
-				int kbps = outputLine.split(",").last().split("kb/s")[0].replace(" ", "").toInt();
-
-				// If bitrate is ~128kb/s and premium is enabled, disable it
-				if (kbps < 200 && Config::HasPremium) {
-					// Check that song has a 256kb/s version
-					// If cookies assigned, "Decrypted nsig" will be shown 3 times, if less the video only has a 128kb/s version
-					if (lowerErrorOutput.count("decrypted nsig") < 3) {
-						qInfo() << SpotifyId << "YT-DLP Response:" << errorOutput;
-						qInfo() << SpotifyId << "Cannot be downloaded at 256kb/s with the YouTube ID:" << YoutubeId;
-
-						onLowQualityWarning();
-
-						break;
-					}
-
-					qWarning() << SpotifyId << "YT-DLP Returned error:" << errorOutput;
-					qInfo() << "User does not have premium or cookies are expired, disabling checks for later downloads";
-
-					Config::HasPremium = false;
-
-					// Call Premium Disabled warning callback if assigned
-					if (onPremiumDisabled != nullptr)
-						onPremiumDisabled();
-				}
-
-				// Exit loop, already found stream
-				break;
-			}
+			if (onLowQualityWarning != nullptr)
+				onLowQualityWarning();
 		}
 	}
 

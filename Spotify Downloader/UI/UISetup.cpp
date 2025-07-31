@@ -250,10 +250,6 @@ void SpotifyDownloader::SetupSetupScreen() {
             DownloadStarted = true;
             Paused = false;
 
-            // Reset HasPremium, will be set after first download
-            // Would check before download but that would require a preset video to test so I may aswell test the first download
-            Config::HasPremium = true;
-
             // Setup and Reset GUI
             ChangeScreen(Config::PROCESSING_SCREEN_INDEX);
             _ui.DownloaderThreadsInput->setEnabled(false);

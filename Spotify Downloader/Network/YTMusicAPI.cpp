@@ -744,6 +744,9 @@ QString YTMusicAPI::GetTabBrowseId(QJsonObject watchNextRenderer, int tabId) {
 }
 
 bool YTMusicAPI::HasPremium(QString cookies) {
+	if (cookies.isEmpty())
+		return false;
+
 	QUrl url = QUrl("https://www.youtube.com/paid_memberships");
 	QNetworkRequest request = QNetworkRequest(url);
 	request.setRawHeader("user-agent", "Mozilla/5.0");

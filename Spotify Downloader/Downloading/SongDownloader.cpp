@@ -169,27 +169,6 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 
 			// Premium already verified, set bitrate override to non-premium max to not waste storage
 			bitrateOverride = maxNonPremiumBitrate;
-		},
-		// On Premium Disabled
-		[&]() {
-			// Call warning and reset bitrate if higher than non-premium account
-			int maxBitrate = Codec::Data[Config::Codec].MaxBitrate;
-			// Dont set bitrate if already under or equal to max
-			if (Config::GetBitrate() <= maxBitrate) {
-				// Warn about expired cookies
-				emit ShowMessageBox("Cookies Expired", "Your cookies have expired. If you have not recently reset your cookies, please do so.", QMessageBox::Warning);
-				
-				// No need to set bitrate
-				return;
-			}
-
-			// Warn user bitrate has been modified
-			emit ShowMessageBox("Using Premium Bitrate or Cookies Expired", "You have assigned a premium bitrate without a YouTube premium account, or your cookies have expired, lowering bitrate down to maximum Non-Premium rate. If you have premium and have not recently reset your cookies, please do so.", QMessageBox::Warning);
-
-			// Set max bitrate and reload UI
-			Config::SetBitrate(maxBitrate);
-			
-			emit LoadSettingsUI();
 		}
 	);
 

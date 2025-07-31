@@ -135,11 +135,6 @@ class Config {
 
         static inline QString YouTubeCookies;
         static inline QString POToken;
-        
-        // Only used when cookies are assigned, premium is assumed
-        // If premium is not detected during a download, this will be set to false
-        // Getting this value before the first download will be inaccurate.
-        static inline bool HasPremium = true;
     
         // Interface
         static inline int DownloaderThreadUIIndex;
