@@ -5,28 +5,36 @@
 #include "Utilities/Logger.h"
 
 #include "Network.h"
+#include "Config.h"
 
 #include <string>
 #include <vector>
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
 struct Notice {
 	int id;
 	std::string date;
+	std::string title;
 	std::string content;
+	bool read;
 };
 
 class NoticesManager {
 	public:
-		static inline int LastReadNoticeID = -1;
 	public:
 		static std::vector<Notice> GetLatestNotices();
 		static void ReadNotice(int noticeId);
 	private:
-		static inline const std::string NOTICES_SOURCE = "https://data.wilschack.dev/SpotifyDownloader/notices.json";
+		static inline const QUrl NOTICES_SOURCE = QUrl("https://data.wilschack.dev/SpotifyDownloader/notices.json");
 
-		static inline std::vector<Notice> _currentNotices;
+		static inline std::vector<Notice> _notices;
+		static inline int _lastReadNoticeID = -1;
 	private:
 		static void UpdateNotices();
+		static int GetLastReadNotice();
 };
 
 #endif

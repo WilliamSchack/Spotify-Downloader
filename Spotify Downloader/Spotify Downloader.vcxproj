@@ -27,6 +27,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Network\MusixmatchAPI.cpp" />
     <ClCompile Include="Network\Network.cpp" />
+    <ClCompile Include="Network\Notices.cpp" />
     <ClCompile Include="Network\SpotifyAPI.cpp" />
     <ClCompile Include="Network\VersionManager.cpp" />
     <ClCompile Include="Network\YTMusicAPI.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="Lyrics\Lyrics.h" />
     <ClInclude Include="Network\MusixmatchAPI.h" />
     <ClInclude Include="Network\Network.h" />
+    <ClInclude Include="Network\Notices.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />
     <ClInclude Include="Network\VersionManager.h" />
     <ClInclude Include="Network\YTMusicAPI.h" />
