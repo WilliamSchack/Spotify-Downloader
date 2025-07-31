@@ -108,7 +108,8 @@ void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void()
 	searchButton->setStyleSheet("background-color: white;");
 	searchButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Search_Icon_B.png"));
 
-	QUrl searchUrl = QUrl(QString("https://music.youtube.com/search?q=%1").arg(searchQuery));
+	QByteArray queryPercentEncoding = QUrl::toPercentEncoding(searchQuery);
+	QUrl searchUrl = QUrl(QString("https://music.youtube.com/search?q=%1").arg(queryPercentEncoding));
 	connect(searchButton, &QPushButton::clicked, [searchUrl] {
 		QDesktopServices::openUrl(searchUrl);
 	});

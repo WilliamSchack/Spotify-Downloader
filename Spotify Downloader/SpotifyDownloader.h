@@ -254,7 +254,7 @@ class SongDownloader : public QObject {
     private:
         void StartDownload(int startIndex);
         QString DownloadSong(QJsonObject track, int count, QJsonObject album);
-        void AddSongToErrors(Song song, QString error, bool silent = false);
+        void AddSongToErrors(Song song, QString error, QString searchQuery = "", bool silent = false);
         void CheckForStop();
     signals:
         void ChangeScreen(int screenIndex);

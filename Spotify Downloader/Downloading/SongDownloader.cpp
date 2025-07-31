@@ -127,7 +127,12 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 
 	// If result contains an error, add it to the download errors
 	if (!searchResult.isEmpty()) {
-		AddSongToErrors(song, searchResult);
+		// If song could not be found, allow the user to manually input a link
+		QString searchQuery = QString("%1 - %2 - %3").arg(song.ArtistName).arg(song.Title).arg(song.AlbumName);
+		bool cannotBeFound = searchResult == "Song Cannot Be Found On YouTube";
+		if (cannotBeFound) searchResult += ". You Can Manually Search And Input The Link Here";
+
+		AddSongToErrors(song, searchResult, cannotBeFound ? searchQuery : "");
 
 		// If IP is flagged cancel download and warn user in download errors
 		if (searchResult.contains("YouTube has flagged your IP")) {
@@ -165,7 +170,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 			if (Config::AudioBitrate[codec] <= maxNonPremiumBitrate && !Config::AutomaticBestQuality)
 				return;
 
-			AddSongToErrors(song, "Song does not have a 256kb/s version, downloaded at 128kb/s", true);
+			AddSongToErrors(song, "Song does not have a 256kb/s version, downloaded at 128kb/s", "", true);
 
 			// Premium already verified, set bitrate override to non-premium max to not waste storage
 			bitrateOverride = maxNonPremiumBitrate;
@@ -334,14 +339,15 @@ void SongDownloader::FinishedDownloading(bool finished) {
 	_finishedDownloading = finished;
 }
 
-void SongDownloader::AddSongToErrors(Song song, QString error, bool silent) {
+void SongDownloader::AddSongToErrors(Song song, QString error, QString searchQuery, bool silent) {
 	_downloadErrors.append(QJsonObject{
 		{"id", song.SpotifyId},
 		{"title", song.Title},
 		{"album", song.AlbumName},
 		{"artists", song.ArtistNames},
 		{"image", JSONUtils::PixmapToJSON(QPixmap::fromImage(song.CoverImage))},
-		{"error", error }
+		{"error", error },
+		{"searchQuery", searchQuery}
 	});
 
 	if (!silent) {
