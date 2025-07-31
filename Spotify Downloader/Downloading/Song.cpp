@@ -272,6 +272,14 @@ void Song::DownloadCoverImage() {
 }
 
 QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
+	// Not a great way of doing this but it works, only used for re-downloading errors anyway which will use 1 song
+	// Will be changed in the refactor
+	if (!NextSongYTIDOverride.isEmpty()) {
+		YoutubeId = NextSongYTIDOverride;
+		NextSongYTIDOverride = "";
+		return "";
+	}
+
 	// YouTube search doesnt like symbols, can result in random results, remove them from the query
 	QRegularExpression symbolRegex("[\\p{S}]");
 	QString ArtistSearchTerm = QString(ArtistName).remove(symbolRegex);
@@ -630,7 +638,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Check if video is age restricted
 	// If so and not using cookies, cancel download
 	// If using cookies cannot download non-age restricted song with cookies if no premium, dont use cookies in that case)
-	bool ageRestricted = yt->IsAgeRestricted(_searchResult["videoId"].toString());
+	bool ageRestricted = yt->IsAgeRestricted(YoutubeId);
 	if (ageRestricted && !cookiesAssigned) {
 		return "Video is Age Restricted. Please assign cookies in the downloading settings";
 	}
@@ -648,7 +656,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		.arg(cookiesAssigned ? "web_music" : "default")
 		.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "")
 		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
-		.arg(QString("https://music.youtube.com/watch?v=%1").arg(_searchResult["videoId"].toString())));
+		.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
 	process->waitForFinished(-1);
 
 	// Check for any errors in the download

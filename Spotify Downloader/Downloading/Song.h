@@ -51,6 +51,8 @@
 
 class Song {
 	public:
+		static inline QString NextSongYTIDOverride = "";
+
 		// --- Song Properties ---
 		QString Title = "";
 		QString SpotifyId = "";
