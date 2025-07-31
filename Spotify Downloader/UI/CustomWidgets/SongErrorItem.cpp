@@ -74,7 +74,7 @@ SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 
 // Widget does not use a layout so buttons are placed where it is not cut off with multiple error items
 // Makes it look a bit weird but the UI is going to change the update after this so its no issue 
-void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void()>& onDownloadClicked) {
+void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void(QString link)>& onDownloadClicked) {
 	// Resize height
 	QRect geometry = this->geometry();
 	int width = geometry.width();
@@ -95,11 +95,11 @@ void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void()
 	background->raise();
 
 	// Add link input
-	QLineEdit* linkInput = new QLineEdit(this);
-	linkInput->setObjectName("ErrorItemLinkInput");
-	linkInput->setGeometry(QRect(10, 114, 607, 26));
-	linkInput->setStyleSheet("color: black; background-color: white; selection-background-color: rgb(0, 120, 215);");
-	linkInput->setPlaceholderText("Input YouTube URL");
+	LinkInput = new QLineEdit(this);
+	LinkInput->setObjectName("ErrorItemLinkInput");
+	LinkInput->setGeometry(QRect(10, 114, 607, 26));
+	LinkInput->setStyleSheet("color: black; background-color: white; selection-background-color: rgb(0, 120, 215);");
+	LinkInput->setPlaceholderText("Input YouTube URL");
 
 	// Add Search Button
 	QPushButton* searchButton = new QPushButton(this);
@@ -121,8 +121,8 @@ void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void()
 	downloadButton->setStyleSheet("background-color: white;");
 	downloadButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Download_Icon_B_Filled.png"));
 
-	connect(downloadButton, &QPushButton::clicked, [onDownloadClicked] {
+	connect(downloadButton, &QPushButton::clicked, [&linkInput = this->LinkInput, onDownloadClicked] {
 		if (onDownloadClicked != nullptr)
-			onDownloadClicked();
+			onDownloadClicked(linkInput->text());
 	});
 }

@@ -21,7 +21,9 @@ class SongErrorItem : public QWidget {
 		SongErrorItem(QWidget* parent = nullptr);
 		~SongErrorItem() {}
 
-		void AddLinkInput(QString searchQuery, const std::function<void()>& onDownloadClicked);
+		void AddLinkInput(QString searchQuery, const std::function<void(QString link)>& onDownloadClicked);
+	private:
+		QLineEdit* LinkInput;
 };
 
 #endif
