@@ -238,9 +238,6 @@
     <ClInclude Include="Network\Notices.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="UI\CustomWidgets\NoticeItem.h">
-      <Filter>Header Files\UI\CustomWidgets</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Utilities\ObjectHoverWatcher.h">
@@ -260,6 +257,9 @@
     </QtMoc>
     <QtMoc Include="SpotifyDownloader.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="UI\CustomWidgets\NoticeItem.h">
+      <Filter>Header Files\UI\CustomWidgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

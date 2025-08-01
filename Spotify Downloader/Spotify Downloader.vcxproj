@@ -66,7 +66,7 @@
     <ClInclude Include="Network\YTMusicAPI.h" />
     <QtMoc Include="UI\CustomWidgets\CheckBox.h" />
     <QtMoc Include="UI\CustomWidgets\DownloaderThread.h" />
-    <ClInclude Include="UI\CustomWidgets\NoticeItem.h" />
+    <QtMoc Include="UI\CustomWidgets\NoticeItem.h" />
     <QtMoc Include="UI\CustomWidgets\SongErrorItem.h" />
     <QtMoc Include="SpotifyDownloader.h" />
     <ClInclude Include="Playlist\M3UFile.h" />

@@ -3,7 +3,7 @@
 NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatcher, QWidget* parent) : QWidget(parent) {
 	// Setup parent widget
 	this->setObjectName("NoticeItem");
-	this->setStyleSheet(IDLE_STYLESHEET);
+	this->setStyleSheet(STYLESHEET);
 	this->setMaximumHeight(40); // Dimensions managed by scroll area
 
 	// Add vertical layout
@@ -24,9 +24,31 @@ NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatc
 	UpdateText();
 	
 	layout->addWidget(_textLabel);
+
+	// Allow hover changes
+	if (objecthoverWatcher == nullptr)
+		return;
+
+	objecthoverWatcher->AddObjectFunctions(this, [=](QObject* object) {
+        Animation::AnimateStylesheetColour(this, "border-color", HOVER_BORDER_COLOUR, ANIMATION_TIME_MS);
+    }, [=](QObject* object) {
+        Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
+    });
 }
 
 void NoticeItem::UpdateText() {
 	QString newText = QString(TEXT_CONSTRUCTOR).arg(_title).arg(_date);
 	_textLabel->setText(newText);
+}
+
+void NoticeItem::Select() {
+	// Update the border and background colours
+	Animation::AnimateStylesheetColour(this, "background-color", SELECTED_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
+	Animation::AnimateStylesheetColour(this, "border-color", SELECTED_BORDER_COLOUR, ANIMATION_TIME_MS);
+};
+
+void NoticeItem::Deselect() {
+	// Update the border and background colours
+	Animation::AnimateStylesheetColour(this, "background-color", DEFAULT_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
+	Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
 }
