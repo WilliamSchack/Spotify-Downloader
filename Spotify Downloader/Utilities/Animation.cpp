@@ -84,7 +84,7 @@ void Animation::AnimateValue(QWidget* target, int newValue, int durationMs) {
     _currentAnimations.insert(target, anim);
 }
 
-void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int durationMs) {
+void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleSheetKey, QColor newColour, int durationMs) {
     CheckForAnimation(target);
 
     if (durationMs == 0) {
@@ -94,6 +94,8 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
 
         return;
     }
+
+    QString styleSheetKeyFull = QString("%1:").arg(styleSheetKey);
 
     QVariantAnimation* anim = new QVariantAnimation(target);
     anim->setDuration(durationMs);
@@ -106,8 +108,9 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
     QObject::connect(anim, &QVariantAnimation::valueChanged, [=](QVariant value) {
         // Get current style sheet and remove background-color if set
         QString styleSheet = target->styleSheet();
-        if (styleSheet.contains("background-color:")) {
-            int startIndex = styleSheet.indexOf("background-color:");
+
+        if (styleSheet.contains(styleSheetKeyFull)) {
+            int startIndex = styleSheet.indexOf(styleSheetKeyFull);
             int endIndex = startIndex + styleSheet.mid(startIndex).indexOf(";") + 1;
             
             styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
@@ -116,15 +119,15 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
         // Add new background colour
         QColor colour = value.value<QColor>();
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(colour.red()).arg(colour.green()).arg(colour.blue()).arg(colour.alpha());
-        styleSheet.append(QString("background-color: %1;").arg(rgbaString));
+        styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
         target->setStyleSheet(styleSheet);
     });
 
     QObject::connect(anim, &QVariantAnimation::finished, [=] {
         // Get current style sheet and remove background-color if set
         QString styleSheet = target->styleSheet();
-        if (styleSheet.contains("background-color:")) {
-            int startIndex = styleSheet.indexOf("background-color:");
+        if (styleSheet.contains(styleSheetKeyFull)) {
+            int startIndex = styleSheet.indexOf(styleSheetKeyFull);
             int endIndex = startIndex + styleSheet.mid(startIndex).indexOf(";") + 1;
 
             styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
@@ -132,7 +135,7 @@ void Animation::AnimateBackgroundColour(QWidget* target, QColor newColour, int d
 
         // Add new background colour
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(newColour.red()).arg(newColour.green()).arg(newColour.blue()).arg(newColour.alpha());
-        styleSheet.append(QString("background-color: %1;").arg(rgbaString));
+        styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
         target->setStyleSheet(styleSheet);
 
         _currentAnimations.remove(target);

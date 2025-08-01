@@ -99,9 +99,9 @@ void SpotifyDownloader::SetupSideBar() {
 
     foreach(QPushButton* button, lowerSidebarButtons) {
         _objectHoverWatcher->AddObjectFunctions(button, [=](QObject* object) {
-            Animation::AnimateBackgroundColour(button, QColor(80, 80, 80), 500);
+            Animation::AnimateStylesheetColour(button, "background-color", QColor(80, 80, 80), 500);
         }, [=](QObject* object) {
-            Animation::AnimateBackgroundColour(button, QColor(44, 44, 44), 500);
+            Animation::AnimateStylesheetColour(button, "background-color", QColor(44, 44, 44), 500);
         });
     }
 
@@ -297,9 +297,9 @@ void SpotifyDownloader::SetupSetupScreen() {
 
     // Donation prompt button
     _objectHoverWatcher->AddObjectFunctions(_ui.DonationPromptButton, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.DonationPromptButton, QColor(80, 80, 80), 500);
+        Animation::AnimateStylesheetColour(_ui.DonationPromptButton, "background-color", QColor(80, 80, 80), 500);
     }, [=](QObject* object) {
-        Animation::AnimateBackgroundColour(_ui.DonationPromptButton, QColor(65, 65, 65), 500);
+        Animation::AnimateStylesheetColour(_ui.DonationPromptButton, "background-color", QColor(65, 65, 65), 500);
     });
 
     connect(_ui.DonationPromptButton, &QPushButton::clicked, [=] {
