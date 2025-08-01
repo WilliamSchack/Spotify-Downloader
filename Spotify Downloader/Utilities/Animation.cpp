@@ -84,7 +84,7 @@ void Animation::AnimateValue(QWidget* target, int newValue, int durationMs) {
     _currentAnimations.insert(target, anim);
 }
 
-void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleSheetKey, QColor newColour, int durationMs) {
+void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleSheetKey, QColor newColour, int durationMs, bool addKeyAfterStylesheet) {
     // If already animating this style sheet, cancel the previous animation
     if (_animatingStyleSheet.contains(target) && _animatingStyleSheet[target].contains(styleSheetKey))
         CheckForAnimation(target);
@@ -151,7 +151,11 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
         // Add the new value
         QColor colour = value.value<QColor>();
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(colour.red()).arg(colour.green()).arg(colour.blue()).arg(colour.alpha());
-        styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
+
+        QString newValueString = QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString);
+        if (addKeyAfterStylesheet) styleSheet += newValueString;
+        else styleSheet = newValueString + styleSheet;
+
         target->setStyleSheet(styleSheet);
     });
 
@@ -167,7 +171,11 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
 
         // Add the new value
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(newColour.red()).arg(newColour.green()).arg(newColour.blue()).arg(newColour.alpha());
-        styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
+
+        QString newValueString = QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString);
+        if (addKeyAfterStylesheet) styleSheet += newValueString;
+        else styleSheet = newValueString + styleSheet;
+
         target->setStyleSheet(styleSheet);
 
         _currentAnimations.remove(target);
