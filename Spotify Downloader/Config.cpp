@@ -54,6 +54,8 @@ void Config::SaveSettings() {
     settings.setValue("autoOpenDownloadFolder", AutoOpenDownloadFolder);
     settings.setValue("sidebarIconsColour", SidebarIconsColour);
     settings.setValue("checkForUpdates", CheckForUpdates);
+    settings.setValue("enableNoticesScreen", EnableNoticesScreen);
+    settings.setValue("checkForNotices", CheckForNotices);
     settings.endGroup();
 
     // Log settings
@@ -175,6 +177,8 @@ void Config::LoadSettings() {
     AutoOpenDownloadFolder = settings.value("autoOpenDownloadFolder", true).toBool();
     SidebarIconsColour = settings.value("sidebarIconsColour", true).toBool();
     CheckForUpdates = settings.value("checkForUpdates", true).toBool();
+    EnableNoticesScreen = settings.value("enableNoticesScreen", true).toBool();
+    CheckForNotices = settings.value("checkForNotices", true).toBool();
     settings.endGroup();
 
     // Log settings
@@ -210,7 +214,9 @@ QJsonObject Config::SettingsLog() {
         {"Downloader Thread UI Index", DownloaderThreadUIIndex},
         {"Auto Open Download Folder", AutoOpenDownloadFolder},
         {"Sidebar Icons Colour", SidebarIconsColour},
-        {"Check For Updates", CheckForUpdates}
+        {"Check For Updates", CheckForUpdates},
+        {"Notices Screen Enabled", EnableNoticesScreen},
+        {"Check For Notices", CheckForNotices}
     };
 
     // Add bitrate to log

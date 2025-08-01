@@ -154,6 +154,9 @@ class Config {
         static inline bool SidebarIconsColour;
 
         static inline bool CheckForUpdates;
+
+        static inline bool EnableNoticesScreen;
+        static inline bool CheckForNotices;
     public:
         static void SetCodecIndex(int index) { _codecIndex = index; Codec = static_cast<Codec::Extension>(CodecIndex()); };
 
