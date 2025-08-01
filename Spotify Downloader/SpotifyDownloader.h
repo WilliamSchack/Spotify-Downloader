@@ -106,6 +106,7 @@ class SpotifyDownloader : public QDialog
         QList<DownloaderThread*> _downloaderUI;
         QList<SongErrorItem*> _errorUI;
         QList<NoticeItem*> _noticesUI;
+        std::vector<Notice> _notices;
 
         ObjectHoverWatcher* _objectHoverWatcher;
 
@@ -113,6 +114,8 @@ class SpotifyDownloader : public QDialog
         int _songsCompleted = 0;
 
         int _threadsPaused = 0;
+
+        int _unreadNotices = 0;
     private:
         void SetupDownloaderThread();
         bool DownloaderUIExists(int threadIndex);

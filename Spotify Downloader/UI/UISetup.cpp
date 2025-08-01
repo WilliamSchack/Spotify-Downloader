@@ -74,11 +74,11 @@ void SpotifyDownloader::SetupSideBar() {
     });
 
     _objectHoverWatcher->AddObjectFunctions(_ui.NoticesScreenButton, [=](QObject* object) {
-        _ui.NoticesScreenButton->setIcon(Config::NoticesIconFilled());
+        _ui.NoticesScreenButton->setIcon(_unreadNotices > 0 ? Config::NoticesAvailableIconFilled() : Config::NoticesIconFilled());
     }, [=](QObject* object) {
         // If not in notices screen, reset icon
         if (CurrentScreen() != Config::NOTICES_SCREEN_INDEX)
-            _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
+            _ui.NoticesScreenButton->setIcon(_unreadNotices > 0 ? Config::NoticesAvailableIcon() : Config::NoticesIcon());
     });
 
     _objectHoverWatcher->AddObjectFunctions(_ui.SettingsScreenButton, [=](QObject* object) {
@@ -499,7 +499,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
         // Set icons
         _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
         _ui.ErrorScreenButton->setIcon(_errorUI.count() > 0 ? Config::ErrorIcon() : Config::ErrorIconInactive());
-        _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
+        _ui.NoticesScreenButton->setIcon(_unreadNotices > 0 ? Config::NoticesAvailableIcon() : Config::NoticesIcon());
         _ui.SettingsScreenButton->setIcon(Config::SettingsIconFilled()); // Set to filled, current screen will be settings, user clicked the button here
         _ui.DonateButton->setIcon(Config::DonateIcon());
         _ui.SubmitBugButton->setIcon(Config::BugIcon());
@@ -648,39 +648,54 @@ void SpotifyDownloader::SetupProcessingScreen() {
 }
 
 void SpotifyDownloader::SetupNoticesScreen() {
-    std::vector<Notice> notices = NoticesManager::GetLatestNotices();
+    _notices = NoticesManager::GetLatestNotices();
 
     QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
 
     // If no notices are available, update the contents text to reflect that
-    if (notices.empty()) {
+    if (_notices.empty()) {
         _ui.NoticesContent->setText(R"(<p align="center"><span style="font-size:28pt;font-weight:700;">No Notices Available</span></p>)");
         return;
     }
 
     // Setup notices
-    for (const Notice& notice : notices) {
+    _unreadNotices = 0;
+    for (Notice& notice : _notices) {
+        qDebug() << notice.read;
+        if (!notice.read) _unreadNotices++;
+
         // Create UI Item
         NoticeItem* noticeItem = new NoticeItem(notice, _objectHoverWatcher);
         noticesItemsLayout->insertWidget(noticesItemsLayout->count() - 1, noticeItem); // Insert before filler widget
 
         _noticesUI.append(noticeItem);
 
-        connect(noticeItem, &QPushButton::clicked, [noticeItem, notice, &noticesUI = this->_noticesUI, noticesContent = this->_ui.NoticesContent] {
+        connect(noticeItem, &QPushButton::clicked, [this, noticeItem, &notice] {
             // Deselect all notices
-            for (NoticeItem* otherNotice : noticesUI) {
+            for (NoticeItem* otherNotice : _noticesUI) {
                 otherNotice->Deselect();
+            }
+
+            if (!notice.read && _unreadNotices > 0) {
+                notice.read = true;
+                _unreadNotices--;
+
+                // If no more unread notices, update the icon
+                if (_unreadNotices == 0)
+                    _ui.NoticesScreenButton->setIcon(Config::NoticesIconFilled());
             }
 
             // Select this notice and update UI
             noticeItem->Select();
             NoticesManager::ReadNotice(notice.id);
-            noticesContent->setText(QString::fromStdString(notice.content));
+            _ui.NoticesContent->setText(QString::fromStdString(notice.content));
         });
     }
 
-    // Select the newest notice
-    _noticesUI[0]->click();
+    // Update icon if there are unread notices
+    qDebug() << "SETUP:" << _unreadNotices;
+    if (_unreadNotices > 0)
+        _ui.NoticesScreenButton->setIcon(Config::NoticesAvailableIcon());
 }
 
 void SpotifyDownloader::LoadSettingsUI() {
@@ -806,7 +821,7 @@ void SpotifyDownloader::LoadSettingsUI() {
 
     // Set icons colour
     _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled()); // Set to filled, current screen will be setup, LoadSettingsUI only called on startup
-    _ui.NoticesScreenButton->setIcon(Config::NoticesIcon());
+    _ui.NoticesScreenButton->setIcon(_unreadNotices > 0 ? Config::NoticesAvailableIcon() : Config::NoticesIcon());
     _ui.SettingsScreenButton->setIcon(Config::SettingsIcon());
     _ui.DonateButton->setIcon(Config::DonateIcon());
     _ui.UpdateImageLabel->setPixmap(Config::UpdateIcon());
