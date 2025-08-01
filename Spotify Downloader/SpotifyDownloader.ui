@@ -4620,8 +4620,11 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <widget class="QLabel" name="NoticesContent">
          <property name="font">
           <font>
-           <pointsize>13</pointsize>
+           <pointsize>11</pointsize>
           </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
          </property>
          <property name="text">
           <string/>
