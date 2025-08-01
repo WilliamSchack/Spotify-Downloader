@@ -652,6 +652,7 @@ void SpotifyDownloader::SetupNoticesScreen() {
 
     QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
 
+    // Setup notices
     for (const Notice& notice : notices) {
         // Create UI Item
         NoticeItem* noticeItem = new NoticeItem(notice, _objectHoverWatcher);
@@ -671,6 +672,9 @@ void SpotifyDownloader::SetupNoticesScreen() {
             noticesContent->setText(QString::fromStdString(notice.content));
         });
     }
+
+    // Select the newest notice
+    _noticesUI[0]->click();
 }
 
 void SpotifyDownloader::LoadSettingsUI() {
