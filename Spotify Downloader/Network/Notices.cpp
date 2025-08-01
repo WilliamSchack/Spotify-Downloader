@@ -17,9 +17,11 @@ void NoticesManager::UpdateNotices() {
 	_notices.clear();
 
 	int lastReadNoticeId = GetLastReadNotice();
-	for (QJsonValue noticeValue : json) {
-		QJsonObject noticeJson = noticeValue.toObject();
-		
+
+	// Read notices backwards to sort by id descending
+	for (int i = json.size() - 1; i >= 0; i--) {
+		QJsonObject noticeJson = json[i].toObject();
+
 		Notice notice;
 		notice.id = noticeJson["id"].toInt();
 		notice.date = noticeJson["release_date"].toString().toStdString();
