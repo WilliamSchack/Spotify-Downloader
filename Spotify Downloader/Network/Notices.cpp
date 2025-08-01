@@ -9,8 +9,6 @@ std::vector<Notice> NoticesManager::GetLatestNotices() {
 
 void NoticesManager::UpdateNotices() {
 	QNetworkRequest request = QNetworkRequest(NOTICES_SOURCE);
-	request.setRawHeader("user-agent", "Mozilla/5.0");
-
 	QByteArray response = Network::Get(request);
 	QString responseString = QString(response);
 	QJsonArray json = QJsonDocument::fromJson(responseString.toUtf8()).array();
