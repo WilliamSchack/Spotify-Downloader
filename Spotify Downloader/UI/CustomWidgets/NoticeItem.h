@@ -14,7 +14,6 @@ class NoticeItem : public QPushButton {
 
 	public:
 		explicit NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatcher = nullptr, QWidget* parent = nullptr);
-		~NoticeItem() {}
 
 		void Select();
 		void Deselect();

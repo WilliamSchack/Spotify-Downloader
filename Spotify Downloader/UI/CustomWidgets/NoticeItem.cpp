@@ -4,7 +4,8 @@ NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatc
 	// Setup parent widget
 	this->setObjectName("NoticeItem");
 	this->setStyleSheet(STYLESHEET);
-	this->setMaximumHeight(40); // Dimensions managed by scroll area
+	this->setMinimumHeight(40);
+	this->setMaximumHeight(40);
 
 	// Add vertical layout
 	QVBoxLayout* layout = new QVBoxLayout(this);
@@ -42,6 +43,8 @@ void NoticeItem::UpdateText() {
 }
 
 void NoticeItem::Select() {
+	if (_selected) return;
+
 	// Update the border and background colours
 	Animation::AnimateStylesheetColour(this, "background-color", SELECTED_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
 	Animation::AnimateStylesheetColour(this, "border-color", SELECTED_BORDER_COLOUR, ANIMATION_TIME_MS);
@@ -50,6 +53,8 @@ void NoticeItem::Select() {
 };
 
 void NoticeItem::Deselect() {
+	if (!_selected) return;
+
 	// Update the border and background colours
 	Animation::AnimateStylesheetColour(this, "background-color", DEFAULT_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
 	Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
