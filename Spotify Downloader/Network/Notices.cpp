@@ -34,6 +34,10 @@ void NoticesManager::UpdateNotices() {
 }
 
 void NoticesManager::ReadNotice(int noticeId) {
+	// Only update settings if a greater ID
+	if (noticeId <= _lastReadNoticeID)
+		return;
+
 	_lastReadNoticeID = noticeId;
 
 	// Save to settings
