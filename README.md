@@ -630,8 +630,6 @@ In this menu click the "View client secret" button to access the secret and now 
 
 The next few updates will take a fair amount of work and time so figured I would put this here so you all know what is going on. No time frames because I dont know how long everything will take and im doing this project on the side so I dont have much time to put into it, but hopefully at least v2.0.0 will be out by the end of this year
 
-- **v1.10.0 YouTube link support for not found songs**
-   - Will add an extra option in the errors screen to manually input a link and re-download songs that couldnt be found
 - **Complete refactor**
    - Doing this because the codebase has become a mess, this will make it much easier to work on and add new features
    - Not going to release it as its own update as there will be no new features, will be released with v2.0.0
