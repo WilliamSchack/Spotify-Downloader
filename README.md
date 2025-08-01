@@ -118,7 +118,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ***Note: Icon colour can be toggled to white by changing the Sidebar Icons Colour setting***
 
-<img src="https://github.com/user-attachments/assets/17c8f5bf-f438-4837-9786-4c141784748c" style="width: 4%; height: 4%;">
+<img src="https://github.com/user-attachments/assets/ad2e1342-e124-4308-9ca9-d3379f9ba4b4" style="width: 4%; height: 4%;">
 
 <br/>
 
@@ -131,6 +131,10 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 **Settings Screen Button**
 - Takes you to the settings screen
+
+**Notices Screen Button**
+- Takes you to the notices screen
+- Can be hidden in the settings
 
 **Donate Button**
 - Click to donate and support the development of this program
@@ -159,7 +163,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ---
 
-<img src="https://github.com/user-attachments/assets/35c16d15-a3fb-474d-8719-7be92f97171c" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/de184e10-d1e4-41bc-a41f-bcbc07af38d3" style="width: 50%; height: 50%;">
 
 **Download Status**
 - Shows the result of the last download
@@ -208,9 +212,9 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Output
 
-<img src="https://github.com/user-attachments/assets/ed4b52bf-63d9-497b-8998-dde561c24a84" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/d3a20d75-77b8-4c9c-9a9e-5097e2aa4e78" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/990d93df-28b6-43ad-84be-f2454d4285c6" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/e8ac28a3-d7b8-416e-b7a8-1b94ed4c5acb" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/fa9a30c5-c9b1-4429-a6c1-9217d3091eda" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/379444fa-06e1-4a83-aa30-9b299adf8e1e" style="width: 50%; height: 50%;">
 
 **Overwrite Existing Files - Recommended: OFF**
 - If enabled, downloading will overwrite previously downloaded files or not
@@ -332,8 +336,8 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/d3c5d278-5bab-4a7c-82f6-69c0128029d9" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/4bd4a04b-1b38-4dd2-8be4-af4a1cb43b3d" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/06ae11f6-96a3-41b6-a656-a85884251c9a" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/1e4f519b-eb26-411e-8e6e-7f316cf0fed2" style="width: 50%; height: 50%;">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -368,7 +372,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Interface
 
-<img src="https://github.com/user-attachments/assets/45b495b1-f31b-4ec0-a8b3-b0af93e4f19a" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/8d1e85f5-0c26-437a-97e8-a68f71f08f7c" style="width: 50%; height: 50%;">
 
 **Downloader Thread UI - Recommended: Compact**
 - Changes the style of each thread UI while downloading
@@ -385,6 +389,13 @@ This has been fixed and the app has been excluded from windows defender scans, i
 **Check For Updates - Default: ON**
 - Toggles if the app checks for updates when launching
 
+**Notices Screen - Default: ON**
+- Toggles if the notices screen button is hidden
+
+**Check For Notices - Default: ON**
+- Toggles if the app checks for notices when launching
+- ***Note: Hidden and disabled when Notices Screen is disabled***
+
 ---
     
 </details>
@@ -394,7 +405,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
     
 ---
 
-<img src="https://github.com/user-attachments/assets/f5ba738f-8fa4-4bdd-a697-fb802c544e97" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/6b419783-3d06-4457-b3c9-25b1331763ca" style="width: 50%; height: 50%;">
 
 Each track downloading will show its:
 - Cover image
@@ -428,9 +439,26 @@ You can see your total download progress on the counter at the bottom left.
     
 ---
 
-<img src="https://github.com/user-attachments/assets/ff63eee3-9a3a-4912-a288-52f2576b504d" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/d7b6c70f-6f5b-4797-8b66-bb4a8c4509b5" style="width: 50%; height: 50%;">
 
 Shows all of the songs that failed to download due to various reasons that will be listed below each song
+
+If a song could not be found on youtube, you can manually input a link in the input that appears below.
+- Clicking the search button will take you to youtube with a prefilled search query
+- Clicking the download button will re-download the song with the inputted youtube link
+
+---
+    
+</details>
+
+<details>
+<summary><b> Notices </b></summary>
+    
+---
+
+<img src="https://github.com/user-attachments/assets/e849b086-185d-40fc-b211-571232942d3d" style="width: 50%; height: 50%;">
+
+Shows various notices including changelogs and progress updates to the app. Will be updated with more notices over time
 
 ---
     
