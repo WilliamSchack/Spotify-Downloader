@@ -66,7 +66,7 @@ void SpotifyDownloader::ChangeScreen(int screenIndex) {
             Animation::AnimatePosition(_ui.SideBar_LineIndicator, QPoint(0, _ui.NoticesScreenButton->y() - 2), 500);
 
             // Select the latest notice, select here to properly update sidebar icon
-            _noticesUI[0]->click();
+            if (_noticesUI.size() > 0) _noticesUI[0]->click();
             break;
         case Config::SETTINGS_SCREEN_INDEX:
             _ui.DownloadingScreenButton->setIcon(Config::DownloadIcon());
