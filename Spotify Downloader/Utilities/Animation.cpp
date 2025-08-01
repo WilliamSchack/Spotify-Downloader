@@ -136,20 +136,17 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
     anim->setStartValue(initialColour);
     anim->setEndValue(newColour);
 
-    // Could not get QPalette working, just ended up setting the style sheet, its a bit manual but it works
-
     QObject::connect(anim, &QVariantAnimation::valueChanged, [=](QVariant value) {
-        // Get current style sheet and remove background-color if set
+        // Remove the stylesheet key
         QString styleSheet = target->styleSheet();
-
         if (styleSheet.contains(styleSheetKeyFull)) {
             int startIndex = styleSheet.indexOf(styleSheetKeyFull);
             int endIndex = startIndex + styleSheet.mid(startIndex).indexOf(";") + 1;
-            
+
             styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
         }
         
-        // Add new background colour
+        // Add the new value
         QColor colour = value.value<QColor>();
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(colour.red()).arg(colour.green()).arg(colour.blue()).arg(colour.alpha());
         styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
@@ -157,7 +154,7 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
     });
 
     QObject::connect(anim, &QVariantAnimation::finished, [=] {
-        // Get current style sheet and remove background-color if set
+        // Remove the stylesheet key
         QString styleSheet = target->styleSheet();
         if (styleSheet.contains(styleSheetKeyFull)) {
             int startIndex = styleSheet.indexOf(styleSheetKeyFull);
@@ -166,7 +163,7 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
             styleSheet = styleSheet.left(startIndex) + styleSheet.mid(endIndex);
         }
 
-        // Add new background colour
+        // Add the new value
         QString rgbaString = QString("rgba(%1, %2, %3, %4)").arg(newColour.red()).arg(newColour.green()).arg(newColour.blue()).arg(newColour.alpha());
         styleSheet.append(QString("%1 %2;").arg(styleSheetKeyFull).arg(rgbaString));
         target->setStyleSheet(styleSheet);
@@ -175,6 +172,5 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
     });
 
     anim->start(QAbstractAnimation::DeleteWhenStopped);
-
     _currentAnimations.insert(target, anim);
 }
