@@ -3265,7 +3265,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <x>0</x>
           <y>0</y>
           <width>715</width>
-          <height>321</height>
+          <height>340</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -3577,7 +3577,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles if the application checks for updates when launching&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles if the notices screen button is shown. Also disables notice checking&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
@@ -3639,7 +3639,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles if the application checks for updates when launching&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggles if the application checks for notices when launching. Automatically disabled if notices screen is disabled&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
@@ -3651,6 +3651,13 @@ color: rgb(0, 0, 0);</string>
             </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QFrame" name="InterfaceSettingsScrollAreaFillerFrame">
+           <property name="frameShape">
+            <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

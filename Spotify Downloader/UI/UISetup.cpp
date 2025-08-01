@@ -513,6 +513,19 @@ void SpotifyDownloader::SetupSettingsScreen() {
             _ui.UpdateImageLabel->setPixmap(Config::UpdateUpToDateIcon());
     });
     connect(_ui.CheckForUpdatesButton, &CheckBox::clicked, [=] { Config::CheckForUpdates = _ui.CheckForUpdatesButton->isChecked; });
+    connect(_ui.EnableNoticesScreenButton, &CheckBox::clicked, [this] {
+        Config::EnableNoticesScreen = _ui.EnableNoticesScreenButton->isChecked;
+
+        _ui.NoticesScreenButton->setVisible(Config::EnableNoticesScreen);
+        _ui.CheckForNoticesLabel->setVisible(Config::EnableNoticesScreen);
+        _ui.CheckForNoticesButton->setVisible(Config::EnableNoticesScreen);
+        _ui.InterfaceSettingsScrollAreaFillerFrame->setVisible(!Config::EnableNoticesScreen); // Prevent scroll bar when all settings are shown
+
+        // If started the app with it disabled, setup the notices screen again
+        if (Config::EnableNoticesScreen && _noticesUI.empty())
+            SetupNoticesScreen();
+    });
+    connect(_ui.CheckForNoticesButton, &CheckBox::clicked, [&ui = this->_ui] { Config::CheckForNotices = ui.CheckForNoticesButton->isChecked; });
 
     // Clear Buttons
     connect(_ui.YoutubeCookiesClearButton, &QPushButton::clicked, [=] {
@@ -648,15 +661,16 @@ void SpotifyDownloader::SetupProcessingScreen() {
 }
 
 void SpotifyDownloader::SetupNoticesScreen() {
-    _notices = NoticesManager::GetLatestNotices();
-
-    QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
+    if (Config::EnableNoticesScreen && Config::CheckForNotices)
+        _notices = NoticesManager::GetLatestNotices();
 
     // If no notices are available, update the contents text to reflect that
     if (_notices.empty()) {
         _ui.NoticesContent->setText(R"(<p align="center"><span style="font-size:28pt;font-weight:700;">No Notices Available</span></p>)");
         return;
     }
+
+    QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
 
     // Setup notices
     _unreadNotices = 0;
@@ -818,6 +832,19 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Check for updates
     if (_ui.CheckForUpdatesButton->isChecked != Config::CheckForUpdates)
         _ui.CheckForUpdatesButton->click();
+
+    // Notices Screen
+    if (_ui.EnableNoticesScreenButton->isChecked != Config::EnableNoticesScreen)
+        _ui.EnableNoticesScreenButton->click();
+    if (!Config::EnableNoticesScreen) {
+        _ui.NoticesScreenButton->hide();
+        _ui.CheckForNoticesLabel->hide();
+        _ui.CheckForNoticesButton->hide();
+    }
+
+    // Check for notices
+    if (_ui.CheckForNoticesButton->isChecked != Config::CheckForNotices)
+        _ui.CheckForNoticesButton->click();
 
     // Set icons colour
     _ui.DownloadingScreenButton->setIcon(Config::DownloadIconFilled()); // Set to filled, current screen will be setup, LoadSettingsUI only called on startup
