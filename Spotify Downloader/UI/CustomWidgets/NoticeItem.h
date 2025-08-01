@@ -18,7 +18,7 @@ class NoticeItem : public QPushButton {
 		void Select();
 		void Deselect();
 	private:
-		inline static const QString TEXT_CONSTRUCTOR = R"(<html><head/><body><p><span style="font-size:10pt;font-weight:700;">%1</span><br/><span style="font-size:8pt;">%2</span></p></body></html>)";
+		inline static const QString TEXT_CONSTRUCTOR = R"(<html><head/><body><p><span style="font-size:10pt;font-weight:700;">%1</span><br/><span style="font-size:8pt;font-style:italic;">%2</span></p></body></html>)";
 
 		inline static const QString STYLESHEET = "background-color: rgb(44, 44, 44);border-color: rgb(100, 100, 100);border-style: solid;border-width: 2px;border-radius: 4px;";
 		inline static const QString UNREAD_EXTRA_STYLE = "border-bottom-color: rgb(255, 0, 0);";
