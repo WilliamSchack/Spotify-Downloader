@@ -8,6 +8,8 @@
 #include <QWidget>
 #include <QMap>
 
+#include <QRegularExpression>
+
 #include <QVariantAnimation>
 #include <QPropertyAnimation>
 

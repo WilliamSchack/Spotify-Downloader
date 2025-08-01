@@ -95,12 +95,45 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
         return;
     }
 
+    // Get current colour from the stylesheet
     QString styleSheetKeyFull = QString("%1:").arg(styleSheetKey);
+    QString initialStyleSheet = target->styleSheet();
+    QColor initialColour = QColor(0, 0, 0, 255);
+    if (initialStyleSheet.contains(styleSheetKeyFull)) {
+        QRegularExpression regex(QString("%1(.+?);").arg(styleSheetKeyFull));
+        QStringList matches = regex.match(initialStyleSheet).capturedTexts();
 
+        // The mighty if mountain
+        if (matches.count() >= 2) {
+            QString colourString = matches[1].trimmed();
+
+            // Get colour based on hex, rgb, rgba
+            if (colourString.startsWith("#")) {
+                initialColour.setNamedColor(colourString.trimmed());
+            }
+            else {
+                QRegularExpression rgbRegex("\\((.+?)\\)");
+                QStringList rgbMatches = rgbRegex.match(colourString).capturedTexts();
+
+                if (rgbMatches.count() >= 2) {
+                    QString rgbString = rgbMatches[1];
+                    QStringList colours = rgbString.split(",");
+
+                    initialColour.setRed(colours[0].trimmed().toInt());
+                    initialColour.setBlue(colours[1].trimmed().toInt());
+                    initialColour.setGreen(colours[2].trimmed().toInt());
+                    if (colours.count() >= 4) initialColour.setAlpha(colours[3].trimmed().toInt());
+                }
+
+            }
+        }
+    }
+
+    // Setup the animation
     QVariantAnimation* anim = new QVariantAnimation(target);
     anim->setDuration(durationMs);
     anim->setEasingCurve(QEasingCurve::Type::OutQuart);
-    anim->setStartValue(target->palette().color(target->backgroundRole()));
+    anim->setStartValue(initialColour);
     anim->setEndValue(newColour);
 
     // Could not get QPalette working, just ended up setting the style sheet, its a bit manual but it works
