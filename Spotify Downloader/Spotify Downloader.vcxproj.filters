@@ -164,6 +164,9 @@
     <ClCompile Include="Network\Notices.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="UI\CustomWidgets\NoticeItem.cpp">
+      <Filter>Source Files\UI\CustomWidgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -234,6 +237,9 @@
     </ClInclude>
     <ClInclude Include="Network\Notices.h">
       <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\CustomWidgets\NoticeItem.h">
+      <Filter>Header Files\UI\CustomWidgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
