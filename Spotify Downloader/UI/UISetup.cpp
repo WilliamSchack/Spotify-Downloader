@@ -134,7 +134,7 @@ void SpotifyDownloader::SetupSideBar() {
             return;
 
         // Save Settings
-        Config::SaveSettings();
+        if(CurrentScreen() == Config::SETTINGS_SCREEN_INDEX) Config::SaveSettings();
 
         // Return to downloading screen
         int downloadingScreen = DownloadStarted ? Config::PROCESSING_SCREEN_INDEX : Config::SETUP_SCREEN_INDEX;
@@ -146,7 +146,7 @@ void SpotifyDownloader::SetupSideBar() {
             return;
 
         // Save Settings
-        Config::SaveSettings();
+        if (CurrentScreen() == Config::SETTINGS_SCREEN_INDEX) Config::SaveSettings();
 
         // Change screen
         ChangeScreen(Config::ERROR_SCREEN_INDEX);
@@ -154,7 +154,7 @@ void SpotifyDownloader::SetupSideBar() {
 
     connect(_ui.NoticesScreenButton, &QPushButton::clicked, [=] {
         // Save Settings
-        Config::SaveSettings();
+        if (CurrentScreen() == Config::SETTINGS_SCREEN_INDEX) Config::SaveSettings();
 
         // Change screen
         ChangeScreen(Config::NOTICES_SCREEN_INDEX);
