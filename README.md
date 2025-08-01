@@ -13,6 +13,11 @@ Spotify Downloader is an application that allows you to easily download spotify 
 > [!CAUTION]
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
+> [!NOTE]
+> **On Break**<br/>
+> I have gone on a bit of a break from this app to work on some other projects. I will come back to it in a month or so (as of v1.10.0) to do a full refactor of the code and a complete UI redesign so it will take some time before the next update releases but it should be out in a few months. I will update here and in the app notices when I am working on the next update :)<br/>
+> Any issues that are submitted will still be addressed though with hotfixes if needed
+
 ## Contents
 - [Installation](#installation)
 - [Usage](#usage)
