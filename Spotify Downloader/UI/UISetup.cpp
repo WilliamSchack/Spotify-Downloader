@@ -647,6 +647,32 @@ void SpotifyDownloader::SetupProcessingScreen() {
     });
 }
 
+void SpotifyDownloader::SetupNoticesScreen() {
+    std::vector<Notice> notices = NoticesManager::GetLatestNotices();
+
+    QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
+
+    for (const Notice& notice : notices) {
+        // Create UI Item
+        NoticeItem* noticeItem = new NoticeItem(notice, _objectHoverWatcher);
+        noticesItemsLayout->insertWidget(noticesItemsLayout->count() - 1, noticeItem); // Insert before filler widget
+
+        _noticesUI.append(noticeItem);
+
+        connect(noticeItem, &QPushButton::clicked, [noticeItem, notice, &noticesUI = this->_noticesUI, noticesContent = this->_ui.NoticesContent] {
+            // Deselect all notices
+            for (NoticeItem* otherNotice : noticesUI) {
+                otherNotice->Deselect();
+            }
+
+            // Select this notice and update UI
+            noticeItem->Select();
+            NoticesManager::ReadNotice(notice.id);
+            noticesContent->setText(QString::fromStdString(notice.content));
+        });
+    }
+}
+
 void SpotifyDownloader::LoadSettingsUI() {
     // Clicking buttons to call their callbacks
     

@@ -24,6 +24,7 @@ SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
     SetupSetupScreen();
     SetupSettingsScreen();
     SetupProcessingScreen();
+    SetupNoticesScreen();
 
     Config::LoadSettings();
     LoadSettingsUI();

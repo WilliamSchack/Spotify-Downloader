@@ -12,6 +12,7 @@
 
 #include "UI/CustomWidgets/DownloaderThread.h"
 #include "UI/CustomWidgets/SongErrorItem.h"
+#include "UI/CustomWidgets/NoticeItem.h"
 
 #include "Utilities/ObjectHoverWatcher.h"
 
@@ -104,6 +105,7 @@ class SpotifyDownloader : public QDialog
 
         QList<DownloaderThread*> _downloaderUI;
         QList<SongErrorItem*> _errorUI;
+        QList<NoticeItem*> _noticesUI;
 
         ObjectHoverWatcher* _objectHoverWatcher;
 
@@ -120,6 +122,7 @@ class SpotifyDownloader : public QDialog
         void SetupSetupScreen();
         void SetupSettingsScreen();
         void SetupProcessingScreen();
+        void SetupNoticesScreen();
 
         void UpdateBitrateInput(Codec::Extension codec);
 
