@@ -9,7 +9,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QVBoxLayout>
 
-class NoticeItem : public QWidget {
+class NoticeItem : public QPushButton {
 	Q_OBJECT
 
 	public:
@@ -36,6 +36,8 @@ class NoticeItem : public QWidget {
 	
 		QString _title;
 		QString _date;
+
+		bool _selected = false;
 	private:
 		void UpdateText();
 };

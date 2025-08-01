@@ -1,6 +1,6 @@
 #include "NoticeItem.h"
 
-NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatcher, QWidget* parent) : QWidget(parent) {
+NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatcher, QWidget* parent) : QPushButton(parent) {
 	// Setup parent widget
 	this->setObjectName("NoticeItem");
 	this->setStyleSheet(STYLESHEET);
@@ -30,9 +30,9 @@ NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatc
 		return;
 
 	objecthoverWatcher->AddObjectFunctions(this, [=](QObject* object) {
-        Animation::AnimateStylesheetColour(this, "border-color", HOVER_BORDER_COLOUR, ANIMATION_TIME_MS);
+		if (!_selected) Animation::AnimateStylesheetColour(this, "border-color", HOVER_BORDER_COLOUR, ANIMATION_TIME_MS);
     }, [=](QObject* object) {
-        Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
+		if (!_selected) Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
     });
 }
 
@@ -45,10 +45,14 @@ void NoticeItem::Select() {
 	// Update the border and background colours
 	Animation::AnimateStylesheetColour(this, "background-color", SELECTED_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
 	Animation::AnimateStylesheetColour(this, "border-color", SELECTED_BORDER_COLOUR, ANIMATION_TIME_MS);
+
+	_selected = true;
 };
 
 void NoticeItem::Deselect() {
 	// Update the border and background colours
 	Animation::AnimateStylesheetColour(this, "background-color", DEFAULT_BACKGROUND_COLOUR, ANIMATION_TIME_MS);
 	Animation::AnimateStylesheetColour(this, "border-color", DEFAULT_BORDER_COLOUR, ANIMATION_TIME_MS);
+
+	_selected = false;
 }
