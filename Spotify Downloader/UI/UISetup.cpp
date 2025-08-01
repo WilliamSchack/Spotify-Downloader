@@ -145,11 +145,17 @@ void SpotifyDownloader::SetupSideBar() {
         if (_errorUI.count() <= 0)
             return;
 
+        // Save Settings
+        Config::SaveSettings();
+
         // Change screen
         ChangeScreen(Config::ERROR_SCREEN_INDEX);
     });
 
     connect(_ui.NoticesScreenButton, &QPushButton::clicked, [=] {
+        // Save Settings
+        Config::SaveSettings();
+
         // Change screen
         ChangeScreen(Config::NOTICES_SCREEN_INDEX);
     });
