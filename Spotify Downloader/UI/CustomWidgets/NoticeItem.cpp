@@ -54,6 +54,7 @@ void NoticeItem::Select() {
 		QString stylesheet = this->styleSheet();
 		stylesheet.remove(UNREAD_EXTRA_STYLE);
 		this->setStyleSheet(stylesheet);
+		_read = true;
 	}
 
 	// Update the border and background colours
