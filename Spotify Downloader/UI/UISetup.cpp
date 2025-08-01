@@ -652,6 +652,12 @@ void SpotifyDownloader::SetupNoticesScreen() {
 
     QVBoxLayout* noticesItemsLayout = (QVBoxLayout*)_ui.NoticesSelectScrollAreaWidgetContents->layout();
 
+    // If no notices are available, update the contents text to reflect that
+    if (notices.empty()) {
+        _ui.NoticesContent->setText(R"(<p align="center"><span style="font-size:28pt;font-weight:700;">No Notices Available</span></p>)");
+        return;
+    }
+
     // Setup notices
     for (const Notice& notice : notices) {
         // Create UI Item
