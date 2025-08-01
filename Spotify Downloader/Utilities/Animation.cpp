@@ -85,7 +85,9 @@ void Animation::AnimateValue(QWidget* target, int newValue, int durationMs) {
 }
 
 void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleSheetKey, QColor newColour, int durationMs) {
-    CheckForAnimation(target);
+    // If already animating this style sheet, cancel the previous animation
+    if (_animatingStyleSheet.contains(target) && _animatingStyleSheet[target].contains(styleSheetKey))
+        CheckForAnimation(target);
 
     if (durationMs == 0) {
         QPalette newPalette = target->palette();
@@ -169,8 +171,23 @@ void Animation::AnimateStylesheetColour(QWidget* target, const QString& styleShe
         target->setStyleSheet(styleSheet);
 
         _currentAnimations.remove(target);
+
+        _animatingStyleSheet[target].removeAll(styleSheetKey);
+        if (_animatingStyleSheet[target].empty())
+            _animatingStyleSheet.remove(target);
     });
 
     anim->start(QAbstractAnimation::DeleteWhenStopped);
     _currentAnimations.insert(target, anim);
+    
+    // If this object is already animating, add this stylesheet key
+    if (_animatingStyleSheet.contains(target)) {
+        _animatingStyleSheet[target].append(styleSheetKey);
+    }
+    // If not already animating, add a new list with this stylesheet key
+    else {
+        QString keyCopy = QString(styleSheetKey);
+        QStringList styleSheetKey({ keyCopy });
+        _animatingStyleSheet.insert(target, styleSheetKey);
+    }
 }
