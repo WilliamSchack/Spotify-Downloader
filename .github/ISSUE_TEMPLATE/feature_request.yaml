@@ -22,7 +22,7 @@ body:
       label: Provide a description of the feature or change
       description: Describe what the problem is and why a change/new feature should be implemented
       placeholder: |
-        Provide the problem and why a change/feature should be added. For example: "This setting makes it hard to ..."
+        Provide the problem and why a change/feature should be added
     validations:
       required: true
   - type: textarea
