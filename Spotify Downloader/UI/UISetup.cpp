@@ -681,7 +681,6 @@ void SpotifyDownloader::SetupNoticesScreen() {
     // Setup notices
     _unreadNotices = 0;
     for (Notice& notice : _notices) {
-        qDebug() << notice.read;
         if (!notice.read) _unreadNotices++;
 
         // Create UI Item
@@ -713,7 +712,6 @@ void SpotifyDownloader::SetupNoticesScreen() {
     }
 
     // Update icon if there are unread notices
-    qDebug() << "SETUP:" << _unreadNotices;
     if (_unreadNotices > 0)
         _ui.NoticesScreenButton->setIcon(Config::NoticesAvailableIcon());
 }
