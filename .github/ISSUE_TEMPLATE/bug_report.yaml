@@ -38,12 +38,11 @@ body:
     attributes:
       label: Complete Log
       description: |
-        You can find your most recent log at the file location (%temp%/SpotifyDownloader/Log.log)
-        Please copy all the text and input it here
-        It should start like the following:
+        You can find your most recent log at the file location (%temp%/SpotifyDownloader/Log.log).
+        Please copy all the text and input it below. It should start like the following:
       placeholder: |
         10-08-2025 00:44:04 |   Info   | 10 | SpotifyDownloader.cpp | SpotifyDownloader | RUNNING VERSION "1.10.0"
-        10-08-2025 00:44:05 |   Info   | 185 | Config.cpp | LoadSettings | Settings Successfully Saved QJsonObject({"Artist Separator":";","Audio Bitrate AAC":128,"Audio Bitrate M4A":128,"Audio Bitrate MP3":192,"Audio Bitrate OGG":128,"Auto Open Download Folder":true,"Automatic Best Quality":true,"Check For Notices":true,"Check For Updates":true,"Codec Index":0,"Create LRC File":false,"Download Speed Limit":0,"Downloader Thread UI Index":0,"Downloader Threads":6,"File Name Format":"<Song Name> - <Song Artist>","File Name Tag":"<>","Get Lyrics":true,"LRC File Name":"<Save Location>/<Song Name> - <Song Artist>","LRC File Name Tag":"<>","Normalise Enabled":true,"Normalise Volume":-14,"Notices Screen Enabled":true,"Overwrite Enabled":true,"PO Token Assigned":false,"Playlist File Name":"D:\\WindowsThings\\Music\\Playlists\\<Playlist Name> - <Playlist Owner>","Playlist File Name Tag":"<>","Playlist File Type Index":1,"Sidebar Icons Colour":true,"Status Notifications Enabled":true,"Sub Folders":"","Sub Folders Tag":"<>","Track Number Index":0,"YouTube Cookies Assigned":false})
+        10-08-2025 00:44:05 |   Info   | 185 | Config.cpp | LoadSettings | Settings Successfully Loaded QJsonObject({})
         10-08-2025 00:44:05 |   Info   | 66 | SpotifyDownloader.cpp | SetupDownloaderThread | Successfully Setup Playlist Worker Thread
         10-08-2025 00:44:05 |   Info   | 157 | SpotifyDownloader.cpp | CheckForUpdate | Latest Version: "v1.10.0" | Update Available: false
         10-08-2025 00:44:05 |   Info   | 37 | SpotifyDownloader.cpp | SpotifyDownloader | Successfully Initialised
