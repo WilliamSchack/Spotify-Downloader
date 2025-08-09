@@ -18,7 +18,7 @@ body:
     id: description
     attributes:
       label: Provide a description of what the bug is
-      description: Provide any information and suggested solutions with as much context and detail as possible
+      placeholder: Provide any information and suggested solutions with as much context and detail as possible
     validations:
       required: true
   - type: textarea
