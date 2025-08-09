@@ -18,16 +18,15 @@ body:
     id: description
     attributes:
       label: Provide a description of what the bug is
-      placeholder: Provide any information and suggested solutions with as much context and detail as possible
+      description: Provide any information and suggested solutions with as much context and detail as possible
     validations:
       required: true
   - type: textarea
     id: reproduction
     attributes:
       label: Provide steps to reproduce the bug
+      description: Please provide the spotify link used here if related to downloading
       placeholder: |
-        Please provide the spotify link used here if related to downloading
-        
         1. ...
         2. ...
         3. ...
