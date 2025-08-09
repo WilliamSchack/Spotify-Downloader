@@ -1,6 +1,6 @@
 name: Bug report
 description: Create a report to help improve Spotify Downloader
-labels: bug
+labels: [bug]
 body:
   - type: markdown
     attributes:
@@ -48,6 +48,6 @@ body:
         10-08-2025 00:44:05 |   Info   | 157 | SpotifyDownloader.cpp | CheckForUpdate | Latest Version: "v1.10.0" | Update Available: false
         10-08-2025 00:44:05 |   Info   | 37 | SpotifyDownloader.cpp | SpotifyDownloader | Successfully Initialised
         <continues from here>
-    render: shell
-  validations:
-    required: true
+      render: shell
+    validations:
+      required: true
