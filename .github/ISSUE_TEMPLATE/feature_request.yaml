@@ -21,16 +21,16 @@ body:
     attributes:
       label: Provide a description of the feature or change
       description: Describe what the problem is and why a change/new feature should be implemented
-      placeholder: For example: This setting makes it hard to ...
-      validations:
-        required: true
+      placeholder: For example: "This setting makes it hard to ..."
+    validations:
+      required: true
   - type: textarea
     id: solution
     attributes:
       label: Propose a solution
       description: Describe the best way you would solve the problem, or a description of what you would want to happen
       placeholder: Propose a solution or provide a description of your ideal outcome
-    validation:
+    validations:
       required: true
   - type: textarea
     id: log
