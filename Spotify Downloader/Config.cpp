@@ -182,7 +182,7 @@ void Config::LoadSettings() {
     settings.endGroup();
 
     // Log settings
-    qInfo() << "Settings Successfully Saved" << SettingsLog();
+    qInfo() << "Settings Successfully Loaded" << SettingsLog();
 }
 
 QJsonObject Config::SettingsLog() {
