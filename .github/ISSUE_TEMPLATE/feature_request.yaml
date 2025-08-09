@@ -21,7 +21,8 @@ body:
     attributes:
       label: Provide a description of the feature or change
       description: Describe what the problem is and why a change/new feature should be implemented
-      placeholder: For example: "This setting makes it hard to ..."
+      placeholder: |
+        For example: "This setting makes it hard to ..."
     validations:
       required: true
   - type: textarea
