@@ -1,0 +1,39 @@
+name: Question
+description: Ask a question about Spotify Downloader
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!IMPORTANT]
+        > Please provide all fields with the required (*) icon
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I am using the latest version as listed [here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest)
+          required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      placeholder: Provide any additional information and context if possible
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Complete Log
+      description: |
+        If related, please provide the logs.
+        You can find your most recent log at the file location (%temp%/SpotifyDownloader/Log.log).
+        Please copy all the text and input it below. It should start like the following:
+      placeholder: |
+        10-08-2025 00:44:04 |   Info   | 10 | SpotifyDownloader.cpp | SpotifyDownloader | RUNNING VERSION "1.10.0"
+        10-08-2025 00:44:05 |   Info   | 185 | Config.cpp | LoadSettings | Settings Successfully Loaded QJsonObject({})
+        10-08-2025 00:44:05 |   Info   | 66 | SpotifyDownloader.cpp | SetupDownloaderThread | Successfully Setup Playlist Worker Thread
+        10-08-2025 00:44:05 |   Info   | 157 | SpotifyDownloader.cpp | CheckForUpdate | Latest Version: "v1.10.0" | Update Available: false
+        10-08-2025 00:44:05 |   Info   | 37 | SpotifyDownloader.cpp | SpotifyDownloader | Successfully Initialised
+        <continues from here>
+      render: shell
