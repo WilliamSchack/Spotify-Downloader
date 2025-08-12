@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QTimer>
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -109,6 +110,8 @@ class Song {
 
 		void Save(QString targetFolder, QString targetPath, bool overwrite);
 	private:
+		static inline constexpr int DOWNLOAD_NO_PROGRESS_TIMEOUT_MSECS = 30000;
+
 		const SpotifyDownloader* _main;
 
 		// --- Settings ---

@@ -575,6 +575,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	QString extension = "";
 	QString downloadedPath = downloadingPathNoExtension;
 
+	float currentProgressPercent = 0.0f;
+
 	// Setup Process
 	process = new QProcess();
 	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
@@ -584,9 +586,9 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		// Get the download progress
 		if (output.contains("[download]") && !output.contains(FileName)) { // Make sure that it is a download status output and not another file related thing
 			QString progress = output.split("]")[1].split("%")[0].replace(" ", "");
-			float percent = progress.toFloat() / 100;
-			percent = MathUtils::Lerp(0, 0.7, percent);
-			onProgressUpdate(percent);
+			currentProgressPercent = progress.toFloat() / 100;
+			currentProgressPercent = MathUtils::Lerp(0, 0.7, currentProgressPercent);
+			onProgressUpdate(currentProgressPercent);
 			return;
 		}
 
@@ -657,7 +659,30 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "")
 		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
 		.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
-	process->waitForFinished(-1);
+
+	// Add timeout for if no progress has been made
+	bool downloadTimedOut = false;
+
+	QTimer timeoutTimer;
+	QObject::connect(&timeoutTimer, &QTimer::timeout, [&]() {
+		if (currentProgressPercent != 0.0f)
+			return;
+
+		// Stop the current download, will most likely be stuck
+		downloadTimedOut = true;
+		process->kill();
+	});
+	timeoutTimer.start(DOWNLOAD_NO_PROGRESS_TIMEOUT_MSECS);
+
+	// Check for process finish every 50ms to allow timer to process
+	while (!process->waitForFinished(50)) {
+		QCoreApplication::processEvents();
+	}
+
+	timeoutTimer.stop();
+	if (downloadTimedOut) {
+		return "Download timed out, please try downloading again";
+	}
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
