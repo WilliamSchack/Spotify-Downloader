@@ -142,6 +142,7 @@ class Config {
     
         static inline int ThreadCount;
         static inline float DownloadSpeed;
+        static inline int DownloadTimeout;
 
         static inline QString YouTubeCookies;
         static inline QString POToken;

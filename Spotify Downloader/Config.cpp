@@ -43,6 +43,7 @@ void Config::SaveSettings() {
     settings.setValue("statusNotificationsEnabled", Notifications);
     settings.setValue("downloaderThreads", ThreadCount);
     settings.setValue("downloadSpeedLimit", DownloadSpeed);
+    settings.setValue("downloadTimeout", DownloadTimeout);
     settings.setValue("youtubeCookies", YouTubeCookies);
     settings.setValue("poToken", POToken);
     settings.setValue("clientID", SpotifyAPI::ClientID);
@@ -166,6 +167,7 @@ void Config::LoadSettings() {
     Notifications = settings.value("statusNotificationsEnabled", true).toBool();
     ThreadCount = settings.value("downloaderThreads", 6).toInt();
     DownloadSpeed = settings.value("downloadSpeedLimit", 0.0).toFloat();
+    DownloadTimeout = settings.value("downloadTimeout", 30000).toInt();
     YouTubeCookies = settings.value("youtubeCookies", "").toString();
     POToken = settings.value("poToken", "").toString();
     SpotifyAPI::ClientID = settings.value("clientID", "").toByteArray();
@@ -209,6 +211,7 @@ QJsonObject Config::SettingsLog() {
         {"Status Notifications Enabled", Notifications},
         {"Downloader Threads", ThreadCount},
         {"Download Speed Limit", DownloadSpeed},
+        {"Download Timeout", DownloadTimeout},
         {"YouTube Cookies Assigned", !YouTubeCookies.isEmpty()},
         {"PO Token Assigned", !POToken.isEmpty()},
         {"Downloader Thread UI Index", DownloaderThreadUIIndex},
