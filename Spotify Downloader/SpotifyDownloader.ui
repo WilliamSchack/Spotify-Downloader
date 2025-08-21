@@ -804,7 +804,7 @@ color: rgb(0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>61</width>
+               <width>92</width>
                <height>41</height>
               </size>
              </property>
@@ -1040,7 +1040,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>61</width>
+               <width>92</width>
                <height>41</height>
               </size>
              </property>
@@ -1231,7 +1231,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>61</width>
+               <width>94</width>
                <height>41</height>
               </size>
              </property>
@@ -2101,7 +2101,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
           <x>0</x>
           <y>0</y>
           <width>715</width>
-          <height>373</height>
+          <height>425</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -2212,7 +2212,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>61</width>
+               <width>94</width>
                <height>41</height>
               </size>
              </property>
@@ -2288,7 +2288,7 @@ background-color: rgba(0, 0, 0, 0);</string>
              </property>
              <property name="maximumSize">
               <size>
-               <width>61</width>
+               <width>92</width>
                <height>41</height>
               </size>
              </property>
@@ -2347,6 +2347,115 @@ color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">
               <string>MB/s</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="DownloadTimeoutSettingLayout">
+           <item>
+            <widget class="QLabel" name="DownloadTimeoutSettingLabel">
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>15</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Download Timeout</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="DownloadTimeoutSettingInput">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>92</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>12</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
+             <property name="mouseTracking">
+              <bool>true</bool>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::FocusPolicy::StrongFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>0 Is Uncapped</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+selection-background-color: rgb(0, 120, 215);</string>
+             </property>
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <double>100000000.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>30000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="DownloadTimeoutSettingLabel_ms">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>41</width>
+               <height>41</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>10</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(0, 0, 0, 0);
+color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string>ms</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
