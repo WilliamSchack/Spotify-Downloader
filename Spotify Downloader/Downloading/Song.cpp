@@ -673,7 +673,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		process->kill();
 
 		// Some cases where it stays alive (not sure why) just double check that here
-		if (process->waitForFinished(2000))
+		if (!process->waitForFinished(2000))
 			process->kill();
 	});
 	timeoutTimer.start(DOWNLOAD_NO_PROGRESS_TIMEOUT_MSECS);
