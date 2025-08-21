@@ -371,6 +371,11 @@ void SpotifyDownloader::SetupSettingsScreen() {
             Config::DownloadSpeed = _ui.DownloadSpeedSettingInput->value();
         }
     });
+    connect(_ui.DownloadTimeoutSettingInput, &QSpinBox::textChanged, [=] {
+        if (_ui.DownloadTimeoutSettingInput->text() != "") {
+            Config::DownloadTimeout = _ui.DownloadTimeoutSettingInput->value();
+        }
+    });
 
     connect(_ui.AudioBitrateInput, &QSpinBox::textChanged, [=] {
         if (_ui.AudioBitrateInput->text() != "") {
@@ -802,6 +807,9 @@ void SpotifyDownloader::LoadSettingsUI() {
     // Download Speed Limit
     _ui.DownloadSpeedSettingInput->setValue(Config::DownloadSpeed);
     
+    // Download Timeout
+    _ui.DownloadTimeoutSettingInput->setValue(Config::DownloadTimeout);
+
     // YouTube Cookies
     _ui.YoutubeCookiesAssignedLabel->setText(Config::YouTubeCookies.isEmpty() ?
         R"(<span style=" font-size:13pt; color:#ff6464;">No Cookies Assigned</span>)" :
