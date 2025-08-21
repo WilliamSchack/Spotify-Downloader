@@ -672,7 +672,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		downloadTimedOut = true;
 		process->kill();
 	});
-	timeoutTimer.start(DOWNLOAD_NO_PROGRESS_TIMEOUT_MSECS);
+	timeoutTimer.start(Config::DownloadTimeout);
 
 	// Check for process finish every 50ms to allow timer to process
 	while (!process->waitForFinished(50)) {
