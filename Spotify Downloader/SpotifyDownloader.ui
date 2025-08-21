@@ -2379,7 +2379,7 @@ background-color: rgba(0, 0, 0, 0);</string>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="DownloadTimeoutSettingInput">
+            <widget class="QSpinBox" name="DownloadTimeoutSettingInput">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -2418,14 +2418,11 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string notr="true">background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
-             <property name="decimals">
-              <number>0</number>
-             </property>
              <property name="maximum">
-              <double>100000000.000000000000000</double>
+              <number>999999999</number>
              </property>
              <property name="value">
-              <double>30000.000000000000000</double>
+              <number>30000</number>
              </property>
             </widget>
            </item>
