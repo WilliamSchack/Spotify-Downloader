@@ -2412,7 +2412,7 @@ background-color: rgba(0, 0, 0, 0);</string>
               <enum>Qt::FocusPolicy::StrongFocus</enum>
              </property>
              <property name="toolTip">
-              <string>0 Is Uncapped</string>
+              <string>How long it takes for a download to time out if no progress is made</string>
              </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);
