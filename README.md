@@ -341,8 +341,8 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 ### Downloading
 
-<img src="https://github.com/user-attachments/assets/06ae11f6-96a3-41b6-a656-a85884251c9a" style="width: 50%; height: 50%;">
-<img src="https://github.com/user-attachments/assets/1e4f519b-eb26-411e-8e6e-7f316cf0fed2" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/39296c6c-868e-43c2-8776-0b5250cee888" style="width: 50%; height: 50%;">
+<img src="https://github.com/user-attachments/assets/b07072a1-7af7-4dc7-9a4f-2271b27ffadd" style="width: 50%; height: 50%;">
 
 **Show Status Notifications - Default: ON**
 - If enabled, notifications will show when notable events happen during downloading to notify you incase it is in the background
@@ -352,6 +352,9 @@ This has been fixed and the app has been excluded from windows defender scans, i
 
 **Download Speed Limit - Recommended: 0MB/s**
 - The speed limit to downloading songs in MB/s. A value of 0 is uncapped
+
+**Download Timeout - Default: 30000**
+- How long it takes for a download to time out if no progress is made in ms
 
 **YouTube Cookies**
 - The YouTube cookies used for downloading songs. Used to download songs with age restrictions and at a higher quality with YouTube Premium
