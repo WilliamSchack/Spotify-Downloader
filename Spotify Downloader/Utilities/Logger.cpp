@@ -76,7 +76,8 @@ void Logger::messageOutput(QtMsgType type, const QMessageLogContext& context, co
 	// Manually flush, can cause issues with multiple threads accessing it at the same time otherwise
 	try {
 		currentLog.append(log);
-	} catch (int x) {
+	}
+	catch (...) {
 		// Rare error that the log cannot be added to the cache, I have only seen it once but it can happen, no clue why so handle it here
 		return;
 	}
