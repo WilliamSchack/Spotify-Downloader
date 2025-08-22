@@ -183,7 +183,7 @@ QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
 	QByteArray response = Network::Post(GetRequest("browse"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
-	if (json.isEmpty()) return QJsonObject();
+	if (!json.contains("contents")) return QJsonObject();
 
 	QJsonObject album = ParseAlbumHeader(json);
 
@@ -217,6 +217,8 @@ QJsonArray YTMusicAPI::GetAlbumTracks(QString browseId) {
 
 QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
 	QJsonObject header = JSONUtils::Navigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" }).toObject();
+
+	if (header.isEmpty()) return QJsonObject();
 
 	QJsonObject album {
 		{"title", header["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
@@ -642,6 +644,8 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 	QByteArray response = Network::Post(request, postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
+	if (!response.contains("contents")) return Lyrics();
+
 	// Look for synced lyrics
 	QJsonObject data = JSONUtils::Navigate(json, { "contents", "elementRenderer", "newElement", "type", "componentType", "model", "timedLyricsModel", "lyricsData" }).toObject();
 	if (timestamps && !data.isEmpty()) {
@@ -697,8 +701,7 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 	// If no synced lyrics found, look for regular lyrics
 	std::string lyricsString = JSONUtils::Navigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0, "text" }).toString().toStdString();
 
-	if (lyricsString.empty())
-		return Lyrics();
+	if (lyricsString.empty()) return Lyrics();
 
 	Lyrics lyrics;
 	lyrics.Type = Lyrics::LyricsType::Unsynced;
@@ -727,6 +730,8 @@ QString YTMusicAPI::GetLyricsBrowseId(QString videoId) {
 	QByteArray postData = QJsonDocument(body).toJson();
 	QByteArray response = Network::Post(GetRequest("next"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
+
+	if (!response.contains("contents")) return "";
 
 	QJsonObject watchNextRenderer = JSONUtils::Navigate(json, { "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer", "watchNextTabbedResultsRenderer" }).toObject();
 	QString lyricsBrowseId = GetTabBrowseId(watchNextRenderer, 1);
