@@ -407,6 +407,15 @@ QJsonObject YTMusicAPI::ParseSongRuns(QJsonArray runs, int offset) {
 				parsed["year"] = text;
 			}
 			else {
+				// Sometimes views are passed here, check for that and if so set the views
+				QRegularExpression regex("(.+)\\sviews");
+				QStringList matches = regex.match(text).capturedTexts();
+
+				if (matches.size() >= 2) {
+					parsed["views"] = matches[1];
+					continue;
+				}
+				
 				artists.append(QJsonObject{
 					{"name", text},
 					{"id", ""}
@@ -471,20 +480,23 @@ QJsonArray YTMusicAPI::ParseSongArtists(QJsonObject data, int index) {
 
 	if (flexItem.isEmpty())
 		return QJsonArray();
-	else {
-		QJsonArray runs = flexItem["text"].toObject()["runs"].toArray();
+	
+	QJsonArray runs = flexItem["text"].toObject()["runs"].toArray();
 
-		QJsonArray artists = QJsonArray();
-		for (int i = 0; i < int(runs.count() / 2 + 1); i++) {
-			QJsonObject artist{
-				{ "name", JSONUtils::Navigate(runs, { i * 2, "text" }).toString() },
-				{ "id", JSONUtils::Navigate(runs, { i * 2, "navigationEndpoint", "browseEndpoint", "browseId" }).toString()}
-			};
-			artists.append(artist);
-		}
+	QJsonArray artists = QJsonArray();
+	for (int i = 0; i < int(runs.count() / 2 + 1); i++) {
+		QString name = JSONUtils::Navigate(runs, { i * 2, "text" }).toString();
+		QString id = JSONUtils::Navigate(runs, { i * 2, "navigationEndpoint", "browseEndpoint", "browseId" }).toString();
 
-		return artists;
+		QJsonObject artist{
+			{ "name", name },
+			{ "id", id }
+		};
+
+		artists.append(artist);
 	}
+
+	return artists;
 }
 
 QJsonObject YTMusicAPI::ParseSongAlbum(QJsonObject data, int index) {
