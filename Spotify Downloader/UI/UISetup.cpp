@@ -195,7 +195,7 @@ void SpotifyDownloader::SetupSideBar() {
     });
 
     connect(_ui.SubmitBugButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader/issues/new"), "Submit Bug", "Would you like to submit a bug?");
+        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader/issues/new/choose"), "Submit Bug", "Would you like to submit a bug?");
     });
 
     connect(_ui.HelpButton, &QPushButton::clicked, [=] {
