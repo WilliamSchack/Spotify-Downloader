@@ -581,7 +581,7 @@ std::tuple<QString, bool> PlaylistDownloader::PlaylistFileNameTagHandler(QString
 	}
 
 	// Value was set if index is from 0-tag length
-	bool valueSet = indexOfTag >= 0 && indexOfTag <= Config::PLAYLIST_NAMING_TAGS.length();
+	bool valueSet = indexOfTag >= 0 && indexOfTag < Config::PLAYLIST_NAMING_TAGS.length();
 
 	return std::make_tuple(tagReplacement, valueSet);
 }

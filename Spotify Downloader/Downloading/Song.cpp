@@ -211,7 +211,7 @@ std::tuple<QString, bool> Song::TagHandler(Song song, QString tag) {
 	}
 
 	// Value was set if index is from 0-tag length
-	bool valueSet = indexOfTag >= 0 && indexOfTag <= Config::NAMING_TAGS.length();
+	bool valueSet = indexOfTag >= 0 && indexOfTag < Config::NAMING_TAGS.length();
 
 	return std::make_tuple(tagReplacement, valueSet);
 }
@@ -578,8 +578,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	float currentProgressPercent = 0.0f;
 
 	// Setup Process
+	// Manually delete later so timer doesnt cause crashes
 	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
 	QObject::connect(process, &QProcess::readyRead, process, [&]() {
 		QString output = process->readAll();
 
@@ -660,33 +660,23 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
 		.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
 
-	// Add timeout for if no progress has been made
-	bool downloadTimedOut = false;
-
-	QTimer timeoutTimer;
-	QObject::connect(&timeoutTimer, &QTimer::timeout, [&]() {
-		if (currentProgressPercent != 0.0f)
-			return;
-
-		// Stop the current download, will most likely be stuck
-		downloadTimedOut = true;
+	// If not finished by the timeout time, check if process is 0%, if so timeout download
+	if (!process->waitForFinished(Config::DownloadTimeout) && currentProgressPercent == 0.0f) {
 		process->kill();
-	});
-	timeoutTimer.start(Config::DownloadTimeout);
-
-	// Check for process finish every 50ms to allow timer to process
-	while (!process->waitForFinished(50)) {
-		QCoreApplication::processEvents();
-	}
-
-	timeoutTimer.stop();
-	if (downloadTimedOut) {
+		delete process;
+		process = nullptr;
 		return "Download timed out, please try downloading again";
 	}
+
+	// Wait for process to finish
+	process->waitForFinished(-1);
 
 	// Check for any errors in the download
 	// I would preferably check some of these when searching to skip the song but no way of checking there
 	QString errorOutput = process->readAllStandardError();
+	delete process;
+	process = nullptr;
+
 	if (!errorOutput.isEmpty()) {
 		QString lowerErrorOutput = errorOutput.toLower();
 
