@@ -272,13 +272,14 @@ void Song::DownloadCoverImage() {
 }
 
 QString Song::SearchForSong(YTMusicAPI*& yt, std::function<void(float)> onProgressUpdate) {
-	// Not a great way of doing this but it works, only used for re-downloading errors anyway which will use 1 song
-	// Will be changed in the refactor
-	if (!NextSongYTIDOverride.isEmpty()) {
-		YoutubeId = NextSongYTIDOverride;
-		NextSongYTIDOverride = "";
-		return "";
-	}
+	// Removed ytlink input temporarily, most likely caused crash
+	//// Not a great way of doing this but it works, only used for re-downloading errors anyway which will use 1 song
+	//// Will be changed in the refactor
+	//if (!NextSongYTIDOverride.isEmpty()) {
+	//	YoutubeId = NextSongYTIDOverride;
+	//	NextSongYTIDOverride = "";
+	//	return "";
+	//}
 
 	// YouTube search doesnt like symbols, can result in random results, remove them from the query
 	QRegularExpression symbolRegex("[\\p{S}]");
