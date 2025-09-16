@@ -573,8 +573,6 @@ QJsonArray YTMusicAPI::ParseSearchResults(QJsonArray results, QString resultType
 					flexItems.append(JSONUtils::Navigate(flexColumnItem, {"text", "runs"}).toArray());
 				}
 				if (!flexItems[0].isNull()) {
-					qDebug() << "VIDEO ID";
-					qDebug() << flexItems;
 					searchResult["videoId"] = JSONUtils::Navigate(flexItems, { 0, 0, "navigationEndpoint", "watchEndpoint", "videoId"}).toString();
 					searchResult["playlistId"] = JSONUtils::Navigate(flexItems, { 0, 0, "navigationEndpoint", "watchEndpoint", "playlistId"}).toString();
 				}

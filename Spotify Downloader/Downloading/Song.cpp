@@ -403,6 +403,10 @@ QJsonArray Song::ScoreSearchResults(QJsonArray searchResults) {
 		if (result.contains("isExplicit") && !result["isExplicit"].toBool() && IsExplicit)
 			continue;
 
+		// If song doesnt have a videoId, skip
+		if (result["videoId"].toString().isEmpty())
+			continue;
+
 		// If song in banned IDs, skip
 		if (bannedIDs.contains(result["videoId"].toString()))
 			continue;
