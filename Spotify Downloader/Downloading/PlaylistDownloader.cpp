@@ -107,6 +107,27 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	// Reset downloaded song paths
 	_downloadedSongFilePaths.clear();
 
+	// Check song file names, later check if there are any conflicts
+	QMap<QString, QString> trackFileNames;
+	for (QJsonValue trackVal : searchTracks) {
+		QJsonObject track = trackVal.toObject();
+		if (url.contains("playlist")) track = track["track"].toObject();
+
+		// Check if track exists on spotify
+		if (track["id"] == QJsonValue::Null) {
+			continue;
+		}
+
+		// Create song to generate filename
+		Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
+
+		// Add to dictionary
+		QString trackId = track["id"].toString();
+		QString trackFileName = song.FileName;
+
+		trackFileNames.insert(trackId, trackFileName);
+	}
+
 	// Dont add tracks that shouldnt be added
 	QJsonArray tracks = QJsonArray();
 	foreach(QJsonValue trackVal, searchTracks) {
@@ -118,12 +139,20 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			continue;
 		}
 
+		// Check if the file name exists for another track
+		QString trackId = track["id"].toString();
+		QString fileName = trackFileNames[trackId];
+		int fileNameOccurences = trackFileNames.values().count(fileName);
+		bool fileNameDuplicated = fileNameOccurences > 1;
+
+		track.insert("file_name_duplicated", fileNameDuplicated);
+
 		// If not overwriting and track already downloaded, dont download
 		if (!Config::Overwrite) {
-			// Create song object to generate filename
+			// Create song to generate filename, remaking song here instead of using previous fileName since:
+			// If file name is duplicated, id will be appended, and we also require the song details for the subfolders
 			Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::Codec, Main);
-
-			// Check if file already exists
+			
 			QString targetPath = Config::SaveLocation;
 
 			// Get sub directories
@@ -137,12 +166,12 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 			targetPath = QString("%1%2%3.%4").arg(targetPath).arg(targetFolderName).arg(song.FileName).arg(Codec::Data[Config::Codec].String);
 
 			if (!QFile::exists(targetPath))
-				tracks.append(trackVal);
+				tracks.append(track);
 			else
 				// If the file already exists, add it to the downloaded paths
 				_downloadedSongFilePaths.append(targetPath);
 		} else {
-			tracks.append(trackVal);
+			tracks.append(track);
 		}
 	}
 
@@ -187,11 +216,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 
 		QJsonArray currentArray = QJsonArray();
 		for (int x = 0; x < currentCount; x++) {
-			if (url.contains("playlist")) {
-				currentArray.append(tracks[currentStart + x].toObject()["track"]);
-				continue;
-			}
-
 			currentArray.append(tracks[currentStart + x]);
 		}
 

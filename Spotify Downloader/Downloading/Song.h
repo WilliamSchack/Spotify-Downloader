@@ -123,6 +123,8 @@ class Song {
 		QString _tempPath;
 		QString _downloadingFolder;
 		QString _downloadingPath;
+
+		bool _fileNameDuplicated = false;
 	private:
 		int TrackNumber();
 

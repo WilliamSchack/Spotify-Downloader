@@ -14,6 +14,8 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 	InPlaylist = song.contains("playlist_track_number");
 	PlaylistTrackNumber = song["playlist_track_number"].toInt();
 
+	_fileNameDuplicated = song["file_name_duplicated"].toBool();
+
 	// If the song has external ids, look for the isrc
 	if (song.contains("external_ids")) {
 		QJsonObject externalIds = song["external_ids"].toObject();
@@ -231,6 +233,11 @@ void Song::GenerateFileName(const SpotifyDownloader* main) {
 
 	// No need to check error, was already checked in setup
 	FileName = std::get<0>(filenameData);
+
+	// Add spotify id to file name if another song with the same name exists
+	if (_fileNameDuplicated)
+		FileName += "_" + SpotifyId;
+
 	FileName = FileUtils::ValidateFileName(FileName);
 }
 
