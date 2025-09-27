@@ -279,6 +279,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
     - Right character sets the closing input
 - File Name Input sets the output name of each song.
     - Each tag must be enclosed with the characters set in the left input field
+- If there are multiple songs with the file name, the spotify id will be appended to the end.
 - Can only include the currently implemented tags listed below
 
 **Sub Folders**
