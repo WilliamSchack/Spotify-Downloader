@@ -130,7 +130,9 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 		// If song could not be found, allow the user to manually input a link
 		QString searchQuery = QString("%1 - %2 - %3").arg(song.ArtistName).arg(song.Title).arg(song.AlbumName);
 		bool cannotBeFound = searchResult == "Song Cannot Be Found On YouTube";
-		if (cannotBeFound) searchResult += ". You Can Manually Search And Input The Link Here";
+		
+		// Temporaily removed until v2.0.0
+		// if (cannotBeFound) searchResult += ". You Can Manually Search And Input The Link Here";
 
 		AddSongToErrors(song, searchResult, cannotBeFound ? searchQuery : "");
 
