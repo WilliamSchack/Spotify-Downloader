@@ -394,8 +394,8 @@ border: none;</string>
     <widget class="QStackedWidget" name="SettingsScreens">
      <property name="geometry">
       <rect>
-       <x>3</x>
-       <y>45</y>
+       <x>0</x>
+       <y>50</y>
        <width>729</width>
        <height>311</height>
       </rect>
@@ -5276,21 +5276,30 @@ border: none;</string>
   <tabstop>DownloadingSettingsButton</tabstop>
   <tabstop>InterfaceSettingsButton</tabstop>
   <tabstop>OutputSettingsScrollArea</tabstop>
-  <tabstop>DownloadingScrollArea</tabstop>
   <tabstop>OverwriteSettingButton</tabstop>
   <tabstop>CodecInput</tabstop>
   <tabstop>NormalizeVolumeSettingButton</tabstop>
   <tabstop>NormalizeVolumeSettingInput</tabstop>
+  <tabstop>GetLyricsSettingButton</tabstop>
+  <tabstop>AutoBestQualitySettingButton</tabstop>
   <tabstop>AudioBitrateInput</tabstop>
+  <tabstop>ArtistSeparatorInput</tabstop>
   <tabstop>TrackNumberInput</tabstop>
   <tabstop>FileNameTagInput</tabstop>
   <tabstop>FileNameInput</tabstop>
   <tabstop>SubFoldersTagInput</tabstop>
   <tabstop>SubFoldersInput</tabstop>
+  <tabstop>CreateLRCFileSettingButton</tabstop>
+  <tabstop>LRCFileNameTagInput</tabstop>
+  <tabstop>LRCFileNameInput</tabstop>
+  <tabstop>PlaylistFileTypeInput</tabstop>
+  <tabstop>PlaylistFileNameTagInput</tabstop>
+  <tabstop>PlaylistFileNameInput</tabstop>
+  <tabstop>DownloadingSettingsScrollArea</tabstop>
   <tabstop>NotificationSettingButton</tabstop>
   <tabstop>DownloaderThreadsInput</tabstop>
   <tabstop>DownloadSpeedSettingInput</tabstop>
-  <tabstop>DownloaderThreadUIInput</tabstop>
+  <tabstop>DownloadTimeoutSettingInput</tabstop>
   <tabstop>YoutubeCookiesClearButton</tabstop>
   <tabstop>YoutubeCookiesPasteButton</tabstop>
   <tabstop>YoutubeCookiesHelpButton</tabstop>
@@ -5306,21 +5315,28 @@ border: none;</string>
   <tabstop>SpotifyAPISecretClearButton</tabstop>
   <tabstop>SpotifyAPISecretPasteButton</tabstop>
   <tabstop>SpotifyAPISecretHelpButton</tabstop>
+  <tabstop>InterfaceSettingsScrollArea</tabstop>
+  <tabstop>DownloaderThreadUIInput</tabstop>
+  <tabstop>AutoOpenFolderButton</tabstop>
   <tabstop>SidebarIconsColourButton</tabstop>
   <tabstop>CheckForUpdatesButton</tabstop>
+  <tabstop>EnableNoticesScreenButton</tabstop>
+  <tabstop>CheckForNoticesButton</tabstop>
+  <tabstop>DownloadingScrollArea</tabstop>
   <tabstop>PauseButton</tabstop>
   <tabstop>PlayButton</tabstop>
   <tabstop>CancelButton</tabstop>
   <tabstop>ErrorScrollArea</tabstop>
+  <tabstop>NoticesSelectScrollArea</tabstop>
+  <tabstop>NoticesTextScrollArea</tabstop>
   <tabstop>DownloadingScreenButton</tabstop>
   <tabstop>ErrorScreenButton</tabstop>
   <tabstop>SettingsScreenButton</tabstop>
+  <tabstop>NoticesScreenButton</tabstop>
   <tabstop>DonateButton</tabstop>
   <tabstop>UpdateButton</tabstop>
   <tabstop>SubmitBugButton</tabstop>
   <tabstop>HelpButton</tabstop>
-  <tabstop>DownloadingSettingsScrollArea</tabstop>
-  <tabstop>InterfaceSettingsScrollArea</tabstop>
  </tabstops>
  <resources>
   <include location="SpotifyDownloader.qrc"/>
