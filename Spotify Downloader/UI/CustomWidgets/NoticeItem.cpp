@@ -44,6 +44,7 @@ NoticeItem::NoticeItem(const Notice& notice, ObjectHoverWatcher* objecthoverWatc
 void NoticeItem::UpdateText() {
 	QString newText = QString(TEXT_CONSTRUCTOR).arg(_title).arg(_date);
 	_textLabel->setText(newText);
+	this->setAccessibleName(newText);
 }
 
 void NoticeItem::Select() {
