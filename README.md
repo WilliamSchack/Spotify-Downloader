@@ -15,7 +15,7 @@ Spotify Downloader is an application that allows you to easily download spotify 
 
 > [!NOTE]
 > **On Break**<br/>
-> I have gone on a bit of a break from this app to work on some other projects. I will come back to it in a month or so (as of v1.10.0) to do a full refactor of the code and a complete UI redesign so it will take some time before the next update releases but it should be out in a few months. I will update here and in the app notices when I am working on the next update :)<br/>
+> I have gone on a bit of a break from this app to work on some other projects. Its taking a little bit longer than expected but I should be working on it again maybe start of december-ish. Once I come back I will do a full refactor of the code, complete UI redesign, rebrand, and be adding a few more features mentioned in the roadmap so it will take some time before the next update releases but it should be out early 2026. I will update here and in the app notices when I am working on the next update :)<br/>
 > Any issues that are submitted will still be addressed though with hotfixes if needed
 
 ## Contents
@@ -642,21 +642,18 @@ The next few updates will take a fair amount of work and time so figured I would
 - **Complete refactor**
    - Doing this because the codebase has become a mess, this will make it much easier to work on and add new features
    - Not going to release it as its own update as there will be no new features, will be released with v2.0.0
-- **v2.0.0 Complete UI Overhaul**
-   - This has been planned for a fair while now, the current ui was only meant to be temporary
-   - The settings menu is also becoming a mess so it needs to be redone
-   - Some of the UI could also be reworked to better present things
-   - Also I just want to make the app look better
+- **v2.0.0 UI Redesign, Rebrand, Linux/Mac Support, New Features**
+   - Im completely redesigning and remaking the UI since the current one is becoming a bit hard to work with. It has also been planned for a while and the current one was only meant to be temporary, its been needed for a while now
+   - YouTube downloading support
+   - Multi-Platform playlists
+   - Get platform links from local files
+   - Metadata editing
+   - Support for Linux & Mac
+   - Because of the major changes the app will be going through a rebrand, I do not have a name at the moment but I'll get around to it
    - Since this update will be the first with the refactor as well, expect more issues then other updates but I will try to find and fix as many as I can before release
 - **v2.0.0 - v3.0.0 Feature Reworks**
    - There are a few features that are poorly implemented and could be much better so I for those I want to go through a proper process to implement them
    - From v2.0.0 I will start properly planning out features and I will re-do some that are currently implemented to make them better to use
-- **v3.0.0 Linux Support** 
-   - This will take a fair while to release since:
-   - I have never used linux and need to learn how to release on it properly
-   - I am using a few windows specific features so those would need to be changed
-   - I would need to change the dependency files to support linux
-   - Honestly same real process anyone else would go through but I havent done this before so it will take some time to learn
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
