@@ -19,6 +19,8 @@ class VersionManager {
 		static inline const QString GITHUB_TAGS_URL = "https://api.github.com/repos/WilliamSchack/Spotify-Downloader/tags";
 
 		static inline QString _latestVersionCache = nullptr;
+	private:
+		static bool VersionHigher(const QString& latestVersion, const QString& currentVersion);
 };
 
 #endif
