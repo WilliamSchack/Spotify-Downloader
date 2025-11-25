@@ -29,6 +29,7 @@ class Config {
 
         static inline const QString YTDLP_PATH = "yt-dlp.exe";
         static inline const QString FFMPEG_PATH = "ffmpeg.exe";
+        static inline const QString NODEJS_PATH = "node.exe";
 
         static const int SETUP_SCREEN_INDEX = 0;
         static const int SETTINGS_SCREEN_INDEX = 1;

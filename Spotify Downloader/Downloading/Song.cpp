@@ -1,10 +1,11 @@
 #include "Song.h"
 
-Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main) {
+Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, QString nodejsPath, Codec::Extension codec, const SpotifyDownloader* main) {
 	_main = main;
 
 	_ytdlpPath = ytdlpPath;
 	_ffmpegPath = ffmpegPath;
+	_nodejsPath = nodejsPath;
 
 	// Get universal details
 	Title = song["name"].toString();

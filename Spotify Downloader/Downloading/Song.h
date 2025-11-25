@@ -90,7 +90,7 @@ class Song {
 		QString FileName;
 		Codec::Extension Codec;
 	public:
-		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
+		Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpegPath, QString nodejsPath, Codec::Extension codec, const SpotifyDownloader* main = nullptr);
 
 		// Helpers for config naming tags
 		static std::tuple<QString, bool> TagHandler(Song song, QString tag);
@@ -115,6 +115,7 @@ class Song {
 		// --- Settings ---
 		QString _ytdlpPath;
 		QString _ffmpegPath;
+		QString _nodejsPath;
 
 		// -- Search Result --
 		QJsonObject _searchResult;

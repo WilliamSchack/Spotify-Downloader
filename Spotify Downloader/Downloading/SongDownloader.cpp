@@ -73,7 +73,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 	Codec::Extension codec = Config::Codec;
 
 	// Initialise Song
-	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, codec, Main);
+	Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::NODEJS_PATH, codec, Main);
 	qInfo() << _threadIndex << "Initialised song" << song.SpotifyId;
 
 	emit SetSongDetails(_threadIndex, song.Title, song.ArtistNamesList.join(", "));
