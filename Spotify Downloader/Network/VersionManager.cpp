@@ -85,5 +85,5 @@ bool VersionManager::VersionHigher(const QString& latestVersion, const QString& 
 			return false;
 	}
 
-	return true;
+	return false;
 }
