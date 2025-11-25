@@ -302,5 +302,8 @@
     <CopyFileToFolders Include="zlibd1.dll">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="node.exe">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
