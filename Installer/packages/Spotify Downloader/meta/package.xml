@@ -3,7 +3,7 @@
     <DisplayName>Spotify Downloader</DisplayName>
     <Description>A program that downloads songs from Spotify</Description>
     <Version>1.10.9</Version>
-    <ReleaseDate>2025-11-25</ReleaseDate>
+    <ReleaseDate>2026-01-30</ReleaseDate>
     <Default>true</Default>
     <Required>true</Required>
     <Script>installscript.qs</Script>

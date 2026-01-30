@@ -77,8 +77,6 @@ bool VersionManager::VersionHigher(const QString& latestVersion, const QString& 
 		int latestVersionPart = latestVersionSplit[i].toInt();
 		int currentVersionPart = currentVersionSplit[i].toInt();
 
-		qDebug() << "Checking:" << latestVersionPart << currentVersionPart << (latestVersionPart > currentVersionPart) << (currentVersionPart > latestVersionPart);
-
 		if (latestVersionPart > currentVersionPart)
 			return true;
 		else if (currentVersionPart > latestVersionPart)

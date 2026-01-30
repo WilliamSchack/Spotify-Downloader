@@ -9,7 +9,6 @@ QByteArray Network::Get(QNetworkRequest request, QNetworkCookieJar* cookieJar) {
 	QByteArray response;
 	QNetworkReply* rep = manager->get(request);
 	QObject::connect(manager, &QNetworkAccessManager::finished, [&complete, &response](QNetworkReply* reply) {
-		QVariantList sentCookies = reply->request().header(QNetworkRequest::CookieHeader).toList();
 		if (reply->error() != QNetworkReply::NoError) {
 			qWarning() << reply->errorString();
 
