@@ -14,9 +14,8 @@ Spotify Downloader is an application that allows you to easily download spotify 
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
 > [!NOTE]
-> **On Break**<br/>
-> I have gone on a bit of a break from this app to work on some other projects. Its taking a little bit longer than expected but I should be working on it again maybe start of december-ish. Once I come back I will do a full refactor of the code, complete UI redesign, rebrand, and be adding a few more features mentioned in the roadmap so it will take some time before the next update releases but it should be out early 2026. I will update here and in the app notices when I am working on the next update :)<br/>
-> Any issues that are submitted will still be addressed though with hotfixes if needed
+> **Rework In Progress**<br/>
+> App is currently going through a complete rework and refactor, view the [v2 Plans & Details discussion](https://github.com/WilliamSchack/Spotify-Downloader/discussions/142) for details, and the v2 branch (When its up) for the current progress
 
 ## Contents
 - [Installation](#installation)
