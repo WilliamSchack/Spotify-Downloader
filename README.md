@@ -11,22 +11,7 @@
 > [!NOTE]
 > **This is the development branch for v2**<br />
 > This readme is partially from the main branch before v2 so most of the details here will not apply<br />
-> For instructions on compiling the program, view the [compiling](#compiling) section below
-
-Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
-
-> [!CAUTION]
-> Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
-
-## Contents
-- [Compiling](#compiling)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Roadmap](#roadmap)
-- [License](#license)
-- [FAQ](#faq)
-- [Credits](#credits)
+> For instructions on compiling the program, view below
 
 ## Compiling
 
@@ -56,6 +41,24 @@ make
 4 - **Run the app:**
 
 `./UnnamedSongApp`
+
+--
+
+# Pre-v2 Readme
+
+Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
+
+> [!CAUTION]
+> Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
+
+## Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [FAQ](#faq)
+- [Credits](#credits)
 
 ## Installation
 ***Only currently supports windows. Other platforms may be coming soon***
