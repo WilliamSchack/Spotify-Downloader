@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Setup project
-set(PROJECT_NAME CMakeTesting CACHE INTERNAL "")
-set(DISPLAY_NAME "CMake Testing" CACHE INTERNAL "")
-set(APP_VERSION "1.0.0" CACHE INTERNAL "")
-set(APP_DESCRIPTION "Testing project for cmake with dependencies used for Spotify Downloader" CACHE INTERNAL "")
-set(ORGANISATION_NAME "Organisation" CACHE INTERNAL "")
-set(APP_ID "com.example.CMakeTesting" CACHE INTERNAL "")
+set(PROJECT_NAME UnnamedSongApp CACHE INTERNAL "")
+set(DISPLAY_NAME "Unnamed Song App" CACHE INTERNAL "")
+set(APP_VERSION "2.0.0" CACHE INTERNAL "")
+set(APP_DESCRIPTION "Can download songs & lyrics, modify metadata, and probably other stuff im forgetting atm" CACHE INTERNAL "")
+set(ORGANISATION_NAME "WilliamSchack" CACHE INTERNAL "")
+set(APP_ID "com.williamschack.unnamedsongapp" CACHE INTERNAL "")
 
 project(
 	${PROJECT_NAME}
