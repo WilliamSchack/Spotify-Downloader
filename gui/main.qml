@@ -23,6 +23,26 @@ Window
             Layout.fillHeight: true
         }
 
+        // Download Link
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: 100
+            Layout.rightMargin: 100
+
+            TextField {
+                Layout.fillWidth: true
+                placeholderText: qsTr("Download Link")
+                text: _manager.linkInputText
+            }
+
+            Button {
+                Layout.preferredWidth: 30
+                icon.source: "qrc:/icons/Icons/Clipboard_Icon_B.png"
+                onClicked: _manager.PasteButtonClicked()
+            }
+        }
+
+        // Folder Path
         RowLayout {
             Layout.fillWidth: true
             Layout.leftMargin: 100
@@ -37,7 +57,7 @@ Window
             Button {
                 Layout.preferredWidth: 30
                 icon.source: "qrc:/icons/Icons/Folder_Icon_B.png"
-                onClicked: _manager.folderButtonClicked()
+                onClicked: _manager.FolderButtonClicked()
             }
         }
 
@@ -46,26 +66,8 @@ Window
             Layout.leftMargin: 100
             Layout.rightMargin: 100
 
-            text: qsTr("ytdlp: Download Test Video")
-            onClicked: _manager.ytdlpButtonClicked()
-        }
-
-        Button {
-            Layout.fillWidth: true
-            Layout.leftMargin: 100
-            Layout.rightMargin: 100
-
-            text: qsTr("ffmpeg: Convert To MP3")
-            onClicked: _manager.ffmpegButtonClicked()
-        }
-
-        Button {
-            Layout.fillWidth: true
-            Layout.leftMargin: 100
-            Layout.rightMargin: 100
-
-            text: qsTr("taglib: Add Metadata")
-            onClicked: _manager.taglibButtonClicked()
+            text: qsTr("Download")
+            onClicked: _manager.DownloadButtonClicked()
         }
 
         // Filler

@@ -3,11 +3,12 @@
 
 #include <iostream>
 
+#include <QStringList>
 #include <QQmlContext>
-#include <QObject>
 #include <QFileDialog>
 #include <QProcess>
-#include <QStringList>
+#include <QClipboard>
+#include <QApplication>
 
 #include <taglib/fileref.h>
 #include <taglib/mpegfile.h>
@@ -16,27 +17,26 @@
 class MainScreenGUIManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString folderInputText READ FolderInputText WRITE SetFolderInputText NOTIFY FolderInputTextChanged)
+    Q_PROPERTY(QString linkInputText READ LinkInputText WRITE SetLinkInputText NOTIFY LinkInputTextChanged)
 
     public:
         explicit MainScreenGUIManager(QObject* parent = 0);
-        void SetQmlContext(QQmlContext* qmlContext);
     public:
         QString FolderInputText() const;
         void SetFolderInputText(const QString& text);
+
+        QString LinkInputText() const;
+        void SetLinkInputText(const QString& text);
     public slots:
-        void folderButtonClicked();
-        void ytdlpButtonClicked();
-        void ffmpegButtonClicked();
-        void taglibButtonClicked();
+        void PasteButtonClicked();
+        void FolderButtonClicked();
+        void DownloadButtonClicked();
     private:
-        inline static constexpr const char* OUTPUT_FILE_NAME = "TestFile";
-
-        QQmlContext* _qmlContext = nullptr;
         QString _folderInputText = "";
-
-        QString _currentDownloadPath = "";
+        QString _linkInputText = "";
     signals:
         void FolderInputTextChanged();
+        void LinkInputTextChanged();
 };
 
 #endif

@@ -2,5 +2,6 @@
 <RCC>
   <qresource prefix="/icons">
     <file>Icons/Folder_Icon_B.png</file>
+    <file>Icons/Clipboard_Icon_B.png</file>
   </qresource>
 </RCC>
