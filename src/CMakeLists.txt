@@ -2,6 +2,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
-add_subdirectory(Downloading)
-add_subdirectory(Gui)
-add_subdirectory(Platforms)
+add_subdirectory(downloading)
+add_subdirectory(gui)
+add_subdirectory(platforms)

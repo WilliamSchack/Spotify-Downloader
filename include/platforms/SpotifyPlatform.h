@@ -1,9 +1,9 @@
 #ifndef SPOTIFYPLATFORM_H
 #define SPOTIFYPLATFORM_H
 
-#include "IPlatform.h"
-
 #include <iostream>
+
+#include "IPlatform.h"
 
 class SpotifyPlatform : public IPlatform
 {

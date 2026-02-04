@@ -1,3 +1,3 @@
-add_subdirectory(Downloading)
-add_subdirectory(Gui)
-add_subdirectory(Platforms)
+add_subdirectory(downloading)
+add_subdirectory(gui)
+add_subdirectory(platforms)
