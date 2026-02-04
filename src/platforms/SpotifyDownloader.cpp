@@ -16,3 +16,8 @@ ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 
     return ELinkType::Unknown;
 }
+
+bool SpotifyDownloader::DownloadTrack(const std::string& url, const std::string& directory)
+{
+    return true;
+}
