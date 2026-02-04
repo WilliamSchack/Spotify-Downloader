@@ -37,31 +37,48 @@ std::string NetworkRequest::GetCookieString()
     return cookieString;
 }
 
-CURLcode NetworkRequest::Get()
+NetworkResponse NetworkRequest::Get()
 {
-    CURLcode globalInit = curl_global_init(CURL_GLOBAL_DEFAULT);
-    if (globalInit != CURLE_OK)
-        return globalInit;
+    NetworkResponse response;
+
+    CURLcode initCode = curl_global_init(CURL_GLOBAL_DEFAULT);
+    if (initCode != CURLE_OK) {
+        response.CurlCode = initCode;
+        return response;
+    }
 
     CURL* curl = curl_easy_init();
     if (!curl) {
         curl_global_cleanup();
-        return globalInit;
+
+        response.CurlCode = initCode;
+        return response;
     }
 
-    // Set params
+    // Request
     curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
 
-    // Request
-    CURLcode response = curl_easy_perform(curl);
-    std::cout << response << std::endl;
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
+
+    response.CurlCode = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
 
     // Cleanup
     curl_easy_cleanup(curl);
     curl_global_cleanup();
 
     return response;
+}
+
+size_t NetworkRequest::CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp)
+{
+    size_t totalSize = size * nmemb;
+    std::string* stream = static_cast<std::string*>(clientp);
+    stream->append(static_cast<char*>(data), totalSize);
+    return totalSize;
 }
 
 NetworkRequest::~NetworkRequest()
