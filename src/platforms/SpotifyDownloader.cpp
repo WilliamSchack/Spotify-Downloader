@@ -1,6 +1,6 @@
-#include "SpotifyPlatform.h"
+#include "SpotifyDownloader.h"
 
-ELinkType SpotifyPlatform::GetLinkType(const std::string& url)
+ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 {
     if (url.find("track") != std::string::npos)
         return ELinkType::Track;

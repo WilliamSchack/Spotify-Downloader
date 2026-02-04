@@ -5,7 +5,7 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
     if (platformType == EPlatform::Unknown) return false;
 
-    std::unique_ptr<IPlatform> platform = PlatformFactory::Create(platformType);
+    std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::Create(platformType);
     if (platform == nullptr) return false;
 
     return platform->Download(url, directory);

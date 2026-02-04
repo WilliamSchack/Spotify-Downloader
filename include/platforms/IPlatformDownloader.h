@@ -1,5 +1,5 @@
-#ifndef IPLATFORM_H
-#define IPLATFORM_H
+#ifndef IPLATFORMDOWNLOADER_H
+#define IPLATFORMDOWNLOADER_H
 
 #include <iostream>
 #include <string>
@@ -7,7 +7,7 @@
 
 #include "ELinkType.h"
 
-class IPlatform
+class IPlatformDownloader
 {
     public:
         bool Download(const std::string& url, const std::string& directory);

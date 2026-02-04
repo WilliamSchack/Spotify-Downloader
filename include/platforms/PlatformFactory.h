@@ -4,12 +4,12 @@
 #include <memory>
 
 #include "EPlatform.h"
-#include "SpotifyPlatform.h"
+#include "SpotifyDownloader.h"
 
 class PlatformFactory
 {
     public:
-        static std::unique_ptr<IPlatform> Create(EPlatform platform);
+        static std::unique_ptr<IPlatformDownloader> Create(EPlatform platform);
 };
 
 #endif
