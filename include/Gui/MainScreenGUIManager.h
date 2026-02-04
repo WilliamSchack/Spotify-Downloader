@@ -14,6 +14,8 @@
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
 
+#include "DownloadManager.h"
+
 class MainScreenGUIManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString folderInputText READ FolderInputText WRITE SetFolderInputText NOTIFY FolderInputTextChanged)
@@ -22,11 +24,11 @@ class MainScreenGUIManager : public QObject {
     public:
         explicit MainScreenGUIManager(QObject* parent = 0);
     public:
-        QString FolderInputText() const;
-        void SetFolderInputText(const QString& text);
-
         QString LinkInputText() const;
         void SetLinkInputText(const QString& text);
+
+        QString FolderInputText() const;
+        void SetFolderInputText(const QString& text);
     public slots:
         void PasteButtonClicked();
         void FolderButtonClicked();
@@ -35,8 +37,8 @@ class MainScreenGUIManager : public QObject {
         QString _folderInputText = "";
         QString _linkInputText = "";
     signals:
-        void FolderInputTextChanged();
         void LinkInputTextChanged();
+        void FolderInputTextChanged();
 };
 
 #endif

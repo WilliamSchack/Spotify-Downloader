@@ -2,23 +2,13 @@
 
 MainScreenGUIManager::MainScreenGUIManager(QObject* parent) : QObject(parent) {}
 
-QString MainScreenGUIManager::FolderInputText() const {
-    return _folderInputText;
-}
-
-void MainScreenGUIManager::SetFolderInputText(const QString& text) {
-    if (text == _folderInputText)
-        return;
-    
-    _folderInputText = text;
-    emit FolderInputTextChanged();
-}
-
-QString MainScreenGUIManager::LinkInputText() const {
+QString MainScreenGUIManager::LinkInputText() const
+{
     return _linkInputText;
 }
 
-void MainScreenGUIManager::SetLinkInputText(const QString& text) {
+void MainScreenGUIManager::SetLinkInputText(const QString& text)
+{
     if (text == _linkInputText)
         return;
     
@@ -26,7 +16,22 @@ void MainScreenGUIManager::SetLinkInputText(const QString& text) {
     emit LinkInputTextChanged();
 }
 
-void MainScreenGUIManager::PasteButtonClicked() {
+QString MainScreenGUIManager::FolderInputText() const
+{
+    return _folderInputText;
+}
+
+void MainScreenGUIManager::SetFolderInputText(const QString& text)
+{
+    if (text == _folderInputText)
+        return;
+    
+    _folderInputText = text;
+    emit FolderInputTextChanged();
+}
+
+void MainScreenGUIManager::PasteButtonClicked()
+{
     const QClipboard* clipboard = QApplication::clipboard();
     QString clipboardText = clipboard->text();
 
@@ -34,12 +39,14 @@ void MainScreenGUIManager::PasteButtonClicked() {
         SetLinkInputText(clipboardText);
 }
 
-void MainScreenGUIManager::FolderButtonClicked() {
+void MainScreenGUIManager::FolderButtonClicked()
+{
     QString folder = QFileDialog::getExistingDirectory(nullptr, "Choose test directory", "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (!folder.isEmpty())
         SetFolderInputText(folder);
 }
 
-void MainScreenGUIManager::DownloadButtonClicked() {
-    std::cout << "Download button clicked\n";
+void MainScreenGUIManager::DownloadButtonClicked()
+{
+    DownloadManager::Download(_linkInputText.toStdString());
 }

@@ -3,9 +3,12 @@
 
 #include <string>
 
+#include "PlatformDetector.h"
+#include "PlatformFactory.h"
+
 class DownloadManager {
     public:
-        void Download(const std::string& url) const;
+        static bool Download(const std::string& url);
 };
 
 #endif

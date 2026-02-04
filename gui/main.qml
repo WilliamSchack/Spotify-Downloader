@@ -33,6 +33,7 @@ Window
                 Layout.fillWidth: true
                 placeholderText: qsTr("Download Link")
                 text: _manager.linkInputText
+                onTextChanged: _manager.linkInputText = text
             }
 
             Button {
@@ -52,6 +53,7 @@ Window
                 Layout.fillWidth: true
                 placeholderText: qsTr("Folder Path")
                 text: _manager.folderInputText
+                onTextChanged: _manager.folderInputText = text
             }
 
             Button {
