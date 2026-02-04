@@ -8,16 +8,18 @@
 [![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 [![Ko-Fi](https://img.shields.io/badge/Support%20Development-FF5a16?style=flat&logo=Ko-fi&logoColor=FF5a16&label=ko-fi)](https://ko-fi.com/williamschack)
 
+> [!NOTE]
+> **This is the development branch for v2**<br />
+> This readme is partially from the main branch before v2 so most of the details here will not apply<br />
+> For instructions on compiling the program, view the [compiling](#compiling) section below
+
 Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
 
 > [!CAUTION]
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
-> [!NOTE]
-> **Rework In Progress**<br/>
-> App is currently going through a complete rework and refactor, view the [v2 Plans & Details discussion](https://github.com/WilliamSchack/Spotify-Downloader/discussions/142) for details, and the v2 branch (When its up) for the current progress
-
 ## Contents
+- [Compiling](#compiling)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
@@ -25,6 +27,35 @@ Spotify Downloader is an application that allows you to easily download spotify 
 - [License](#license)
 - [FAQ](#faq)
 - [Credits](#credits)
+
+## Compiling
+
+Notes:
+- This is my first app using cmake so it may have problems, if you find any please [submit an issue](https://github.com/WilliamSchack/Spotify-Downloader/issues/new/choose)
+- I have not tested this on mac and probably wont until the end of 2.0 development since I cant be bothered to setup a vm for it
+- This does not have arm support at the minute, I will add it near the end of 2.0 development
+
+**Dependencies**
+- Qt6
+- CMake
+
+1 - **Download/Clone this branch**
+
+2 - **In the root folder:**
+
+```
+mkdir build && cd build
+cmake ..
+make
+```
+
+3 - **If on linux, make the output executable:**
+
+`chmod +x ./UnnamedSongApp`
+
+4 - **Run the app:**
+
+`./UnnamedSongApp`
 
 ## Installation
 ***Only currently supports windows. Other platforms may be coming soon***
