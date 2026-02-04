@@ -22,6 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+find_package(CURL REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS
 	Core
 	Widgets
@@ -55,6 +56,7 @@ add_dependencies(${PROJECT_NAME} ${ADDITIONAL_DEPENDENCIES})
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
+	CURL::libcurl
 	Qt6::Core
 	Qt6::Widgets
 	Qt6::Qml
