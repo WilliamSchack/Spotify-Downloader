@@ -8,7 +8,7 @@
 
 class DownloadManager {
     public:
-        static bool Download(const std::string& url);
+        static bool Download(const std::string& url, const std::string& directory);
 };
 
 #endif

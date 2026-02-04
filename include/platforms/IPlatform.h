@@ -1,12 +1,18 @@
 #ifndef IPLATFORM_H
 #define IPLATFORM_H
 
+#include <iostream>
 #include <string>
+#include <filesystem>
+
+#include "ELinkType.h"
 
 class IPlatform
 {
     public:
-        virtual bool Download(const std::string& url) = 0;
+        bool Download(const std::string& url, const std::string& directory);
+    protected:
+        virtual ELinkType GetLinkType(const std::string& url) = 0;
 };
 
 #endif

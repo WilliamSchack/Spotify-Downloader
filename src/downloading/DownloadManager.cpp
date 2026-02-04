@@ -1,6 +1,6 @@
 #include "DownloadManager.h"
 
-bool DownloadManager::Download(const std::string& url)
+bool DownloadManager::Download(const std::string& url, const std::string& directory)
 {
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
     if (platformType == EPlatform::Unknown) return false;
@@ -8,7 +8,5 @@ bool DownloadManager::Download(const std::string& url)
     std::unique_ptr<IPlatform> platform = PlatformFactory::Create(platformType);
     if (platform == nullptr) return false;
 
-    platform->Download(url);
-
-    return true;
+    return platform->Download(url, directory);
 }

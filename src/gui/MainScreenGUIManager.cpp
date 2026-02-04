@@ -48,5 +48,5 @@ void MainScreenGUIManager::FolderButtonClicked()
 
 void MainScreenGUIManager::DownloadButtonClicked()
 {
-    DownloadManager::Download(_linkInputText.toStdString());
+    DownloadManager::Download(_linkInputText.toStdString(), _folderInputText.toStdString());
 }
