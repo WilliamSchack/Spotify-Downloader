@@ -15,7 +15,8 @@ Spotify Downloader is an application that allows you to easily download spotify 
 
 > [!NOTE]
 > **Rework In Progress**<br/>
-> App is currently going through a complete rework and refactor, view the [v2 Plans & Details discussion](https://github.com/WilliamSchack/Spotify-Downloader/discussions/142) for details, and the v2 branch (When its up) for the current progress
+> App is currently going through a complete rework and refactor, view the [v2 Plans & Details discussion](https://github.com/WilliamSchack/Spotify-Downloader/discussions/142) for details, and the [v2 branch](https://github.com/WilliamSchack/Spotify-Downloader/tree/v2) for the current progress<br/>
+> Since this is also going to take a while and a lot of work, I have opened [monthly memberships](https://ko-fi.com/williamschack/tiers) with some rewards so if you want to support development please check it out :)
 
 ## Contents
 - [Installation](#installation)
