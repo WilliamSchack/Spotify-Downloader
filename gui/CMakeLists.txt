@@ -1,0 +1,6 @@
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/gui.qrc
+	${CMAKE_CURRENT_SOURCE_DIR}/main.qml
+)
+
+qt6_add_resources(QT_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/gui.qrc)

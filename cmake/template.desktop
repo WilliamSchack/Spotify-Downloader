@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=@DISPLAY_NAME@
+Comment=@APP_DESCRIPTION@
+Exec=@DESKTOP_EXEC_PATH@
+Icon=@DESKTOP_ICON_PATH@
+Categories=AudioVideo;Audio;Music;Utility;Qt;
