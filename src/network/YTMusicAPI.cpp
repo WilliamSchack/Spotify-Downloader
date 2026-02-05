@@ -61,8 +61,8 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 	if (!responseJson.contains("contents"))
 		return nlohmann::json::object();
 
-	nlohmann::json contents = responseJson["contents"]["tabbedSearchRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
-	
+	nlohmann::json contents = responseJson["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+
 	nlohmann::json searchResults;
 	for(nlohmann::json result : contents) {
 		std::string type;
@@ -98,7 +98,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 				topResult["title"] = data["title"]["runs"][0]["text"];
 				nlohmann::json runs = data["subtitle"]["runs"];
 				nlohmann::json songInfo = ParseSongRuns(runs, 2);
-				topResult.update(songInfo, true);
+				topResult.merge_patch(songInfo);
 
 			}
 
@@ -133,7 +133,10 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 		}
 
 		nlohmann::json currentSearchResults = ParseSearchResults(contents, type, category);
-		searchResults.update(currentSearchResults);
+		if (!searchResults.is_null())
+			searchResults.update(currentSearchResults);
+		else
+			searchResults = currentSearchResults;
 
 		if (filter != "") {
 			nlohmann::json continuationResults = result["musicShelfRenderer"];
@@ -162,10 +165,10 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 
 				if (continuationContents.size() == 0) break;
 
-				items.update(continuationContents);
+				items.insert(items.end(), continuationContents.begin(), continuationContents.end());
 			}
 
-			searchResults.update(items);
+			searchResults.insert(searchResults.end(), items.begin(), items.end());
 		}
 	}
 
@@ -520,7 +523,7 @@ QJsonObject YTMusicAPI::ParseSongAlbum(QJsonObject data, int index) {
 nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std::string resultType, const std::string& category) {
 	nlohmann::json finalResults = nlohmann::json::array();
 
-	int defaultOffset = (resultType == "" ? true : false) * 2;
+	int defaultOffset = resultType.empty() ? 2 : 0;
 
 	for (nlohmann::json val : results) {
 		nlohmann::json data = val["musicResponsiveListItemRenderer"];
@@ -585,7 +588,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 				}
 				if (!flexItems[1].is_null()) {
 					nlohmann::json songRuns = ParseSongRuns(flexItems[1]);
-					searchResult.update(songRuns, true);
+					searchResult.merge_patch(songRuns);
 				}
 			} else {
 				searchResult["browseId"] = browseId;
@@ -618,7 +621,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 			nlohmann::json flexItem = GetFlexColumnItem(data, 1);
 			nlohmann::json runs = flexItem["text"]["runs"];
 			nlohmann::json songInfo = ParseSongRuns(runs, defaultOffset);
-			searchResult.update(songInfo, true);
+			searchResult.merge_patch(songInfo);
 		}
 
 		if (resultType == "album" || resultType == "playlist") {
