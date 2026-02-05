@@ -3,6 +3,8 @@
 
 #include "NetworkRequest.h"
 
+#include <nlohmann/json.hpp>
+
 #include <QObject>
 #include <QByteArray>
 
@@ -28,10 +30,7 @@ class SpotifyAPI {
 		QJsonObject GetTrack(QString id);
 		QJsonObject GetEpisode(QString id);
 	private:
-		const QByteArray DEFAULT_CLIENT_ID = "DEFAULT_CLIENT_ID";
-		const QByteArray DEFAULT_CLIENT_SECRET = "DEFAULT_CLIENT_SECRET";
-
-		QByteArray _auth;
+		std::string _auth;
 	private:
 		QJsonArray GetTracks(QJsonObject json);
 };

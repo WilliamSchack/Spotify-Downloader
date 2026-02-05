@@ -1,30 +1,28 @@
 #include "SpotifyAPI.h"
 
-/*
 SpotifyAPI::SpotifyAPI() {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://accounts.spotify.com/api/token");
-	
-	QByteArray postData;
+	std::string postData;
 	postData.append("grant_type=client_credentials&");
 
 	// Use default api keys if not set
-	postData.append("client_id=" + (ClientID.isEmpty() ? DEFAULT_CLIENT_ID : ClientID) + "&");
-	postData.append("client_secret=" + (ClientSecret.isEmpty() ? DEFAULT_CLIENT_SECRET : ClientSecret));
+	postData.append("client_id=" + (ClientID.isEmpty() ? SPOTIFYAPI_KEY : ClientID) + "&");
+	postData.append("client_secret=" + (ClientSecret.isEmpty() ? SPOTIFYAPI_SECRET : ClientSecret));
 	
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+	NetworkRequest request;
+	request.URL = "https://accounts.spotify.com/api/token";
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
 
-	QByteArray response = Network::Post(req, postData);
-	if (response == nullptr) {
-		qWarning() << "Error Authorizing...";
+	NetworkResponse response = request.Post(postData);
+	if (response.HTTPCode != 200) {
+		std::cout << "Error authorizing Spotify API (HTTP " << response.HTTPCode << ")" << std::endl;
 		return;
 	}
 
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-	_auth = json["access_token"].toString().toLatin1();
+	nlohmann::json responseJson = nlohmann::json::parse(response.Body);
+	_auth = responseJson["access_token"].get<std::string>();
 }
 
+/*
 bool SpotifyAPI::CheckConnection() {
 	if (_auth.isNull()) return false;
 
