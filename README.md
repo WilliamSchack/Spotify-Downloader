@@ -21,8 +21,9 @@ Notes:
 - This does not have arm support at the minute, I will add it near the end of 2.0 development
 
 **Dependencies**
-- Qt6
 - CMake
+- Curl
+- Qt6
 
 1 - **Download/Clone this branch**
 
