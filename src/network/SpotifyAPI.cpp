@@ -1,5 +1,6 @@
 #include "SpotifyAPI.h"
 
+/*
 SpotifyAPI::SpotifyAPI() {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://accounts.spotify.com/api/token");
@@ -164,3 +165,4 @@ QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
 
 	return tracks;
 }
+*/
