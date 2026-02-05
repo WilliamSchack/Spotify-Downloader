@@ -1,11 +1,11 @@
 #ifndef IPLATFORMDOWNLOADER_H
 #define IPLATFORMDOWNLOADER_H
 
+#include "ELinkType.h"
+
 #include <iostream>
 #include <string>
 #include <filesystem>
-
-#include "ELinkType.h"
 
 class IPlatformDownloader
 {

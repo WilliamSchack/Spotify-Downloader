@@ -73,6 +73,43 @@ NetworkResponse NetworkRequest::Get()
     return response;
 }
 
+NetworkResponse NetworkRequest::Post(const std::string& postData)
+{
+    NetworkResponse response;
+
+    CURLcode initCode = curl_global_init(CURL_GLOBAL_DEFAULT);
+    if (initCode != CURLE_OK) {
+        response.CurlCode = initCode;
+        return response;
+    }
+
+    CURL* curl = curl_easy_init();
+    if (!curl) {
+        curl_global_cleanup();
+
+        response.CurlCode = initCode;
+        return response;
+    }
+
+    // Request
+    curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
+
+    response.CurlCode = curl_easy_perform(curl);
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
+
+    // Cleanup
+    curl_easy_cleanup(curl);
+    curl_global_cleanup();
+
+    return response;
+}
+
 size_t NetworkRequest::CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp)
 {
     size_t totalSize = size * nmemb;

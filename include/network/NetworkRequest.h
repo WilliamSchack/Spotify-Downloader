@@ -21,6 +21,7 @@ class NetworkRequest
         void AddCookie(const std::string& cookie, const std::string& value);
 
         NetworkResponse Get();
+        NetworkResponse Post(const std::string& postData);
     private:
         struct curl_slist* _headers = NULL;
         std::vector<std::string> _cookies;
