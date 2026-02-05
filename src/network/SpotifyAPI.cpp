@@ -10,7 +10,7 @@ SpotifyAPI::SpotifyAPI()
 	postData.append("client_secret=" + std::string(SPOTIFYAPI_SECRET));
 	
 	NetworkRequest request;
-	request.URL = TOKEN_URL;
+	request.Url = TOKEN_URL;
 	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
 
 	NetworkResponse response = request.Post(postData);
@@ -29,7 +29,7 @@ bool SpotifyAPI::CheckConnection()
 		return false;
 
 	NetworkRequest request;
-	request.URL = API_BASE_URL;
+	request.Url = API_BASE_URL;
 	NetworkResponse response = request.Get();
 	
 	// If anything is returned, connection is ok
@@ -39,7 +39,7 @@ bool SpotifyAPI::CheckConnection()
 nlohmann::json SpotifyAPI::SendRequest(const std::string& url)
 {
 	NetworkRequest request;
-	request.URL = url;
+	request.Url = url;
 	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.SetHeader("Authorization", "Bearer " + _auth);
 

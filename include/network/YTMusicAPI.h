@@ -4,13 +4,9 @@
 #ifndef YTMUSICAPI_H
 #define YTMUSICAPI_H
 
-#define QT_MESSAGELOGCONTEXT
-#include "Utilities/Logger.h"
+#include "NetworkRequest.h"
 
-#include "Utilities/JSONUtils.h"
-#include "Network/Network.h"
-
-#include "Lyrics/Lyrics.h"
+#include <nlohmann/json.hpp>
 
 #include <time.h>
 #include <regex>
@@ -29,18 +25,20 @@ class YTMusicAPI {
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
 
-		Lyrics GetLyrics(QString videoId, bool timestamps = true);
+		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
 
 		bool HasPremium(QString cookies);
 
 		bool IsAgeRestricted(QString videoId);
 	private:
-		static inline const QStringList VALID_PREMIUM_IMAGE_ALT_TEXT{
+        static inline const std::string API_BASE_URL = "https://music.youtube.com/youtubei/v1";
+
+		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {
 			"YouTube Premium",
 			"YouTube Music Premium"
 		};
 	private:
-		QNetworkRequest GetRequest(QString endpoint);
+		NetworkRequest GetRequest(std::string endpoint);
 		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one
 
 		QJsonObject ParseSongRuns(QJsonArray runs, int offset = 0);

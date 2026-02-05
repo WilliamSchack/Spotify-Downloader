@@ -14,7 +14,7 @@
 class NetworkRequest
 {
     public:
-    std::string URL = "";
+    std::string Url = "";
     public:
     ~NetworkRequest();
     

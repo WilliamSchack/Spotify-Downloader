@@ -1,22 +1,28 @@
 #include "YTMusicAPI.h"
 
 bool YTMusicAPI::CheckConnection() {
-	QUrl url = QUrl("https://music.youtube.com/youtubei/v1/");
-	return Network::Ping(url);
+    NetworkRequest request;
+    request.Url = API_BASE_URL;
+    NetworkResponse response = request.Get();
+	
+	// If anything is returned, connection is ok
+	return response.CurlCode == CURLcode::CURLE_OK;
 }
 
-QNetworkRequest YTMusicAPI::GetRequest(QString endpoint) {
-	QUrl url = QUrl(QString("https://music.youtube.com/youtubei/v1/%1/?alt=json").arg(endpoint));
-	QNetworkRequest request = QNetworkRequest(url);
-	request.setRawHeader("user-agent", "Mozilla/5.0");
-	request.setRawHeader("accept", "*/*");
-	request.setRawHeader("accept-encoding", "gzip, deflate");
-	request.setRawHeader("content-type", "application/json");
-	request.setRawHeader("content-encoding", "gzip");
-	request.setRawHeader("origin", "https://music.youtube.com/youtubei/v1/");
+NetworkRequest YTMusicAPI::GetRequest(std::string endpoint) {
+    NetworkRequest request;
+    request.Url = API_BASE_URL + "/" + endpoint + "/?alt=json";
+	request.SetHeader("User-Agent", "Mozilla/5.0");
+	request.SetHeader("Accept", "*/*");
+	request.SetHeader("Accept-encoding", "gzip, deflate");
+	request.SetHeader("Content-Type", "application/json");
+	request.SetHeader("Content-Encoding", "gzip");
+	request.SetHeader("Origin", "https://music.youtube.com/youtubei/v1/");
 
 	return request;
 }
+
+/*
 
 QJsonObject YTMusicAPI::GetContext() {
 	std::time_t rawTime;
@@ -858,3 +864,5 @@ bool YTMusicAPI::IsAgeRestricted(QString videoId) {
 	// Other error
 	return false;
 }
+
+*/
