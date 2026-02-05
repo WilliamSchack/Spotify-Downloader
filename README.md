@@ -45,6 +45,23 @@ make
 
 --
 
+**Arguments**
+
+Environment Variables:
+- SPOTIFYAPI_KEY: The default spotify api key
+- SPOTIFYAPI_SECRET: The detauls spotify api secret
+
+Linux (For the cmake command):
+
+`SPOTIFYAPI_KEY=key SPOTIFYAPI_SECRET=secret cmake ..`
+
+Windows (For the current terminal):
+```
+set SPOTIFYAPI_KEY=key
+set SPOTIFYAPI_SECRET=secret
+cmake ..
+```
+
 # Pre-v2 Readme
 
 Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
