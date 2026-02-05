@@ -19,7 +19,7 @@ class NetworkRequest
     ~NetworkRequest();
     
     void AddHeader(const std::string& header);
-    void AddHeader(const std::string& header, const std::string& value);
+    void SetHeader(const std::string& header, const std::string& value);
     void AddCookie(const std::string& cookie, const std::string& value);
     
     NetworkResponse Get();

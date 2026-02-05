@@ -5,7 +5,7 @@ void NetworkRequest::AddHeader(const std::string& header)
     _headers = curl_slist_append(_headers, header.c_str());
 }
 
-void NetworkRequest::AddHeader(const std::string& header, const std::string& value)
+void NetworkRequest::SetHeader(const std::string& header, const std::string& value)
 {
     std::string headerString = "";
     if (value.empty()) headerString = header + ";";
