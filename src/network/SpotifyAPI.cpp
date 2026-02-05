@@ -87,7 +87,7 @@ void SpotifyAPI::GetTracks(nlohmann::json& json)
 		// Get tracks in chunks of 100
 		bool finished = false;
 		while (!finished) {
-			if (json["next"] == "") {
+			if (!json.contains("next") || json["next"].is_null()) {
 				finished = true;
 				break;
 			}
@@ -106,18 +106,24 @@ void SpotifyAPI::GetTracks(nlohmann::json& json)
 
 TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 {
+	std::cout << json << std::endl;
+
 	TrackData track;
-	track.Id = json["id"];
-	track.Isrc = json["external_ids"]["isrc"];
-	track.Name = json["name"];
-	track.Explicit = json["explicit"];
-	track.SetDuration(json["duration_ms"]);
-	track.DiscNumber = json["disc_number"];
-	track.TrackNumber = json["track_number"];
+	track.Id = json.value("id", "");
+	if (json.contains("external_ids"))
+		track.Isrc = json["external_ids"].value("isrc", "");
+	track.Name = json.value("name", "");
+	track.Explicit = json.value("explicit", false);
+	track.SetDuration(json.value("duration_ms", 0));
+	track.DiscNumber = json.value("disc_number", 1);
+	track.TrackNumber = json.value("track_number", 1);
 	track.PlaylistTrackNumber = 1;
 	
-	track.Album = ParseAlbum(json["album"]);
-	track.Artists = ParseArtists(json["artists"]);
+	if (json.contains("album"))
+		track.Album = ParseAlbum(json["album"]);
+
+	if (json.contains("artists"))
+		track.Artists = ParseArtists(json["artists"]);
 
 	return track;
 }
@@ -162,6 +168,7 @@ TrackData SpotifyAPI::ParseEpisode(const nlohmann::json& json)
 	artists.push_back(artist);
 
 	show.Artists = artists;
+	track.Artists = artists;
 
 	track.Album = show;
 
@@ -171,15 +178,17 @@ TrackData SpotifyAPI::ParseEpisode(const nlohmann::json& json)
 PlaylistData SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 {
 	PlaylistData playlist;
-	playlist.Id = json["id"];
-	playlist.Name = json["name"];
-	playlist.TotalTracks = json["tracks"]["total"];
-	playlist.ImageUrl = json["images"][0]["url"];
-	if (json.contains("description"))
-		playlist.Description = json["description"];
-	playlist.OwnerId = json["owner"]["id"];
-	if (json["owner"].contains("display_name"))
-		playlist.OwnerName = json["owner"]["display_name"];
+	playlist.Id = json.value("id", "");
+	playlist.Name = json.value("name", "");
+	if (json.contains("tracks"))
+		playlist.TotalTracks = json["tracks"].value("total", 1);
+	if (json.contains("images"))
+		playlist.ImageUrl = json["images"][0]["url"];
+	playlist.Description = json.value("description", "");
+	if (json.contains("owner")) {
+		playlist.OwnerId = json["owner"].value("id", "");
+		playlist.OwnerName = json["owner"].value("display_name", "");
+	}
 
 	playlist.Tracks = ParseTracks(json["tracks"]["items"]);
 
@@ -196,8 +205,8 @@ AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 	album.ReleaseDate = json["release_date"];
 	album.ReleaseDatePrecision = json["release_date_precision"];
 	if      (json["album_type"] == "album")  album.Type = EAlbumType::Album;
-	else if (json["single"] == "album")      album.Type = EAlbumType::Single;
-	else if (json["compilation"] == "album") album.Type = EAlbumType::Compilation;
+	else if (json["album_type"] == "single")      album.Type = EAlbumType::Single;
+	else if (json["album_type"] == "compilation") album.Type = EAlbumType::Compilation;
 
 	album.Artists = ParseArtists(json["artists"]);
 
