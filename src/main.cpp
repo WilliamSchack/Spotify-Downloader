@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     engine.load(QUrl("qrc:/gui/main.qml"));
 
     YTMusicAPI yt;
-    yt.Search("NEWLY HUMAN FEELING", "songs", 10);
+    std::cout << yt.Search("NEWLY HUMAN FEELING", "", 10) << std::endl;
 
     return app.exec();
 }

@@ -82,8 +82,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 			topResult["resultType"] = resultType;
 
 			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(data, { "header", "musicCardShelfHeaderBasicRenderer", "title" });
-			if (!categoryJson.empty())
-				category = categoryJson["runs"][0]["text"];
+			if (!categoryJson.empty()) category = categoryJson["runs"][0]["text"];
 
 			topResult["category"] = category;
 
@@ -119,8 +118,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 			contents = result["musicShelfRenderer"]["contents"];
 
 			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(result, { "musicShelfRenderer", "title" });
-			if (!categoryJson.empty())
-				category = categoryJson["runs"][0]["text"];
+			if (!categoryJson.empty()) category = categoryJson["runs"][0]["text"];
 
 			type = StringUtils::RemoveLast(filter);
 			StringUtils::ToLower(type);
@@ -532,10 +530,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 			{"category", category}
 		};
 
-		nlohmann::json videoTypeJson = JsonUtils::SafelyNavigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" });
-		std::string videoType = "";
-		if (!videoTypeJson.empty())
-			videoType = videoTypeJson;
+		std::string videoType = JsonUtils::SafelyNavigate<std::string>(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" });
 		
 		if (resultType == "" && videoType != "") {
 			if (videoType == "MUSIC_VIDEO_TYPE_ATV") resultType = "song";
