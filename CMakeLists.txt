@@ -51,6 +51,7 @@ set(POST_BUILD_COPY_FILES CACHE INTERNAL "Files that will be copied to the final
 set(BINARIES_DIR ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for external dependency files")
 file(MAKE_DIRECTORY ${BINARIES_DIR})
 
+include(cmake/GetJson.cmake)
 include(cmake/GetTagLib.cmake)
 include(cmake/GetYtdlp.cmake)
 include(cmake/GetFFmpeg.cmake)
