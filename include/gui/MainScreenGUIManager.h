@@ -1,6 +1,8 @@
 #ifndef MAINSCREENGUIMANAGER_H
 #define MAINSCREENGUIMANAGER_H
 
+#include "DownloadManager.h"
+
 #include <iostream>
 
 #include <QStringList>
@@ -13,8 +15,6 @@
 #include <taglib/fileref.h>
 #include <taglib/mpegfile.h>
 #include <taglib/id3v2tag.h>
-
-#include "DownloadManager.h"
 
 class MainScreenGUIManager : public QObject {
     Q_OBJECT

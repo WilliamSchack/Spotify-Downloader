@@ -1,13 +1,13 @@
 #ifndef NETWORKREQUEST_H
 #define NETWORKREQUEST_H
 
+#include "NetworkResponse.h"
+
 #include <string>
 #include <vector>
 #include <memory>
 
 #include <curl/curl.h>
-
-#include "NetworkResponse.h"
 
 class NetworkRequest
 {

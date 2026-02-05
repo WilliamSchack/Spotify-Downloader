@@ -1,10 +1,7 @@
 #ifndef SPOTIFYAPI_H
 #define SPOTIFYAPI_H
 
-#define QT_MESSAGELOGCONTEXT
-#include "Utilities/Logger.h"
-
-#include "Network/Network.h"
+#include "NetworkRequest.h"
 
 #include <QObject>
 #include <QByteArray>
