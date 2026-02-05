@@ -1,7 +1,5 @@
 #include "NetworkRequest.h"
 
-#include <iostream>
-
 void NetworkRequest::AddHeader(const std::string& header)
 {
     _headers = curl_slist_append(_headers, header.c_str());
@@ -66,8 +64,7 @@ NetworkResponse NetworkRequest::Post(const std::string& postData)
 
 CURL* NetworkRequest::InitCurl()
 {
-    CURLcode initCode = curl_global_init(CURL_GLOBAL_DEFAULT);
-    if (initCode != CURLE_OK)
+    if (_globalHandler.GlobalInit != CURLcode::CURLE_OK)
         return nullptr;
 
     CURL* curl = curl_easy_init();
@@ -99,7 +96,6 @@ NetworkResponse NetworkRequest::SendRequest(CURL* curl)
 void NetworkRequest::CleanupCurl(CURL* curl)
 {
     curl_easy_cleanup(curl);
-    curl_global_cleanup();  
 }
 
 size_t NetworkRequest::CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp)

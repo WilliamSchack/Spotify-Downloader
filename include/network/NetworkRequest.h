@@ -9,19 +9,31 @@
 
 #include <curl/curl.h>
 
+#include <iostream>
+
 class NetworkRequest
 {
     public:
-        std::string URL = "";
+    std::string URL = "";
     public:
-        ~NetworkRequest();
+    ~NetworkRequest();
+    
+    void AddHeader(const std::string& header);
+    void AddHeader(const std::string& header, const std::string& value);
+    void AddCookie(const std::string& cookie, const std::string& value);
+    
+    NetworkResponse Get();
+    NetworkResponse Post(const std::string& postData);
+    private:
+        struct CurlGlobalHandler
+        {
+            CurlGlobalHandler()  { GlobalInit = curl_global_init(CURL_GLOBAL_DEFAULT); }
+            ~CurlGlobalHandler() { curl_global_cleanup(); }
 
-        void AddHeader(const std::string& header);
-        void AddHeader(const std::string& header, const std::string& value);
-        void AddCookie(const std::string& cookie, const std::string& value);
+            CURLcode GlobalInit;
+        };
 
-        NetworkResponse Get();
-        NetworkResponse Post(const std::string& postData);
+        static inline const CurlGlobalHandler _globalHandler;
     private:
         struct curl_slist* _headers = NULL;
         std::vector<std::string> _cookies;
