@@ -7,6 +7,7 @@
 #include "NetworkRequest.h"
 #include "StringUtils.h"
 #include "ArrayUtils.h"
+#include "JsonUtils.h"
 
 #include <nlohmann/json.hpp>
 

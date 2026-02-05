@@ -133,10 +133,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 		}
 
 		nlohmann::json currentSearchResults = ParseSearchResults(contents, type, category);
-		if (!searchResults.is_null())
-			searchResults.update(currentSearchResults);
-		else
-			searchResults = currentSearchResults;
+		JsonUtils::ExtendArray(searchResults, currentSearchResults);
 
 		if (filter != "") {
 			nlohmann::json continuationResults = result["musicShelfRenderer"];
@@ -165,10 +162,10 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 
 				if (continuationContents.size() == 0) break;
 
-				items.insert(items.end(), continuationContents.begin(), continuationContents.end());
+				JsonUtils::ExtendArray(items, continuationContents);
 			}
 
-			searchResults.insert(searchResults.end(), items.begin(), items.end());
+			JsonUtils::ExtendArray(searchResults, items);
 		}
 	}
 
