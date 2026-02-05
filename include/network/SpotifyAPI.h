@@ -23,11 +23,11 @@ class SpotifyAPI {
 		static inline QByteArray ClientSecret;
 
 		bool CheckConnection();
+		nlohmann::json GetTrack(const std::string& id);
 		QJsonObject GetPlaylist(QString id);
 		QJsonArray GetPlaylistTracks(QString id);
 		QJsonObject GetAlbum(QString id);
 		QJsonArray GetAlbumTracks(QJsonObject album);
-		QJsonObject GetTrack(QString id);
 		QJsonObject GetEpisode(QString id);
 	private:
 		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";

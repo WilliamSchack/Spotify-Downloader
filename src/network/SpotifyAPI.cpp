@@ -34,6 +34,21 @@ bool SpotifyAPI::CheckConnection() {
 	return response.CurlCode == CURLcode::CURLE_OK;
 }
 
+nlohmann::json SpotifyAPI::GetTrack(const std::string& id) {
+	NetworkRequest request;
+	request.URL = API_BASE_URL + "/tracks/" + id;
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.AddHeader("Authorization", "Bearer " + _auth);
+
+	NetworkResponse response = request.Get();
+	if (response.HTTPCode != 200) {
+		std::cout << "Error Getting Track..." << std::endl;
+		return nlohmann::json();
+	}
+
+	return nlohmann::json::parse(response.Body);
+}
+
 /*
 QJsonObject SpotifyAPI::GetPlaylist(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
