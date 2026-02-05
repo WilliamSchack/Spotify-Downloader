@@ -1,6 +1,8 @@
 #ifndef PLAYLISTDATA_H
 #define PLAYLISTDATA_H
 
+#include "TrackData.h"
+
 #include <string>
 #include <vector>
 
@@ -13,6 +15,7 @@ struct PlaylistData
     std::string Description = "";
     std::string OwnerId = "";
     std::string OwnerName = "";
+    std::vector<TrackData> Tracks;
 };
 
 #endif

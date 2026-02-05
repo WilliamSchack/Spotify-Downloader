@@ -192,6 +192,8 @@ PlaylistData SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 	if (json["owner"].contains("display_name"))
 		playlist.OwnerName = json["owner"]["display_name"];
 
+	playlist.Tracks = ParseTracks(json["tracks"]["items"]);
+
 	return playlist;
 }
 
