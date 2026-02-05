@@ -5,8 +5,8 @@ SpotifyAPI::SpotifyAPI() {
 	postData.append("grant_type=client_credentials&");
 
 	// Use default api keys if not set
-	postData.append("client_id=" + (ClientID.isEmpty() ? SPOTIFYAPI_KEY : ClientID) + "&");
-	postData.append("client_secret=" + (ClientSecret.isEmpty() ? SPOTIFYAPI_SECRET : ClientSecret));
+	postData.append("client_id=" + std::string(SPOTIFYAPI_KEY) + "&");
+	postData.append("client_secret=" + std::string(SPOTIFYAPI_SECRET));
 	
 	NetworkRequest request;
 	request.URL = TOKEN_URL;
@@ -19,7 +19,7 @@ SpotifyAPI::SpotifyAPI() {
 	}
 
 	nlohmann::json responseJson = nlohmann::json::parse(response.Body);
-	_auth = responseJson["access_token"].get<std::string>();
+	_auth = responseJson["access_token"];
 }
 
 bool SpotifyAPI::CheckConnection() {
@@ -49,138 +49,112 @@ nlohmann::json SpotifyAPI::GetTrack(const std::string& id) {
 	return nlohmann::json::parse(response.Body);
 }
 
-/*
-QJsonObject SpotifyAPI::GetPlaylist(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id);
+nlohmann::json SpotifyAPI::GetEpisode(const std::string& id) {
+	NetworkRequest request;
+	request.URL = API_BASE_URL + "/episodes/" + id;
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.AddHeader("Authorization", "Bearer " + _auth);
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
+	NetworkResponse response = request.Get();
+	if (response.HTTPCode != 200) {
+		std::cout << "Error Getting Episode..." << std::endl;
+		return nlohmann::json();
+	}
 
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	return json;
+	return nlohmann::json::parse(response.Body);
 }
 
-QJsonArray SpotifyAPI::GetPlaylistTracks(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id + "/tracks");
+nlohmann::json SpotifyAPI::GetPlaylist(const std::string& id) {
+	NetworkRequest request;
+	request.URL = API_BASE_URL + "/playlists/" + id;
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.AddHeader("Authorization", "Bearer " + _auth);
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
+	NetworkResponse response = request.Get();
+	if (response.HTTPCode != 200) {
+		std::cout << "Error Getting Playlist..." << std::endl;
+		return nlohmann::json();
+	}
 
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
+	return nlohmann::json::parse(response.Body);
+}
 
+nlohmann::json SpotifyAPI::GetPlaylistTracks(const std::string& id) {
+	NetworkRequest request;
+	request.URL = API_BASE_URL + "/playlists/" + id;
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.AddHeader("Authorization", "Bearer " + _auth);
+
+	NetworkResponse response = request.Get();
+	if (response.HTTPCode != 200) {
+		std::cout << "Error Getting Playlist Tracks..." << std::endl;
+		return nlohmann::json();
+	}
+
+	nlohmann::json json = nlohmann::json::parse(response.Body);
 	return GetTracks(json);
 }
 
-QJsonObject SpotifyAPI::GetAlbum(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/albums/" + id);
+nlohmann::json SpotifyAPI::GetAlbum(const std::string& id) {
+	NetworkRequest request;
+	request.URL = API_BASE_URL + "/albums/" + id;
+	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.AddHeader("Authorization", "Bearer " + _auth);
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	return json;
-}
-
-QJsonArray SpotifyAPI::GetAlbumTracks(QJsonObject album) {
-	return GetTracks(album["tracks"].toObject());
-}
-
-QJsonObject SpotifyAPI::GetTrack(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/tracks/" + id);
-
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	if (response == nullptr) {
-		"Error Getting Track...";
-		return QJsonObject();
+	NetworkResponse response = request.Get();
+	if (response.HTTPCode != 200) {
+		std::cout << "Error Getting Album..." << std::endl;
+		return nlohmann::json();
 	}
 
-	return QJsonDocument::fromJson(response).object();
+	return nlohmann::json::parse(response.Body);
 }
 
-QJsonObject SpotifyAPI::GetEpisode(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/episodes/" + id);
-
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	if (response == nullptr) {
-		"Error Getting Track...";
-		return QJsonObject();
-	}
-
-	return QJsonDocument::fromJson(response).object();
+nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album) {
+	return GetTracks(album["tracks"]);
 }
 
-QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
-	QJsonArray tracks = json["items"].toArray();
+nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json) {
+	nlohmann::json tracks = json["items"];
 	
 	// Continue to get tracks if more than 100 are requested
-	if (json["next"].toString() != "") {
-		QNetworkRequest req(QUrl(""));
-		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		req.setRawHeader("Authorization", "Bearer " + _auth);
+	if (json["next"] != "") {
+		NetworkRequest request;
+		request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.AddHeader("Authorization", "Bearer " + _auth);
 
 		// Get tracks in chunks of 100
 		bool finished = false;
 		while (!finished) {
-			if (json["next"].toString() == "") {
+			if (json["next"] == "") {
 				finished = true;
 				break;
 			}
 
-			req.setUrl(json["next"].toString());
-
-			QByteArray response = Network::Get(req);
-			if (response == nullptr) {
-				qWarning() << "Error Getting Tracks...";
-				return QJsonArray();
+			request.URL = json["next"];
+			NetworkResponse response = request.Get();
+			if (response.HTTPCode != 200) {
+				std::cout << "Error Getting Tracks..." << std::endl;
+				return nlohmann::json();
 			}
 
-			json = QJsonDocument::fromJson(response).object();
-			QJsonArray items = json["items"].toArray();
+			json = nlohmann::json::parse(response.Body);
+			nlohmann::json items = json["items"];
 
-			foreach(QJsonValue item, items) {
-				tracks.append(item);
+			for(nlohmann::json item : items) {
+				tracks.push_back(item);
 			}
 
-			if (json["next"].toString() == "") finished = true;
+			if (json["next"] == "") finished = true;
 		}
 	}
 
 	// Add playlist track number, the one included is the position in the album
 	// Tracks will be positioned at its count in the spotify playlist, use index for track number
-	for (int i = 0; i < tracks.count(); i++) {
-		// Get track
-		QJsonObject track = tracks[i].toObject();
-		QJsonObject trackData = track["track"].toObject();
-
-		// Add playlist track number
+	for (int i = 0; i < tracks.size(); i++) {
+		nlohmann::json trackData = tracks[i]["track"];
 		trackData["playlist_track_number"] = i + 1;
-
-		// Add data to original track
-		track["track"] = trackData;
-		tracks[i] = track;
 	}
 
 	return tracks;
 }
-*/

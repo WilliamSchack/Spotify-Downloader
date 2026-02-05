@@ -5,37 +5,24 @@
 
 #include <nlohmann/json.hpp>
 
-#include <QObject>
-#include <QByteArray>
-
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-
-#include <QFuture>
-#include <QtConcurrent/QtConcurrentRun>
-
 class SpotifyAPI {
 	public:
 		SpotifyAPI();
 
-		static inline QByteArray ClientID;
-		static inline QByteArray ClientSecret;
-
 		bool CheckConnection();
 		nlohmann::json GetTrack(const std::string& id);
-		QJsonObject GetPlaylist(QString id);
-		QJsonArray GetPlaylistTracks(QString id);
-		QJsonObject GetAlbum(QString id);
-		QJsonArray GetAlbumTracks(QJsonObject album);
-		QJsonObject GetEpisode(QString id);
+		nlohmann::json GetEpisode(const std::string& id);
+		nlohmann::json GetPlaylist(const std::string& id);
+		nlohmann::json GetPlaylistTracks(const std::string& id);
+		nlohmann::json GetAlbum(const std::string& id);
+		nlohmann::json GetAlbumTracks(nlohmann::json album);
 	private:
 		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";
 		static inline const std::string API_BASE_URL = "https://api.spotify.com/v1";
 
 		std::string _auth;
 	private:
-		QJsonArray GetTracks(QJsonObject json);
+		nlohmann::json GetTracks(nlohmann::json json);
 };
 
 #endif
