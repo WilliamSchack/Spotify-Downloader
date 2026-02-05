@@ -24,8 +24,8 @@ std::string NetworkRequest::GetCookieString()
 {
     std::string cookieString = "";
 
-    int cookiesSize = _cookies.size();
-    for (int i = 0; i < cookiesSize; i++) {
+    unsigned int cookiesSize = _cookies.size();
+    for (unsigned i = 0; i < cookiesSize; i++) {
         cookieString += _cookies[i];
 
         if (i < cookiesSize - 1)

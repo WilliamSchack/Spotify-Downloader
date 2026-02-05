@@ -14,15 +14,15 @@ struct TrackData
     std::string Name = "";
     std::string Description = "";
     bool Explicit = false;
-    int DurationMs = 0;
-    int DurationS = 0;
-    int DiscNumber = 0;
-    int TrackNumber = 0;
-    int PlaylistTrackNumber = 0;
+    unsigned int DurationMs = 0;
+    unsigned int DurationS = 0;
+    unsigned int DiscNumber = 0;
+    unsigned int TrackNumber = 0;
+    unsigned int PlaylistTrackNumber = 0;
     AlbumData Album;
     std::vector<ArtistData> Artists;
 
-    void SetDuration(int ms)
+    void SetDuration(unsigned int ms)
     {
         DurationMs = ms;
         DurationS = ms / 1000;

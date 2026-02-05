@@ -12,7 +12,7 @@ struct AlbumData
     std::string Id = "";
     std::string Name = "";
     std::string Description = "";
-    int TotalTracks = 0;
+    unsigned int TotalTracks = 0;
     std::string ImageUrl = "";
     std::string ReleaseDate = "";
     std::string ReleaseDatePrecision = "";

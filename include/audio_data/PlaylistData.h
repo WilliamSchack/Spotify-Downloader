@@ -10,7 +10,7 @@ struct PlaylistData
 {
     std::string Id = "";
     std::string Name = "";
-    int TotalTracks = 0;
+    unsigned int TotalTracks = 0;
     std::string ImageUrl = "";
     std::string Description = "";
     std::string OwnerId = "";

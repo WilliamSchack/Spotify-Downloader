@@ -7,7 +7,7 @@
 class NetworkResponse
 {
     public:
-        int HTTPCode = 0;
+        unsigned short HTTPCode = 0;
         CURLcode CurlCode = CURLcode::CURLE_OK;
         std::string Body = "";
 };
