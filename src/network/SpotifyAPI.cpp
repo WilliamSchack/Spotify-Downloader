@@ -52,40 +52,30 @@ nlohmann::json SpotifyAPI::SendRequest(const std::string& url)
 	return nlohmann::json::parse(response.Body);
 }
 
-nlohmann::json SpotifyAPI::GetTrack(const std::string& id)
+TrackData SpotifyAPI::GetTrack(const std::string& id)
 {
-	return SendRequest(API_BASE_URL + "/tracks/" + id);
+	nlohmann::json json = SendRequest(API_BASE_URL + "/tracks/" + id);
+	return ParseTrack(json);
 }
 
-nlohmann::json SpotifyAPI::GetEpisode(const std::string& id)
+TrackData SpotifyAPI::GetEpisode(const std::string& id)
 {
-	return SendRequest(API_BASE_URL + "/episodes/" + id);
+	nlohmann::json json = SendRequest(API_BASE_URL + "/episodes/" + id);
+	return ParseEpisode(json);
 }
 
-nlohmann::json SpotifyAPI::GetPlaylist(const std::string& id)
-{
-	return SendRequest(API_BASE_URL + "/playlists/" + id);
-}
-
-nlohmann::json SpotifyAPI::GetPlaylistTracks(const std::string& id)
+PlaylistData SpotifyAPI::GetPlaylist(const std::string& id)
 {
 	nlohmann::json json = SendRequest(API_BASE_URL + "/playlists/" + id);
 	GetTracks(json);
 
-	return json;
+	return ParsePlaylist(json);
 }
 
-nlohmann::json SpotifyAPI::GetAlbum(const std::string& id)
+AlbumData SpotifyAPI::GetAlbum(const std::string& id)
 {
-	return SendRequest(API_BASE_URL + "/albums/" + id);
-}
-
-nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album)
-{
-	nlohmann::json& albumTracks = album["tracks"];
-	GetTracks(albumTracks);
-	
-	return album;
+	nlohmann::json json = SendRequest(API_BASE_URL + "/albums/" + id);
+	return ParseAlbum(json);
 }
 
 void SpotifyAPI::GetTracks(nlohmann::json& json)

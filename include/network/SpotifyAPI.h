@@ -13,12 +13,10 @@ class SpotifyAPI {
 		SpotifyAPI();
 
 		bool CheckConnection();
-		nlohmann::json GetTrack(const std::string& id);
-		nlohmann::json GetEpisode(const std::string& id);
-		nlohmann::json GetPlaylist(const std::string& id);
-		nlohmann::json GetPlaylistTracks(const std::string& id);
-		nlohmann::json GetAlbum(const std::string& id);
-		nlohmann::json GetAlbumTracks(nlohmann::json album);
+		TrackData GetTrack(const std::string& id);
+		TrackData GetEpisode(const std::string& id);
+		PlaylistData GetPlaylist(const std::string& id);
+		AlbumData GetAlbum(const std::string& id);
 	private:
 		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";
 		static inline const std::string API_BASE_URL = "https://api.spotify.com/v1";
