@@ -68,10 +68,8 @@ CURL* NetworkRequest::InitCurl()
         return nullptr;
 
     CURL* curl = curl_easy_init();
-    if (!curl) {
-        curl_global_cleanup();
+    if (curl == nullptr)
         return curl;
-    }
 
     curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);

@@ -29,12 +29,11 @@ class NetworkRequest
         {
             CurlGlobalHandler()  { GlobalInit = curl_global_init(CURL_GLOBAL_DEFAULT); }
             ~CurlGlobalHandler() { curl_global_cleanup(); }
-
             CURLcode GlobalInit;
         };
-
-        static inline const CurlGlobalHandler _globalHandler;
     private:
+        static inline const CurlGlobalHandler _globalHandler;
+        
         struct curl_slist* _headers = NULL;
         std::vector<std::string> _cookies;
     private:
