@@ -39,7 +39,7 @@ class YTMusicAPI {
 		};
 	private:
 		NetworkRequest GetRequest(std::string endpoint);
-		QJsonObject GetContext(); // Just so we get the current time instead of an initialized one
+		nlohmann::json GetContext(); // Just so we get the current time instead of an initialized one
 
 		QJsonObject ParseSongRuns(QJsonArray runs, int offset = 0);
 

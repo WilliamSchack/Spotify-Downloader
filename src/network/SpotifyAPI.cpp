@@ -46,7 +46,7 @@ nlohmann::json SpotifyAPI::SendRequest(const std::string& url)
 	NetworkResponse response = request.Get();
 	if (response.HTTPCode != 200) {
 		std::cout << "Error from Spotify API: " << response.HTTPCode << std::endl;
-		return nlohmann::json();
+		return nlohmann::json::object();
 	}
 
 	return nlohmann::json::parse(response.Body);

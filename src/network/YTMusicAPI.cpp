@@ -22,26 +22,25 @@ NetworkRequest YTMusicAPI::GetRequest(std::string endpoint) {
 	return request;
 }
 
-/*
-
-QJsonObject YTMusicAPI::GetContext() {
+nlohmann::json YTMusicAPI::GetContext() {
 	std::time_t rawTime;
 	struct tm* timeInfo;
 	char buffer[80];
 	std::time(&rawTime);
 	timeInfo = std::localtime(&rawTime);
 	std::strftime(buffer, sizeof(buffer), "%Y%m%d", timeInfo);
-	QString clientVersion = QString("1.%1.01.00").arg(buffer);
+	std::string clientVersion = "1." + std::string(buffer) + ".01.00";
 
-	return QJsonObject{
-		{"client", QJsonObject{
-			{"clientName", "WEB_REMIX"},
-			{"clientVersion", clientVersion}
-		}},
-		{"user", QJsonObject{}}
-	};
+    return nlohmann::json {
+        {"client", {
+            {"clientName", "WEB_REMIX"},
+            {"clientVersion", clientVersion}
+        }},
+        {"user", nlohmann::json::object()}
+    };
 }
 
+/*
 QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 	// Get web page
 	QString searchParams = "EgWKAQ"; // Param 1
