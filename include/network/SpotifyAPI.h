@@ -18,7 +18,7 @@ class SpotifyAPI {
 		nlohmann::json GetPlaylist(const std::string& id);
 		nlohmann::json GetPlaylistTracks(const std::string& id);
 		nlohmann::json GetAlbum(const std::string& id);
-		nlohmann::json GetAlbumTracks(const nlohmann::json& album);
+		nlohmann::json GetAlbumTracks(nlohmann::json album);
 	private:
 		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";
 		static inline const std::string API_BASE_URL = "https://api.spotify.com/v1";
@@ -26,7 +26,7 @@ class SpotifyAPI {
 		std::string _auth;
 	private:
 		nlohmann::json SendRequest(const std::string& url);
-		nlohmann::json GetTracks(nlohmann::json json);
+		void GetTracks(nlohmann::json& json);
 		
 		TrackData ParseTrack(const nlohmann::json& json);
 		std::vector<TrackData> ParseTracks(const nlohmann::json& json);

@@ -70,7 +70,9 @@ nlohmann::json SpotifyAPI::GetPlaylist(const std::string& id)
 nlohmann::json SpotifyAPI::GetPlaylistTracks(const std::string& id)
 {
 	nlohmann::json json = SendRequest(API_BASE_URL + "/playlists/" + id);
-	return GetTracks(json);
+	GetTracks(json);
+
+	return json;
 }
 
 nlohmann::json SpotifyAPI::GetAlbum(const std::string& id)
@@ -78,14 +80,17 @@ nlohmann::json SpotifyAPI::GetAlbum(const std::string& id)
 	return SendRequest(API_BASE_URL + "/albums/" + id);
 }
 
-nlohmann::json SpotifyAPI::GetAlbumTracks(const nlohmann::json& album)
+nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album)
 {
-	return GetTracks(album["tracks"]);
+	nlohmann::json& albumTracks = album["tracks"];
+	GetTracks(albumTracks);
+	
+	return album;
 }
 
-nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
+void SpotifyAPI::GetTracks(nlohmann::json& json)
 {
-	nlohmann::json tracks = json["items"];
+	nlohmann::json& tracks = json["items"];
 	
 	// Continue to get tracks if more than 100 are requested
 	if (json["next"] != "") {
@@ -98,9 +103,9 @@ nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
 			}
 
 			json = SendRequest(json["next"]);
-			nlohmann::json items = json["items"];
+			nlohmann::json& items = json["items"];
 
-			for(nlohmann::json item : items) {
+			for(const nlohmann::json& item : items) {
 				tracks.push_back(item);
 			}
 
@@ -111,11 +116,9 @@ nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
 	// Add playlist track number, the one included is the position in the album
 	// Tracks will be positioned at its count in the spotify playlist, use index for track number
 	for (int i = 0; i < tracks.size(); i++) {
-		nlohmann::json trackData = tracks[i]["track"];
+		nlohmann::json& trackData = tracks[i]["track"];
 		trackData["playlist_track_number"] = i + 1;
 	}
-
-	return tracks;
 }
 
 TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
