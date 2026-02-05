@@ -3,6 +3,7 @@
 
 #include "IPlatformDownloader.h"
 #include "SpotifyAPI.h"
+#include "StringUtils.h"
 
 class SpotifyDownloader : public IPlatformDownloader
 {

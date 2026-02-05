@@ -4,13 +4,13 @@ SpotifyDownloader::SpotifyDownloader() :_spotify() {}
 
 ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 {
-    if (url.find("track") != std::string::npos)
+    if (StringUtils::Contains(url, "track"))
         return ELinkType::Track;
 
-    if (url.find("playlist") != std::string::npos)
+    if (StringUtils::Contains(url, "playlist"))
         return ELinkType::Playlist;
 
-    if (url.find("album") != std::string::npos)
+    if (StringUtils::Contains(url, "album"))
         return ELinkType::Album;
 
     return ELinkType::Unknown;
@@ -28,7 +28,7 @@ TrackData SpotifyDownloader::GetTrack(const std::string& url)
     std::string trackId = GetLinkId(url);
     if (trackId.empty()) return TrackData();
 
-    if (url.find("episode") != std::string::npos)
+    if (StringUtils::Contains(url, "episode"))
         return _spotify.GetEpisode(trackId);
     
     return _spotify.GetTrack(trackId);

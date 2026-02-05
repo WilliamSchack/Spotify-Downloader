@@ -64,7 +64,7 @@ NetworkResponse NetworkRequest::Post(const std::string& postData)
 
 NetworkResponse NetworkRequest::Post(nlohmann::json postData)
 {
-    Post(postData.dump());
+    return Post(postData.dump());
 }
 
 CURL* NetworkRequest::InitCurl()

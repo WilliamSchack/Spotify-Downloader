@@ -2,6 +2,7 @@
 #define PLATFORMDETECTOR_H
 
 #include "EPlatform.h"
+#include "StringUtils.h"
 
 #include <string>
 

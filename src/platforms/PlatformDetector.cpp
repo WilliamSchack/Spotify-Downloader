@@ -4,7 +4,7 @@
 
 EPlatform PlatformDetector::GetPlatformFromUrl(const std::string& url)
 {
-    if (url.find("open.spotify.com") != std::string::npos)
+    if (StringUtils::Contains(url, "open.spotify.com"))
         return EPlatform::Spotify;
 
     return EPlatform::Unknown;
