@@ -9,7 +9,7 @@ SpotifyAPI::SpotifyAPI() {
 	postData.append("client_secret=" + (ClientSecret.isEmpty() ? SPOTIFYAPI_SECRET : ClientSecret));
 	
 	NetworkRequest request;
-	request.URL = "https://accounts.spotify.com/api/token";
+	request.URL = TOKEN_URL;
 	request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
 
 	NetworkResponse response = request.Post(postData);
@@ -22,14 +22,19 @@ SpotifyAPI::SpotifyAPI() {
 	_auth = responseJson["access_token"].get<std::string>();
 }
 
-/*
 bool SpotifyAPI::CheckConnection() {
-	if (_auth.isNull()) return false;
+	if (_auth.empty())
+		return false;
 
-	QUrl url = QUrl("https://api.spotify.com/v1");
-	return Network::Ping(url);
+	NetworkRequest request;
+	request.URL = API_BASE_URL;
+	NetworkResponse response = request.Get();
+	
+	// If anything is returned, connection is ok
+	return response.CurlCode == CURLcode::CURLE_OK;
 }
 
+/*
 QJsonObject SpotifyAPI::GetPlaylist(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id);

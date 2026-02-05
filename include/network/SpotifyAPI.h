@@ -30,6 +30,9 @@ class SpotifyAPI {
 		QJsonObject GetTrack(QString id);
 		QJsonObject GetEpisode(QString id);
 	private:
+		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";
+		static inline const std::string API_BASE_URL = "https://api.spotify.com/v1";
+
 		std::string _auth;
 	private:
 		QJsonArray GetTracks(QJsonObject json);
