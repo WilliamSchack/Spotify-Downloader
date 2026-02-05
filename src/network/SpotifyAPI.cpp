@@ -78,7 +78,7 @@ nlohmann::json SpotifyAPI::GetAlbum(const std::string& id)
 	return SendRequest(API_BASE_URL + "/albums/" + id);
 }
 
-nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album)
+nlohmann::json SpotifyAPI::GetAlbumTracks(const nlohmann::json& album)
 {
 	return GetTracks(album["tracks"]);
 }
@@ -116,4 +116,57 @@ nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
 	}
 
 	return tracks;
+}
+
+TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
+{
+	TrackData track;
+	track.Id = json["id"];
+	track.Isrc = json["external_ids"]["isrc"];
+	track.Name = json["name"];
+	track.Explicit = json["explicit"];
+	track.SetDuration(json["duration_ms"]);
+	track.DiscNumber = json["disc_number"];
+	track.TrackNumber = json["track_number"];
+	track.PlaylistTrackNumber = 1;
+	
+	track.Album = ParseAlbum(json["album"]);
+	track.Artists = ParseArtists(json["artists"]);
+
+	return track;
+}
+
+AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
+{
+	AlbumData album;
+	album.Id = json["id"];
+	album.TotalTracks = json["total_tracks"];
+	album.ReleaseDate = json["release_date"];
+	album.ReleaseDatePrecision = json["release_date_precision"];
+	if      (json["album_type"] == "album")  album.Type = EAlbumType::Album;
+	else if (json["single"] == "album")      album.Type = EAlbumType::Single;
+	else if (json["compilation"] == "album") album.Type = EAlbumType::Compilation;
+
+	album.Artists = ParseArtists(json["artists"]);
+
+	return album;
+}
+
+ArtistData SpotifyAPI::ParseArtist(const nlohmann::json& json)
+{
+	ArtistData artist;
+	artist.Id = json["id"];
+	artist.Name = json["name"];
+
+	return artist;
+}
+
+std::vector<ArtistData> SpotifyAPI::ParseArtists(const nlohmann::json& json)
+{
+	std::vector<ArtistData> artists;
+	for (nlohmann::json artistJson : json) {
+		artists.push_back(ParseArtist(artistJson));
+	}
+
+	return artists;
 }
