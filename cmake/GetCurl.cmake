@@ -2,7 +2,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     curl
-    GIT_REPOSITORY https://github.com/curl/curl.git
+    URL https://github.com/curl/curl/releases/download/curl-8_1_2/curl-8.1.2.zip
 )
 
 FetchContent_MakeAvailable(curl)
