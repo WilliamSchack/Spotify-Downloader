@@ -5,6 +5,8 @@
 #define YTMUSICAPI_H
 
 #include "NetworkRequest.h"
+#include "StringUtils.h"
+#include "ArrayUtils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -12,15 +14,17 @@
 #include <regex>
 #include <format>
 
+#include <iostream>
 #include <QObject>
 #include <QTime>
 #include <QRegularExpression>
+#include <QJsonArray>
 
 class YTMusicAPI {
 	public:
 		bool CheckConnection();
 		
-		QJsonArray Search(QString query, QString filter, int limit);
+		nlohmann::json Search(const std::string&, const std::string&, int limit);
 
 		QJsonObject GetAlbum(QString browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
@@ -38,10 +42,10 @@ class YTMusicAPI {
 			"YouTube Music Premium"
 		};
 	private:
-		NetworkRequest GetRequest(std::string endpoint);
-		nlohmann::json GetContext(); // Just so we get the current time instead of an initialized one
+		NetworkRequest GetRequest(const std::string& endpoint);
+		nlohmann::json GetContext();
 
-		QJsonObject ParseSongRuns(QJsonArray runs, int offset = 0);
+		nlohmann::json ParseSongRuns(const nlohmann::json& runs, int offset = 0);
 
 		QJsonObject ParseAlbumHeader(QJsonObject response);
 		QJsonArray ParsePlaylistItems(QJsonArray results, bool isAlbum = false);
@@ -49,16 +53,16 @@ class YTMusicAPI {
 		QJsonArray ParseSongArtists(QJsonObject data, int index);
 		QJsonObject ParseSongAlbum(QJsonObject data, int index);
 
-		QJsonArray ParseSearchResults(QJsonArray results, QString resultType = "", QString category = "");
+		nlohmann::json ParseSearchResults(const nlohmann::json& results, std::string resultType = "", const std::string& category = "");
 
-		QString GetItemText(QJsonObject item, int index = 0, int runIndex = 0);
-		QJsonObject GetFlexColumnItem(QJsonObject item, int index);
+		std::string GetItemText(const nlohmann::json& item, int index = 0, int runIndex = 0);
+		nlohmann::json GetFlexColumnItem(const nlohmann::json& item, int index);
 		QJsonObject GetFixedColumnItem(QJsonObject item, int index);
 
 		QString GetLyricsBrowseId(QString videoId);
 		QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
 
-		int TimeToSeconds(QString time);
+		int TimeToSeconds(const std::string& time);
 };
 
 #endif
