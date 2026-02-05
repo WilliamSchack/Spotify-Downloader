@@ -14,7 +14,6 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
 
     switch (linkType) {
         case ELinkType::Track:    return DownloadTrack(url, directory);
-        case ELinkType::Episode:  return DownloadEpisode(url, directory);
         case ELinkType::Playlist: return DownloadPlaylist(url, directory);
         case ELinkType::Album:    return DownloadAlbum(url, directory);
     }
@@ -25,12 +24,6 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
 bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
 {
     TrackData track = GetTrack(url);
-    return false;
-}
-
-bool IPlatformDownloader::DownloadEpisode(const std::string& url, const std::string& directory)
-{
-    TrackData episode = GetEpisode(url);
     return false;
 }
 
