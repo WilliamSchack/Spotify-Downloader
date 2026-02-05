@@ -5,9 +5,9 @@ enum class ELinkType
 {
     Unknown,
     Track,
+    Episode,
     Playlist,
-    Album,
-    Episode
+    Album
 };
 
 #endif
