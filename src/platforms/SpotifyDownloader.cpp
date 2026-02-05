@@ -30,6 +30,6 @@ TrackData SpotifyDownloader::GetTrack(const std::string& url)
 
     if (url.find("episode") != std::string::npos)
         return _spotify.GetEpisode(trackId);
-    else
-        return _spotify.GetTrack(trackId);
+    
+    return _spotify.GetTrack(trackId);
 }
