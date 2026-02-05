@@ -154,7 +154,7 @@ nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json) {
 	for (int i = 0; i < tracks.size(); i++) {
 		nlohmann::json trackData = tracks[i]["track"];
 		trackData["playlist_track_number"] = i + 1;
-	}`
+	}
 
 	return tracks;
 }
