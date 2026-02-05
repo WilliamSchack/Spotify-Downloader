@@ -5,6 +5,7 @@
 #include "TrackData.h"
 #include "PlaylistData.h"
 
+#include <iostream>
 #include <vector>
 #include <nlohmann/json.hpp>
 
@@ -24,7 +25,7 @@ class SpotifyAPI {
 		std::string _auth;
 	private:
 		nlohmann::json SendRequest(const std::string& url);
-		void GetTracks(nlohmann::json& json);
+		nlohmann::json GetTracks(nlohmann::json json);
 		
 		TrackData ParseTrack(const nlohmann::json& json);
 		std::vector<TrackData> ParseTracks(const nlohmann::json& json);

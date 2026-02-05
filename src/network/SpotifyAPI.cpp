@@ -67,7 +67,7 @@ TrackData SpotifyAPI::GetEpisode(const std::string& id)
 PlaylistData SpotifyAPI::GetPlaylist(const std::string& id)
 {
 	nlohmann::json json = SendRequest(API_BASE_URL + "/playlists/" + id);
-	GetTracks(json);
+	json["tracks"]["items"] = GetTracks(json["tracks"]);
 
 	return ParsePlaylist(json);
 }
@@ -78,10 +78,10 @@ AlbumData SpotifyAPI::GetAlbum(const std::string& id)
 	return ParseAlbum(json);
 }
 
-void SpotifyAPI::GetTracks(nlohmann::json& json)
+nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
 {
-	nlohmann::json& tracks = json["items"];
-	
+	nlohmann::json tracks = json["items"];
+
 	// Continue to get tracks if more than 100 are requested
 	if (json["next"] != "") {
 		// Get tracks in chunks of 100
@@ -102,12 +102,12 @@ void SpotifyAPI::GetTracks(nlohmann::json& json)
 			if (json["next"] == "") finished = true;
 		}
 	}
+
+	return tracks;
 }
 
 TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 {
-	std::cout << json << std::endl;
-
 	TrackData track;
 	track.Id = json.value("id", "");
 	if (json.contains("external_ids"))
@@ -132,7 +132,7 @@ std::vector<TrackData> SpotifyAPI::ParseTracks(const nlohmann::json& json)
 {
 	std::vector<TrackData> tracks;
 	for (int i = 0; i < json.size(); i++) {
-		TrackData track = ParseTrack(json[i]);
+		TrackData track = ParseTrack(json[i]["track"]);
 		track.PlaylistTrackNumber = i + 1;
 
 		tracks.push_back(track);
