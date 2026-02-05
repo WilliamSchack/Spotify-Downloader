@@ -2,19 +2,19 @@
 #define ALBUM_H
 
 #include "EAlbumType.h"
-#include "Artist.h"
+#include "ArtistData.h"
 
 #include <string>
 #include <vector>
 
-struct Album
+struct AlbumData
 {
     std::string Id = "";
     int TotalTracks = 0;
     std::string ReleaseDate = "";
     std::string ReleaseDatePrecision = "";
     EAlbumType Type = EAlbumType::Album;
-    std::vector<Artist> Artists;
+    std::vector<ArtistData> Artists;
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <string>
 
-struct Artist
+struct ArtistData
 {
     std::string Id = "";
     std::string Name = "";
