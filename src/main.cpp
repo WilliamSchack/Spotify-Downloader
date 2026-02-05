@@ -1,10 +1,8 @@
+#include "MainScreenGUIManager.h"
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-
-#include "MainScreenGUIManager.h"
-
-#include "NetworkRequest.h"
 
 int main(int argc, char** argv)
 {

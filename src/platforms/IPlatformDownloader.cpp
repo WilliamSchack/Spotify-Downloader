@@ -21,3 +21,27 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
 
     return false;
 }
+
+bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
+{
+    TrackData track = GetTrack(url);
+    return false;
+}
+
+bool IPlatformDownloader::DownloadEpisode(const std::string& url, const std::string& directory)
+{
+    TrackData episode = GetEpisode(url);
+    return false;
+}
+
+bool IPlatformDownloader::DownloadPlaylist(const std::string& url, const std::string& directory)
+{
+    PlaylistData playlist = GetPlaylist(url);
+    return false;
+}   
+
+bool IPlatformDownloader::DownloadAlbum(const std::string& url, const std::string& directory)
+{
+    AlbumData album = GetAlbum(url);
+    return false;
+}

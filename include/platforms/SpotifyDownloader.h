@@ -3,7 +3,6 @@
 
 #include "IPlatformDownloader.h"
 #include "SpotifyAPI.h"
-#include "TrackData.h"
 
 class SpotifyDownloader : public IPlatformDownloader
 {
@@ -15,10 +14,10 @@ class SpotifyDownloader : public IPlatformDownloader
         ELinkType GetLinkType(const std::string& url) override;
         std::string GetLinkId(const std::string& url);
 
-        bool DownloadTrack(const std::string& url, const std::string& directory) override;
-        bool DownloadPlaylist(const std::string& url, const std::string& directory) override { return false; }
-        bool DownloadAlbum(const std::string& url, const std::string& directory)    override { return false; }
-        bool DownloadEpisode(const std::string& url, const std::string& directory)  override { return false; }
+        TrackData GetTrack(const std::string& url)       override;
+        TrackData GetEpisode(const std::string& url)     override { return TrackData(); }
+        PlaylistData GetPlaylist(const std::string& url) override { return PlaylistData(); }
+        AlbumData GetAlbum(const std::string& url)       override { return AlbumData(); }
 };
 
 #endif

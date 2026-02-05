@@ -26,10 +26,10 @@ std::string SpotifyDownloader::GetLinkId(const std::string& url)
     return url.substr(startIndex, endIndex - startIndex);
 }
 
-bool SpotifyDownloader::DownloadTrack(const std::string& url, const std::string& directory)
+TrackData SpotifyDownloader::GetTrack(const std::string& url)
 {
     std::string trackId = GetLinkId(url);
-    TrackData track = _spotify.GetTrack(trackId);
+    if (trackId.empty()) return TrackData();
 
-    return true;
+    return _spotify.GetTrack(trackId);
 }
