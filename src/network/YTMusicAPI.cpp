@@ -64,7 +64,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 	nlohmann::json contents = responseJson["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
 	nlohmann::json searchResults;
-	for(nlohmann::json result : contents) {
+	for (nlohmann::json result : contents) {
 		std::string type;
 		std::string category;
 
@@ -75,15 +75,16 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 			std::string resultType = data["subtitle"]["runs"][0]["text"];
 			StringUtils::ToLower(resultType);
 
-			std::cout << "IS LOWER: " << resultType << std::endl;
-
 			if (!ArrayUtils::Contains(resultTypes, resultType))
 				resultType = "album";
 			
 			nlohmann::json topResult;
 			topResult["resultType"] = resultType;
 
-			std::string category = data["header"]["musicCardShelfHeaderBasicRenderer"]["title"]["runs"][0]["text"];
+			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(data, { "header", "musicCardShelfHeaderBasicRenderer", "title" });
+			if (!categoryJson.empty())
+				category = categoryJson["runs"][0]["text"];
+
 			topResult["category"] = category;
 
 			if (resultType == "song" || resultType == "video") {
@@ -104,21 +105,23 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 
 			searchResults.push_back(topResult);
 
-			if (contents == result["musicCardShelfRenderer"]["contents"]) {
-				contents = result["musicCardShelfRenderer"]["contents"];
-				category = "";
-				if (contents[0].contains("messageRenderer")) {
-					contents.erase(0);
-					category = contents[0]["messageRenderer"]["text"]["runs"][0]["text"];
-				}
-			} else {
-				contents = result["musicCardShelfRenderer"]["contents"];
+			if (!result["musicCardShelfRenderer"].contains("contents") || contents != result["musicCardShelfRenderer"]["contents"])
 				continue;
+
+			contents = result["musicCardShelfRenderer"]["contents"];
+			category = "";
+			if (contents[0].contains("messageRenderer")) {
+				contents.erase(0);
+				category = contents[0]["messageRenderer"]["text"]["runs"][0]["text"];
 			}
 
 		} else if (result.contains("musicShelfRenderer")) {
 			contents = result["musicShelfRenderer"]["contents"];
-			category = result["musicShelfRenderer"]["title"]["runs"][0]["text"];
+
+			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(result, { "musicShelfRenderer", "title" });
+			if (!categoryJson.empty())
+				category = categoryJson["runs"][0]["text"];
+
 			type = StringUtils::RemoveLast(filter);
 			StringUtils::ToLower(type);
 		} else {
@@ -529,7 +532,11 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 			{"category", category}
 		};
 
-		std::string videoType = data["overlay"]["musicItemThumbnailOverlayRenderer"]["content"]["musicPlayButtonRenderer"]["playNavigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+		nlohmann::json videoTypeJson = JsonUtils::SafelyNavigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" });
+		std::string videoType = "";
+		if (!videoTypeJson.empty())
+			videoType = videoTypeJson;
+		
 		if (resultType == "" && videoType != "") {
 			if (videoType == "MUSIC_VIDEO_TYPE_ATV") resultType = "song";
 			else resultType = "video";
