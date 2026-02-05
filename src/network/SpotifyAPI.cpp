@@ -112,13 +112,6 @@ void SpotifyAPI::GetTracks(nlohmann::json& json)
 			if (json["next"] == "") finished = true;
 		}
 	}
-
-	// Add playlist track number, the one included is the position in the album
-	// Tracks will be positioned at its count in the spotify playlist, use index for track number
-	for (int i = 0; i < tracks.size(); i++) {
-		nlohmann::json& trackData = tracks[i]["track"];
-		trackData["playlist_track_number"] = i + 1;
-	}
 }
 
 TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
@@ -142,8 +135,11 @@ TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 std::vector<TrackData> SpotifyAPI::ParseTracks(const nlohmann::json& json)
 {
 	std::vector<TrackData> tracks;
-	for (nlohmann::json trackJson : json) {
-		tracks.push_back(ParseTrack(trackJson));
+	for (int i = 0; i < json.size(); i++) {
+		TrackData track = ParseTrack(json[i]);
+		track.PlaylistTrackNumber = i + 1;
+
+		tracks.push_back(track);
 	}
 
 	return tracks;
