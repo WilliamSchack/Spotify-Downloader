@@ -1,6 +1,7 @@
 #include "SpotifyAPI.h"
 
-SpotifyAPI::SpotifyAPI() {
+SpotifyAPI::SpotifyAPI()
+{
 	std::string postData;
 	postData.append("grant_type=client_credentials&");
 
@@ -22,7 +23,8 @@ SpotifyAPI::SpotifyAPI() {
 	_auth = responseJson["access_token"];
 }
 
-bool SpotifyAPI::CheckConnection() {
+bool SpotifyAPI::CheckConnection()
+{
 	if (_auth.empty())
 		return false;
 
@@ -34,95 +36,59 @@ bool SpotifyAPI::CheckConnection() {
 	return response.CurlCode == CURLcode::CURLE_OK;
 }
 
-nlohmann::json SpotifyAPI::GetTrack(const std::string& id) {
+nlohmann::json SpotifyAPI::SendRequest(const std::string& url)
+{
 	NetworkRequest request;
-	request.URL = API_BASE_URL + "/tracks/" + id;
+	request.URL = url;
 	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.SetHeader("Authorization", "Bearer " + _auth);
 
 	NetworkResponse response = request.Get();
 	if (response.HTTPCode != 200) {
-		std::cout << "Error Getting Track..." << std::endl;
+		std::cout << "Error from Spotify API: " << response.HTTPCode << std::endl;
 		return nlohmann::json();
 	}
 
 	return nlohmann::json::parse(response.Body);
 }
 
-nlohmann::json SpotifyAPI::GetEpisode(const std::string& id) {
-	NetworkRequest request;
-	request.URL = API_BASE_URL + "/episodes/" + id;
-	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
-	request.SetHeader("Authorization", "Bearer " + _auth);
-
-	NetworkResponse response = request.Get();
-	if (response.HTTPCode != 200) {
-		std::cout << "Error Getting Episode..." << std::endl;
-		return nlohmann::json();
-	}
-
-	return nlohmann::json::parse(response.Body);
+nlohmann::json SpotifyAPI::GetTrack(const std::string& id)
+{
+	return SendRequest(API_BASE_URL + "/tracks/" + id);
 }
 
-nlohmann::json SpotifyAPI::GetPlaylist(const std::string& id) {
-	NetworkRequest request;
-	request.URL = API_BASE_URL + "/playlists/" + id;
-	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
-	request.SetHeader("Authorization", "Bearer " + _auth);
-
-	NetworkResponse response = request.Get();
-	if (response.HTTPCode != 200) {
-		std::cout << "Error Getting Playlist..." << std::endl;
-		return nlohmann::json();
-	}
-
-	return nlohmann::json::parse(response.Body);
+nlohmann::json SpotifyAPI::GetEpisode(const std::string& id)
+{
+	return SendRequest(API_BASE_URL + "/episodes/" + id);
 }
 
-nlohmann::json SpotifyAPI::GetPlaylistTracks(const std::string& id) {
-	NetworkRequest request;
-	request.URL = API_BASE_URL + "/playlists/" + id;
-	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
-	request.SetHeader("Authorization", "Bearer " + _auth);
+nlohmann::json SpotifyAPI::GetPlaylist(const std::string& id)
+{
+	return SendRequest(API_BASE_URL + "/playlists/" + id);
+}
 
-	NetworkResponse response = request.Get();
-	if (response.HTTPCode != 200) {
-		std::cout << "Error Getting Playlist Tracks..." << std::endl;
-		return nlohmann::json();
-	}
-
-	nlohmann::json json = nlohmann::json::parse(response.Body);
+nlohmann::json SpotifyAPI::GetPlaylistTracks(const std::string& id)
+{
+	nlohmann::json json = SendRequest(API_BASE_URL + "/playlists/" + id);
 	return GetTracks(json);
 }
 
-nlohmann::json SpotifyAPI::GetAlbum(const std::string& id) {
-	NetworkRequest request;
-	request.URL = API_BASE_URL + "/albums/" + id;
-	request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
-	request.SetHeader("Authorization", "Bearer " + _auth);
-
-	NetworkResponse response = request.Get();
-	if (response.HTTPCode != 200) {
-		std::cout << "Error Getting Album..." << std::endl;
-		return nlohmann::json();
-	}
-
-	return nlohmann::json::parse(response.Body);
+nlohmann::json SpotifyAPI::GetAlbum(const std::string& id)
+{
+	return SendRequest(API_BASE_URL + "/albums/" + id);
 }
 
-nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album) {
+nlohmann::json SpotifyAPI::GetAlbumTracks(nlohmann::json album)
+{
 	return GetTracks(album["tracks"]);
 }
 
-nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json) {
+nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json)
+{
 	nlohmann::json tracks = json["items"];
 	
 	// Continue to get tracks if more than 100 are requested
 	if (json["next"] != "") {
-		NetworkRequest request;
-		request.SetHeader("Content-Type", "application/x-www-form-urlencoded");
-		request.SetHeader("Authorization", "Bearer " + _auth);
-
 		// Get tracks in chunks of 100
 		bool finished = false;
 		while (!finished) {
@@ -131,14 +97,7 @@ nlohmann::json SpotifyAPI::GetTracks(nlohmann::json json) {
 				break;
 			}
 
-			request.URL = json["next"];
-			NetworkResponse response = request.Get();
-			if (response.HTTPCode != 200) {
-				std::cout << "Error Getting Tracks..." << std::endl;
-				return nlohmann::json();
-			}
-
-			json = nlohmann::json::parse(response.Body);
+			json = SendRequest(json["next"]);
 			nlohmann::json items = json["items"];
 
 			for(nlohmann::json item : items) {

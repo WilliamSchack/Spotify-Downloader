@@ -22,6 +22,7 @@ class SpotifyAPI {
 
 		std::string _auth;
 	private:
+		nlohmann::json SendRequest(const std::string& url);
 		nlohmann::json GetTracks(nlohmann::json json);
 };
 
