@@ -62,6 +62,11 @@ NetworkResponse NetworkRequest::Post(const std::string& postData)
     return response;
 }
 
+NetworkResponse NetworkRequest::Post(nlohmann::json postData)
+{
+    Post(postData.dump());
+}
+
 CURL* NetworkRequest::InitCurl()
 {
     if (_globalHandler.GlobalInit != CURLcode::CURLE_OK)
@@ -71,7 +76,7 @@ CURL* NetworkRequest::InitCurl()
     if (curl == nullptr)
         return curl;
 
-    curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, Url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
 
     return curl;

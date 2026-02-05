@@ -8,22 +8,22 @@
 #include <memory>
 
 #include <curl/curl.h>
-
-#include <iostream>
+#include <nlohmann/json.hpp>
 
 class NetworkRequest
 {
     public:
-    std::string Url = "";
+        std::string Url = "";
     public:
-    ~NetworkRequest();
-    
-    void AddHeader(const std::string& header);
-    void SetHeader(const std::string& header, const std::string& value);
-    void AddCookie(const std::string& cookie, const std::string& value);
-    
-    NetworkResponse Get();
-    NetworkResponse Post(const std::string& postData);
+        ~NetworkRequest();
+        
+        void AddHeader(const std::string& header);
+        void SetHeader(const std::string& header, const std::string& value);
+        void AddCookie(const std::string& cookie, const std::string& value);
+        
+        NetworkResponse Get();
+        NetworkResponse Post(const std::string& postData);
+        NetworkResponse Post(nlohmann::json postData);
     private:
         struct CurlGlobalHandler
         {
