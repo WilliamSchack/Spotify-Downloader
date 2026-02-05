@@ -1,21 +1,25 @@
 # Assumed variables:
+# BINARIES_DIR_NAME     | Name for the directory of external binaries
 # BINARIES_DIR          | Directory to external binaries, assumes folder is created
 # POST_BUILD_COPY_FILES | List of files to copy to final build
 
 # Setup paths
 set(YTDLP_URL "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp")
-set(YTDLP_PATH "${BINARIES_DIR}/yt-dlp")
+set(YTDLP_FILE_NAME "yt-dlp")
 
 if(WIN32)
 	set(YTDLP_URL "${YTDLP_URL}.exe")
-	set(YTDLP_PATH "${YTDLP_PATH}.exe")
+	set(YTDLP_FILE_NAME "${YTDLP_FILE_NAME}.exe")
 elseif(APPLE)
 	set(YTDLP_URL "${YTDLP_URL}_macos")
-	set(YTDLP_PATH "${YTDLP_PATH}_macos")
+	set(YTDLP_FILE_NAME "${YTDLP_FILE_NAME}_macos")
 elseif(UNIX)
 	set(YTDLP_URL "${YTDLP_URL}_linux")
-	set(YTDLP_PATH "${YTDLP_PATH}_linux")
+	set(YTDLP_FILE_NAME "${YTDLP_FILE_NAME}_linux")
 endif()
+
+set(YTDLP_PATH "${BINARIES_DIR}/${YTDLP_FILE_NAME}")
+set(YTDLP_PATH_RELATIVE "${BINARIES_DIR_NAME}/${YTDLP_FILE_NAME}")
 
 # Download ytdlp
 if(NOT EXISTS ${YTDLP_PATH})
@@ -36,5 +40,5 @@ list(APPEND POST_BUILD_COPY_FILES
 
 # Make path available in the code
 add_compile_definitions(${PROJECT_NAME} PRIVATE
-	YTDLP_PATH="${YTDLP_PATH}"
+	YTDLP_PATH_RELATIVE="${YTDLP_PATH_RELATIVE}"
 )

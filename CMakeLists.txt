@@ -48,7 +48,8 @@ set(ADDITIONAL_LIBS CACHE INTERNAL "Additional libraries")
 set(ADDITIONAL_DEPENDENCIES CACHE INTERNAL "Additional dependencies")
 set(POST_BUILD_COPY_FILES CACHE INTERNAL "Files that will be copied to the final build")
 
-set(BINARIES_DIR ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for external dependency files")
+set(BINARIES_DIR_NAME "bin" CACHE INTERNAL "The name for the binaries directory")
+set(BINARIES_DIR "${CMAKE_BINARY_DIR}/${BINARIES_DIR_NAME}" CACHE INTERNAL "Directory for external dependency files")
 file(MAKE_DIRECTORY ${BINARIES_DIR})
 
 include(cmake/GetJson.cmake)

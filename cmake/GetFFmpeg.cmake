@@ -1,10 +1,11 @@
 # Assumed variables:
+# BINARIES_DIR_NAME     | Name for the directory of external binaries
 # BINARIES_DIR          | Directory to external binaries, assumes folder is created
 # POST_BUILD_COPY_FILES | List of files to copy to final build
 
 # Setup paths
 set(FFMPEG_URL "")
-set(FFMPEG_PATH "${BINARIES_DIR}/ffmpeg")
+set(FFMPEG_FILE_NAME "ffmpeg")
 set(FFMPEG_ARCHIVE_PATH "${BINARIES_DIR}/ffmpeg_archive")
 set(FFMPEG_ARCHIVE_EXTRACTED_PATH "${BINARIES_DIR}/ffmpeg_archive_extracted")
 
@@ -21,7 +22,7 @@ if(WIN32)
 	set(FFMPEG_GYANDEV_LATEST_RELEASE_NAME ${CMAKE_MATCH_1})
 	
 	set(FFMPEG_URL "https://github.com/GyanD/codexffmpeg/releases/latest/download/${FFMPEG_GYANDEV_LATEST_RELEASE_NAME}.zip")
-	set(FFMPEG_PATH "${FFMPEG_PATH}.exe")
+	set(FFMPEG_FILE_NAME "${FFMPEG_FILE_NAME}.exe")
 elseif(APPLE)
 	set(FFMPEG_URL "https://evermeet.cx/ffmpeg/get/zip")
 elseif(UNIX)
@@ -29,6 +30,10 @@ elseif(UNIX)
 	set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz")
 endif()
 
+set(FFMPEG_PATH "${BINARIES_DIR}/${FFMPEG_FILE_NAME}")
+set(FFMPEG_PATH_RELATIVE "${BINARIES_DIR_NAME}/${FFMPEG_FILE_NAME}")
+
+# Download ffmpeg
 if(NOT EXISTS ${FFMPEG_PATH})
 	# Download ffmpeg archive
 	message(STATUS "Downloading ffmpeg archive...")
@@ -70,5 +75,5 @@ list(APPEND POST_BUILD_COPY_FILES
 
 # Make path available in the code
 add_compile_definitions(${PROJECT_NAME} PRIVATE
-	FFMPEG_PATH="${FFMPEG_PATH}"
+	FFMPEG_PATH_RELATIVE="${FFMPEG_PATH_RELATIVE}"
 )
