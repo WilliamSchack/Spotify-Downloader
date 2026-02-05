@@ -1,5 +1,5 @@
-#ifndef TRACK_H
-#define TRACK_H
+#ifndef TRACKDATA_H
+#define TRACKDATA_H
 
 #include "ArtistData.h"
 #include "AlbumData.h"

@@ -136,11 +136,29 @@ TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 	return track;
 }
 
+PlaylistData SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
+{
+	PlaylistData playlist;
+	playlist.Id = json["id"];
+	playlist.Name = json["name"];
+	playlist.TotalTracks = json["tracks"]["total"];
+	playlist.ImageUrl = json["images"]["url"];
+	if (json.contains("description"))
+		playlist.Description = json["description"];
+	playlist.OwnerId = json["owner"]["id"];
+	if (json["owner"].contains("display_name"))
+		playlist.OwnerName = json["owner"]["display_name"];
+
+	return playlist;
+}
+
 AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 {
 	AlbumData album;
 	album.Id = json["id"];
+	album.Name = json["name"];
 	album.TotalTracks = json["total_tracks"];
+	album.ImageUrl = json["images"]["url"];
 	album.ReleaseDate = json["release_date"];
 	album.ReleaseDatePrecision = json["release_date_precision"];
 	if      (json["album_type"] == "album")  album.Type = EAlbumType::Album;

@@ -1,5 +1,5 @@
-#ifndef ARTIST_H
-#define ARTIST_H
+#ifndef ARTISTDATA_H
+#define ARTISTDATA_H
 
 #include <string>
 

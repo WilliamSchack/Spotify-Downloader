@@ -3,6 +3,7 @@
 
 #include "NetworkRequest.h"
 #include "TrackData.h"
+#include "PlaylistData.h"
 
 #include <vector>
 #include <nlohmann/json.hpp>
@@ -28,6 +29,7 @@ class SpotifyAPI {
 		nlohmann::json GetTracks(nlohmann::json json);
 		
 		TrackData ParseTrack(const nlohmann::json& json);
+		PlaylistData ParsePlaylist(const nlohmann::json& json);
 		AlbumData ParseAlbum(const nlohmann::json& json);
 		ArtistData ParseArtist(const nlohmann::json& json);
 		std::vector<ArtistData> ParseArtists(const nlohmann::json& json);

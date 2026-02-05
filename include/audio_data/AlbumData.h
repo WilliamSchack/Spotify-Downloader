@@ -1,5 +1,5 @@
-#ifndef ALBUM_H
-#define ALBUM_H
+#ifndef ALBUMDATA_H
+#define ALBUMDATA_H
 
 #include "EAlbumType.h"
 #include "ArtistData.h"
@@ -10,7 +10,9 @@
 struct AlbumData
 {
     std::string Id = "";
+    std::string Name = "";
     int TotalTracks = 0;
+    std::string ImageUrl = "";
     std::string ReleaseDate = "";
     std::string ReleaseDatePrecision = "";
     EAlbumType Type = EAlbumType::Album;
