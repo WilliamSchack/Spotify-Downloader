@@ -22,7 +22,6 @@ Notes:
 
 **Dependencies**
 - Qt6
-- Curl
 - CMake
 
 1 - **Download/Clone this branch**

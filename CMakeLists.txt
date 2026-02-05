@@ -27,11 +27,6 @@ add_compile_definitions(${PROJECT_NAME} PRIVATE
 	SPOTIFYAPI_SECRET="${SPOTIFYAPI_SECRET}"
 )
 
-# Setup Curl
-find_package(CURL REQUIRED)
-
-include_directories(${CURL_INCLUDE_DIR})
-
 # Setup Qt
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -51,6 +46,7 @@ set(POST_BUILD_COPY_FILES CACHE INTERNAL "Files that will be copied to the final
 set(BINARIES_DIR ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for external dependency files")
 file(MAKE_DIRECTORY ${BINARIES_DIR})
 
+include(cmake/GetCurl.cmake)
 include(cmake/GetJson.cmake)
 include(cmake/GetTagLib.cmake)
 include(cmake/GetYtdlp.cmake)
@@ -73,7 +69,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Core
 	Qt6::Widgets
 	Qt6::Qml
-	${CURL_LIBRARIES}
 	${ADDITIONAL_LIBS}
 )
 
