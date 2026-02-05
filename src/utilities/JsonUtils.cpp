@@ -10,15 +10,28 @@ void JsonUtils::ExtendArray(nlohmann::json& source, const nlohmann::json& other)
     source.insert(source.end(), other.begin(), other.end());
 }
 
-nlohmann::json JsonUtils::SafelyNavigate(const nlohmann::json& json, std::vector<std::string> keys)
+nlohmann::json JsonUtils::SafelyNavigate(const nlohmann::json& json, std::vector<std::variant<std::string, int>> keys)
 {
     nlohmann::json currentJson = json;
 
-    for (std::string key : keys) {
-        if (!currentJson.contains(key) || currentJson[key].is_null())
-            return nlohmann::json::object();
+    for (std::variant<std::string, int> key : keys) {
+        // Object Key
+        if (std::holds_alternative<std::string>(key)) {
+            std::string stringKey = std::get<std::string>(key);
+            if (!currentJson.contains(stringKey) || currentJson[stringKey].is_null())
+                return nlohmann::json::object();
 
-        currentJson = currentJson[key];
+            currentJson = currentJson[stringKey];
+        }
+
+        // Array Index
+        else {
+            int intKey = std::get<int>(key);
+            if (!currentJson.is_array() || currentJson.size() <= intKey || currentJson[intKey].is_null())
+                return nlohmann::json::object();
+
+            currentJson = currentJson[intKey];
+        }
     }
 
     return currentJson;
