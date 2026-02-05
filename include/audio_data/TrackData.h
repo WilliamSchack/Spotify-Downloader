@@ -12,6 +12,7 @@ struct TrackData
     std::string Id = "";
     std::string Isrc = "";
     std::string Name = "";
+    std::string Description = "";
     bool Explicit = false;
     int DurationMs = 0;
     int DurationS = 0;

@@ -136,13 +136,56 @@ TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 	return track;
 }
 
+std::vector<TrackData> SpotifyAPI::ParseTracks(const nlohmann::json& json)
+{
+	std::vector<TrackData> tracks;
+	for (nlohmann::json trackJson : json) {
+		tracks.push_back(ParseTrack(trackJson));
+	}
+
+	return tracks;
+}
+
+TrackData SpotifyAPI::ParseEpisode(const nlohmann::json& json)
+{
+	TrackData track;
+	track.Id = json["id"];
+	track.Name = json["name"];
+	track.Description = json["description"];
+	track.Explicit = json["explicit"];
+	track.SetDuration(json["duration_ms"]);
+	track.DiscNumber = 1;
+	track.TrackNumber = 1;
+	track.PlaylistTrackNumber = 1;
+
+	const nlohmann::json& showJson = json["show"];
+	AlbumData show;
+	show.Id = showJson["id"];
+	show.Name = showJson["name"];
+	show.Description = showJson["description"];
+	show.TotalTracks = showJson["total_episodes"];
+	show.ImageUrl = showJson["images"][0]["url"];
+	show.Type = show.TotalTracks == 1 ? EAlbumType::Single : EAlbumType::Album;
+
+	std::vector<ArtistData> artists;
+	ArtistData artist;
+	artist.Name = showJson["publisher"];
+	artists.push_back(artist);
+
+	show.Artists = artists;
+
+	track.Album = show;
+
+	return track;
+}
+
 PlaylistData SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 {
 	PlaylistData playlist;
 	playlist.Id = json["id"];
 	playlist.Name = json["name"];
 	playlist.TotalTracks = json["tracks"]["total"];
-	playlist.ImageUrl = json["images"]["url"];
+	playlist.ImageUrl = json["images"][0]["url"];
 	if (json.contains("description"))
 		playlist.Description = json["description"];
 	playlist.OwnerId = json["owner"]["id"];
@@ -158,7 +201,7 @@ AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 	album.Id = json["id"];
 	album.Name = json["name"];
 	album.TotalTracks = json["total_tracks"];
-	album.ImageUrl = json["images"]["url"];
+	album.ImageUrl = json["images"][0]["url"];
 	album.ReleaseDate = json["release_date"];
 	album.ReleaseDatePrecision = json["release_date_precision"];
 	if      (json["album_type"] == "album")  album.Type = EAlbumType::Album;

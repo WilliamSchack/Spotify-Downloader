@@ -29,6 +29,8 @@ class SpotifyAPI {
 		nlohmann::json GetTracks(nlohmann::json json);
 		
 		TrackData ParseTrack(const nlohmann::json& json);
+		std::vector<TrackData> ParseTracks(const nlohmann::json& json);
+		TrackData ParseEpisode(const nlohmann::json& json);
 		PlaylistData ParsePlaylist(const nlohmann::json& json);
 		AlbumData ParseAlbum(const nlohmann::json& json);
 		ArtistData ParseArtist(const nlohmann::json& json);
