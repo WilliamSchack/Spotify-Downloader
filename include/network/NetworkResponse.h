@@ -7,9 +7,9 @@
 class NetworkResponse
 {
     public:
-        int HTTPCode;
-        CURLcode CurlCode;
-        std::string Body;
+        int HTTPCode = 0;
+        CURLcode CurlCode = CURLcode::CURLE_OK;
+        std::string Body = "";
 };
 
 #endif

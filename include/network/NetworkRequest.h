@@ -26,6 +26,10 @@ class NetworkRequest
         struct curl_slist* _headers = NULL;
         std::vector<std::string> _cookies;
     private:
+        CURL* InitCurl();
+        NetworkResponse SendRequest(CURL* curl);
+        void CleanupCurl(CURL* curl);
+
         std::string GetCookieString();
         static size_t CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp);
 };

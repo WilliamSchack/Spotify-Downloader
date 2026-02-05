@@ -39,62 +39,52 @@ std::string NetworkRequest::GetCookieString()
 
 NetworkResponse NetworkRequest::Get()
 {
-    NetworkResponse response;
+    CURL* curl = InitCurl();
+    if (curl == nullptr)
+        return NetworkResponse();
 
-    CURLcode initCode = curl_global_init(CURL_GLOBAL_DEFAULT);
-    if (initCode != CURLE_OK) {
-        response.CurlCode = initCode;
-        return response;
-    }
-
-    CURL* curl = curl_easy_init();
-    if (!curl) {
-        curl_global_cleanup();
-
-        response.CurlCode = initCode;
-        return response;
-    }
-
-    // Request
-    curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
-
-    response.CurlCode = curl_easy_perform(curl);
-
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
+    NetworkResponse response = SendRequest(curl);
 
     // Cleanup
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-
+    CleanupCurl(curl);
     return response;
 }
 
 NetworkResponse NetworkRequest::Post(const std::string& postData)
 {
-    NetworkResponse response;
+    CURL* curl = InitCurl();
+    if (curl == nullptr)
+        return NetworkResponse();
 
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+
+    NetworkResponse response = SendRequest(curl);
+
+    CleanupCurl(curl);
+    return response;
+}
+
+CURL* NetworkRequest::InitCurl()
+{
     CURLcode initCode = curl_global_init(CURL_GLOBAL_DEFAULT);
-    if (initCode != CURLE_OK) {
-        response.CurlCode = initCode;
-        return response;
-    }
+    if (initCode != CURLE_OK)
+        return nullptr;
 
     CURL* curl = curl_easy_init();
     if (!curl) {
         curl_global_cleanup();
-
-        response.CurlCode = initCode;
-        return response;
+        return curl;
     }
 
-    // Request
     curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData.c_str());
+
+    return curl;
+}
+
+NetworkResponse NetworkRequest::SendRequest(CURL* curl)
+{
+    NetworkResponse response;
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
@@ -103,11 +93,13 @@ NetworkResponse NetworkRequest::Post(const std::string& postData)
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
 
-    // Cleanup
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
-
     return response;
+}
+
+void NetworkRequest::CleanupCurl(CURL* curl)
+{
+    curl_easy_cleanup(curl);
+    curl_global_cleanup();  
 }
 
 size_t NetworkRequest::CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp)
