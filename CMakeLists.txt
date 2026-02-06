@@ -57,10 +57,11 @@ set(BINARIES_DIR_NAME "bin" CACHE INTERNAL "The name for the binaries directory"
 set(BINARIES_DIR "${CMAKE_BINARY_DIR}/${BINARIES_DIR_NAME}" CACHE INTERNAL "Directory for external dependency files")
 file(MAKE_DIRECTORY ${BINARIES_DIR})
 
-include(cmake/GetJson.cmake)
 include(cmake/GetTagLib.cmake)
 include(cmake/GetYtdlp.cmake)
 include(cmake/GetFFmpeg.cmake)
+include(cmake/GetJson.cmake)
+include(cmake/GetStb.cmake)
 
 # Add the executable
 add_executable(${PROJECT_NAME})
