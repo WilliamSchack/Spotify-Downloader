@@ -16,6 +16,11 @@ void StringUtils::ToLower(std::string& string)
         [](unsigned char c){ return std::tolower(c); });
 }
 
+void StringUtils::RemoveChar(std::string& string, const char& c)
+{
+    string.erase(std::remove(string.begin(), string.end(), c), string.end());
+}
+
 std::string StringUtils::RemoveLast(const std::string& string)
 {
     return string.substr(0, string.size() - 1);
