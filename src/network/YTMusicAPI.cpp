@@ -302,13 +302,12 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, boo
 		std::vector<int> userChannelIndexes;
 		int unrecognisedIndex = -1;
 
-		for (nlohmann::json val : data["flexColumns"]) {
-			int index = val;
-			nlohmann::json flexColumnItem = GetFlexColumnItem(data, index);
+		for (int i = 0; i < data["flexColumns"].size(); i++) {
+			nlohmann::json flexColumnItem = GetFlexColumnItem(data, i);
 
 			if (JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "navigationEndpoint" }).empty()) {
 				if (!JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "text" }).empty())
-					unrecognisedIndex = unrecognisedIndex == -1 ? index : unrecognisedIndex;
+					unrecognisedIndex = unrecognisedIndex == -1 ? i : unrecognisedIndex;
 
 				continue;
 			}
@@ -316,18 +315,18 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, boo
 			nlohmann::json navigationEndpoint = flexColumnItem["text"]["runs"][0]["navigationEndpoint"];
 
 			if (navigationEndpoint.contains("watchEndpoint")) {
-				titleIndex = index;
+				titleIndex = i;
 			} else if (navigationEndpoint.contains("browseEndpoint")) {
 				std::string pageType = navigationEndpoint["browseEndpoint"]["browseEndpointContectSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
 
 				if (pageType == "MUSIC_PAGE_TYPE_ARTIST" || pageType == "MUSIC_PAGE_TYPE_UNKNOWN")
-					artistIndex = index;
+					artistIndex = i;
 				else if (pageType == "MUSIC_PAGE_TYPE_ALBUM")
-					albumIndex = index;
+					albumIndex = i;
 				else if (pageType == "MUSIC_PAGE_TYPE_USER_CHANNEL")
-					userChannelIndexes.push_back(index);
+					userChannelIndexes.push_back(i);
 				else if (pageType == "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE")
-					titleIndex = index;
+					titleIndex = i;
 			}
 		}
 
@@ -503,9 +502,8 @@ nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, int index)
 
 	if (flexItem.empty())
 		return nlohmann::json::object();
-	
-	std::string browseId = flexItem["text"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
+	std::string browseId = JsonUtils::SafelyNavigate<std::string>(flexItem, { "text", "runs", 0, "navigationEndpoint", "browseEndpoint", "browseId" });
 	return nlohmann::json {
 		{ "name", GetItemText(data, index) },
 		{ "id", browseId }
