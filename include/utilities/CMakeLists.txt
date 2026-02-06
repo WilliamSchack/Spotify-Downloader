@@ -4,4 +4,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/StringUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ArrayUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/JsonUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/FileUtils.h
 )
