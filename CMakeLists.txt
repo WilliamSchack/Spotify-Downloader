@@ -8,6 +8,11 @@ set(APP_DESCRIPTION "Can download songs & lyrics, modify metadata, and probably 
 set(ORGANISATION_NAME "WilliamSchack" CACHE INTERNAL "")
 set(APP_ID "com.williamschack.unnamedsongapp" CACHE INTERNAL "")
 
+add_compile_definitions(${PROJECT_NAME} PRIVATE
+	APP_NAME="${PROJECT_NAME}"
+	APP_DISPLAY_NAME="${DISPLAY_NAME}"
+)
+
 project(
 	${PROJECT_NAME}
 	VERSION ${APP_VERSION}
