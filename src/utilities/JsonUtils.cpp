@@ -10,7 +10,7 @@ void JsonUtils::ExtendArray(nlohmann::json& source, const nlohmann::json& other)
     source.insert(source.end(), other.begin(), other.end());
 }
 
-nlohmann::json JsonUtils::SafelyNavigate(const nlohmann::json& json, std::vector<std::variant<std::string, int>> keys)
+nlohmann::json JsonUtils::SafelyNavigate(const nlohmann::json& json, const std::vector<std::variant<std::string, int>>& keys)
 {
     nlohmann::json currentJson = json;
 

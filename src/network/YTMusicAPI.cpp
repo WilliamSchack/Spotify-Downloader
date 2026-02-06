@@ -81,9 +81,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 			nlohmann::json topResult;
 			topResult["resultType"] = resultType;
 
-			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(data, { "header", "musicCardShelfHeaderBasicRenderer", "title" });
-			if (!categoryJson.empty()) category = categoryJson["runs"][0]["text"];
-
+			category = JsonUtils::SafelyNavigate<std::string>(data, { "header", "musicCardShelfHeaderBasicRenderer", "title", "runs", 0, "text" });
 			topResult["category"] = category;
 
 			if (resultType == "song" || resultType == "video") {
@@ -116,9 +114,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 
 		} else if (result.contains("musicShelfRenderer")) {
 			contents = result["musicShelfRenderer"]["contents"];
-
-			nlohmann::json categoryJson = JsonUtils::SafelyNavigate(result, { "musicShelfRenderer", "title" });
-			if (!categoryJson.empty()) category = categoryJson["runs"][0]["text"];
+			category = JsonUtils::SafelyNavigate<std::string>(result, { "musicShelfRenderer", "title", "runs", 0, "text" });
 
 			type = StringUtils::RemoveLast(filter);
 			StringUtils::ToLower(type);
@@ -173,36 +169,35 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const std::string& f
 	return searchResults;
 }
 
-/*
-QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
-	if (!browseId.startsWith("MPRE")) return QJsonObject();
+nlohmann::json YTMusicAPI::GetAlbum(const std::string& browseId) {
+	if (!StringUtils::StartsWith(browseId, "MPRE"))
+		return nlohmann::json::object();
 
-	QJsonObject body {
+	nlohmann::json postData {
 		{"browseId", browseId},
 		{"context", GetContext()}
 	};
 
-	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(GetRequest("browse"), postData);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
+	NetworkRequest request = GetRequest("browse");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
 
-	if (!json.contains("contents")) return QJsonObject();
+	if (!json.contains("contents"))
+		return nlohmann::json::object();
 
-	QJsonObject album = ParseAlbumHeader(json);
+	nlohmann::json album = ParseAlbumHeader(json);
 
-	QJsonObject results = JSONUtils::Navigate(json, {"contents", "twoColumnBrowseResultsRenderer", "secondaryContents", "sectionListRenderer", "contents", 0, "musicShelfRenderer"}).toObject();
-	QJsonArray tracks = ParsePlaylistItems(results["contents"].toArray(), true);
+	nlohmann::json results = json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicShelfRenderer"];
+	nlohmann::json tracks = ParsePlaylistItems(results["contents"], true);
 
-	for (int i = 0; i < tracks.count(); i++) {
-		QJsonObject track = tracks[i].toObject();
-		track["album"] = QJsonObject{
+	for (int i = 0; i < tracks.size(); i++) {
+		nlohmann::json track = tracks[i];
+		track["album"] = nlohmann::json {
 			{"id", browseId},
-			{"name", album["title"].toString()}
+			{"name", album["title"]}
 		};
-		track["artists"] = track["artists"].toArray().isEmpty() ? album["artists"] : track["artists"];
-
-		track["resultType"] = track["videoType"].toString().contains("MUSIC_VIDEO") ? "video" : ""; // It is a video 99% of the time, just in case it isnt
-
+		track["artists"] = track["artists"].empty() ? album["artists"] : track["artists"];
+		track["resultType"] = StringUtils::Contains(track["videoType"], "MUSIC_VIDEO") ? "video" : ""; // It is a video 99% of the time, just in case it isnt
 		tracks[i] = track;
 	}
 
@@ -211,89 +206,91 @@ QJsonObject YTMusicAPI::GetAlbum(QString browseId) {
 	return album;
 }
 
+
+/*
 QJsonArray YTMusicAPI::GetAlbumTracks(QString browseId) {
 	QJsonObject album = GetAlbum(browseId);
 	if (album.isEmpty()) return QJsonArray();
 
 	return album["tracks"].toArray();
 }
+*/
 
-QJsonObject YTMusicAPI::ParseAlbumHeader(QJsonObject response) {
-	QJsonObject header = JSONUtils::Navigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" }).toObject();
+nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
+	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
 
-	if (header.isEmpty()) return QJsonObject();
+	if (header.empty())
+		return nlohmann::json::object();
 
-	QJsonObject album {
-		{"title", header["title"].toObject()["runs"].toArray()[0].toObject()["text"].toString()},
-		{"type", header["subtitle"].toObject()["runs"].toArray()[0].toObject()["text"].toString()}
+	nlohmann::json album {
+		{"title", header["title"]["runs"][0]["text"]},
+		{"type", header["subtitle"]["runs"][0]["text"]}
 	};
 
 	if (header.contains("description"))
-		album["description"] = JSONUtils::Navigate(header, { "description", "musicDescriptionShelfRenderer", "description", "runs", 0, "text" }).toString();
+		album["description"] = header["description"]["musicDescriptionShelfRenderer"]["description"]["runs"][0]["text"];
 	
-	QJsonObject albumInfo = ParseSongRuns(header["subtitle"].toObject()["runs"].toArray());
-	if (!header["straplineTextOne"].toObject().isEmpty()) { // If this does not pass, artists will be found for tracks individually, only happens for very few albums
-		albumInfo["artists"] = QJsonArray{
-			QJsonObject {
-				{"name", JSONUtils::Navigate(header, {"straplineTextOne", "runs", 0, "text"}).toString()},
-				{"id", JSONUtils::Navigate(header, {"straplineTextOne", "runs", 0, "navigationEndpoint", "browseEndpoint", "browseId"}).toString()}
+	nlohmann::json albumInfo = ParseSongRuns(header["subtitle"]["runs"]);
+	if (!header["straplineTextOne"].empty()) { // If this does not pass, artists will be found for tracks individually, only happens for very few albums
+		albumInfo["artists"] = nlohmann::json {
+			{
+				{"name", header["straplineTextOne"]["runs"][0]["text"]},
+				{"id", header["straplineTextOne"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"]}
 			}
 		};
 	}
-	album = JSONUtils::Merge(album, albumInfo);
+	
+	album.merge_patch(albumInfo);
 
-	if (JSONUtils::Navigate(header, {"secondSubtitle", "runs"}).toArray().count() > 1) {
-		album["trackCount"] = JSONUtils::Navigate(header, {"secondSubtitle", "runs", 0, "text"}).toString().split(" ")[0].toInt(); // Output is -- Songs, remove " songs" and convert to int
-		album["duration"] = JSONUtils::Navigate(header, { "secondSubtitle", "runs", 2, "text" }).toString();
+	if (header["secondSubtitle"]["runs"].size() > 1) {
+		album["trackCount"] =  std::stoi(StringUtils::Split(header["secondSubtitle"]["runs"][0]["text"], " ")[0]); // Output is -- Songs, remove " songs" and convert to int
+		album["duration"] = header["secondSubtitle"]["runs"][2]["text"];
 	} else {
-		album["duration"] = JSONUtils::Navigate(header, { "secondSubtitle", "runs", 0, "text" }).toString();
+		album["duration"] = header["secondSubtitle"]["runs"][0]["text"];
 	}
 
-	QJsonArray buttons = header["buttons"].toArray();
-	album["audioPlaylistId"] = JSONUtils::Navigate(buttons, { 1, "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "playlistId" }).toString();
+	nlohmann::json buttons = header["buttons"];
+	album["audioPlaylistId"] = buttons[1]["musicPlayButtonRenderer"]["playNavigationEndpoint"]["watchEndpoint"]["playlistId"];
 
 	bool isExplicit = false;
 	if (header.contains("description"))
-		isExplicit = JSONUtils::Navigate(header, {"description", "musicDescriptionShelfRenderer"}).toObject().contains("straplineBadge");
+		isExplicit = header["description"]["musicDescriptionShelfRenderer"].contains("straplineBadge");
 
 	album["isExplicit"] = isExplicit;
 
 	return album;
 }
 
-QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
-	QJsonArray songs = QJsonArray();
+nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, bool isAlbum) {
+	nlohmann::json songs = nlohmann::json::array();
 
-	foreach(QJsonValue val, results) {
-		QJsonObject result = val.toObject();
-
+	for (nlohmann::json result : results) {
 		if (!result.contains("musicResponsiveListItemRenderer"))
 			continue;
 
-		QJsonObject data = result["musicResponsiveListItemRenderer"].toObject();
-		QJsonObject song = QJsonObject();
+		nlohmann::json data = result["musicResponsiveListItemRenderer"];
+		nlohmann::json song = nlohmann::json::object();
 
 		if (data.contains("menu")) {
-			QJsonArray menuItems = data["menu"].toObject()["menuRenderer"].toObject()["items"].toArray();
-			foreach(QJsonValue val, menuItems) {
-				QJsonObject	item = val.toObject();
-
+			nlohmann::json menuItems = data["menu"]["menuRenderer"]["items"];
+			foreach(nlohmann::json item, menuItems) {
 				if (item.contains("menuServiceItemRenderer")) {
-					QJsonObject menuService = JSONUtils::Navigate(item, { "menuServiceItemRenderer", "menuServiceItemRenderer" }).toObject();
+					nlohmann::json menuService = item["menuServiceItemRenderer"]["menuServiceItemRenderer"];
 					if (menuService.contains("playlistEditEndpoint")) {
-						song["setVideoId"] = JSONUtils::Navigate(menuService, { "playlistEditEndpoint", "actions", 0, "setVideoId" }).toString();
-						song["videoId"] = JSONUtils::Navigate(menuService, { "playlistEditEndpoint", "actions", 0, "removedVideoId" }).toString();
+						song["setVideoId"] = menuService["playlistEditEndpoint"]["actions"][0]["setVideoId"];
+						song["videoId"] = menuService["playlistEditEndpoint"]["actions"][0]["removedVideoId"];
 					}
 				}
 			}
 		}
 
-		if (!JSONUtils::Navigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer" }).isNull())
-			song["videoId"] = JSONUtils::Navigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "videoId" }).toString();
+		nlohmann::json musicPlayButton = JsonUtils::SafelyNavigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer" });
+		if (!musicPlayButton.empty())
+			song["videoId"] = musicPlayButton["playNavigationEndpoint"]["watchEndpoint"]["videoId"];
 
 		bool isAvailable = true;
 		if (data.contains("musicItemRendererDisplayPolicy")) {
-			isAvailable = data["musicItemRendererDisplayPolicy"].toString() != "MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT";
+			isAvailable = data["musicItemRendererDisplayPolicy"] != "MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT";
 		}
 
 		bool usePresetColumns = isAvailable == false || isAlbum == true;
@@ -302,35 +299,33 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 		int artistIndex = usePresetColumns ? 1 : -1;
 		int albumIndex = usePresetColumns ? 2 : -1;
 		
-		QList<int> userChannelIndexes = QList<int>();
+		std::vector<int> userChannelIndexes;
 		int unrecognisedIndex = -1;
 
-		foreach(QJsonValue val, data["flexColumns"].toArray()) {
-			int index = val.toInt();
+		for (nlohmann::json val : data["flexColumns"]) {
+			int index = val;
+			nlohmann::json flexColumnItem = GetFlexColumnItem(data, index);
 
-			QJsonObject flexColumnItem = GetFlexColumnItem(data, index);
-
-			if (JSONUtils::Navigate(flexColumnItem, { "text", "runs", 0, "navigationEndpoint" }).isNull()) {
-				if (!JSONUtils::Navigate(flexColumnItem, { "text", "runs", 0, "text" }).isNull()) {
+			if (JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "navigationEndpoint" }).empty()) {
+				if (!JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "text" }).empty())
 					unrecognisedIndex = unrecognisedIndex == -1 ? index : unrecognisedIndex;
-				}
 
 				continue;
 			}
 
-			QJsonObject navigationEndpoint = JSONUtils::Navigate(flexColumnItem, { "text", "runs", 0, "navigationEndpoint" }).toObject();
+			nlohmann::json navigationEndpoint = flexColumnItem["text"]["runs"][0]["navigationEndpoint"];
 
 			if (navigationEndpoint.contains("watchEndpoint")) {
 				titleIndex = index;
 			} else if (navigationEndpoint.contains("browseEndpoint")) {
-				QString pageType = JSONUtils::Navigate(navigationEndpoint, { "browseEndpoint", "browseEndpointContectSupportedConfigs", "browseEndpointContextMusicConfig", "pageType" }).toString();
+				std::string pageType = navigationEndpoint["browseEndpoint"]["browseEndpointContectSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"];
 
 				if (pageType == "MUSIC_PAGE_TYPE_ARTIST" || pageType == "MUSIC_PAGE_TYPE_UNKNOWN")
 					artistIndex = index;
 				else if (pageType == "MUSIC_PAGE_TYPE_ALBUM")
 					albumIndex = index;
 				else if (pageType == "MUSIC_PAGE_TYPE_USER_CHANNEL")
-					userChannelIndexes.append(index);
+					userChannelIndexes.push_back(index);
 				else if (pageType == "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE")
 					titleIndex = index;
 			}
@@ -339,29 +334,29 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 		if (artistIndex == -1 && unrecognisedIndex != -1)
 			artistIndex = unrecognisedIndex;
 
-		if (artistIndex == -1 && !userChannelIndexes.isEmpty())
-			artistIndex = userChannelIndexes.last();
+		if (artistIndex == -1 && !userChannelIndexes.empty())
+			artistIndex = userChannelIndexes.back();
 
-		QString title = titleIndex != -1 ? GetItemText(data, titleIndex) : "";
+		std::string title = titleIndex != -1 ? GetItemText(data, titleIndex) : "";
 		if (title == "Song deleted")
-			return QJsonArray();
+			return nlohmann::json::array();
 		song["title"] = title;
 
-		song["artists"] = artistIndex != -1 ? ParseSongArtists(data, artistIndex) : QJsonArray();
+		song["artists"] = artistIndex != -1 ? ParseSongArtists(data, artistIndex) : nlohmann::json::array();
 
-		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : QJsonObject();
+		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : nlohmann::json::object();
 
-		song["views"] = isAlbum ? GetItemText(data, 2).split(" ")[0] : "";
+		song["views"] = isAlbum ? StringUtils::Split(GetItemText(data, 2), " ")[0] : "";
 
 		song["isExplicit"] = data.contains("badges");
 
 		if (data.contains("fixedColumns")) {
-			QString duration = "";
-			QJsonObject fixedColumnItemText = GetFixedColumnItem(data, 0)["text"].toObject();
+			std::string duration = "";
+			nlohmann::json fixedColumnItemText = GetFixedColumnItem(data, 0)["text"];
 			if (fixedColumnItemText.contains("simpleText"))
-				duration = fixedColumnItemText["simpleText"].toString();
+				duration = fixedColumnItemText["simpleText"];
 			else
-				duration = JSONUtils::Navigate(fixedColumnItemText, { "runs", 0, "text" }).toString();
+				duration = fixedColumnItemText["runs"][0]["text"];
 
 			song["duration"] = duration;
 			song["durationSeconds"] = TimeToSeconds(duration);
@@ -369,14 +364,14 @@ QJsonArray YTMusicAPI::ParsePlaylistItems(QJsonArray results, bool isAlbum) {
 
 		song["videoType"] = "";
 		if (data.contains("menu"))
-			song["videoType"] = JSONUtils::Navigate(data, { "menu", "menuRenderer", "items", 0, "menuNavigationItemRenderer", "navigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" }).toString();
+			song["videoType"] = data["menu"]["menuRenderer"]["items"][0]["menuNavigationItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
 
-		songs.append(song);
+		songs.push_back(song);
 	}
 
 	return songs;
 }
-*/
+
 
 nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset) {
 	nlohmann::json parsed = nlohmann::json::object();
@@ -469,54 +464,53 @@ nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, int ind
 	return flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"];
 }
 
-/*
-QJsonObject YTMusicAPI::GetFixedColumnItem(QJsonObject item, int index) {
-	if (!JSONUtils::Navigate(item, { "fixedColumns", index, "musicResponsiveListItemFixedColumnRenderer" }).toObject().contains("text") ||
-		!JSONUtils::Navigate(item, { "fixedColumns", index, "musicResponsiveListItemFixedColumnRenderer", "text" }).toObject().contains("runs")) {
-		return QJsonObject();
+nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json&  item, int index) {
+	nlohmann::json columnItem = item["fixedColumns"][index]["musicResponsiveListItemFixedColumnRenderer"];
+	if (!columnItem.contains("text") ||
+		!columnItem["text"].contains("runs")) {
+		return nlohmann::json::object();
 	}
 
-	return JSONUtils::Navigate(item, { "fixedColumns", index, "musicResponsiveListItemFixedColumnRenderer"}).toObject();
+	return columnItem;
 }
 
-QJsonArray YTMusicAPI::ParseSongArtists(QJsonObject data, int index) {
-	QJsonObject flexItem = GetFlexColumnItem(data, index);
+nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, int index) {
+	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
-	if (flexItem.isEmpty())
-		return QJsonArray();
+	if (flexItem.empty())
+		return nlohmann::json::array();
 	
-	QJsonArray runs = flexItem["text"].toObject()["runs"].toArray();
+	nlohmann::json runs = flexItem["text"]["runs"];
 
-	QJsonArray artists = QJsonArray();
-	for (int i = 0; i < int(runs.count() / 2 + 1); i++) {
-		QString name = JSONUtils::Navigate(runs, { i * 2, "text" }).toString();
-		QString id = JSONUtils::Navigate(runs, { i * 2, "navigationEndpoint", "browseEndpoint", "browseId" }).toString();
+	nlohmann::json artists = nlohmann::json::array();
+	for (int i = 0; i < int(runs.size() / 2 + 1); i++) {
+		std::string name = runs[i * 2]["text"];
+		std::string id = runs[i * 2]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-		QJsonObject artist{
+		nlohmann::json artist {
 			{ "name", name },
 			{ "id", id }
 		};
 
-		artists.append(artist);
+		artists.push_back(artist);
 	}
 
 	return artists;
 }
 
-QJsonObject YTMusicAPI::ParseSongAlbum(QJsonObject data, int index) {
-	QJsonObject flexItem = GetFlexColumnItem(data, index);
+nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, int index) {
+	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
-	if (flexItem.isEmpty())
-		return QJsonObject();
+	if (flexItem.empty())
+		return nlohmann::json::object();
 	
-	QString browseId = JSONUtils::Navigate(flexItem, { "text", "runs", 0, "navigationEndpoint", "browseEndpoint", "browseId" }).toString();
+	std::string browseId = flexItem["text"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"];
 
-	return QJsonObject {
+	return nlohmann::json {
 		{ "name", GetItemText(data, index) },
 		{ "id", browseId }
 	};
 }
-*/
 
 nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std::string resultType, const std::string& category) {
 	nlohmann::json finalResults = nlohmann::json::array();
@@ -531,7 +525,6 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 		};
 
 		std::string videoType = JsonUtils::SafelyNavigate<std::string>(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" });
-		
 		if (resultType == "" && videoType != "") {
 			if (videoType == "MUSIC_VIDEO_TYPE_ATV") resultType = "song";
 			else resultType = "video";

@@ -25,7 +25,7 @@ class YTMusicAPI {
 		
 		nlohmann::json Search(const std::string&, const std::string&, int limit);
 
-		QJsonObject GetAlbum(QString browseId);
+		nlohmann::json GetAlbum(const std::string& browseId);
 		QJsonArray GetAlbumTracks(QString browseId);
 
 		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
@@ -46,17 +46,17 @@ class YTMusicAPI {
 
 		nlohmann::json ParseSongRuns(const nlohmann::json& runs, int offset = 0);
 
-		QJsonObject ParseAlbumHeader(QJsonObject response);
-		QJsonArray ParsePlaylistItems(QJsonArray results, bool isAlbum = false);
+		nlohmann::json ParseAlbumHeader(const nlohmann::json& response);
+		nlohmann::json ParsePlaylistItems(const nlohmann::json& results, bool isAlbum = false);
 
-		QJsonArray ParseSongArtists(QJsonObject data, int index);
-		QJsonObject ParseSongAlbum(QJsonObject data, int index);
+		nlohmann::json ParseSongArtists(const nlohmann::json& data, int index);
+		nlohmann::json ParseSongAlbum(const nlohmann::json& data, int index);
 
 		nlohmann::json ParseSearchResults(const nlohmann::json& results, std::string resultType = "", const std::string& category = "");
 
 		std::string GetItemText(const nlohmann::json& item, int index = 0, int runIndex = 0);
 		nlohmann::json GetFlexColumnItem(const nlohmann::json& item, int index);
-		QJsonObject GetFixedColumnItem(QJsonObject item, int index);
+		nlohmann::json GetFixedColumnItem(const nlohmann::json& item, int index);
 
 		QString GetLyricsBrowseId(QString videoId);
 		QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
