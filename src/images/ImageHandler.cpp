@@ -1,5 +1,20 @@
 #include "ImageHandler.h"
 
+bool ImageHandler::SaveImage(const std::filesystem::path& path, const Image& image)
+{
+    std::string pathString = path.string();
+    unsigned int startIndex = pathString.find_last_of('.') + 1;
+    std::string format = pathString.substr(startIndex);
+    StringUtils::ToLower(format);
+
+    if (format == "png")                     return SavePng(path, image);
+    if (format == "jpg" || format == "jpeg") return SaveJpg(path, image);
+
+    std::cout << "Unable to save image, format (" << format << ") is not implemented" << std::endl;
+
+    return false;
+}
+
 bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image)
 {
     return stbi_write_png(
