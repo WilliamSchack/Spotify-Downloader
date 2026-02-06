@@ -26,13 +26,13 @@ class YTMusicAPI {
 		nlohmann::json Search(const std::string&, const std::string&, int limit);
 
 		nlohmann::json GetAlbum(const std::string& browseId);
-		QJsonArray GetAlbumTracks(QString browseId);
+		//QJsonArray GetAlbumTracks(QString browseId);
 
 		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
 
-		bool HasPremium(QString cookies);
+		//bool HasPremium(QString cookies);
 
-		bool IsAgeRestricted(QString videoId);
+		//bool IsAgeRestricted(QString videoId);
 	private:
         static inline const std::string API_BASE_URL = "https://music.youtube.com/youtubei/v1";
 
@@ -58,8 +58,8 @@ class YTMusicAPI {
 		nlohmann::json GetFlexColumnItem(const nlohmann::json& item, int index);
 		nlohmann::json GetFixedColumnItem(const nlohmann::json& item, int index);
 
-		QString GetLyricsBrowseId(QString videoId);
-		QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
+		//QString GetLyricsBrowseId(QString videoId);
+		//QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
 
 		int TimeToSeconds(const std::string& time);
 };
