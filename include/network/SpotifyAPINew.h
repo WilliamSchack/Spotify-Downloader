@@ -1,0 +1,4 @@
+#ifndef SPOTIFYAPINEW_H
+#define SPOTIFYAPINEW_H
+
+#endif
