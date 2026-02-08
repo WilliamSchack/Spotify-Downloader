@@ -3,9 +3,10 @@
 
 #include "NetworkRequest.h"
 #include "HtmlParser.h"
-#include "TrackData.h"
 #include "StringUtils.h"
 #include "JsonUtils.h"
+#include "TrackData.h"
+#include "AlbumTracks.h"
 
 #include <regex>
 
@@ -13,6 +14,9 @@ class SpotifyAPINew
 {
     public:
         static TrackData GetTrack(const std::string& id);
+        static AlbumTracks GetAlbum(const std::string& id);
+    private:
+        static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
 };
 
 #endif

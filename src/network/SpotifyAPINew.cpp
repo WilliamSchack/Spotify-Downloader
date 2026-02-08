@@ -1,8 +1,8 @@
 #include "SpotifyAPINew.h"
 
-TrackData SpotifyAPINew::GetTrack(const std::string& id)
+NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std::string& id)
 {
-    std::string url = "https://open.spotify.com/track/" + id;
+    std::string url = "https://open.spotify.com/" + endpoint + "/" + id;
     
     NetworkRequest request;
     request.Url = url;
@@ -10,7 +10,12 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("DNT", "1");
 	request.SetHeader("Referer", "https://open.spotify.com");
+    return request;
+}
 
+TrackData SpotifyAPINew::GetTrack(const std::string& id)
+{
+    NetworkRequest request = GetRequest("track", id);
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
 
@@ -94,4 +99,9 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
     track.Artists = artists;
 
     return track;
+}
+
+AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
+{
+    return AlbumTracks();
 }
