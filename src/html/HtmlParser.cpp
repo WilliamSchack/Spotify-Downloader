@@ -29,6 +29,7 @@ HtmlParser::~HtmlParser()
 std::vector<HtmlNode> HtmlParser::SelectAll(lxb_dom_node_t* node, const std::string& selector)
 {
     _lastNodes.clear();
+    if (node == nullptr) return _lastNodes;
 
     const lxb_char_t* lxbSelector = reinterpret_cast<const lxb_char_t*>(selector.c_str());
 
@@ -55,7 +56,10 @@ std::vector<HtmlNode> HtmlParser::SelectAll(const std::string& selector)
 HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
 {
     SelectAll(node, selector);
-    return _lastNodes[0];
+    if (_lastNodes.size() > 0)
+        return _lastNodes[0];
+    
+    return HtmlNode(nullptr);
 }
 
 HtmlNode HtmlParser::Select(const HtmlNode& node, const std::string& selector)
