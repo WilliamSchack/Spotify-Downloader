@@ -103,5 +103,48 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 
 AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
 {
+    NetworkRequest request = GetRequest("album", id);
+    NetworkResponse response = request.Get();
+    std::string responseHtml = response.Body;
+
+    std::cout << responseHtml << std::endl;
+
+    // Get meta details
+    HtmlParser parser(responseHtml);
+    HtmlNode descriptionNode = parser.Select(R"(meta[property="og:description"])");
+    HtmlNode imageNode = parser.Select(R"(meta[property="og:image"])");
+    HtmlNode mainArtistIdNode = parser.Select(R"(meta[name="music:musician"])");
+    HtmlNode releaseDateNode = parser.Select(R"(meta[name="music:release_date"])");
+    std::vector<HtmlNode> songIdNodes = parser.SelectAll(R"(meta[name="music:song"])");
+    std::vector<HtmlNode> songDiscNodes = parser.SelectAll(R"(meta[name="music:song:disc"])");
+    std::vector<HtmlNode> songTrackNodes = parser.SelectAll(R"(meta[name="music:song:track"])");
+
+    // Parse meta details
+    std::string description = descriptionNode.GetAttribute("content");
+    std::vector<std::string> descriptionSplit = StringUtils::Split(description, "\U000000B7"); // dot char
+    std::string mainArtistName = descriptionSplit[0];
+    std::string albumTypeString = descriptionSplit[1];
+    std::string albumYear = descriptionSplit[2];
+    std::string songCountString = descriptionSplit[3];
+    mainArtistName = mainArtistName.substr(0, mainArtistName.size() - 1);    // Remove last whitespace
+    albumTypeString = albumTypeString.substr(1, albumTypeString.size() - 2); // Remove start and end whitespace
+    albumYear = albumYear.substr(1, albumYear.size() - 2);                   // Remove start and end whitespace
+    songCountString = songCountString.substr(1, songCountString.size() - 7); // Remove start whitespace, and ending " songs"
+    
+    EAlbumType albumType = EAlbumType::Album;
+    if      (albumTypeString == "single")      albumType = EAlbumType::Single;
+    else if (albumTypeString == "compilation") albumType = EAlbumType::Compilation;
+    
+    int songCount = std::stoi(songCountString);
+
+    std::string imageUrl = imageNode.GetAttribute("content");
+    std::string mainArtistId = mainArtistIdNode.GetAttribute("content");
+    std::string releaseDate = releaseDateNode.GetAttribute("content");
+
+    // Get json details
+    HtmlNode jsonNode = parser.Select(R"(script[type="application/ld+json"])");
+    nlohmann::json json = nlohmann::json::parse(jsonNode.GetText());
+    std::string albumName = json["name"];
+
     return AlbumTracks();
 }

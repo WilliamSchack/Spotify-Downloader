@@ -8,7 +8,12 @@
 #include "TrackData.h"
 #include "AlbumTracks.h"
 
+#include <nlohmann/json.hpp>
+
 #include <regex>
+
+#include <iostream>
+
 
 class SpotifyAPINew
 {
