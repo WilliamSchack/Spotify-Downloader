@@ -8,10 +8,14 @@ lxb_dom_node_t* HtmlNode::GetNode() const
     return _node;
 }
 
+bool HtmlNode::Exists() const
+{
+    return _node != nullptr;
+}
+
 std::string HtmlNode::GetText() const
 {
-    if (_node == nullptr)
-        return "";
+    if (!Exists()) return "";
 
     size_t textLen;
     const lxb_char_t *text = lxb_dom_node_text_content(_node, &textLen);
@@ -22,8 +26,7 @@ std::string HtmlNode::GetText() const
 
 std::string HtmlNode::GetAttribute(const std::string& attribute) const
 {
-    if (_node == nullptr)
-        return "";
+    if (!Exists()) return "";
 
     const lxb_char_t* lxbAttribute = reinterpret_cast<const lxb_char_t*>(attribute.c_str());
 

@@ -114,7 +114,7 @@ TrackData SpotifyAPI::ParseTrack(const nlohmann::json& json)
 		track.Isrc = json["external_ids"].value("isrc", "");
 	track.Name = json.value("name", "");
 	track.Explicit = json.value("explicit", false);
-	track.SetDuration(json.value("duration_ms", 0));
+	track.DurationSeconds = json.value("duration_ms", 0) / 1000;
 	track.DiscNumber = json.value("disc_number", 1);
 	track.TrackNumber = json.value("track_number", 1);
 	track.PlaylistTrackNumber = 1;
@@ -148,7 +148,7 @@ TrackData SpotifyAPI::ParseEpisode(const nlohmann::json& json)
 	track.Name = json["name"];
 	track.Description = json["description"];
 	track.Explicit = json["explicit"];
-	track.SetDuration(json["duration_ms"]);
+	track.DurationSeconds = json.value("duration_ms", 0) / 1000;
 	track.DiscNumber = 1;
 	track.TrackNumber = 1;
 	track.PlaylistTrackNumber = 1;
@@ -202,8 +202,7 @@ AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 	album.Name = json["name"];
 	album.TotalTracks = json["total_tracks"];
 	album.ImageUrl = json["images"][0]["url"];
-	album.ReleaseDate = json["release_date"];
-	album.ReleaseDatePrecision = json["release_date_precision"];
+	//album.ReleaseDate = json["release_date"];
 	if      (json["album_type"] == "album")  album.Type = EAlbumType::Album;
 	else if (json["album_type"] == "single")      album.Type = EAlbumType::Single;
 	else if (json["album_type"] == "compilation") album.Type = EAlbumType::Compilation;

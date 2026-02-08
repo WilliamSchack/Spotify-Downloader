@@ -4,6 +4,7 @@
 #include "NetworkRequest.h"
 #include "HtmlParser.h"
 #include "TrackData.h"
+#include "StringUtils.h"
 #include "JsonUtils.h"
 
 #include <regex>

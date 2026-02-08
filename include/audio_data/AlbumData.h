@@ -14,8 +14,7 @@ struct AlbumData
     std::string Description = "";
     unsigned int TotalTracks = 0;
     std::string ImageUrl = "";
-    std::string ReleaseDate = "";
-    std::string ReleaseDatePrecision = "";
+    std::string ReleaseYear = "";
     EAlbumType Type = EAlbumType::Album;
     std::vector<ArtistData> Artists;
 };

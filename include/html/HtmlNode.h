@@ -12,6 +12,7 @@ struct HtmlNode
         HtmlNode(lxb_dom_node_t* node);
 
         lxb_dom_node_t* GetNode() const;
+        bool Exists() const;
         std::string GetText() const;
         std::string GetAttribute(const std::string& attribute) const;
     private:
