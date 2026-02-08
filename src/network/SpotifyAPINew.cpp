@@ -1,7 +1,5 @@
 #include "SpotifyAPINew.h"
 
-#include <iostream>
-
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
 {
     std::string url = "https://open.spotify.com/track/" + id;
@@ -15,9 +13,6 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
-
-    std::cout << responseHtml << std::endl;
-    return TrackData();
 
     // Get meta details
     HtmlParser parser(responseHtml);
