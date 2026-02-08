@@ -40,8 +40,16 @@ HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
     if (_lastStatus != LXB_STATUS_OK) return HtmlNode(nullptr);
 
     // Wait for selector find, done on another thread so this one can be blocked
+    auto startTime = std::chrono::steady_clock::now();
+    auto timeoutTime = std::chrono::milliseconds(SELECT_TIMEOUT_MS);
     while (_searching) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        if (std::chrono::steady_clock::now() - startTime > timeoutTime) {
+            std::cout << "Timeout waiting for selector, could not find the element" << std::endl;
+            _searching = false;
+            break;
+        }
     }
 
     return HtmlNode(_lastNode);
@@ -67,6 +75,8 @@ lxb_status_t HtmlParser::FindCallback(lxb_dom_node_t* node, lxb_css_selector_spe
     HtmlParser* parser = (HtmlParser*)ctx;
     parser->_lastNode = node;
     parser->_searching = false;
+
+    std::cout << "FOUND" << std::endl;
 
     return LXB_STATUS_OK;
 }

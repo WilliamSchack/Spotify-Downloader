@@ -25,6 +25,8 @@ class HtmlParser
 
         lxb_status_t GetStatus();
     private:
+        static inline const int SELECT_TIMEOUT_MS = 1000;
+
         lxb_html_document* _document;
         lxb_css_parser_t* _parser;
         lxb_selectors_t* _selectors;

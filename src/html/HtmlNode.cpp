@@ -10,6 +10,9 @@ lxb_dom_node_t* HtmlNode::GetNode() const
 
 std::string HtmlNode::GetText() const
 {
+    if (_node == nullptr)
+        return "";
+
     size_t text_len;
     const lxb_char_t *text = lxb_dom_node_text_content(_node, &text_len);
     std::string textString = reinterpret_cast<const char*>(text);
