@@ -76,7 +76,5 @@ lxb_status_t HtmlParser::FindCallback(lxb_dom_node_t* node, lxb_css_selector_spe
     parser->_lastNode = node;
     parser->_searching = false;
 
-    std::cout << "FOUND" << std::endl;
-
     return LXB_STATUS_OK;
 }

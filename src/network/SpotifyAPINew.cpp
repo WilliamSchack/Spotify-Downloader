@@ -21,12 +21,18 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
 
+    std::cout << responseHtml << std::endl;
+
+    // Get details from html
     HtmlParser parser(responseHtml);
     HtmlNode trackViewNode = parser.Select(R"(div[data-testid="track-view"] > :first-child)");
     HtmlNode titleNode = parser.Select(trackViewNode, R"(:first-child h1)");
     HtmlNode artistNode = parser.Select(trackViewNode, R"(div.encore-text-body-small a)");
-    std::cout << titleNode.GetText() << std::endl;
-    std::cout << artistNode.GetText() << std::endl;
+    
+    HtmlNode bottomSectionNode = parser.Select(trackViewNode, R"(div[data-testid="entity-bottom-section"] > :first-child)");
+    HtmlNode albumNode = parser.Select(bottomSectionNode, R"(:nth-child(1))");
+    HtmlNode yearNode = parser.Select(bottomSectionNode, R"(:nth-child(2))");
+    HtmlNode durationNode = parser.Select(bottomSectionNode, R"(:nth-child(3))");
 
     return TrackData();
 }
