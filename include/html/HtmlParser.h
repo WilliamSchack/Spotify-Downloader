@@ -6,8 +6,9 @@
 #include <lexbor/selectors/selectors.h>
 
 #include <string>
-#include <unistd.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 class HtmlParser
 {

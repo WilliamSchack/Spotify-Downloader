@@ -45,7 +45,7 @@ lxb_dom_node_t* HtmlParser::Select(const std::string& selector)
 
     // Wait for selector find, done on another thread so this one can be blocked
     while (_searching) {
-        usleep(10000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     return _lastNode;
