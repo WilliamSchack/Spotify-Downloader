@@ -32,16 +32,12 @@ HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
 
     lxb_css_selector_list_t *list = lxb_css_selectors_parse(_parser, lxbSelector, selector.size());
     _lastStatus = _parser->status;
-    if (_lastStatus != LXB_STATUS_OK) return nullptr;
+    if (_lastStatus != LXB_STATUS_OK) return HtmlNode(nullptr);
 
+    _lastNode = nullptr;
     _searching = true;
     _lastStatus = lxb_selectors_find(_selectors, node, list, FindCallback, this);
-    if (_lastStatus != LXB_STATUS_OK) {
-        lxb_css_selector_list_destroy_memory(list);
-        return nullptr;
-    }
-
-    lxb_css_selector_list_destroy_memory(list);
+    if (_lastStatus != LXB_STATUS_OK) return HtmlNode(nullptr);
 
     // Wait for selector find, done on another thread so this one can be blocked
     while (_searching) {
