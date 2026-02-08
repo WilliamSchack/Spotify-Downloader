@@ -1,6 +1,3 @@
-// Translation from https://github.com/AliAkhtari78/SpotifyScraper
-// Only contains things relevant to this project
-
 #ifndef SPOTIFYAPINEW_H
 #define SPOTIFYAPINEW_H
 
