@@ -26,7 +26,7 @@ HtmlParser::~HtmlParser()
     lxb_selectors_destroy(_selectors, true);
 }
 
-HtmlNode HtmlParser::Select(const std::string& selector)
+HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
 {
     const lxb_char_t* lxbSelector = reinterpret_cast<const lxb_char_t*>(selector.c_str());
 
@@ -35,7 +35,7 @@ HtmlNode HtmlParser::Select(const std::string& selector)
     if (_lastStatus != LXB_STATUS_OK) return nullptr;
 
     _searching = true;
-    _lastStatus = lxb_selectors_find(_selectors, lxb_dom_interface_node(_document), list, FindCallback, this);
+    _lastStatus = lxb_selectors_find(_selectors, node, list, FindCallback, this);
     if (_lastStatus != LXB_STATUS_OK) {
         lxb_css_selector_list_destroy_memory(list);
         return nullptr;
@@ -48,8 +48,17 @@ HtmlNode HtmlParser::Select(const std::string& selector)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    HtmlNode node(_lastNode);
-    return node;
+    return HtmlNode(_lastNode);
+}
+
+HtmlNode HtmlParser::Select(const HtmlNode& node, const std::string& selector)
+{
+    return Select(node.GetNode(), selector);
+}
+
+HtmlNode HtmlParser::Select(const std::string& selector)
+{
+    return Select(lxb_dom_interface_node(_document), selector);
 }
 
 lxb_status_t HtmlParser::GetStatus()
@@ -57,7 +66,6 @@ lxb_status_t HtmlParser::GetStatus()
     return _lastStatus;
 }
 
-// Assumes the parser object is passed to ctx
 lxb_status_t HtmlParser::FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx)
 {
     HtmlParser* parser = (HtmlParser*)ctx;

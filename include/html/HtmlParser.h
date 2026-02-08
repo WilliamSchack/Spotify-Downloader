@@ -18,6 +18,9 @@ class HtmlParser
         HtmlParser(const std::string& html);
         ~HtmlParser();
 
+        // HtmlNode _node is owned by the document and will become useless when this destroyed
+        HtmlNode Select(lxb_dom_node_t* node, const std::string& selector);
+        HtmlNode Select(const HtmlNode& node, const std::string& selector);
         HtmlNode Select(const std::string& selector);
 
         lxb_status_t GetStatus();
@@ -31,6 +34,7 @@ class HtmlParser
         lxb_dom_node_t* _lastNode;
         bool _searching = false;
     private:
+        // Assumes the parser object is passed to ctx
         static lxb_status_t FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx);
 };
 

@@ -10,8 +10,8 @@ struct HtmlNode
     public:
         HtmlNode(lxb_dom_node_t* node);
 
-        lxb_dom_node_t* GetNode();
-        std::string GetText();
+        lxb_dom_node_t* GetNode() const;
+        std::string GetText() const;
     private:
         lxb_dom_node_t* _node;
 
