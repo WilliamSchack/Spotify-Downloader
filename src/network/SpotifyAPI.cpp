@@ -64,12 +64,16 @@ TrackData SpotifyAPI::GetEpisode(const std::string& id)
 	return ParseEpisode(json);
 }
 
-PlaylistData SpotifyAPI::GetPlaylist(const std::string& id)
+PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
 {
 	nlohmann::json json = SendRequest(API_BASE_URL + "/playlists/" + id);
 	json["tracks"]["items"] = GetTracks(json["tracks"]);
 
-	return ParsePlaylist(json);
+	PlaylistTracks playlist;
+	playlist.Data = ParsePlaylist(id);
+	playlist.Tracks = ParseTracks(json["tracks"]["items"]);
+
+	return playlist;
 }
 
 AlbumData SpotifyAPI::GetAlbum(const std::string& id)
@@ -186,11 +190,12 @@ PlaylistData SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 		playlist.ImageUrl = json["images"][0]["url"];
 	playlist.Description = json.value("description", "");
 	if (json.contains("owner")) {
-		playlist.OwnerId = json["owner"].value("id", "");
-		playlist.OwnerName = json["owner"].value("display_name", "");
-	}
+		ArtistData owner;
+		owner.Id = json["owner"].value("id", "");
+		owner.Name = json["owner"].value("display_name", "");
 
-	playlist.Tracks = ParseTracks(json["tracks"]["items"]);
+		playlist.Owner = owner;
+	}
 
 	return playlist;
 }

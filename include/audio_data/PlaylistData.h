@@ -2,6 +2,7 @@
 #define PLAYLISTDATA_H
 
 #include "TrackData.h"
+#include "ArtistData.h"
 
 #include <string>
 #include <vector>
@@ -13,9 +14,7 @@ struct PlaylistData
     unsigned int TotalTracks = 0;
     std::string ImageUrl = "";
     std::string Description = "";
-    std::string OwnerId = "";
-    std::string OwnerName = "";
-    std::vector<TrackData> Tracks;
+    ArtistData Owner;
 };
 
 #endif

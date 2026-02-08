@@ -3,7 +3,8 @@
 
 #include "NetworkRequest.h"
 #include "TrackData.h"
-#include "PlaylistData.h"
+#include "AlbumData.h"
+#include "PlaylistTracks.h"
 
 #include <iostream>
 #include <vector>
@@ -16,7 +17,7 @@ class SpotifyAPI {
 		bool CheckConnection();
 		TrackData GetTrack(const std::string& id);
 		TrackData GetEpisode(const std::string& id);
-		PlaylistData GetPlaylist(const std::string& id);
+		PlaylistTracks GetPlaylist(const std::string& id);
 		AlbumData GetAlbum(const std::string& id);
 	private:
 		static inline const std::string TOKEN_URL = "https://accounts.spotify.com/api/token";
