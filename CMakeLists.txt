@@ -62,6 +62,7 @@ include(cmake/GetYtdlp.cmake)
 include(cmake/GetFFmpeg.cmake)
 include(cmake/GetJson.cmake)
 include(cmake/GetStb.cmake)
+include(cmake/GetLexbor.cmake)
 
 # Add the executable
 add_executable(${PROJECT_NAME})
