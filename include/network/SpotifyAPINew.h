@@ -5,6 +5,7 @@
 #define SPOTIFYAPINEW_H
 
 #include "NetworkRequest.h"
+#include "HtmlParser.h"
 #include "TrackData.h"
 #include "JsonUtils.h"
 

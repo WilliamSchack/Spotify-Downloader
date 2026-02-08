@@ -6,6 +6,7 @@
 #include <lexbor/selectors/selectors.h>
 
 #include <string>
+#include <unistd.h>
 #include <iostream>
 
 class HtmlParser
@@ -14,6 +15,8 @@ class HtmlParser
         HtmlParser(const std::string& html);
         ~HtmlParser();
 
+        lxb_dom_node_t* Select(const std::string& selector);
+
         lxb_status_t GetStatus();
     private:
         lxb_html_document* _document;
@@ -21,8 +24,11 @@ class HtmlParser
         lxb_selectors_t* _selectors;
 
         lxb_status_t _lastStatus;
+
+        lxb_dom_node_t* _lastNode;
+        bool _searching = false;
     private:
-        void CheckLastStatus();
+        static lxb_status_t FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx);
 };
 
 #endif
