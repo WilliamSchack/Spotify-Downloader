@@ -21,18 +21,13 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
 
-    std::cout << responseHtml << std::endl;
-
     // Get details from html
     HtmlParser parser(responseHtml);
-    HtmlNode trackViewNode = parser.Select(R"(div[data-testid="track-view"] > :first-child)");
-    HtmlNode titleNode = parser.Select(trackViewNode, R"(:first-child h1)");
-    HtmlNode artistNode = parser.Select(trackViewNode, R"(div.encore-text-body-small a)");
-    
-    HtmlNode bottomSectionNode = parser.Select(trackViewNode, R"(div[data-testid="entity-bottom-section"] > :first-child)");
-    HtmlNode albumNode = parser.Select(bottomSectionNode, R"(:nth-child(1))");
-    HtmlNode yearNode = parser.Select(bottomSectionNode, R"(:nth-child(2))");
-    HtmlNode durationNode = parser.Select(bottomSectionNode, R"(:nth-child(3))");
+    HtmlNode titleNode = parser.Select(R"(meta[property="og:title"])");
+    HtmlNode descriptionNode = parser.Select(R"(meta[property="og:description"])");
+    HtmlNode durationNode = parser.Select(R"(meta[name="music:duration"])");
+    HtmlNode releaseDateNode = parser.Select(R"(meta[name="music:release_date"])");
+    HtmlNode albumNumberNode = parser.Select(R"(meta[name="music:album:track"])");
 
     return TrackData();
 }

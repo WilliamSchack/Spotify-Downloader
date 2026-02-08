@@ -22,6 +22,9 @@ std::string HtmlNode::GetText() const
 
 std::string HtmlNode::GetAttribute(const std::string& attribute) const
 {
+    if (_node == nullptr)
+        return "";
+
     const lxb_char_t* lxbAttribute = reinterpret_cast<const lxb_char_t*>(attribute.c_str());
 
     size_t textLen;
