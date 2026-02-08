@@ -34,7 +34,7 @@ std::vector<std::string> StringUtils::Split(const std::string& string, const std
     
     while (end != std::string::npos) {
         tokens.push_back(string.substr(start, end - start));
-        start = end + 1;
+        start = end + delimiter.size();
         end = string.find(delimiter, start);
     }
     
