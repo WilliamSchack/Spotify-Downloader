@@ -26,7 +26,7 @@ HtmlParser::~HtmlParser()
     lxb_selectors_destroy(_selectors, true);
 }
 
-lxb_dom_node_t* HtmlParser::Select(const std::string& selector)
+HtmlNode HtmlParser::Select(const std::string& selector)
 {
     const lxb_char_t* lxbSelector = reinterpret_cast<const lxb_char_t*>(selector.c_str());
 
@@ -48,7 +48,8 @@ lxb_dom_node_t* HtmlParser::Select(const std::string& selector)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
-    return _lastNode;
+    HtmlNode node(_lastNode);
+    return node;
 }
 
 lxb_status_t HtmlParser::GetStatus()

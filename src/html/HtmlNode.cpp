@@ -12,7 +12,7 @@ std::string HtmlNode::GetText()
 {
     size_t text_len;
     const lxb_char_t *text = lxb_dom_node_text_content(_node, &text_len);
-
     std::string textString = reinterpret_cast<const char*>(text);
+    
     return textString;
 }

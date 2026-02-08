@@ -1,6 +1,8 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
+#include "HtmlNode.h"
+
 #include <lexbor/html/parser.h>
 #include <lexbor/css/css.h>
 #include <lexbor/selectors/selectors.h>
@@ -16,7 +18,7 @@ class HtmlParser
         HtmlParser(const std::string& html);
         ~HtmlParser();
 
-        lxb_dom_node_t* Select(const std::string& selector);
+        HtmlNode Select(const std::string& selector);
 
         lxb_status_t GetStatus();
     private:
