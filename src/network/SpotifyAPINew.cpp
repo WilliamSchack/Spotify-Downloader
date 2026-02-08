@@ -4,11 +4,10 @@
 
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
 {
-    // Get embed page
-    std::string embedUrl = "https://open.spotify.com/track/" + id;
+    std::string url = "https://open.spotify.com/track/" + id;
     
     NetworkRequest request;
-    request.Url = embedUrl;
+    request.Url = url;
     request.SetHeader("User-Agent", "Mozilla/5.0");
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("DNT", "1");
@@ -16,6 +15,9 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
+
+    std::cout << responseHtml << std::endl;
+    return TrackData();
 
     // Get meta details
     HtmlParser parser(responseHtml);
