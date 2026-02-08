@@ -26,33 +26,36 @@ HtmlParser::~HtmlParser()
     lxb_selectors_destroy(_selectors, true);
 }
 
-HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
+std::vector<HtmlNode> HtmlParser::SelectAll(lxb_dom_node_t* node, const std::string& selector)
 {
+    _lastNodes.clear();
+
     const lxb_char_t* lxbSelector = reinterpret_cast<const lxb_char_t*>(selector.c_str());
 
     lxb_css_selector_list_t *list = lxb_css_selectors_parse(_parser, lxbSelector, selector.size());
     _lastStatus = _parser->status;
-    if (_lastStatus != LXB_STATUS_OK) return HtmlNode(nullptr);
+    if (_lastStatus != LXB_STATUS_OK) return _lastNodes;
 
-    _lastNode = nullptr;
-    _searching = true;
     _lastStatus = lxb_selectors_find(_selectors, node, list, FindCallback, this);
-    if (_lastStatus != LXB_STATUS_OK) return HtmlNode(nullptr);
+    if (_lastStatus != LXB_STATUS_OK) return _lastNodes;
 
-    // Wait for selector find, done on another thread so this one can be blocked
-    auto startTime = std::chrono::steady_clock::now();
-    auto timeoutTime = std::chrono::milliseconds(SELECT_TIMEOUT_MS);
-    while (_searching) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    return _lastNodes;
+}
 
-        if (std::chrono::steady_clock::now() - startTime > timeoutTime) {
-            std::cout << "Timeout waiting for selector, could not find the element" << std::endl;
-            _searching = false;
-            break;
-        }
-    }
+std::vector<HtmlNode> HtmlParser::SelectAll(const HtmlNode& node, const std::string& selector)
+{
+    return SelectAll(node.GetNode(), selector);
+}
 
-    return HtmlNode(_lastNode);
+std::vector<HtmlNode> HtmlParser::SelectAll(const std::string& selector)
+{
+    return SelectAll(lxb_dom_interface_node(_document), selector);
+}
+
+HtmlNode HtmlParser::Select(lxb_dom_node_t* node, const std::string& selector)
+{
+    SelectAll(node, selector);
+    return _lastNodes[0];
 }
 
 HtmlNode HtmlParser::Select(const HtmlNode& node, const std::string& selector)
@@ -73,8 +76,7 @@ lxb_status_t HtmlParser::GetStatus()
 lxb_status_t HtmlParser::FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx)
 {
     HtmlParser* parser = (HtmlParser*)ctx;
-    parser->_lastNode = node;
-    parser->_searching = false;
+    parser->_lastNodes.push_back(HtmlNode(node));
 
     return LXB_STATUS_OK;
 }
