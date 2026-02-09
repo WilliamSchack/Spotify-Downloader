@@ -192,3 +192,73 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
     return AlbumTracks();
     */
 }
+
+TrackData SpotifyAPINew::ParseTrack(nlohmann::json json)
+{
+    if (json.contains("track"))       json = json["track"];
+    else if (json.contains("itemV2")) json = json["itemV2"];
+
+    TrackData track;
+    track.Id = json["id"];
+    track.Name = json["name"];
+    track.Explicit = json["contentRating"]["label"] == "EXPLICIT";
+    track.DiscNumber = json.value("discNumber", 0);
+    track.TrackNumber = json["trackNumber"];
+    track.PlaylistTrackNumber = 0;
+    track.SetDuration(json["duration"]["totalMilliseconds"]);
+
+    track.Album = ParseSimpleAlbum(json["albumOfTrack"]);
+    track.Artists = ParseArtists(json["artists"]["items"]);
+
+    return track;
+}
+
+std::vector<TrackData> SpotifyAPINew::ParseTracks(const nlohmann::json& json)
+{
+    std::vector<TrackData> tracks;
+    if (!json.is_array()) return tracks;
+
+    for (const nlohmann::json& trackJson : json) {
+        tracks.push_back(ParseTrack(trackJson));
+    }
+
+    return tracks;
+}
+
+ArtistData SpotifyAPINew::ParseArtist(const nlohmann::json& json)
+{
+    ArtistData artist;
+    artist.Id = StringUtils::Split(json["uri"], ":").back();
+    artist.Name = json["profile"]["name"];
+
+    return artist;
+}
+
+std::vector<ArtistData> SpotifyAPINew::ParseArtists(const nlohmann::json& json)
+{
+    std::vector<ArtistData> artists;
+    if (!json.is_array()) return artists;
+
+    for (const nlohmann::json& artistJson : json) {
+        artists.push_back(ParseArtist(artistJson));
+    }
+
+    return artists;
+}
+
+AlbumData SpotifyAPINew::ParseSimpleAlbum(const nlohmann::json& json)
+{
+    AlbumData album;
+    album.Id = StringUtils::Split(json["uri"], ":").back();
+    album.Name = json["name"];
+    
+    unsigned int highestResolution = 0;
+    for (nlohmann::json coverArtDetails : json["coverArt"]["sources"]) {
+        int resolution = coverArtDetails["width"];
+        if (resolution < highestResolution)
+            continue;
+        
+        highestResolution = resolution;
+        album.ImageUrl = coverArtDetails["url"];
+    }
+}

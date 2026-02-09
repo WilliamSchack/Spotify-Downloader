@@ -23,6 +23,14 @@ class SpotifyAPINew
     private:
         static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
         static nlohmann::json GetPageJson(const std::string& endpoint, const std::string& id);
+
+        static TrackData ParseTrack(nlohmann::json json);
+        static std::vector<TrackData> ParseTracks(const nlohmann::json& json);
+
+        static ArtistData ParseArtist(const nlohmann::json& json);
+        static std::vector<ArtistData> ParseArtists(const nlohmann::json& json);
+
+        static AlbumData ParseSimpleAlbum(const nlohmann::json& json);
 };
 
 #endif
