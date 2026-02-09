@@ -1,6 +1,6 @@
 #include "NetworkRequest.h"
 
-void NetworkRequest::AddHeader(const std::string& header)
+void NetworkRequest::SetHeader(const std::string& header)
 {
     _headers = curl_slist_append(_headers, header.c_str());
 }
@@ -11,7 +11,7 @@ void NetworkRequest::SetHeader(const std::string& header, const std::string& val
     if (value.empty()) headerString = header + ";";
     else               headerString = header + ": " + value;
 
-    AddHeader(headerString);
+    SetHeader(headerString);
 }
 
 void NetworkRequest::AddCookie(const std::string& cookie, const std::string& value)
@@ -88,6 +88,7 @@ NetworkResponse NetworkRequest::SendRequest(CURL* curl)
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br, zstd");
 
     response.CurlCode = curl_easy_perform(curl);
 

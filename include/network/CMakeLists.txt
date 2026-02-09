@@ -7,5 +7,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAPINew.h
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAuth.h
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAuthRetriever.h
+	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAuthInterceptor.h
 	${CMAKE_CURRENT_SOURCE_DIR}/YTMusicAPI.h
 )

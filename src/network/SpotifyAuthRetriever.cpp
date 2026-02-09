@@ -3,12 +3,49 @@
 SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
 {
     QWebEngineProfile* webProfile = new QWebEngineProfile();
-    webProfile->setHttpUserAgent("Mozilla/5.0 (Linux; Android 14) Mobile");
-    
+    webProfile->setHttpUserAgent(QString::fromStdString(USER_AGENT));
+
+    SpotifyAuthInterceptor* interceptor = new SpotifyAuthInterceptor();
+    webProfile->setUrlRequestInterceptor(interceptor);
+
     QWebEnginePage* webPage = new QWebEnginePage(webProfile);
     webPage->load(QUrl(QString::fromStdString(url)));
 
-    // intercept query response
+    // Wait for authorisation
+    QEventLoop loop;
+    QObject::connect(interceptor, &SpotifyAuthInterceptor::ValuesRetrieved, &loop, &QEventLoop::quit);
+    QTimer::singleShot(10000, &loop, &QEventLoop::quit);
+    loop.exec();
 
-    return SpotifyAuth();
+    webPage->deleteLater();
+    webProfile->deleteLater();
+
+    if (!interceptor->FoundAll) {
+        std::cout << "Could not retrieve spotify auth" << std::endl;
+        return SpotifyAuth();
+    }
+
+    // Get mobile js for playlist query sha256Hash
+    NetworkRequest mobileJsRequest;
+    mobileJsRequest.Url = interceptor->MobileJsUrl;
+    mobileJsRequest.SetHeader("User-Agent", USER_AGENT);
+    mobileJsRequest.SetHeader("Accept-Encoding", "gzip");
+
+    NetworkResponse mobileJsResponse = mobileJsRequest.Get();
+    std::string mobileJs = mobileJsResponse.Body;
+
+    std::smatch matches;
+    if (!std::regex_search(mobileJs, matches, std::regex(PLAYLIST_QUERY_REGEX))) {
+        std::cout << "Could not retrieve spotify auth" << std::endl;
+        return SpotifyAuth();
+    }
+
+    SpotifyAuth auth;
+    auth.Authorization = interceptor->Authorization;
+    auth.ClientToken = interceptor->ClientToken;
+    auth.PlaylistQueryHash = matches[1];
+
+    interceptor->deleteLater();
+
+    return auth;
 }

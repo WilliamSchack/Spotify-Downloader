@@ -3,5 +3,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAPI.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAPINew.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAuthRetriever.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/SpotifyAuthInterceptor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/YTMusicAPI.cpp
 )
