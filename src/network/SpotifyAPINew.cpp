@@ -33,93 +33,65 @@ nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std
 
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
 {
-    GetPageJson("track", id);
-    return TrackData();
+    nlohmann::json json = GetPageJson("track", id);
+    json = json["entities"]["items"].front();
 
-    NetworkRequest request = GetRequest("track", id);
-    NetworkResponse response = request.Get();
-    std::string responseHtml = response.Body;
+    // Track details
+    TrackData track;
+    track.Id = json["id"];
+    track.Name = json["name"];
+    track.DiscNumber = 0;                    // Cannot be retrieved
+    track.TrackNumber = json["trackNumber"]; // The track number in the album, in its disc
+    track.PlaylistTrackNumber = 0;           // Playlist(s) is unknown
+    track.Explicit = json["contentRating"]["label"] == "EXPLICIT";
+    track.SetDuration(json["duration"]["totalMilliseconds"]);
 
-    std::cout << responseHtml << std::endl;
+    // Artist details
+    nlohmann::json artistsJson = json["firstArtist"]["items"];
+    JsonUtils::ExtendArray(artistsJson, json["otherArtists"]["items"]);
 
-    // Get meta details
-    HtmlParser parser(responseHtml);
-    HtmlNode titleNode = parser.Select(R"(meta[property="og:title"])");
-    HtmlNode descriptionNode = parser.Select(R"(meta[property="og:description"])");
-    HtmlNode imageNode = parser.Select(R"(meta[property="og:image"])");
-    HtmlNode durationNode = parser.Select(R"(meta[name="music:duration"])");
-    HtmlNode releaseDateNode = parser.Select(R"(meta[name="music:release_date"])");
-    HtmlNode albumNode = parser.Select(R"(meta[name="music:album"])");
-    HtmlNode albumNumberNode = parser.Select(R"(meta[name="music:album:track"])");
-    HtmlNode artistsNamesNode = parser.Select(R"(meta[name="music:musician_description"])");
-    std::vector<HtmlNode> artistsIdNodes = parser.SelectAll(R"(meta[name="music:musician"])");
-
-    std::string title = titleNode.GetAttribute("content");
-    std::string description = descriptionNode.GetAttribute("content");
-    std::string imageUrl = imageNode.GetAttribute("content");
-    unsigned int durationSeconds = std::stoi(durationNode.GetAttribute("content"));
-    std::string releaseDate = releaseDateNode.GetAttribute("content");
-    std::string albumUrl = albumNode.GetAttribute("content");
-    std::string albumId = StringUtils::Split(albumUrl, "/").back();
-    unsigned int albumNumber = std::stoi(albumNumberNode.GetAttribute("content"));
-    std::vector<std::string> artistNames = StringUtils::Split(artistsNamesNode.GetAttribute("content"), ", ");
-
-    // Explicit tag is only found in the album list at the bottom of the page
-    std::string albumTrackSelector = R"(a[href="/track/)" + id + R"("])";
-    std::vector<HtmlNode> trackNodes = parser.SelectAll(albumTrackSelector);
-    HtmlNode albumTrackNode = trackNodes.back();
-    HtmlNode explicitNode = parser.Select(albumTrackNode, R"(span[aria-label="Explicit"])");
-
-    bool isExplicit = explicitNode.Exists();
-
-    // Get all album tracks
-    std::vector<HtmlNode> possibleAlbumTracksNode = parser.SelectAll("div:has(" + albumTrackSelector + ")");
-    HtmlNode trackAlbumParentNode = possibleAlbumTracksNode.back();
-    std::vector<HtmlNode> albumTracksNodes = parser.SelectAll(trackAlbumParentNode, "a");
-
-    int albumTrackCount = albumTracksNodes.size();
-    EAlbumType albumType = albumTrackCount == 1 ? EAlbumType::Single : EAlbumType::Album;
-
-    // Get extra album details
-    std::vector<std::string> descriptionSplit = StringUtils::Split(description, "\U000000B7"); // dot char
-    std::string albumName = descriptionSplit[1];
-    albumName = albumName.substr(1, albumName.size() - 2); // Remove start and end whitespace
-    std::string albumYear = descriptionSplit.back();
-    albumYear = albumYear.substr(1, albumName.size()); // Remove start whitespace
-
-    // Parse Data
     std::vector<ArtistData> artists;
-    for (int i = 0; i < artistNames.size(); i++) {
+    for (nlohmann::json artistJson : artistsJson) {
         ArtistData artist;
-        artist.Id = artistsIdNodes[i].GetAttribute("content");
-        artist.Name = artistNames[i];
+        artist.Id = artistJson["id"];
+        artist.Name = artistJson["profile"]["name"];
 
         artists.push_back(artist);
     }
 
-    std::vector<ArtistData> albumArtists;
-    albumArtists.push_back(artists[0]); // Use first artist for album artists, could get them all but it wont be used
+    track.Artists = artists;
+
+    // Album details
+    nlohmann::json albumJson = json["albumOfTrack"];
+    
+    std::cout << albumJson << std::endl;
 
     AlbumData album;
-    album.Id = albumId;
-    album.Name = albumName;
-    album.TotalTracks = albumTrackCount;
-    album.ImageUrl = imageUrl;
-    album.ReleaseYear = albumYear;
-    album.Type = albumType;
+    album.Id = StringUtils::Split(albumJson["uri"], ":").back();
+    album.Name = albumJson["name"];
+    album.TotalTracks = albumJson["tracks"]["items"].size();
+    album.Type = EAlbumType::Album;
+    if      (albumJson["type"] == "SINGLE")      album.Type = EAlbumType::Single;
+    else if (albumJson["type"] == "COMPILATION") album.Type = EAlbumType::Compilation;
     
-    TrackData track;
-    track.Id = id;
-    track.Name = title;
-    track.Description = description;
-    track.ReleaseDate = releaseDate;
-    track.Explicit = isExplicit;
-    track.DurationSeconds = durationSeconds;
-    track.DiscNumber = 1;            // Cannot be retrieved
-    track.TrackNumber = albumNumber; // The track number in the album, in its disc
-    track.PlaylistTrackNumber = 1;   // Playlist(s) is unknown
+    unsigned int highestResolution = 0;
+    for (nlohmann::json coverArtDetails : albumJson["coverArt"]["sources"]) {
+        int resolution = coverArtDetails["width"];
+        if (resolution < highestResolution)
+        continue;
+        
+        highestResolution = resolution;
+        album.ImageUrl = coverArtDetails["url"];
+    }
+    
+    nlohmann::json dateJson = albumJson["date"];
+    album.ReleaseYear = std::to_string(dateJson["year"].get<int>());
+    track.ReleaseDate = std::to_string(dateJson["year"].get<int>());
+    if (dateJson.contains("month")) track.ReleaseDate += "-" + std::to_string(dateJson["month"].get<int>());
+    if (dateJson.contains("day"))   track.ReleaseDate += "-" + std::to_string(dateJson["day"].get<int>());
+
+    album.MainArtist = artists[0];
     track.Album = album;
-    track.Artists = artists;
 
     return track;
 }

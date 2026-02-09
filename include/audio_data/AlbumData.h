@@ -5,7 +5,6 @@
 #include "ArtistData.h"
 
 #include <string>
-#include <vector>
 
 struct AlbumData
 {
@@ -16,7 +15,7 @@ struct AlbumData
     std::string ImageUrl = "";
     std::string ReleaseYear = "";
     EAlbumType Type = EAlbumType::Album;
-    std::vector<ArtistData> Artists;
+    ArtistData MainArtist;
 };
 
 #endif

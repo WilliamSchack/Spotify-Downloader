@@ -171,7 +171,7 @@ TrackData SpotifyAPI::ParseEpisode(const nlohmann::json& json)
 	artist.Name = showJson["publisher"];
 	artists.push_back(artist);
 
-	show.Artists = artists;
+	show.MainArtist = artists[0];
 	track.Artists = artists;
 
 	track.Album = show;
@@ -212,7 +212,7 @@ AlbumData SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 	else if (json["album_type"] == "single")      album.Type = EAlbumType::Single;
 	else if (json["album_type"] == "compilation") album.Type = EAlbumType::Compilation;
 
-	album.Artists = ParseArtists(json["artists"]);
+	album.MainArtist = ParseArtists(json["artists"])[0];
 
 	return album;
 }
