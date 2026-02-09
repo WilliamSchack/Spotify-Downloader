@@ -6,7 +6,7 @@ NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std:
     
     NetworkRequest request;
     request.Url = url;
-    request.SetHeader("User-Agent", "Mozilla/5.0"); // For some reason setting a generic user agent allows a mobile browser? Its exactly what we want but a bit weird
+    request.SetHeader("User-Agent", "Mozilla/5.0"); // For some reason setting a generic user agent gets the mobile page? Its exactly what we want but a bit weird
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("Referer", "https://open.spotify.com");
 	request.SetHeader("DNT", "1");
@@ -25,6 +25,7 @@ nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std
     std::string jsonString64 = parser.Select(R"(script[id="initialState"])").GetText();
 
     // Decode json from base64
+
 
     std::cout << jsonString64 << std::endl;
 
