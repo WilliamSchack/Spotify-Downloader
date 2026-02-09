@@ -16,13 +16,14 @@ NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std:
 nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std::string& id)
 {
     // Get page
-    NetworkRequest request = GetRequest("track", id);
+    NetworkRequest request = GetRequest(endpoint, id);
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
 
     // Get json
     HtmlParser parser(responseHtml);
     std::string jsonString64 = parser.Select(R"(script[id="initialState"])").GetText();
+    if (jsonString64.empty()) return nlohmann::json::object();
 
     // Decode json from base64
     std::string jsonString = base64::decode<std::string>(jsonString64);
@@ -34,6 +35,8 @@ nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
 {
     nlohmann::json json = GetPageJson("track", id);
+    if (json.empty()) return TrackData();
+
     json = json["entities"]["items"].front();
 
     // Track details
@@ -98,6 +101,14 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 
 AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
 {
+    nlohmann::json json = GetPageJson("album", id);
+    if (json.empty()) return AlbumTracks();
+
+    std::cout << json << std::endl;
+
+    return AlbumTracks();
+
+    /*
     NetworkRequest request = GetRequest("album", id);
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
@@ -179,4 +190,5 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
     }
 
     return AlbumTracks();
+    */
 }
