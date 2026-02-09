@@ -64,6 +64,7 @@ NetworkResponse NetworkRequest::Post(const std::string& postData)
 
 NetworkResponse NetworkRequest::Post(nlohmann::json postData)
 {
+    SetHeader("Content-Type", "application/json");
     return Post(postData.dump());
 }
 

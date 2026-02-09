@@ -42,6 +42,7 @@ class SpotifyAPINew
         static AlbumTracks ParseAlbum(const nlohmann::json& json);
     private:
         static inline const std::string USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
+        static inline const unsigned int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
 
         // TODO: Make this thread safe
         static inline SpotifyAuth _spotifyAuth;

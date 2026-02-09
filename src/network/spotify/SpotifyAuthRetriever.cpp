@@ -25,7 +25,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
         return SpotifyAuth();
     }
 
-    // Get mobile js for playlist query sha256Hash
+    // Get mobile js for playlist query sha256Hash, cannot get response body from QWebEnginePage so this is the next best thing
     NetworkRequest mobileJsRequest;
     mobileJsRequest.Url = interceptor->MobileJsUrl;
     mobileJsRequest.SetHeader("User-Agent", USER_AGENT);

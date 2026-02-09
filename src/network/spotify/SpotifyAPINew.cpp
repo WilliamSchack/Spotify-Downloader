@@ -79,12 +79,11 @@ PlaylistTracks SpotifyAPINew::GetPlaylist(const std::string& id)
     request.SetHeader("User-Agent", USER_AGENT);
     request.SetHeader("Authorization", _spotifyAuth.Authorization);
     request.SetHeader("Client-Token", _spotifyAuth.ClientToken);
-    request.SetHeader("Content-Type", "application/json");
 
     nlohmann::json postData {
 		{"variables", {
-            {"uri", ("spotify:playlist:" + id)},
-            {"limit", 100},
+            {"uri", "spotify:playlist:" + id},
+            {"limit", PLAYLIST_REQUEST_TRACK_LIMIT},
             {"offset", 0}
         }},
         {"operationName", "queryPlaylist"},
