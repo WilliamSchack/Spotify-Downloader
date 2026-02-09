@@ -24,6 +24,8 @@ Notes:
 - CMake
 - Curl
 - Qt6
+  - Qt Quick
+  - QtWebEngine (required by spotify to get >30 songs from a playlist)
 
 1 - **Download/Clone this branch**
 

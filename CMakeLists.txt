@@ -45,6 +45,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 	Core
 	Widgets
 	Qml
+	WebEngineCore
 )
 
 # Additional dependencies
@@ -82,6 +83,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Core
 	Qt6::Widgets
 	Qt6::Qml
+	Qt6::WebEngineCore
 	${CURL_LIBRARIES}
 	${ADDITIONAL_LIBS}
 )
