@@ -25,11 +25,10 @@ nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std
     std::string jsonString64 = parser.Select(R"(script[id="initialState"])").GetText();
 
     // Decode json from base64
+    std::string jsonString = base64::decode<std::string>(jsonString64);
+    nlohmann::json json = nlohmann::json::parse(jsonString);
 
-
-    std::cout << jsonString64 << std::endl;
-
-    return nlohmann::json::object();
+    return json;
 }
 
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
