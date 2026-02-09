@@ -115,7 +115,7 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
     HtmlNode imageNode = parser.Select(R"(meta[property="og:image"])");
     HtmlNode mainArtistIdNode = parser.Select(R"(meta[name="music:musician"])");
     HtmlNode releaseDateNode = parser.Select(R"(meta[name="music:release_date"])");
-    std::vector<HtmlNode> songIdNodes = parser.SelectAll(R"(meta[name="music:song"])");
+    std::vector<HtmlNode> songUrlNodes = parser.SelectAll(R"(meta[name="music:song"])");
     std::vector<HtmlNode> songDiscNodes = parser.SelectAll(R"(meta[name="music:song:disc"])");
     std::vector<HtmlNode> songTrackNodes = parser.SelectAll(R"(meta[name="music:song:track"])");
 
@@ -145,6 +145,42 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
     HtmlNode jsonNode = parser.Select(R"(script[type="application/ld+json"])");
     nlohmann::json json = nlohmann::json::parse(jsonNode.GetText());
     std::string albumName = json["name"];
+
+    // Get songs details
+    std::vector<TrackData> tracks;
+    for (int i = 0; i < songUrlNodes.size(); i++) {
+        TrackData track;
+
+        track.Id = StringUtils::Split(songUrlNodes[i].GetAttribute("content"), "/").back();
+        track.ReleaseDate = releaseDate;
+        track.DiscNumber = std::stoi(songDiscNodes[i].GetAttribute("content"));
+        track.TrackNumber = std::stoi(songTrackNodes[i].GetAttribute("content"));
+        track.PlaylistTrackNumber = 1;  // Playlist(s) is unknown
+
+        // Details
+        HtmlNode trackDetailsParentNode = parser.Select(R"(div:has(> a[href="/track/)" + track.Id + R"("]))");
+        HtmlNode trackNameNode = parser.Select(trackDetailsParentNode, R"(p[data-encore-id="listRowTitle"] span)");
+        HtmlNode explicitNode = parser.Select(trackDetailsParentNode, R"(span[aria-label="Explicit"])");
+
+        track.Name = trackNameNode.GetText();
+        track.Explicit = explicitNode.Exists();
+
+        // Artists
+        std::vector<HtmlNode> trackArtistNodes = parser.SelectAll(trackDetailsParentNode, R"(p[data-encore-id="listRowDetails"] a)");
+
+        std::vector<ArtistData> artists;
+        for (int j = 0; j < trackArtistNodes.size(); j++) {
+            ArtistData artist;
+            artist.Id = StringUtils::Split(trackArtistNodes[j].GetAttribute("href"), "/").back();
+            artist.Name = trackArtistNodes[j].GetText();
+            
+            artists.push_back(artist);
+        }
+
+        track.Artists = artists;
+
+        tracks.push_back(track);
+    }
 
     return AlbumTracks();
 }
