@@ -22,6 +22,7 @@ class SpotifyAPINew
 {
     public:
         static TrackData GetTrack(const std::string& id);
+        static TrackData GetEpisode(const std::string& id);
         static AlbumTracks GetAlbum(const std::string& id);
     private:
         static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
