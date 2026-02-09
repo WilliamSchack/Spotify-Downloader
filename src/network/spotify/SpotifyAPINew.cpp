@@ -6,7 +6,7 @@ NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std:
     
     NetworkRequest request;
     request.Url = url;
-    request.SetHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14) Mobile");
+    request.SetHeader("User-Agent", USER_AGENT);
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("Referer", "https://open.spotify.com");
 	request.SetHeader("DNT", "1");
@@ -58,11 +58,47 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
 
 PlaylistTracks SpotifyAPINew::GetPlaylist(const std::string& id)
 {
-    nlohmann::json json = GetPageJson("playlist", id);
-    if (json.empty()) return PlaylistTracks();
-    
     if (_spotifyAuth.Authorization.empty())
         _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).Url);
+
+    // Could not get auth, return first 30 tracks
+    if (_spotifyAuth.Authorization.empty()) {
+        nlohmann::json json = GetPageJson("playlist", id);
+        if (json.empty()) return PlaylistTracks();
+
+        // PARSE
+
+        return PlaylistTracks();
+    }
+
+    // Get playlist tracks in blocks of 100 until we reach the end
+    // First one will also set playlist data
+
+    NetworkRequest request;
+    request.Url = "https://api-partner.spotify.com/pathfinder/v2/query";
+    request.SetHeader("User-Agent", USER_AGENT);
+    request.SetHeader("Authorization", _spotifyAuth.Authorization);
+    request.SetHeader("Client-Token", _spotifyAuth.ClientToken);
+    request.SetHeader("Content-Type", "application/json");
+
+    nlohmann::json postData {
+		{"variables", {
+            {"uri", ("spotify:playlist:" + id)},
+            {"limit", 100},
+            {"offset", 0}
+        }},
+        {"operationName", "queryPlaylist"},
+        {"extensions", {
+            {"persistedQuery", {
+                {"version", 1},
+                {"sha256Hash", _spotifyAuth.PlaylistQueryHash}
+            }}
+        }}
+	};
+
+    NetworkResponse response = request.Post(postData);
+
+    std::cout << response.Body << std::endl;
 
     return PlaylistTracks();
 }

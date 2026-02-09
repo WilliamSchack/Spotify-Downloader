@@ -26,6 +26,8 @@ class SpotifyAPINew
         static TrackData GetTrack(const std::string& id);
         static TrackData GetEpisode(const std::string& id);
         static AlbumTracks GetAlbum(const std::string& id);
+
+        // Opens headless browser initially to get auth
         static PlaylistTracks GetPlaylist(const std::string& id);
     private:
         static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
@@ -39,6 +41,8 @@ class SpotifyAPINew
 
         static AlbumTracks ParseAlbum(const nlohmann::json& json);
     private:
+        static inline const std::string USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
+
         // TODO: Make this thread safe
         static inline SpotifyAuth _spotifyAuth;
 };
