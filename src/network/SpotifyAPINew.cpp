@@ -45,11 +45,7 @@ TrackData SpotifyAPINew::GetEpisode(const std::string& id)
     nlohmann::json json = GetPageJson("episode", id);
     if (json.empty()) return TrackData();
 
-    TrackData track = ParseTrack(json);
-    track.Print();
-
-    return TrackData();
-    //return ParseTrack(json);
+    return ParseTrack(json);
 }
 
 AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
@@ -152,9 +148,6 @@ std::vector<ArtistData> SpotifyAPINew::ParseArtists(const nlohmann::json& json)
 
 AlbumTracks SpotifyAPINew::ParseAlbum(const nlohmann::json& json)
 {
-    std::cout << "ALBUM:" << std::endl;
-    std::cout << json << std::endl;
-
     AlbumTracks albumTracks;
 
     AlbumData album;
