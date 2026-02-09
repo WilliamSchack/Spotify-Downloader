@@ -31,7 +31,7 @@ struct TrackData
         DurationSeconds = ms / 1000;
     }
 
-    void Print()
+    void Print(bool printAlbum = true, bool printArtists = true)
     {
         std::cout << Id << std::endl;
         std::cout << Name << std::endl;
@@ -42,11 +42,17 @@ struct TrackData
         std::cout << DiscNumber << std::endl;
         std::cout << TrackNumber << std::endl;
         std::cout << PlaylistTrackNumber << std::endl;
-        std::cout << "ALBUM:" << std::endl;
-        Album.Print();
-        std::cout << "ARTISTS:" << std::endl;
-        for (ArtistData artist : Artists) {
-            artist.Print();
+        
+        if (printAlbum) {
+            std::cout << "ALBUM:" << std::endl;
+            Album.Print();
+        }
+
+        if (printArtists) {
+            std::cout << "ARTISTS:" << std::endl;
+            for (ArtistData artist : Artists) {
+                artist.Print();
+            }
         }
     }
 };
