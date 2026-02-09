@@ -6,7 +6,7 @@ NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std:
     
     NetworkRequest request;
     request.Url = url;
-    request.SetHeader("User-Agent", "Mozilla/5.0"); // For some reason setting a generic user agent gets the mobile page? Its exactly what we want but a bit weird
+    request.SetHeader("User-Agent", "Mozilla/5.0 (Linux; Android 14) Mobile");
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("Referer", "https://open.spotify.com");
 	request.SetHeader("DNT", "1");
@@ -54,6 +54,17 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
     if (json.empty()) return AlbumTracks();
 
     return ParseAlbum(json);
+}
+
+PlaylistTracks SpotifyAPINew::GetPlaylist(const std::string& id)
+{
+    nlohmann::json json = GetPageJson("playlist", id);
+    if (json.empty()) return PlaylistTracks();
+    
+    if (_spotifyAuth.Authorization.empty())
+        _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).Url);
+
+    return PlaylistTracks();
 }
 
 TrackData SpotifyAPINew::ParseTrack(nlohmann::json json)
