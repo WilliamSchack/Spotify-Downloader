@@ -22,6 +22,7 @@ class SpotifyAPINew
         static AlbumTracks GetAlbum(const std::string& id);
     private:
         static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
+        static nlohmann::json GetPageJson(const std::string& endpoint, const std::string& id);
 };
 
 #endif

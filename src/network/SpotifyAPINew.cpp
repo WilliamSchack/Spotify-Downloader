@@ -6,18 +6,41 @@ NetworkRequest SpotifyAPINew::GetRequest(const std::string& endpoint, const std:
     
     NetworkRequest request;
     request.Url = url;
-    request.SetHeader("User-Agent", "Mozilla/5.0");
+    request.SetHeader("User-Agent", "Mozilla/5.0"); // For some reason setting a generic user agent allows a mobile browser? Its exactly what we want but a bit weird
 	request.SetHeader("Accept", "*/*");
-	request.SetHeader("DNT", "1");
 	request.SetHeader("Referer", "https://open.spotify.com");
+	request.SetHeader("DNT", "1");
     return request;
+}
+
+nlohmann::json SpotifyAPINew::GetPageJson(const std::string& endpoint, const std::string& id)
+{
+    // Get page
+    NetworkRequest request = GetRequest("track", id);
+    NetworkResponse response = request.Get();
+    std::string responseHtml = response.Body;
+
+    // Get json
+    HtmlParser parser(responseHtml);
+    std::string jsonString64 = parser.Select(R"(script[id="initialState"])").GetText();
+
+    // Decode json from base64
+
+    std::cout << jsonString64 << std::endl;
+
+    return nlohmann::json::object();
 }
 
 TrackData SpotifyAPINew::GetTrack(const std::string& id)
 {
+    GetPageJson("track", id);
+    return TrackData();
+
     NetworkRequest request = GetRequest("track", id);
     NetworkResponse response = request.Get();
     std::string responseHtml = response.Body;
+
+    std::cout << responseHtml << std::endl;
 
     // Get meta details
     HtmlParser parser(responseHtml);
@@ -177,6 +200,7 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
             artists.push_back(artist);
         }
 
+        // track.album = album;
         track.Artists = artists;
 
         tracks.push_back(track);
