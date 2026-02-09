@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 struct TrackData
 {
     std::string Id = "";
@@ -27,6 +29,25 @@ struct TrackData
     {
         DurationMilliseconds = ms;
         DurationSeconds = ms / 1000;
+    }
+
+    void Print()
+    {
+        std::cout << Id << std::endl;
+        std::cout << Name << std::endl;
+        std::cout << ReleaseDate << std::endl;
+        std::cout << Explicit << std::endl;
+        std::cout << DurationMilliseconds << std::endl;
+        std::cout << DurationSeconds << std::endl;
+        std::cout << DiscNumber << std::endl;
+        std::cout << TrackNumber << std::endl;
+        std::cout << PlaylistTrackNumber << std::endl;
+        std::cout << "ALBUM:" << std::endl;
+        Album.Print();
+        std::cout << "ARTISTS:" << std::endl;
+        for (ArtistData artist : Artists) {
+            artist.Print();
+        }
     }
 };
 
