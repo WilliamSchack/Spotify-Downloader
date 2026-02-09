@@ -39,6 +39,35 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
 
     json = json["entities"]["items"].front();
 
+    TrackData track = ParseTrack(json);
+
+    std::cout << track.Id << std::endl;
+    std::cout << track.Name << std::endl;
+    std::cout << track.ReleaseDate << std::endl;
+    std::cout << track.Explicit << std::endl;
+    std::cout << track.DurationMilliseconds << std::endl;
+    std::cout << track.DurationSeconds << std::endl;
+    std::cout << track.DiscNumber << std::endl;
+    std::cout << track.TrackNumber << std::endl;
+    std::cout << track.PlaylistTrackNumber << std::endl;
+    std::cout << "ALBUM:" << std::endl;
+    std::cout << track.Album.Id << std::endl;
+    std::cout << track.Album.Name << std::endl;
+    std::cout << track.Album.TotalTracks << std::endl;
+    std::cout << track.Album.ReleaseDate << std::endl;
+    std::cout << (int)track.Album.Type << std::endl;
+    std::cout << track.Album.MainArtist.Id << std::endl;
+    std::cout << track.Album.MainArtist.Name << std::endl;
+    std::cout << "ARTISTS:" << std::endl;
+    for (auto test : track.Artists) {
+        std::cout << test.Id << std::endl;
+        std::cout << test.Name << std::endl;
+    }
+    
+    return track;
+
+    /*
+
     // Track details
     TrackData track;
     track.Id = json["id"];
@@ -97,6 +126,7 @@ TrackData SpotifyAPINew::GetTrack(const std::string& id)
     track.Album = album;
 
     return track;
+    */
 }
 
 AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
@@ -196,7 +226,7 @@ AlbumTracks SpotifyAPINew::GetAlbum(const std::string& id)
 TrackData SpotifyAPINew::ParseTrack(nlohmann::json json)
 {
     if (json.contains("track"))       json = json["track"];
-    else if (json.contains("itemV2")) json = json["itemV2"];
+    else if (json.contains("itemV2")) json = json["itemV2"]["data"];
 
     TrackData track;
     track.Id = json["id"];
@@ -207,8 +237,24 @@ TrackData SpotifyAPINew::ParseTrack(nlohmann::json json)
     track.PlaylistTrackNumber = 0;
     track.SetDuration(json["duration"]["totalMilliseconds"]);
 
-    track.Album = ParseSimpleAlbum(json["albumOfTrack"]);
-    track.Artists = ParseArtists(json["artists"]["items"]);
+    // Artists
+    if (json.contains("firstArtist")) {
+        nlohmann::json artistsJson = json["firstArtist"]["items"];
+        JsonUtils::ExtendArray(artistsJson, json["otherArtists"]["items"]);
+        track.Artists = ParseArtists(artistsJson);
+    } else {
+        track.Artists = ParseArtists(json["artists"]["items"]);
+    }
+
+    // Album
+    if (json.contains("albumOfTrack")) {
+        track.Album = ParseAlbum(json["albumOfTrack"]).Data;
+        track.Album.MainArtist = track.Artists[0];
+        track.ReleaseDate = track.Album.ReleaseDate;
+
+        std::cout << track.Album.MainArtist.Id << std::endl;
+        std::cout << track.Album.MainArtist.Name << std::endl;
+    }
 
     return track;
 }
@@ -246,12 +292,22 @@ std::vector<ArtistData> SpotifyAPINew::ParseArtists(const nlohmann::json& json)
     return artists;
 }
 
-AlbumData SpotifyAPINew::ParseSimpleAlbum(const nlohmann::json& json)
+AlbumTracks SpotifyAPINew::ParseAlbum(const nlohmann::json& json)
 {
+    AlbumTracks albumTracks;
+
     AlbumData album;
     album.Id = StringUtils::Split(json["uri"], ":").back();
     album.Name = json["name"];
     
+    // Type
+    album.Type = EAlbumType::Album;
+    if (json.contains("type")) {
+        if      (json["type"] == "SINGLE")      album.Type = EAlbumType::Single;
+        else if (json["type"] == "COMPILATION") album.Type = EAlbumType::Compilation;
+    }
+
+    // Cover Art
     unsigned int highestResolution = 0;
     for (nlohmann::json coverArtDetails : json["coverArt"]["sources"]) {
         int resolution = coverArtDetails["width"];
@@ -261,4 +317,26 @@ AlbumData SpotifyAPINew::ParseSimpleAlbum(const nlohmann::json& json)
         highestResolution = resolution;
         album.ImageUrl = coverArtDetails["url"];
     }
+
+    // Release Date
+    if (json.contains("date")) {
+        nlohmann::json dateJson = json["date"];
+        album.ReleaseYear = std::to_string(dateJson["year"].get<int>());
+        album.ReleaseDate = std::to_string(dateJson["year"].get<int>());
+        if (dateJson.contains("month")) album.ReleaseDate += "-" + std::to_string(dateJson["month"].get<int>());
+        if (dateJson.contains("day"))   album.ReleaseDate += "-" + std::to_string(dateJson["day"].get<int>());
+    }
+
+    nlohmann::json tracksJson;
+    if      (json.contains("tracks"))   tracksJson = json["tracks"];
+    else if (json.contains("tracksV2")) tracksJson = json["tracksV2"];
+    if (!tracksJson.empty()) {
+        tracksJson = tracksJson["items"];
+        album.TotalTracks = tracksJson.size();
+        albumTracks.Tracks = ParseTracks(tracksJson);
+    }
+
+    albumTracks.Data = album;
+
+    return albumTracks;
 }

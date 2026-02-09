@@ -1,3 +1,6 @@
+// Gets spotify metadata through the mobile site
+// Parses the encoded json in the bottom script tag
+
 #ifndef SPOTIFYAPINEW_H
 #define SPOTIFYAPINEW_H
 
@@ -30,7 +33,7 @@ class SpotifyAPINew
         static ArtistData ParseArtist(const nlohmann::json& json);
         static std::vector<ArtistData> ParseArtists(const nlohmann::json& json);
 
-        static AlbumData ParseSimpleAlbum(const nlohmann::json& json);
+        static AlbumTracks ParseAlbum(const nlohmann::json& json);
 };
 
 #endif

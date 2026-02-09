@@ -13,6 +13,7 @@ struct AlbumData
     std::string Description = "";
     unsigned int TotalTracks = 0;
     std::string ImageUrl = "";
+    std::string ReleaseDate = "";
     std::string ReleaseYear = "";
     EAlbumType Type = EAlbumType::Album;
     ArtistData MainArtist;
