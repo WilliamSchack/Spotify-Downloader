@@ -1,6 +1,7 @@
 #ifndef TRACKDATA_H
 #define TRACKDATA_H
 
+#include "EPlatform.h"
 #include "ArtistData.h"
 #include "AlbumData.h"
 
@@ -11,7 +12,9 @@
 
 struct TrackData
 {
+    EPlatform Platform = EPlatform::Unknown;
     std::string Id = "";
+    std::string Url = "";
     std::string Isrc = "";
     std::string Name = "";
     std::string Description = "";
@@ -33,7 +36,9 @@ struct TrackData
 
     void Print(bool printAlbum = true, bool printArtists = true)
     {
+        std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;
+        std::cout << Url << std::endl;
         std::cout << Name << std::endl;
         std::cout << ReleaseDate << std::endl;
         std::cout << Explicit << std::endl;

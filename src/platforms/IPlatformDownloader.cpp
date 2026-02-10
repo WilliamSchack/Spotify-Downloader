@@ -57,9 +57,9 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     std::filesystem::path imageFilePath = imagesFolder / imageFileName;
 
     Image image;
-    if (std::filesystem::exists(imageFilePath))
+    if (std::filesystem::exists(imageFilePath)) {
         image = ImageHandler::LoadImage(imageFilePath);
-    else {
+    } else {
         image = ImageHandler::DownloadImage(track.Album.ImageUrl);
         ImageHandler::SaveImage(imageFilePath, image);
     }

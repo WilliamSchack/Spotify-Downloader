@@ -55,6 +55,14 @@ class SpotifyAPI
         static inline const unsigned int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
         static inline const std::chrono::milliseconds RATE_LIMIT_MS = std::chrono::milliseconds(500);
 
+        static inline const std::string BASE_URL = "https://open.spotify.com/";
+        static inline const std::string TRACK_URL = BASE_URL + "track/";
+        static inline const std::string EPISODE_URL = BASE_URL + "episode/";
+        static inline const std::string ARTIST_URL = BASE_URL + "artist/";
+        static inline const std::string USER_URL = BASE_URL + "user/";
+        static inline const std::string ALBUM_URL = BASE_URL + "album/";
+        static inline const std::string PLAYLIST_URL = BASE_URL + "playlist/";
+
         // TODO: Make this thread safe
         static inline SpotifyAuth _spotifyAuth;
         

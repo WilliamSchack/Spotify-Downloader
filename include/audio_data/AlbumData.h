@@ -1,6 +1,7 @@
 #ifndef ALBUMDATA_H
 #define ALBUMDATA_H
 
+#include "EPlatform.h"
 #include "EAlbumType.h"
 #include "ArtistData.h"
 
@@ -10,7 +11,9 @@
 
 struct AlbumData
 {
+    EPlatform Platform = EPlatform::Unknown;
     std::string Id = "";
+    std::string Url = "";
     std::string Name = "";
     std::string Description = "";
     unsigned int TotalTracks = 0;
@@ -22,7 +25,9 @@ struct AlbumData
 
     void Print()
     {
+        std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;
+        std::cout << Url << std::endl;
         std::cout << Name << std::endl;
         std::cout << Description << std::endl;
         std::cout << TotalTracks << std::endl;
