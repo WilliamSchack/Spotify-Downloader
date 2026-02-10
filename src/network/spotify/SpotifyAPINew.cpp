@@ -117,17 +117,7 @@ PlaylistTracks SpotifyAPINew::GetPlaylist(const std::string& id)
     // Incase of any error in the loop
     if (json.empty()) return PlaylistTracks();
 
-    PlaylistTracks playlistTracks = ParsePlaylist(json);
-
-    playlistTracks.Data.Print();
-
-    std::cout << "==== TRACKS:" << std::endl;
-    for (int i = 0; i < 200; i++) {
-        std::cout << ">> Track (" << i << "):" << std::endl;
-        playlistTracks.Tracks[i].Print();
-    }
-
-    return playlistTracks;
+    return ParsePlaylist(json);
 }
 
 TrackData SpotifyAPINew::ParseTrack(nlohmann::json json)
