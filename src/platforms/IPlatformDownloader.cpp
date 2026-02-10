@@ -17,13 +17,57 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
         case ELinkType::Playlist: return DownloadPlaylist(url, directory);
         case ELinkType::Album:    return DownloadAlbum(url, directory);
     }
-
+    
     return false;
 }
 
 bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
 {
+    // Get track details
     TrackData track = GetTrack(url);
+
+    // Todo: Move below into seperate files
+    //       Just getting it working at the moment
+
+    // Get paths
+    std::filesystem::path tempFolder = std::filesystem::temp_directory_path() / APP_NAME;
+    if (!std::filesystem::exists(tempFolder))
+        std::filesystem::create_directory(tempFolder);
+
+    std::filesystem::path downloadsFolder = tempFolder / DOWNLOADS_FOLDER_NAME;
+    if (!std::filesystem::exists(downloadsFolder))
+        std::filesystem::create_directory(downloadsFolder);
+
+    std::string fileName = track.Name + " - " + track.Artists[0].Name + ".mp3";
+    fileName = FileUtils::ValidateFileName(fileName);
+
+    std::filesystem::path tempDownloadPath = downloadsFolder / fileName;
+
+    std::filesystem::path targetFolder = directory;
+    std::filesystem::path targetDownloadPath = targetFolder / fileName;
+
+    // Get cover art
+    std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;
+    if (!std::filesystem::exists(imagesFolder))
+        std::filesystem::create_directory(imagesFolder);
+
+    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover.png";
+    imageFileName = FileUtils::ValidateFileName(imageFileName);
+
+    std::filesystem::path imageFilePath = imagesFolder / imageFileName;
+
+    Image image;
+    if (std::filesystem::exists(imageFilePath))
+        image = ImageHandler::LoadImage(imageFilePath);
+    else {
+        image = ImageHandler::DownloadImage(track.Album.ImageUrl);
+        ImageHandler::SaveImage(imageFilePath, image);
+    }
+
+
+
+    std::cout << "PATH: " << tempDownloadPath << std::endl;
+
     return false;
 }
 
