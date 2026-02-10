@@ -7,6 +7,10 @@ struct Image
     int Height = 0;
     int Channels;
     unsigned char* Data;
+
+    ~Image() {
+        delete[] Data;
+    }
 };
 
 #endif
