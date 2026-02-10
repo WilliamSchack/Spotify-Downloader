@@ -47,7 +47,7 @@ void SpotifyAPI::WaitForRateLimit()
 TrackData SpotifyAPI::GetTrack(const std::string& id)
 {
     nlohmann::json json = GetPageJson("track", id);
-    if (json.empty()) return TrackData();
+    if (json.empty()) return TrackData(EPlatform::Unknown);
 
     return ParseTrack(json);
 }
@@ -55,7 +55,7 @@ TrackData SpotifyAPI::GetTrack(const std::string& id)
 TrackData SpotifyAPI::GetEpisode(const std::string& id)
 {
     nlohmann::json json = GetPageJson("episode", id);
-    if (json.empty()) return TrackData();
+    if (json.empty()) return TrackData(EPlatform::Unknown);
 
     return ParseTrack(json);
 }
@@ -141,8 +141,7 @@ TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
 
     bool isEpisode = json.contains("showOrAudiobook");
 
-    TrackData track;
-    track.Platform = EPlatform::Spotify;
+    TrackData track(EPlatform::Spotify);
     track.Id = StringUtils::Split(json["uri"], ":").back();
     track.Url = (isEpisode ? TRACK_URL : EPISODE_URL) + track.Id;
     track.Name = json["name"];
@@ -208,8 +207,7 @@ std::vector<TrackData> SpotifyAPI::ParseTracks(const nlohmann::json& json)
 
 ArtistData SpotifyAPI::ParseArtist(const nlohmann::json& json)
 {
-    ArtistData artist;
-    artist.Platform = EPlatform::Spotify;
+    ArtistData artist(EPlatform::Spotify);
     artist.Id = StringUtils::Split(json["uri"], ":").back();
     artist.Url = ARTIST_URL + artist.Id;
     artist.Name = json["profile"]["name"];
@@ -233,8 +231,7 @@ AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 {
     AlbumTracks albumTracks;
 
-    AlbumData album;
-    album.Platform = EPlatform::Spotify;
+    AlbumData album(EPlatform::Spotify);
     album.Id = StringUtils::Split(json["uri"], ":").back();
     album.Url = ALBUM_URL + album.Id;
     album.Name = json["name"];
@@ -292,8 +289,7 @@ PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
     PlaylistTracks playlistTracks;
 
     const nlohmann::json& playlistJson = json["data"]["playlistV2"];
-    PlaylistData playlist;
-    playlist.Platform = EPlatform::Spotify;
+    PlaylistData playlist(EPlatform::Spotify);
     playlist.Id = playlistJson["id"];
     playlist.Url = PLAYLIST_URL + playlist.Id;
     playlist.Name = playlistJson["name"];
@@ -303,8 +299,7 @@ PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 
     // Owner
     const nlohmann::json& ownerJson = playlistJson["ownerV2"]["data"];
-    ArtistData owner;
-    owner.Platform = EPlatform::Spotify;
+    ArtistData owner(EPlatform::Spotify);
     owner.Id = ownerJson["username"];
     owner.Url = USER_URL + owner.Id;
     owner.Name = ownerJson["name"];

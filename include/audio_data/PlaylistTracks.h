@@ -10,6 +10,8 @@ struct PlaylistTracks
 {
     PlaylistData Data;
     std::vector<TrackData> Tracks;
+
+    PlaylistTracks() : Data(EPlatform::Unknown) {}
 };
 
 #endif

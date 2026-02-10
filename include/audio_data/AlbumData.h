@@ -23,6 +23,8 @@ struct AlbumData
     EAlbumType Type = EAlbumType::Album;
     ArtistData MainArtist;
 
+    AlbumData(EPlatform platform) : Platform(platform) {}
+
     void Print()
     {
         std::cout << (int)Platform << std::endl;

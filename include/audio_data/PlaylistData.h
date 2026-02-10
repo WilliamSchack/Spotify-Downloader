@@ -21,6 +21,8 @@ struct PlaylistData
     unsigned int TotalTracks = 0;
     ArtistData Owner;
 
+    PlaylistData(EPlatform platform) : Platform(platform) {}
+
     void Print()
     {
         std::cout << (int)Platform << std::endl;

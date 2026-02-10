@@ -14,6 +14,8 @@ struct ArtistData
     std::string Url = "";
     std::string Name = "";
 
+    ArtistData(EPlatform platform) : Platform(platform) {}
+
     void Print()
     {
         std::cout << (int)Platform << std::endl;

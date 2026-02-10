@@ -28,6 +28,8 @@ struct TrackData
     AlbumData Album;
     std::vector<ArtistData> Artists;
 
+    TrackData(EPlatform platform) : Platform(platform) {}
+
     void SetDuration(unsigned int ms)
     {
         DurationMilliseconds = ms;
