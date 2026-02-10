@@ -33,6 +33,7 @@ class HtmlParser
         lxb_html_document* _document;
         lxb_css_parser_t* _parser;
         lxb_selectors_t* _selectors;
+        lxb_css_selector_list_t* _currentSelectorList;
 
         lxb_status_t _lastStatus;
 
@@ -40,6 +41,9 @@ class HtmlParser
     private:
         // Assumes the parser object is passed to ctx
         static lxb_status_t FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx);
+
+        bool CreateSelectors();
+        void CleanupSelectors();
 };
 
 #endif
