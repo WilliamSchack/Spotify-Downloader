@@ -14,7 +14,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
     // Wait for authorisation
     QEventLoop loop;
     QObject::connect(interceptor, &SpotifyAuthInterceptor::ValuesRetrieved, &loop, &QEventLoop::quit);
-    QTimer::singleShot(10000, &loop, &QEventLoop::quit);
+    QTimer::singleShot(TIMEOUT_MS, &loop, &QEventLoop::quit);
     loop.exec();
 
     webPage->deleteLater();
