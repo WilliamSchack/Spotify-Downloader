@@ -2,6 +2,8 @@
 
 NetworkRequest SpotifyAPI::GetRequest(const std::string& endpoint, const std::string& id)
 {
+    WaitForRateLimit();
+
     std::string url = "https://open.spotify.com/" + endpoint + "/" + id;
     
     NetworkRequest request;
@@ -30,6 +32,16 @@ nlohmann::json SpotifyAPI::GetPageJson(const std::string& endpoint, const std::s
     nlohmann::json json = nlohmann::json::parse(jsonString);
 
     return json["entities"]["items"].front();
+}
+
+void SpotifyAPI::WaitForRateLimit()
+{
+    std::chrono::time_point currentTime = std::chrono::system_clock::now();
+    std::chrono::milliseconds msSinceLastRequest = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _lastRequestTime);
+    if (msSinceLastRequest < RATE_LIMIT_MS)
+        std::this_thread::sleep_for(RATE_LIMIT_MS - msSinceLastRequest);
+
+    _lastRequestTime = std::chrono::system_clock::now();
 }
 
 TrackData SpotifyAPI::GetTrack(const std::string& id)
@@ -77,6 +89,8 @@ PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
     unsigned int retrievedTracks = 0;
 
     while (retrievedTracks < totalTracks) {
+        WaitForRateLimit();
+
         NetworkRequest request;
         request.Url = "https://api-partner.spotify.com/pathfinder/v2/query";
         request.SetHeader("User-Agent", USER_AGENT);

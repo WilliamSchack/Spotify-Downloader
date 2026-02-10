@@ -17,7 +17,8 @@
 
 #include <iostream>
 #include <regex>
-
+#include <chrono>
+#include <thread>
 
 class SpotifyAPI
 {
@@ -37,7 +38,8 @@ class SpotifyAPI
         static NetworkRequest GetRequest(const std::string& endpoint, const std::string& id);
         static nlohmann::json GetPageJson(const std::string& endpoint, const std::string& id);
 
-        
+        static void WaitForRateLimit();
+
         static TrackData ParseTrack(nlohmann::json json);
         static std::vector<TrackData> ParseTracks(const nlohmann::json& json);
 
@@ -51,9 +53,12 @@ class SpotifyAPI
     private:
         static inline const std::string USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
         static inline const unsigned int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
+        static inline const std::chrono::milliseconds RATE_LIMIT_MS = std::chrono::milliseconds(500);
 
         // TODO: Make this thread safe
         static inline SpotifyAuth _spotifyAuth;
+        
+        static inline std::chrono::time_point _lastRequestTime = std::chrono::system_clock::now();
 };
 
 #endif
