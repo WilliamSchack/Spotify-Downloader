@@ -42,21 +42,13 @@ bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image
 Image ImageHandler::LoadImage(const std::filesystem::path& path)
 {
     Image image;
-
-    stbi_uc* stbData = stbi_load(
+    image.Data = stbi_load(
         path.c_str(),
         &image.Width,
         &image.Height,
         &image.Channels,
         0
     );
-
-    // If image couldnt be loaded
-    if (!stbData) return image;
-
-    unsigned int dataSize = image.Width * image.Height * image.Channels;
-    image.Data = new unsigned char[dataSize];
-    std::memcpy(image.Data, stbData, dataSize);
 
     return image;
 };
@@ -70,7 +62,7 @@ Image ImageHandler::DownloadImage(const std::string& url)
     NetworkResponse response = request.Get();
     if (response.Body.empty()) return image;
 
-    stbi_uc* stbData = stbi_load_from_memory(
+    image.Data = stbi_load_from_memory(
         reinterpret_cast<const stbi_uc*>(response.Body.data()),
         response.Body.size(),
         &image.Width,
@@ -78,15 +70,6 @@ Image ImageHandler::DownloadImage(const std::string& url)
         &image.Channels,
         0
     );
-
-    // If image couldnt be loaded
-    if (!stbData) return image;
-
-    unsigned int dataSize = image.Width * image.Height * image.Channels;
-    image.Data = new unsigned char[dataSize];
-    std::memcpy(image.Data, stbData, dataSize);
-
-    stbi_image_free(stbData);
 
     return image;
 }
