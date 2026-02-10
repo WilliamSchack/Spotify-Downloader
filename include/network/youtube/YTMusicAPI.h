@@ -23,7 +23,7 @@ class YTMusicAPI {
 	public:
 		bool CheckConnection();
 		
-		nlohmann::json Search(const std::string&, const std::string&, int limit);
+		nlohmann::json Search(const std::string& query, const std::string& filter, int limit);
 
 		nlohmann::json GetAlbum(const std::string& browseId);
 		//QJsonArray GetAlbumTracks(QString browseId);

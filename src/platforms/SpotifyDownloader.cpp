@@ -26,7 +26,7 @@ std::string SpotifyDownloader::GetLinkId(const std::string& url)
 TrackData SpotifyDownloader::GetTrack(const std::string& url)
 {
     std::string trackId = GetLinkId(url);
-    if (trackId.empty()) return TrackData();
+    if (trackId.empty()) return TrackData(EPlatform::Unknown);
 
     if (StringUtils::Contains(url, "episode"))
         return _spotify.GetEpisode(trackId);
