@@ -55,9 +55,6 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
         }
     }
 
-    track.Print();
-    std::cout << "=========" << std::endl;
-
     // Get the best result
     return GetClosestTrack(track, searchResults);
 }
