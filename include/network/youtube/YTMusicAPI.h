@@ -7,8 +7,8 @@
 
 #include "EYoutubeCategory.h"
 #include "YoutubeSearchResult.h"
-
 #include "NetworkRequest.h"
+#include "AlbumTracks.h"
 #include "StringUtils.h"
 #include "ArrayUtils.h"
 #include "JsonUtils.h"
@@ -29,7 +29,7 @@ class YTMusicAPI {
 		
 		std::vector<YoutubeSearchResult> Search(const std::string& query, const EYoutubeCategory& filter, int limit);
 
-		nlohmann::json GetAlbum(const std::string& browseId);
+		AlbumTracks GetAlbum(const std::string& browseId);
 		//QJsonArray GetAlbumTracks(QString browseId);
 
 		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
@@ -51,6 +51,10 @@ class YTMusicAPI {
 	private:
 		NetworkRequest GetRequest(const std::string& endpoint);
 		nlohmann::json GetContext();
+
+		TrackData ParseTrackJson(const nlohmann::json& json);
+		ArtistData ParseArtistJson(const nlohmann::json& json);
+		AlbumTracks ParseAlbumJson(const nlohmann::json& json);
 
 		nlohmann::json ParseSongRuns(const nlohmann::json& runs, int offset = 0);
 
