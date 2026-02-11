@@ -32,7 +32,7 @@ struct AlbumData
         Artists.push_back(artist);
     }
 
-    void Print(bool printArtists = true)
+    void Print(bool printArtists = true) const
     {
         std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;

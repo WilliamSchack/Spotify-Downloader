@@ -37,7 +37,7 @@ struct TrackData
         DurationSeconds = ms / 1000;
     }
 
-    void Print(bool printAlbum = true, bool printArtists = true)
+    void Print(bool printAlbum = true, bool printArtists = true) const
     {
         std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;

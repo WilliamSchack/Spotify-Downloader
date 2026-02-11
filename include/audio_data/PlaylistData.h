@@ -23,7 +23,7 @@ struct PlaylistData
 
     PlaylistData(EPlatform platform) : Platform(platform), Owner(platform) {}
 
-    void Print()
+    void Print() const
     {
         std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;

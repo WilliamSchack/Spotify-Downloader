@@ -16,7 +16,7 @@ struct ArtistData
 
     ArtistData(EPlatform platform) : Platform(platform) {}
 
-    void Print()
+    void Print() const
     {
         std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;
