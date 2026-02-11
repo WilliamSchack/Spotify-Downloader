@@ -214,7 +214,7 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 			track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
 			track.Name = result["title"];
 			track.ReleaseYear = result.value("year", "");
-			track.Explicit = result["isExplicit"];
+			track.Explicit = result.value("isExplicit", false);
 			if (!result["durationSeconds"].empty())
 				track.SetDuration(result["durationSeconds"].get<int>() * 1000);
 
@@ -231,8 +231,8 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 
 			// Album
 			AlbumData album(EPlatform::YouTube);
-			nlohmann::json albumJson = result["album"];
-			if (!albumJson.empty()) {
+			if (result.contains("album")) {
+				nlohmann::json albumJson = result["album"];
 				album.Id = albumJson["id"];
 				album.Url = ""; // Havent got url, only the browse id is returned
 				album.Name = albumJson["name"];
@@ -272,8 +272,6 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 
 		finalSearchResults.push_back(resultOut);
 	}
-
-	std::cout << searchResults << std::endl;
 
 	return finalSearchResults;
 }
