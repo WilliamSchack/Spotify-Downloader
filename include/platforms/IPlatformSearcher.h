@@ -1,6 +1,7 @@
 #ifndef IPLATFORMSEARCHER_H
 #define IPLATFORMSEARCHER_H
 
+#include "PlatformSearcherResult.h"
 #include "TrackData.h"
 #include "AlbumTracks.h"
 #include "PlaylistTracks.h"
@@ -11,7 +12,7 @@ class IPlatformSearcher
     public:
         virtual ~IPlatformSearcher() = default;
 
-        virtual TrackData FindTrack(const TrackData& track) = 0;
+        virtual PlatformSearcherResult FindTrack(const TrackData& track) = 0;
         virtual AlbumTracks FindAlbum(const AlbumTracks& track) = 0;
         virtual PlaylistTracks FindPlaylist(const PlaylistTracks& track) = 0;
 };

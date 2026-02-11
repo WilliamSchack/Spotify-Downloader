@@ -4,7 +4,7 @@
 
 YoutubeSearcher::YoutubeSearcher() : _yt() {}
 
-TrackData YoutubeSearcher::FindTrack(const TrackData& track)
+PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
 {
     std::string titleSearchTerm  = track.Name;
     std::string artistSearchTerm = track.Artists[0].Name;
@@ -58,7 +58,7 @@ TrackData YoutubeSearcher::FindTrack(const TrackData& track)
     // Score songs
 
 
-    return TrackData(EPlatform::Unknown);
+    return PlatformSearcherResult();
 }
 
 double YoutubeSearcher::ScoreTrack(const TrackData& src, const TrackData& track)
