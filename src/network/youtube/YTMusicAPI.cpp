@@ -358,16 +358,6 @@ AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId) {
 	return ParseAlbumJson(album);
 }
 
-
-/*
-QJsonArray YTMusicAPI::GetAlbumTracks(QString browseId) {
-	QJsonObject album = GetAlbum(browseId);
-	if (album.isEmpty()) return QJsonArray();
-
-	return album["tracks"].toArray();
-}
-*/
-
 nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
 	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
 

@@ -30,7 +30,6 @@ class YTMusicAPI {
 		std::vector<YoutubeSearchResult> Search(const std::string& query, const EYoutubeCategory& filter, int limit);
 
 		AlbumTracks GetAlbum(const std::string& browseId);
-		//QJsonArray GetAlbumTracks(QString browseId);
 
 		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
 
