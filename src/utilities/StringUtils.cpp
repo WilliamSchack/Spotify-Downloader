@@ -41,3 +41,50 @@ std::vector<std::string> StringUtils::Split(const std::string& string, const std
     tokens.push_back(string.substr(start));
     return tokens;
 }
+
+// Levenshtein Distance Algorithim From Geeks For Geeks
+// https://www.geeksforgeeks.org/introduction-to-levenshtein-distance/
+double StringUtils::LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2)
+{
+    int m = s1.length();
+    int n = s2.length();
+
+    std::vector<int> prevRow(n + 1, 0);
+    std::vector<int> currRow(n + 1, 0);
+
+    for (int j = 0; j <= n; j++) {
+        prevRow[j] = j;
+    }
+
+    for (int i = 1; i <= m; i++) {
+        currRow[0] = i;
+
+        for (int j = 1; j <= n; j++) {
+            if (s1[i - 1] == s2[j - 1]) {
+                currRow[j] = prevRow[j - 1];
+            }
+            else {
+                currRow[j] = 1
+                    + std::min(
+                        // Insert
+                        currRow[j - 1],
+                        std::min(
+                            // Remove
+                            prevRow[j],
+
+                            // Replace
+                            prevRow[j - 1]
+                        )
+                    );
+            }
+        }
+
+        prevRow = currRow;
+    }
+
+    // Normalize distance to similarity
+    float maxLength = std::max(m, n);
+    float dist = (maxLength - currRow[n]) / maxLength;
+
+    return dist;
+}
