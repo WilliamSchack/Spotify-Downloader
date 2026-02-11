@@ -1,6 +1,6 @@
 #include "SpotifyDownloader.h"
 
-SpotifyDownloader::SpotifyDownloader() :_spotify() {}
+SpotifyDownloader::SpotifyDownloader() : _spotify() {}
 
 ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 {
