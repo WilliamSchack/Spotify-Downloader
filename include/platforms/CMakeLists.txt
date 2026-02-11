@@ -7,6 +7,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/IPlatformSearcher.h
 	${CMAKE_CURRENT_SOURCE_DIR}/PlatformDetector.h
 	${CMAKE_CURRENT_SOURCE_DIR}/PlatformFactory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/PlatformSearcherResult.h
 )
 
 add_subdirectory(spotify)
