@@ -3,6 +3,7 @@
 
 enum class EYoutubeCategory
 {
+    Unknown,
     None,
     Songs,
     Videos,

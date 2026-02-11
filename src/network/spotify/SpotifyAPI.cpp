@@ -168,19 +168,22 @@ TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
     if (!albumJson.empty()) {
         track.Album = ParseAlbum(albumJson).Data;
         
-        if (track.Album.MainArtist.Name.empty() && track.Artists.size() > 0)
-            track.Album.MainArtist = track.Artists[0];
+        if (track.Album.Artists.size() > 0 && track.Artists.size() > 0)
+            track.Album.Artists[0] = track.Artists[0];
         
         if (isEpisode)
-            track.Artists = std::vector<ArtistData> { track.Album.MainArtist };
+            track.Artists = std::vector<ArtistData> { track.Album.Artists };
 
         track.ReleaseDate = track.Album.ReleaseDate;
+        track.ReleaseYear = track.Album.ReleaseYear;
     }
 
     // Release date
     if (json.contains("releaseDate")) {
         nlohmann::json dateJson = json["releaseDate"];
-        track.ReleaseDate = std::to_string(dateJson["year"].get<int>());
+
+        track.ReleaseYear = std::to_string(dateJson["year"].get<int>());
+        track.ReleaseDate = track.ReleaseYear;
         if (dateJson.contains("month")) track.ReleaseDate += "-" + std::to_string(dateJson["month"].get<int>());
         if (dateJson.contains("day"))   track.ReleaseDate += "-" + std::to_string(dateJson["day"].get<int>());
 
@@ -258,9 +261,10 @@ AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 
     // Main Artist
     if (json.contains("artists")) {
-        album.MainArtist = ParseArtist(json["artists"]["items"][0]);
+        album.SetMainArtist(ParseArtist(json["artists"]["items"][0]));
     } else if (json.contains("publisher")) {
-        album.MainArtist.Name = json["publisher"]["name"];
+        album.SetMainArtist(ArtistData(EPlatform::Spotify));
+        album.Artists[0].Name = json["publisher"]["name"];
     }
 
     // Tracks
@@ -274,8 +278,10 @@ AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 
         // Add release date
         for (TrackData& track : albumTracks.Tracks) {
-            if (track.ReleaseDate == "")
+            if (track.ReleaseDate == "") {
                 track.ReleaseDate = album.ReleaseDate;
+                track.ReleaseYear = album.ReleaseYear;
+            }
         }
     }
 

@@ -19,6 +19,7 @@ struct TrackData
     std::string Name = "";
     std::string Description = "";
     std::string ReleaseDate = "";
+    std::string ReleaseYear = "";
     bool Explicit = false;
     unsigned int DurationMilliseconds = 0;
     unsigned int DurationSeconds = 0;
@@ -43,6 +44,7 @@ struct TrackData
         std::cout << Url << std::endl;
         std::cout << Name << std::endl;
         std::cout << ReleaseDate << std::endl;
+        std::cout << ReleaseYear << std::endl;
         std::cout << Explicit << std::endl;
         std::cout << DurationMilliseconds << std::endl;
         std::cout << DurationSeconds << std::endl;

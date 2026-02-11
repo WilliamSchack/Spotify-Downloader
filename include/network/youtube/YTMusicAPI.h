@@ -1,10 +1,12 @@
 // Translation from https://github.com/sigma67/ytmusicapi
 // Only contains things relevant to this project
+// Implementation here is a bit scuffed but it works
 
 #ifndef YTMUSICAPI_H
 #define YTMUSICAPI_H
 
 #include "EYoutubeCategory.h"
+#include "YoutubeSearchResult.h"
 
 #include "NetworkRequest.h"
 #include "StringUtils.h"
@@ -25,7 +27,7 @@ class YTMusicAPI {
 	public:
 		bool CheckConnection();
 		
-		nlohmann::json Search(const std::string& query, const EYoutubeCategory& filter, int limit);
+		std::vector<YoutubeSearchResult> Search(const std::string& query, const EYoutubeCategory& filter, int limit);
 
 		nlohmann::json GetAlbum(const std::string& browseId);
 		//QJsonArray GetAlbumTracks(QString browseId);
@@ -36,7 +38,11 @@ class YTMusicAPI {
 
 		//bool IsAgeRestricted(QString videoId);
 	private:
-        static inline const std::string API_BASE_URL = "https://music.youtube.com/youtubei/v1";
+		static inline const std::string YOUTUBE_URL = "https://music.youtube.com";
+        static inline const std::string API_BASE_URL = YOUTUBE_URL + "/youtubei/v1";
+		static inline const std::string VIDEO_BASE_URL = YOUTUBE_URL + "/watch?v=";
+		static inline const std::string CHANNEL_BASE_URL = YOUTUBE_URL + "/channel/";
+		static inline const std::string PLAYLIST_BASE_URL = YOUTUBE_URL + "/playlist?list=";
 
 		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {
 			"YouTube Premium",

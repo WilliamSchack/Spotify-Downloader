@@ -6,6 +6,7 @@
 #include "ArtistData.h"
 
 #include <string>
+#include <vector>
 
 #include <iostream>
 
@@ -21,11 +22,17 @@ struct AlbumData
     std::string ReleaseDate = "";
     std::string ReleaseYear = "";
     EAlbumType Type = EAlbumType::Album;
-    ArtistData MainArtist;
+    std::vector<ArtistData> Artists;
 
-    AlbumData(EPlatform platform) : Platform(platform), MainArtist(platform) {}
+    AlbumData(EPlatform platform) : Platform(platform) {}
 
-    void Print()
+    void SetMainArtist(ArtistData artist)
+    {
+        Artists = std::vector<ArtistData>();
+        Artists.push_back(artist);
+    }
+
+    void Print(bool printArtists = true)
     {
         std::cout << (int)Platform << std::endl;
         std::cout << Id << std::endl;
@@ -37,8 +44,13 @@ struct AlbumData
         std::cout << ReleaseDate << std::endl;
         std::cout << ReleaseYear << std::endl;
         std::cout << (int)Type << std::endl;
-        std::cout << MainArtist.Id << std::endl;
-        std::cout << MainArtist.Name << std::endl;
+        
+        if (printArtists) {
+            std::cout << "ARTISTS:" << std::endl;
+            for (ArtistData artist : Artists) {
+                artist.Print();
+            }
+        }
     }
 };
 
