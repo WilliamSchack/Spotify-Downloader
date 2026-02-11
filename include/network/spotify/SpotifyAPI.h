@@ -1,6 +1,3 @@
-// Gets spotify metadata through the mobile site
-// Parses the encoded json in the bottom script tag
-
 #ifndef SPOTIFYAPI_H
 #define SPOTIFYAPI_H
 
@@ -20,6 +17,8 @@
 #include <chrono>
 #include <thread>
 
+// Gets spotify metadata through the mobile site
+// Parses the encoded json in the bottom script tag
 class SpotifyAPI
 {
     public:

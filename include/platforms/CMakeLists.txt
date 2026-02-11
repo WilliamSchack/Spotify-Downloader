@@ -10,3 +10,4 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(spotify)
+add_subdirectory(youtube)
