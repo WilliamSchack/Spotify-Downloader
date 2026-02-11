@@ -19,6 +19,12 @@ class ArrayUtils
             original.reserve(original.size() + distance(src.begin(),src.end()));
             original.insert(original.end(),src.begin(),src.end());
         }
+
+        template<typename T>
+        static void RemoveAt(std::vector<T>& vector, const unsigned int& index)
+        {
+            vector.erase(vector.begin() + index);
+        }
 };
 
 #endif

@@ -16,6 +16,17 @@ void StringUtils::ToLower(std::string& string)
         [](unsigned char c){ return std::tolower(c); });
 }
 
+std::string StringUtils::ReplaceAll(std::string string, const std::string& from, const std::string& to)
+{
+    size_t start_pos = 0;
+    while((start_pos = string.find(from, start_pos)) != std::string::npos) {
+        string.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+
+    return string;
+}
+
 void StringUtils::RemoveChar(std::string& string, const char& c)
 {
     string.erase(std::remove(string.begin(), string.end(), c), string.end());
@@ -83,8 +94,8 @@ double StringUtils::LevenshteinDistanceSimilarity(const std::string& s1, const s
     }
 
     // Normalize distance to similarity
-    float maxLength = std::max(m, n);
-    float dist = (maxLength - currRow[n]) / maxLength;
+    double maxLength = std::max(m, n);
+    double dist = (maxLength - currRow[n]) / maxLength;
 
     return dist;
 }

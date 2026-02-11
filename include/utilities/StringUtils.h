@@ -12,6 +12,7 @@ class StringUtils
         static bool StartsWith(const std::string& string, const std::string& value);
         static bool Contains(const std::string& string, const std::string& value);
         static void ToLower(std::string& string);
+        static std::string ReplaceAll(std::string string, const std::string& from, const std::string& to);
         static void RemoveChar(std::string& string, const char& c);
         static std::string RemoveLast(const std::string& string);
         static std::vector<std::string> Split(const std::string& string, const std::string& delimiter);

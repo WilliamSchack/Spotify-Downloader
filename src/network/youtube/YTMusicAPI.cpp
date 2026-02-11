@@ -43,8 +43,7 @@ nlohmann::json YTMusicAPI::GetContext() {
 TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 {
 	TrackData track(EPlatform::YouTube);
-	track.Id = json["videoId"];
-	if (track.Id == "null") track.Id = "";
+	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
 	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
 	track.Name = json["title"];
 	track.ReleaseYear = json.value("year", "");
@@ -82,7 +81,7 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 ArtistData YTMusicAPI::ParseArtistJson(const nlohmann::json& json)
 {
 	ArtistData artist(EPlatform::YouTube);
-	artist.Id = json["id"];
+	artist.Id = json["id"].is_null() ? "" : json["id"];
 	artist.Url = CHANNEL_BASE_URL + artist.Id;
 	artist.Name = json["name"];
 
@@ -100,7 +99,7 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 		album.Url = PLAYLIST_BASE_URL + album.Id;
 	} else {
 		// Use browse id as a fallback
-		album.Id = json.value("id", "");
+		album.Id = !json.contains("videoId") || json["videoId"].is_null() ? "" : json["videoId"];
 	}
 
 	album.Name = json.contains("name") ? json["name"] : json["title"];
