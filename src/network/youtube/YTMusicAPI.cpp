@@ -536,6 +536,7 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset)
 			}
 		}
 		else {
+			std::smatch matches;
 			if (std::regex_match(text.c_str(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
 				parsed["views"] = StringUtils::Split(text, " ")[0];
 			}
@@ -546,11 +547,19 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset)
 			else if (std::regex_match(text.c_str(), std::regex(R"(^\d{4}$)"))) {
 				parsed["year"] = text;
 			}
-			else {
+			else if (std::regex_search(text, matches, std::regex(R"((.+)\sviews)"))) {
 				// Sometimes views are passed here, check for that and if so set the views
-				std::smatch matches;
-				if (std::regex_search(text, matches, std::regex(R"((.+)\sviews)")))
-					parsed["views"] = matches[1];
+				parsed["views"] = matches[1];
+			} else {
+				// Artist without id (If multiple, seperated with " & ")
+				std::vector<std::string> artistNames = StringUtils::Split(text, " & ");
+
+				for (std::string name : artistNames) {
+					artists.push_back({
+						{"id", ""},
+						{"name", name}
+					});
+				}
 			}
 		}
 	}
@@ -666,6 +675,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 			std::string resultTypes[] { "artist", "playlist", "song", "video", "station", "profile" };
 			std::string resultTypeLocal = GetItemText(data, 1);
 			StringUtils::ToLower(resultTypeLocal);
+
 			if (!ArrayUtils::Contains(resultTypes, resultTypeLocal)) {
 				resultType = "album";
 			} else {
