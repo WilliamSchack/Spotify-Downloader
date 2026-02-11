@@ -40,17 +40,17 @@ nlohmann::json YTMusicAPI::GetContext() {
     };
 }
 
-nlohmann::json YTMusicAPI::Search(const std::string& query, const EYoutubeSearchFilter& filter, int limit) {
+nlohmann::json YTMusicAPI::Search(const std::string& query, const EYoutubeCategory& filter, int limit) {
 	// Get web page
 	std::string searchParams = "EgWKAQ"; // Param 1
 	switch (filter) {
-		case EYoutubeSearchFilter::Songs:
+		case EYoutubeCategory::Songs:
 			searchParams += "II";
 			break;
-		case EYoutubeSearchFilter::Videos:
+		case EYoutubeCategory::Videos:
 			searchParams += "IQ";
 			break;
-		case EYoutubeSearchFilter::Albums:
+		case EYoutubeCategory::Albums:
 			searchParams += "IY";
 			break;
 	}
@@ -127,13 +127,13 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const EYoutubeSearch
 
 			type = "";
 			switch (filter) {
-				case EYoutubeSearchFilter::Songs:
+				case EYoutubeCategory::Songs:
 					type = "song";
 					break;
-				case EYoutubeSearchFilter::Videos:
+				case EYoutubeCategory::Videos:
 					type = "video";
 					break;
-				case EYoutubeSearchFilter::Albums:
+				case EYoutubeCategory::Albums:
 					type = "album";
 					break;
 			}
@@ -151,7 +151,7 @@ nlohmann::json YTMusicAPI::Search(const std::string& query, const EYoutubeSearch
 		nlohmann::json currentSearchResults = ParseSearchResults(contents, type, category);
 		JsonUtils::ExtendArray(searchResults, currentSearchResults);
 
-		if (filter != EYoutubeSearchFilter::None) {
+		if (filter != EYoutubeCategory::None) {
 			nlohmann::json continuationResults = result["musicShelfRenderer"];
 			int currentLimit = limit - searchResults.size();
 
