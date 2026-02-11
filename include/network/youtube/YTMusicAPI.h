@@ -4,6 +4,8 @@
 #ifndef YTMUSICAPI_H
 #define YTMUSICAPI_H
 
+#include "EYoutubeSearchFilter.h"
+
 #include "NetworkRequest.h"
 #include "StringUtils.h"
 #include "ArrayUtils.h"
@@ -23,7 +25,7 @@ class YTMusicAPI {
 	public:
 		bool CheckConnection();
 		
-		nlohmann::json Search(const std::string& query, const std::string& filter, int limit);
+		nlohmann::json Search(const std::string& query, const EYoutubeSearchFilter& filter, int limit);
 
 		nlohmann::json GetAlbum(const std::string& browseId);
 		//QJsonArray GetAlbumTracks(QString browseId);
