@@ -10,8 +10,10 @@ std::string Ytdlp::GetVersion()
 }
 
 // Assumes the path has no extension
-void Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension)
+YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension)
 {
+    YtdlpResult result;
+
     // Check file path
     std::filesystem::path pathM4a = pathNoExtension.string() + ".m4a";
     std::filesystem::path pathWebm = pathNoExtension.string() + ".webm";
@@ -27,7 +29,7 @@ void Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNo
     std::string extension = "";
     std::filesystem::path downloadedPath = pathNoExtension;
 
-    std::string error = "";
+    std::string errorString = "";
 
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         // Get the download progress
@@ -62,12 +64,13 @@ void Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNo
             // Extension
             if (std::regex_search(line, matches, std::regex(R"(\[extension\](\w+))"))) {
                 extension = matches[1];
+                downloadedPath = downloadedPath.string() + "." + extension;
             }
         }
 
         // Error
         if (StringUtils::Contains(line, "ERROR:"))
-            error = line;
+            errorString = line;
     };
 
     // Download
@@ -87,5 +90,99 @@ void Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNo
 
     std::string output = process.Execute(newLineCallback);
 
-    // Parse errors
+    YtdlpError error = GetError(errorString);
+    if (error.Error != EYtdlpError::None && error.Error != EYtdlpError::LowQuality) {
+        result.Error = error;
+        return result;
+    }
+
+    // Check if the file exists
+    if (!std::filesystem::exists(downloadedPath)) {
+        error.Details = "Download failed with an unknown error, try downloading again";
+        error.Error = EYtdlpError::Unknown;
+
+        result.Error = error;
+        return result;;
+    }
+
+    result.Path = downloadedPath;
+    return result;
+}
+
+YtdlpError Ytdlp::GetError(const std::string& errorString)
+{
+    YtdlpError error;
+
+    if (errorString.empty())
+        return error;
+
+    error.Parsed = errorString;
+    std::string errorLower = errorString;
+    StringUtils::ToLower(errorLower);
+
+    if (StringUtils::Contains(errorLower, "invalid po_token configuration")) {
+        error.Details = "PO Token is invalid";
+        error.Error = EYtdlpError::InvalidPoToken;
+        return error;
+    }
+
+    // Check for error 403, means cookies have expired if set, otherwise forbidden
+    if (StringUtils::Contains(errorLower, "http error 403: forbidden")) {
+
+        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::cout;
+        //if (cookiesAssigned) {
+        //  error.Details = "Your cookies have expired. Please reset them and the PO Token";
+        //	error.Error = EYtdlpError::CookiesExpired;
+        //  return error;
+        //}
+
+        // This shouldnt happen but return just incase
+        error.Details = "HTTP Error 403: Forbidden. Please try downloading again or setting cookies";
+        error.Error = EYtdlpError::Forbidden;
+        return error;
+    }
+
+    if (StringUtils::Contains(errorLower, "sign in to confirm youre not a bot")) {
+        error.Details = "IP was flagged. Try adding cookies or enabling/disabling a vpn";
+        error.Error = EYtdlpError::IpFlagged;
+        return error;
+    }
+
+    // If video is drm protected, cannot be downloaded
+    if (StringUtils::Contains(errorLower, "drm protected") && !StringUtils::Contains(errorLower, "tv client https formats have been skipped as they are drm protected")) {
+        error.Details = "Video is DRM protected";
+        error.Error = EYtdlpError::DrmProtected;
+        return error;
+    }
+
+    // If the video does not have a m4a file (majority should)
+    if (StringUtils::Contains(errorLower, "requested format is not available")) {
+        error.Details = "Video does not have file to download";
+        error.Error = EYtdlpError::NoFile;
+        return error;
+    }
+
+    // Video Unavailable
+    if (StringUtils::Contains(errorLower, "video unavailable. this content")) {
+        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::cout;
+
+        std::string errorOutput = "Video is unavailable, try downloading again";
+        //if (cookiesAssigned) errorOutput += " or resetting/removing cookies";
+
+        error.Details = errorOutput;
+        error.Error = EYtdlpError::Unavailable;
+        return error;
+    }
+
+    // Check if a low quality version was downloaded with premium
+    std::cout << "CHECK FOR PREMIUM IN YTDLP ERROR" << std::endl;
+    //if (hasPremium && bitrate < 200) {
+    //	qInfo() << SpotifyId << "Does not have a high quality version for the YouTube ID:" << YoutubeId;
+    //  error.Details = "Video does not have a high quality version, output will be non-premium quality";
+    //  error.Error = EYtdlpError::LowQuality;
+    //  return error;
+    //}
+
+    error.Parsed = "";
+    return error;
 }
