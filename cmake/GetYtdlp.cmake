@@ -19,7 +19,7 @@ endif()
 
 set(YTDLP_PATH "${BINARIES_DIR}/${YTDLP_FILE_NAME}")
 
-# Download ytdlp
+# Download
 if(NOT EXISTS ${YTDLP_PATH})
 	message(STATUS "Downloading ytdlp...")
 	file(DOWNLOAD ${YTDLP_URL} ${YTDLP_PATH} SHOW_PROGRESS)
