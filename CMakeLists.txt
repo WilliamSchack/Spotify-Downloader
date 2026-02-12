@@ -133,6 +133,9 @@ endif()
 # Copy files to final build
 foreach(file ${POST_BUILD_COPY_FILES})
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}
+
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${file}"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>

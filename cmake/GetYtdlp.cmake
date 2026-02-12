@@ -19,7 +19,6 @@ elseif(UNIX)
 endif()
 
 set(YTDLP_PATH "${BINARIES_DIR}/${YTDLP_FILE_NAME}")
-set(YTDLP_PATH_RELATIVE "${BINARIES_DIR_NAME}/${YTDLP_FILE_NAME}")
 
 # Download ytdlp
 if(NOT EXISTS ${YTDLP_PATH})
@@ -33,9 +32,12 @@ if(NOT EXISTS ${YTDLP_PATH})
 	endif()
 endif()
 
+set(YTDLP_PATH_RELATIVE "${BINARIES_DIR_NAME}/${YTDLP_FILE_NAME}")
+set(YTDLP_POST_BUILD_PATH "${CMAKE_BINARY_DIR}/${YTDLP_PATH_RELATIVE}")
+
 # Copy to folder after build
 list(APPEND POST_BUILD_COPY_FILES
-	${YTDLP_PATH}
+	${YTDLP_POST_BUILD_PATH}
 )
 
 # Make path available in the code
