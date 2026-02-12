@@ -71,7 +71,21 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
 
     // Download 
-    Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
+    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
+    
+    // TODO: Handle errors properly
+    if (downloadResult.Error.Error != EYtdlpError::None) 
+        return false;
+
+    // Check if downloaded codec is different to the target, if so, convert it
+
+    // Normalise audio / Set bitrate if manual
+
+    // Get lyrics
+
+    // Assign metadata
+
+    // Check for errors
 
     return false;
 }

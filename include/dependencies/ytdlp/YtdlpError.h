@@ -6,7 +6,6 @@
 enum class EYtdlpError
 {
     None,
-    Unknown,
     LowQuality,
     NoFile,
     Unavailable,
@@ -14,7 +13,8 @@ enum class EYtdlpError
     Forbidden,
     IpFlagged,
     InvalidPoToken,
-    CookiesExpired
+    CookiesExpired,
+    Unknown
 };
 
 struct YtdlpError
