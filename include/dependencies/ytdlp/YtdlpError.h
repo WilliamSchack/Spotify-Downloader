@@ -1,9 +1,21 @@
 #ifndef YTDLPERROR_H
 #define YTDLPERROR_H
 
-#include "EYtdlpError.h"
-
 #include <string>
+
+enum class EYtdlpError
+{
+    None,
+    Unknown,
+    LowQuality,
+    NoFile,
+    Unavailable,
+    DrmProtected,
+    Forbidden,
+    IpFlagged,
+    InvalidPoToken,
+    CookiesExpired
+};
 
 struct YtdlpError
 {
