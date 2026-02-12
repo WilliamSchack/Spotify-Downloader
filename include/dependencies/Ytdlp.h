@@ -1,8 +1,9 @@
 #ifndef YTDLP_H
 #define YTDLP_H
 
-#include "FileUtils.h"
+#include "Process.h"
 
+#include <iostream>
 #include <string>
 
 class Ytdlp
