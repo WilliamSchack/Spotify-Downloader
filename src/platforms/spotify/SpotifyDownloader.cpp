@@ -23,7 +23,7 @@ std::string SpotifyDownloader::GetLinkId(const std::string& url)
     return url.substr(startIndex, endIndex - startIndex);
 }
 
-std::unique_ptr<IPlatformSearcher> GetSearcher()
+std::unique_ptr<IPlatformSearcher> SpotifyDownloader::GetSearcher()
 {
     return std::make_unique<YoutubeSearcher>();
 }
