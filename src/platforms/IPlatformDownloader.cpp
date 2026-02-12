@@ -64,9 +64,13 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
         ImageHandler::SaveImage(imageFilePath, image);
     }
 
+    // Get the song on the target platform
+    std::unique_ptr<IPlatformSearcher> searcher = GetSearcher();
+    if (searcher == nullptr) return false;
 
+    PlatformSearcherResult searchResult = searcher->FindTrack(track);
 
-    std::cout << "PATH: " << tempDownloadPath << std::endl;
+    
 
     return false;
 }

@@ -1,6 +1,7 @@
 #ifndef IPLATFORMDOWNLOADER_H
 #define IPLATFORMDOWNLOADER_H
 
+#include "IPlatformSearcher.h"
 #include "SpotifyAPI.h"
 #include "FileUtils.h"
 #include "ImageHandler.h"
@@ -20,6 +21,8 @@ class IPlatformDownloader
         bool Download(const std::string& url, const std::string& directory);
     protected:
         virtual ELinkType GetLinkType(const std::string& url) = 0;
+
+        virtual std::unique_ptr<IPlatformSearcher> GetSearcher() = 0;
 
         virtual TrackData GetTrack(const std::string& url) = 0;
         virtual PlaylistData GetPlaylist(const std::string& url) = 0;
