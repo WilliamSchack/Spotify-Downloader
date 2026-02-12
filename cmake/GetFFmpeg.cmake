@@ -36,7 +36,6 @@ if(NOT EXISTS ${FFMPEG_PATH})
 	# Download ffmpeg archive
 	message(STATUS "Downloading ffmpeg archive...")
 	file(DOWNLOAD ${FFMPEG_URL} ${FFMPEG_ARCHIVE_PATH} SHOW_PROGRESS)
-	message(STATUS "Downloaded ffmpeg archive to ${FFMPEG_ARCHIVE_PATH}")
 	
 	# Extract archive
 	message(STATUS "Extracting ffmpeg...")
@@ -44,9 +43,8 @@ if(NOT EXISTS ${FFMPEG_PATH})
 		INPUT "${FFMPEG_ARCHIVE_PATH}"
 		DESTINATION "${FFMPEG_ARCHIVE_EXTRACTED_PATH}"
 	)
-	message(STATUS "Extracted ffmpeg to ${FFMPEG_ARCHIVE_EXTRACTED_PATH}")
 	
-	# Copy ffmpeg from archive to binaries folder
+	# Copy from archive to binaries folder
 	message(STATUS "Copying ffmpeg to binaries...")
 	if(WIN32)
 		# Use release name from earlier to access top folder
@@ -61,7 +59,7 @@ if(NOT EXISTS ${FFMPEG_PATH})
 	endif()
 	
 	# Remove archive folders
-	message(STATUS "Removing ffmpeg archives...")
+	message(STATUS "Removing ffmpeg archive...")
 	file(REMOVE_RECURSE "${FFMPEG_ARCHIVE_EXTRACTED_PATH}")
 	file(REMOVE "${FFMPEG_ARCHIVE_PATH}")
 endif()
