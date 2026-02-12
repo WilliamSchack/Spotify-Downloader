@@ -2,6 +2,7 @@
 #define IPLATFORMDOWNLOADER_H
 
 #include "IPlatformSearcher.h"
+#include "Ytdlp.h"
 #include "SpotifyAPI.h"
 #include "FileUtils.h"
 #include "ImageHandler.h"

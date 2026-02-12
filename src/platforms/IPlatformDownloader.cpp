@@ -26,7 +26,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     // Get track details
     TrackData track = GetTrack(url);
 
-    // Todo: Move below into seperate files
+    // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
     // Get paths
@@ -38,7 +38,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (!std::filesystem::exists(downloadsFolder))
         std::filesystem::create_directory(downloadsFolder);
 
-    std::string fileName = track.Name + " - " + track.Artists[0].Name + ".mp3";
+    std::string fileName = track.Name + " - " + track.Artists[0].Name;
     fileName = FileUtils::ValidateFileName(fileName);
 
     std::filesystem::path tempDownloadPath = downloadsFolder / fileName;
@@ -70,7 +70,8 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
 
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
 
-    
+    // Download 
+    Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
 
     return false;
 }
