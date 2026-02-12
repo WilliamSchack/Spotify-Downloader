@@ -105,6 +105,14 @@ unsigned int StringUtils::TimeToSeconds(const std::string& string)
 {
     std::vector<std::string> seperated = Split(string, ":");
 	int seconds = 0;
+
+    // Make sure the strings are numbers
+    for(std::string string : seperated) {
+        bool hasOnlyDigits = string.find_first_not_of("0123456789") == std::string::npos;
+        if (!hasOnlyDigits)
+            return 0;
+    }
+
 	switch (seperated.size()) {
 		case 1:
 			seconds = std::stoi(seperated[0]);
@@ -118,6 +126,8 @@ unsigned int StringUtils::TimeToSeconds(const std::string& string)
 		case 4:
 			seconds = std::stoi(seperated[0]) * 86400 + std::stoi(seperated[1]) * 3600 + std::stoi(seperated[2]) * 60 + std::stoi(seperated[3]);
 			break;
+        default:
+            return 0;
 	}
 
 	return seconds;
