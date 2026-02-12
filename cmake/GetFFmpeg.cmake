@@ -1,7 +1,6 @@
 # Assumed variables:
 # BINARIES_DIR_NAME     | Name for the directory of external binaries
 # BINARIES_DIR          | Directory to external binaries, assumes folder is created
-# POST_BUILD_COPY_FILES | List of files to copy to final build
 
 # Setup paths
 set(FFMPEG_URL "")
@@ -68,11 +67,15 @@ if(NOT EXISTS ${FFMPEG_PATH})
 endif()
 
 set(FFMPEG_PATH_RELATIVE "${BINARIES_DIR_NAME}/${FFMPEG_FILE_NAME}")
-set(FFMPEG_POST_BUILD_PATH "${CMAKE_BINARY_DIR}/${FFMPEG_PATH_RELATIVE}")
 
 # Copy to folder after build
-list(APPEND POST_BUILD_COPY_FILES
-	${FFMPEG_POST_BUILD_PATH}
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory
+		"$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}"
+
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${FFMPEG_PATH}"
+		"$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}"
 )
 
 # Make path available in the code

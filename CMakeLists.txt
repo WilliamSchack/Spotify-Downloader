@@ -48,12 +48,10 @@ find_package(Qt6 REQUIRED COMPONENTS
 	WebEngineCore
 )
 
-# Additional dependencies
-set(ADDITIONAL_INCLUDE_DIRS CACHE INTERNAL "Additional include directories")
-set(ADDITIONAL_LIBS CACHE INTERNAL "Additional libraries")
-set(ADDITIONAL_DEPENDENCIES CACHE INTERNAL "Additional dependencies")
-set(POST_BUILD_COPY_FILES CACHE INTERNAL "Files that will be copied to the final build")
+# Add the executable
+add_executable(${PROJECT_NAME})
 
+# Additional dependencies
 set(BINARIES_DIR_NAME "bin" CACHE INTERNAL "The name for the binaries directory")
 set(BINARIES_DIR "${CMAKE_BINARY_DIR}/${BINARIES_DIR_NAME}" CACHE INTERNAL "Directory for external dependency files")
 file(MAKE_DIRECTORY ${BINARIES_DIR})
@@ -66,17 +64,11 @@ include(cmake/GetStb.cmake)
 include(cmake/GetCppcodec.cmake)
 include(cmake/GetLexbor.cmake)
 
-# Add the executable
-add_executable(${PROJECT_NAME})
-
 # Include files
 add_subdirectory(include)
 add_subdirectory(gui)
 add_subdirectory(resources)
 add_subdirectory(src)
-
-# Add dependencies
-add_dependencies(${PROJECT_NAME} ${ADDITIONAL_DEPENDENCIES})
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -85,12 +77,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Qml
 	Qt6::WebEngineCore
 	${CURL_LIBRARIES}
-	${ADDITIONAL_LIBS}
-)
-
-# Include Directories
-target_include_directories(${PROJECT_NAME} PRIVATE
-	${ADDITIONAL_INCLUDE_DIRS}
 )
 
 # Enable debug logging on RELWITHDEBINFO configuration
@@ -129,15 +115,3 @@ elseif(APPLE)
 			-verbose=1
 	)
 endif()
-
-# Copy files to final build
-foreach(file ${POST_BUILD_COPY_FILES})
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}
-
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"${file}"
-			$<TARGET_FILE_DIR:${PROJECT_NAME}>
-	)
-endforeach()

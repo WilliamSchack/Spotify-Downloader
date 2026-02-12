@@ -7,6 +7,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(lexbor)
 
-list(APPEND ADDITIONAL_LIBS
+target_link_libraries(${PROJECT_NAME} PRIVATE
     lexbor
 )

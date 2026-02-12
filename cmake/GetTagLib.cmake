@@ -1,9 +1,3 @@
-# Assumed variables:
-# ADDITIONAL_INCLUDE_DIRS | List of additional include directories
-# ADDITIONAL_LIBS         | List of additional libraries
-# ADDITIONAL_DEPENDENCIES | List of additional dependencies
-# POST_BUILD_COPY_FILES   | List of files to copy to final build
-
 set(taglib_INSTALL_DIR "${CMAKE_BINARY_DIR}/taglib-install")
 
 # Download taglib
@@ -27,33 +21,31 @@ ExternalProject_Add(
 )
 
 # Setup taglib
-list(APPEND ADDITIONAL_DEPENDENCIES
-	taglib
-)
+add_dependencies(${PROJECT_NAME} taglib)
 
-list(APPEND ADDITIONAL_INCLUDE_DIRS
+target_include_directories(${PROJECT_NAME} PRIVATE
 	${taglib_INSTALL_DIR}/include
 )
 
 if(WIN32)
-	list(APPEND ADDITIONAL_LIBS
+	target_link_libraries(${PROJECT_NAME} PRIVATE
 		${taglib_INSTALL_DIR}/lib/tag.lib
 	)
 elseif(APPLE)
-	list(APPEND ADDITIONAL_LIBS
+	target_link_libraries(${PROJECT_NAME} PRIVATE
 		${taglib_INSTALL_DIR}/lib/libtag.dylib
 	)
 elseif(UNIX)
-	list(APPEND ADDITIONAL_LIBS
+	target_link_libraries(${PROJECT_NAME} PRIVATE
 		${taglib_INSTALL_DIR}/lib/libtag.so
 	)
 endif()
 
 # Copy shared library to folder after build
 if(WIN32)
-	set(taglib_LIBRARY_PATH "${taglib_INSTALL_DIR}/bin/tag.dll")
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${taglib_INSTALL_DIR}/bin/tag.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)
 endif()
-
-list(APPEND POST_BUILD_COPY_FILES
-	${taglib_LIBRARY_PATH}
-)

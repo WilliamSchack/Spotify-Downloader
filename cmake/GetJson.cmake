@@ -7,6 +7,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json)
 
-list(APPEND ADDITIONAL_LIBS
+target_link_libraries(${PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
 )

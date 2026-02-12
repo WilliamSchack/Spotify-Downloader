@@ -13,6 +13,6 @@ target_include_directories(ccpcodec PUBLIC
     ${ccpcodec_SOURCE_DIR}
 )
 
-list(APPEND ADDITIONAL_LIBS
+target_link_libraries(${PROJECT_NAME} PRIVATE
     ccpcodec
 )

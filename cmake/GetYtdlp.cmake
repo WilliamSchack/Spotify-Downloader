@@ -1,7 +1,6 @@
 # Assumed variables:
 # BINARIES_DIR_NAME     | Name for the directory of external binaries
 # BINARIES_DIR          | Directory to external binaries, assumes folder is created
-# POST_BUILD_COPY_FILES | List of files to copy to final build
 
 # Setup paths
 set(YTDLP_URL "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp")
@@ -33,11 +32,15 @@ if(NOT EXISTS ${YTDLP_PATH})
 endif()
 
 set(YTDLP_PATH_RELATIVE "${BINARIES_DIR_NAME}/${YTDLP_FILE_NAME}")
-set(YTDLP_POST_BUILD_PATH "${CMAKE_BINARY_DIR}/${YTDLP_PATH_RELATIVE}")
 
 # Copy to folder after build
-list(APPEND POST_BUILD_COPY_FILES
-	${YTDLP_POST_BUILD_PATH}
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory
+		"$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}"
+
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${YTDLP_PATH}"
+		"$<TARGET_FILE_DIR:${PROJECT_NAME}>/${BINARIES_DIR_NAME}"
 )
 
 # Make path available in the code
