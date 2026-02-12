@@ -21,6 +21,9 @@ std::string Process::GetCommand()
         command += _args[i];
     }
 
+    // Dont relay outputs to stdout
+    command += " 2>&1";
+
     return command;
 }
 
@@ -47,6 +50,11 @@ std::string Process::Execute(std::function<void(std::string)> lineAvailableCallb
     
     while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
         std::string line = buffer;
+
+        // Remove ending new line
+        if (!line.empty() && line.back() == '\n')
+            line = StringUtils::RemoveLast(line);
+
         output += line;
 
         if (lineAvailableCallback != nullptr)

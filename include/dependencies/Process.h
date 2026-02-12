@@ -2,6 +2,7 @@
 #define PROCESS_H
 
 #include "FileUtils.h"
+#include "StringUtils.h"
 
 #include <vector>
 #include <functional>
@@ -15,7 +16,7 @@ class Process
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);
 
-        std::string Execute(std::function<void(std::string)> lineAvailableCallback);
+        std::string Execute(std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
         std::filesystem::path _path;
         std::vector<std::string> _args;
