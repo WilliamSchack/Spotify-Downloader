@@ -17,6 +17,7 @@ class StringUtils
         static std::string RemoveLast(const std::string& string);
         static std::vector<std::string> Split(const std::string& string, const std::string& delimiter);
         static double LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2);
+        static unsigned int TimeToSeconds(const std::string& string);
 };
 
 #endif

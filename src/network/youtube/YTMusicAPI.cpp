@@ -499,7 +499,7 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, boo
 				duration = fixedColumnItemText["runs"][0]["text"];
 
 			song["duration"] = duration;
-			song["durationSeconds"] = TimeToSeconds(duration);
+			song["durationSeconds"] = StringUtils::TimeToSeconds(duration);
 		}
 
 		song["videoType"] = "";
@@ -542,7 +542,7 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset)
 			}
 			else if (std::regex_match(text.c_str(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
 				parsed["duration"] = text;
-				parsed["durationSeconds"] = TimeToSeconds(text);
+				parsed["durationSeconds"] = StringUtils::TimeToSeconds(text);
 			}
 			else if (std::regex_match(text.c_str(), std::regex(R"(^\d{4}$)"))) {
 				parsed["year"] = text;
@@ -565,27 +565,6 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset)
 	}
 	parsed["artists"] = artists;
 	return parsed;
-}
-
-int YTMusicAPI::TimeToSeconds(const std::string& time) {
-	std::vector<std::string> seperated = StringUtils::Split(time, ":");
-	int seconds = 0;
-	switch (seperated.size()) {
-		case 1:
-			seconds = std::stoi(seperated[0]);
-			break;
-		case 2:
-			seconds = std::stoi(seperated[0]) * 60 + std::stoi(seperated[1]);
-			break;
-		case 3:
-			seconds = std::stoi(seperated[0]) * 3600 + std::stoi(seperated[1]) * 60 + std::stoi(seperated[2]);
-			break;
-		case 4:
-			seconds = std::stoi(seperated[0]) * 86400 + std::stoi(seperated[1]) * 3600 + std::stoi(seperated[2]) * 60 + std::stoi(seperated[3]);
-			break;
-	}
-
-	return seconds;
 }
 
 std::string YTMusicAPI::GetItemText(const nlohmann::json& item, int index, int runIndex) {
