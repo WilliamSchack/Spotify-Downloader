@@ -4,6 +4,7 @@
 #include "FileUtils.h"
 
 #include <vector>
+#include <functional>
 
 class Process
 {
@@ -14,7 +15,7 @@ class Process
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);
 
-        std::string Execute();
+        std::string Execute(std::function<void(std::string)> lineAvailableCallback);
     private:
         std::filesystem::path _path;
         std::vector<std::string> _args;

@@ -34,7 +34,7 @@ void Process::AddArgument(const std::string& arg, const std::string& value)
     AddArgument(arg + " " + value);
 }
 
-std::string Process::Execute()
+std::string Process::Execute(std::function<void(std::string)> lineAvailableCallback)
 {
     FILE* pipe = popen(GetCommand().c_str(), "r");
     if (pipe == NULL) {
@@ -48,6 +48,9 @@ std::string Process::Execute()
     while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
         std::string line = buffer;
         output += line;
+
+        if (lineAvailableCallback != nullptr)
+            lineAvailableCallback(line);
     }
     
     int exitStatus = pclose(pipe);
