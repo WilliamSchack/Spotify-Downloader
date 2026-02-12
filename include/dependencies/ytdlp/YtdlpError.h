@@ -1,7 +1,7 @@
 #ifndef YTDLPERROR_H
 #define YTDLPERROR_H
 
-#include "EYtdlpError"
+#include "EYtdlpError.h"
 
 #include <string>
 

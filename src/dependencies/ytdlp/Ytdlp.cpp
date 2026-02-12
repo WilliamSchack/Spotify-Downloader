@@ -129,7 +129,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString)
     // Check for error 403, means cookies have expired if set, otherwise forbidden
     if (StringUtils::Contains(errorLower, "http error 403: forbidden")) {
 
-        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::cout;
+        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::endl;
         //if (cookiesAssigned) {
         //  error.Details = "Your cookies have expired. Please reset them and the PO Token";
         //	error.Error = EYtdlpError::CookiesExpired;
@@ -164,7 +164,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString)
 
     // Video Unavailable
     if (StringUtils::Contains(errorLower, "video unavailable. this content")) {
-        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::cout;
+        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::endl;
 
         std::string errorOutput = "Video is unavailable, try downloading again";
         //if (cookiesAssigned) errorOutput += " or resetting/removing cookies";
