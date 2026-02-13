@@ -9,6 +9,7 @@ std::unique_ptr<ICodec> CodecFactory::Create(EExtension extension)
         case EExtension::OGG:  return std::make_unique<CodecOGG>();
         case EExtension::WAV:  return std::make_unique<CodecWAV>();
         case EExtension::FLAC: return std::make_unique<CodecFLAC>();
+        case EExtension::WEBM: return std::make_unique<CodecWEBM>();
     }
 
     return nullptr;
@@ -16,6 +17,9 @@ std::unique_ptr<ICodec> CodecFactory::Create(EExtension extension)
 
 std::unique_ptr<ICodec> CodecFactory::Create(const std::string& extension)
 {
+    if (extension.empty())
+        return nullptr;
+
     std::string extensionLower = extension;
     StringUtils::ToLower(extensionLower);
 
@@ -29,5 +33,6 @@ std::unique_ptr<ICodec> CodecFactory::Create(const std::string& extension)
     if (extensionLower == "ogg")  return Create(EExtension::OGG);
     if (extensionLower == "wav")  return Create(EExtension::WAV);
     if (extensionLower == "flac") return Create(EExtension::FLAC);
+    if (extensionLower == "webm") return Create(EExtension::WEBM);
     return nullptr;
 }

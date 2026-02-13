@@ -81,7 +81,9 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
 
     // Check if downloaded codec is different to the target, if so, convert it
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
-    std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(downloadResult.Path.extension());
+    std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(downloadResult.Path.extension().string());
+    if (targetCodec == nullptr) return false;
+    if (downloadedCodec == nullptr) return false;
 
     std::cout << targetCodec->GetString() << std::endl;
     std::cout << downloadedCodec->GetString() << std::endl;

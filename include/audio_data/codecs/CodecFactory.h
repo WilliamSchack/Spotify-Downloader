@@ -7,6 +7,7 @@
 #include "CodecOGG.h"
 #include "CodecWAV.h"
 #include "CodecFLAC.h"
+#include "CodecWEBM.h"
 #include "StringUtils.h"
 
 #include <string>

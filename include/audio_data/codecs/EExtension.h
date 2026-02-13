@@ -8,7 +8,8 @@ enum class EExtension
     MP3,
     OGG,
     WAV,
-    FLAC
+    FLAC,
+    WEBM
 };
 
 #endif
