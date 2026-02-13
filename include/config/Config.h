@@ -6,7 +6,7 @@
 class Config
 {
     public:
-        static inline EExtension Codec = EExtension::MP3;
+        static inline EExtension CodecExtension = EExtension::MP3;
 };
 
 #endif

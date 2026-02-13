@@ -1,6 +1,6 @@
 #include "CodecFactory.h"
 
-static std::unique_ptr<ICodec> Create(EExtension extension)
+std::unique_ptr<ICodec> CodecFactory::Create(EExtension extension)
 {
     switch (extension) {
         case EExtension::M4A:  return std::make_unique<CodecM4A>();
@@ -14,7 +14,7 @@ static std::unique_ptr<ICodec> Create(EExtension extension)
     return nullptr;
 }
 
-static std::unique_ptr<ICodec> Create(const std::string& extension)
+std::unique_ptr<ICodec> CodecFactory::Create(const std::string& extension)
 {
     std::string extensionLower = extension;
     StringUtils::ToLower(extensionLower);

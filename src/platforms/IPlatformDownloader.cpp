@@ -74,11 +74,17 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
     
     // TODO: Handle errors properly
-    if (downloadResult.Error.Error != EYtdlpError::None) 
+    if (downloadResult.Error.Error != EYtdlpError::None) {
+        std::cout << downloadResult.Error.Details << std::endl;
         return false;
+    }
 
     // Check if downloaded codec is different to the target, if so, convert it
-    
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
+    std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(downloadResult.Path.extension());
+
+    std::cout << targetCodec->GetString() << std::endl;
+    std::cout << downloadedCodec->GetString() << std::endl;
 
     // Normalise audio / Set bitrate if manual
 

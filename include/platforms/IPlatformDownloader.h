@@ -7,6 +7,7 @@
 #include "FileUtils.h"
 #include "ImageHandler.h"
 #include "Config.h"
+#include "CodecFactory.h"
 
 #include "ELinkType.h"
 
