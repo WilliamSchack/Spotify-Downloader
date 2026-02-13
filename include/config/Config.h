@@ -1,12 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "ECodec.h"
+#include "EExtension.h"
 
 class Config
 {
     public:
-        static inline ECodec Codec = ECodec::MP3;
+        static inline EExtension Codec = EExtension::MP3;
 };
 
 #endif
