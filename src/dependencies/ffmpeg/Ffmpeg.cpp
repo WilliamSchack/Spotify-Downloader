@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath)
+FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
     process.AddArgument("-i", "\"" + filePath.string() + "\"");
-    process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose"); // Volume details
+    if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
     process.AddArgument("-"); // No output
     std::string output = process.Execute();
@@ -25,6 +25,9 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     // Bitrate
     if (std::regex_search(output, matches, std::regex(R"(bitrate:\s(\d+?)\s)")))
         details.Bitrate = std::stoi(matches[1]);
+
+    if (!getVolumeDetails)
+        return details;
 
     // Decibals
     if (std::regex_search(output, matches, std::regex(R"(mean_volume:\s([^\s]+?)\s)")))
@@ -63,7 +66,7 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
 std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& currentPath, const EExtension& newExtension)
 {    
     // Get the new path and details
-    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(newExtension);
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(newExtension, false);
     
     std::filesystem::path newPath = currentPath;
     newPath.replace_extension(targetCodec->GetString());

@@ -12,7 +12,7 @@
 class Ffmpeg
 {
     public:
-        static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath);
+        static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
         // Returns the new path
         static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension);
