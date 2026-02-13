@@ -120,14 +120,12 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension());
 
     std::filesystem::path tempPath = filePath;
-    tempPath.replace_filename(filePath.stem().string() + "_N" + filePath.extension().string());
+    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
 
     float dbDifference = (targetDb - audioDetails.MeanDB) + 0.4;  // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why
 
     // Get the conversion progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
-        std::cout << line << std::endl;
-
         if (!StringUtils::Contains(line, "out_time_ms"))
             return;
 
@@ -159,7 +157,56 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
         return false;
 
     std::filesystem::remove(filePath);
-    std::filesystem::rename(tempPath, tempPath);
+    std::filesystem::rename(tempPath, filePath);
+
+    return true;
+}
+
+bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate)
+{
+    if (!std::filesystem::exists(filePath))
+        return false;
+
+    // Get details
+    FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
+
+    std::filesystem::path tempPath = filePath;
+    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+
+    // Get the conversion progress
+    std::function<void(std::string)> newLineCallback = [&](std::string line) {
+        std::cout << line << std::endl;
+
+        if (!StringUtils::Contains(line, "out_time_ms"))
+            return;
+
+        std::smatch matches;
+        if (!std::regex_search(line, matches, std::regex(R"(=(\d+))")))
+            return;
+
+        int msProgress = std::stoi(matches[1]) / 1000;
+        float progressPercent = (float)msProgress / (float)audioDetails.DurationMilliseconds;
+
+        // Output this to a progress callback
+        std::cout << progressPercent << std::endl;
+    };
+
+    // Set bitrate
+    Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
+    process.AddArgument("-i", "\"" + filePath.string() + "\"");
+    process.AddArgument("-progress", "-");
+    process.AddArgument("-nostats");
+    process.AddArgument("-b:a", std::to_string(bitrate) + "k");
+    process.AddArgument("\"" + tempPath.string() + "\"");
+
+    process.Execute(newLineCallback);
+
+    // Rename back to original
+    if (!std::filesystem::exists(tempPath))
+        return false;
+
+    std::filesystem::remove(filePath);
+    std::filesystem::rename(tempPath, filePath);
 
     return true;
 }

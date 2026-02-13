@@ -21,6 +21,8 @@ class Ffmpeg
         // > Details already gotten in GetAudioDetails
         // > https://github.com/WilliamSchack/Spotify-Downloader/issues/101)
         static bool Normalise(const std::filesystem::path& filePath, const float& targetDb);
+
+        static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate);
 };
 
 #endif

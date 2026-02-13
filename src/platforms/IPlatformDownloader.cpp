@@ -89,8 +89,12 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
 
-    // Normalise audio / Set bitrate if manual
+    // Normalise
     bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
+
+    // Set bitrate
+    if (Config::MANUAL_BITRATE)
+        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE);
 
     // Get lyrics
 
