@@ -3,6 +3,7 @@
 // TAGLIB_H is used in taglib
 
 #include "Config.h"
+#include "CodecFactory.h"
 #include "TrackData.h"
 #include "Image.h"
 
@@ -31,20 +32,23 @@
 class Taglib
 {
     public:
-        static void SetTitle        (const std::filesystem::path& filePath, const std::string& value);
-        static void SetArtists      (const std::filesystem::path& filePath, const std::string& value);
-        static void SetAlbumName    (const std::filesystem::path& filePath, const std::string& value);
-        static void SetAlbumArtists (const std::filesystem::path& filePath, const std::string& value);
-        static void SetPublisher    (const std::filesystem::path& filePath, const std::string& value);
-        static void SetCopyright    (const std::filesystem::path& filePath, const std::string& value);
-        static void SetComment      (const std::filesystem::path& filePath, const std::string& value);
-        static void SetReleaseDate  (const std::filesystem::path& filePath, const std::string& value);
-        static void SetTrackNumber  (const std::filesystem::path& filePath, const std::string& value);
-        static void SetDiscNumber   (const std::filesystem::path& filePath, const std::string& value);
-        static void SetLyrics       (const std::filesystem::path& filePath, const std::string& value);
-        static void SetCoverImage   (const std::filesystem::path& filePath, const Image& image);
+        Taglib(const std::filesystem::path& filePath);
+
+        static void SetTitle        (const std::string& value);
+        static void SetArtists      (const std::string& value);
+        static void SetAlbumName    (const std::string& value);
+        static void SetAlbumArtists (const std::string& value);
+        static void SetPublisher    (const std::string& value);
+        static void SetCopyright    (const std::string& value);
+        static void SetComment      (const std::string& value);
+        static void SetReleaseDate  (const std::string& value);
+        static void SetTrackNumber  (const std::string& value);
+        static void SetDiscNumber   (const std::string& value);
+        static void SetLyrics       (const std::string& value);
+        static void SetCoverImage   (const Image& image);
     private:
-        static TagLib::FileRef GetFileRef(const std::filesystem::path& filePath);
+        TagLib::FileRef _fileRef;
+        std::unique_ptr<ICodec> _codec;
 };
 
 #endif
