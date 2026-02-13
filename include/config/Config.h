@@ -3,6 +3,8 @@
 
 #include "EExtension.h"
 
+#include <string>
+
 class Config
 {
     public:
@@ -12,6 +14,7 @@ class Config
         static inline constexpr float NORMALISE_DB = -14.0;
         static inline constexpr bool MANUAL_BITRATE = true;
         static inline constexpr int BITRATE = 96;
+        static inline constexpr std::string ARTISTS_CONNECTOR = "; ";
 };
 
 #endif
