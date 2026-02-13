@@ -77,35 +77,23 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& currentPath, 
     if (std::filesystem::exists(newPath))
         return newPath;
 
+    // Convert
     FfmpegAudioDetails audioDetails = GetAudioDetails(currentPath, false);
-
-    // Get the conversion progress
-    std::function<void(std::string)> newLineCallback = [&](std::string line) {
-        if (!StringUtils::Contains(line, "out_time_ms"))
-            return;
-
-        std::smatch matches;
-        if (!std::regex_search(line, matches, std::regex(R"(=(\d+))")))
-            return;
-
-        int msProgress = std::stoi(matches[1]) / 1000;
-        float progressPercent = (float)msProgress / (float)audioDetails.DurationMilliseconds;
-
-        // Output this to a progress callback
-        std::cout << progressPercent << std::endl;
+    std::vector<std::string> args {
+        "-i", "\"" + currentPath.string() + "\"",
+        "-progress", "-",
+        "-nostats",
+        targetCodec->GetFfmpegConversionParams()
     };
 
-    // Convert
-    Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument("-i", "\"" + currentPath.string() + "\"");
-    process.AddArgument("-progress", "-");
-    process.AddArgument("-nostats");
-    process.AddArgument(targetCodec->GetFfmpegConversionParams());
-    if (!targetCodec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0)
-        process.AddArgument("-b:a", std::to_string(audioDetails.Bitrate) + "k");
-    process.AddArgument("\"" + newPath.string() + "\"");
-    
-    process.Execute(newLineCallback);
+    if (!targetCodec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0) {
+        args.push_back("-b:a");
+        args.push_back(std::to_string(audioDetails.Bitrate) + "k");
+    }
+
+    args.push_back("\"" + newPath.string() + "\"");
+
+    Execute(audioDetails, args);
 
     return newPath;
 }
@@ -124,33 +112,22 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
 
     float dbDifference = (targetDb - audioDetails.MeanDB) + 0.4;  // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why
 
-    // Get the conversion progress
-    std::function<void(std::string)> newLineCallback = [&](std::string line) {
-        if (!StringUtils::Contains(line, "out_time_ms"))
-            return;
-
-        std::smatch matches;
-        if (!std::regex_search(line, matches, std::regex(R"(=(\d+))")))
-            return;
-
-        int msProgress = std::stoi(matches[1]) / 1000;
-        float progressPercent = (float)msProgress / (float)audioDetails.DurationMilliseconds;
-
-        // Output this to a progress callback
-        std::cout << progressPercent << std::endl;
+    // Normalise
+    std::vector<std::string> args {
+        "-i", "\"" + filePath.string() + "\"",
+        "-progress", "-",
+        "-nostats",
+        "-af", "volume=" + std::to_string(dbDifference) + "dB"
     };
 
-    // Normalise
-    Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument("-i", "\"" + filePath.string() + "\"");
-    process.AddArgument("-progress", "-");
-    process.AddArgument("-nostats");
-    process.AddArgument("-af", "volume=" + std::to_string(dbDifference) + "dB");
-    if (!codec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0)
-        process.AddArgument("-b:a", std::to_string(audioDetails.Bitrate) + "k");
-    process.AddArgument("\"" + tempPath.string() + "\"");
+    if (!codec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0) {
+        args.push_back("-b:a");
+        args.push_back(std::to_string(audioDetails.Bitrate) + "k");
+    }
 
-    process.Execute(newLineCallback);
+    args.push_back("\"" + tempPath.string() + "\"");
+
+    Execute(audioDetails, args);
 
     // Rename back to original
     if (!std::filesystem::exists(tempPath))
@@ -168,12 +145,32 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
         return false;
 
     // Get details
-    FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
-
     std::filesystem::path tempPath = filePath;
     tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+    
+    // Set bitrate
+    FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
+    Execute(audioDetails, {
+        "-i", "\"" + filePath.string() + "\"",
+        "-progress", "-",
+        "-nostats",
+        "-b:a", std::to_string(bitrate) + "k",
+        "\"" + tempPath.string() + "\""
+    });
 
-    // Get the conversion progress
+    // Rename back to original
+    if (!std::filesystem::exists(tempPath))
+        return false;
+
+    std::filesystem::remove(filePath);
+    std::filesystem::rename(tempPath, filePath);
+
+    return true;
+}
+
+std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args)
+{
+    // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         std::cout << line << std::endl;
 
@@ -191,22 +188,12 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
         std::cout << progressPercent << std::endl;
     };
 
-    // Set bitrate
+    // Setup command
     Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument("-i", "\"" + filePath.string() + "\"");
-    process.AddArgument("-progress", "-");
-    process.AddArgument("-nostats");
-    process.AddArgument("-b:a", std::to_string(bitrate) + "k");
-    process.AddArgument("\"" + tempPath.string() + "\"");
+    for (std::string arg : args) {
+        process.AddArgument(arg);
+    }
 
-    process.Execute(newLineCallback);
-
-    // Rename back to original
-    if (!std::filesystem::exists(tempPath))
-        return false;
-
-    std::filesystem::remove(filePath);
-    std::filesystem::rename(tempPath, filePath);
-
-    return true;
+    // Execute command
+    return process.Execute(newLineCallback);
 }
