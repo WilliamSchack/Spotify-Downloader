@@ -1,6 +1,5 @@
-#ifndef TAGLIBWRAPPER_H
-#define TAGLIBWRAPPER_H
-// TAGLIB_H is used in taglib
+#ifndef METADATAMANAGER_H
+#define METADATAMANAGER_H
 
 #include "Config.h"
 #include "CodecFactory.h"
@@ -29,10 +28,10 @@
 
 #include <filesystem>
 
-class Taglib
+class MetadataManager
 {
     public:
-        Taglib(const std::filesystem::path& filePath);
+        MetadataManager(const std::filesystem::path& filePath);
 
         static void SetTitle        (const std::string& value);
         static void SetArtists      (const std::string& value);
