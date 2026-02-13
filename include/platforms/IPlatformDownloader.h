@@ -3,6 +3,7 @@
 
 #include "IPlatformSearcher.h"
 #include "Ytdlp.h"
+#include "Ffmpeg.h"
 #include "SpotifyAPI.h"
 #include "FileUtils.h"
 #include "ImageHandler.h"

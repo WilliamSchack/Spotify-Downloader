@@ -1,6 +1,6 @@
 #include "PlatformFactory.h"
 
-std::unique_ptr<IPlatformDownloader> PlatformFactory::Create(EPlatform platform)
+std::unique_ptr<IPlatformDownloader> PlatformFactory::Create(const EPlatform& platform)
 {
     switch (platform) {
         case EPlatform::Spotify:
