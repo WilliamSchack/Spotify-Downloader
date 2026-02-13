@@ -6,7 +6,8 @@
 class Config
 {
     public:
-        static inline EExtension CodecExtension = EExtension::MP3;
+        static inline constexpr EExtension CODEC_EXTENSION = EExtension::MP3;
+        static inline constexpr float NORMALISE_DB = -14.0;
 };
 
 #endif

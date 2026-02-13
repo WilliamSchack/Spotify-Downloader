@@ -81,7 +81,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     }
 
     // Check if downloaded codec is different to the target, if so, convert it
-    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
     if (targetCodec == nullptr) return false;
     if (downloadedCodec == nullptr) return false;
@@ -90,6 +90,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
 
     // Normalise audio / Set bitrate if manual
+    bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
 
     // Get lyrics
 
