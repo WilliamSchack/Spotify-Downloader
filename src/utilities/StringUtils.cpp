@@ -132,3 +132,15 @@ unsigned int StringUtils::TimeToSeconds(const std::string& string)
 
 	return seconds;
 }
+
+unsigned int StringUtils::TimeToMilliseconds(const std::string& string)
+{
+    std::vector<std::string> seperated = Split(string, ".");
+    if (seperated.size() != 2) return 0;
+    
+    unsigned int seconds = TimeToSeconds(seperated[0]);
+    unsigned int milliseconds = seconds * 1000;
+    milliseconds += std::stoi(seperated[1]) * 10;
+
+    return milliseconds;
+};
