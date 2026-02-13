@@ -3,7 +3,7 @@
 
 #include "SpotifyAuth.h"
 #include "SpotifyAuthInterceptor.h"
-#include "NetworkRequest.h"
+#include "Network/Network.h"
 
 #include <QUrl>
 #include <QEventLoop>
@@ -17,8 +17,8 @@ class SpotifyAuthRetriever
     public:
         static SpotifyAuth GetAuth(const std::string& url);
     private:
-        static inline const std::string USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
-        static inline const std::string PLAYLIST_QUERY_REGEX = "\"queryPlaylist\",\"query\",\"(.*?)\"";
+        static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
+        static inline const QString PLAYLIST_QUERY_REGEX = "\"queryPlaylist\",\"query\",\"(.*?)\"";
         static inline const unsigned int TIMEOUT_MS = 10000;
 };
 

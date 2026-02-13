@@ -3,7 +3,7 @@
 SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
 {
     QWebEngineProfile* webProfile = new QWebEngineProfile();
-    webProfile->setHttpUserAgent(QString::fromStdString(USER_AGENT));
+    webProfile->setHttpUserAgent(USER_AGENT);
 
     SpotifyAuthInterceptor* interceptor = new SpotifyAuthInterceptor();
     webProfile->setUrlRequestInterceptor(interceptor);
@@ -21,29 +21,28 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
     webProfile->deleteLater();
 
     if (!interceptor->FoundAll) {
-        std::cout << "Could not retrieve spotify auth" << std::endl;
+        qWarning() << "Could not retrieve spotify auth";
         return SpotifyAuth();
     }
 
     // Get mobile js for playlist query sha256Hash, cannot get response body from QWebEnginePage so this is the next best thing
-    NetworkRequest mobileJsRequest;
-    mobileJsRequest.Url = interceptor->MobileJsUrl;
-    mobileJsRequest.SetHeader("User-Agent", USER_AGENT);
-    mobileJsRequest.SetHeader("Accept-Encoding", "gzip");
+    QNetworkRequest mobileJsRequest = QNetworkRequest(QString::fromStdString(interceptor->MobileJsUrl));
+    mobileJsRequest.setRawHeader("User-Agent", USER_AGENT);
+    mobileJsRequest.setRawHeader("Accept-Encoding", "gzip");
+    QByteArray mobileJs = Network::Get(mobileJsRequest);
 
-    NetworkResponse mobileJsResponse = mobileJsRequest.Get();
-    std::string mobileJs = mobileJsResponse.Body;
+    QRegularExpression regex(PLAYLIST_QUERY_REGEX);
+    QStringList matches = regex.match(mobileJs).capturedTexts();
 
-    std::smatch matches;
-    if (!std::regex_search(mobileJs, matches, std::regex(PLAYLIST_QUERY_REGEX))) {
-        std::cout << "Could not retrieve spotify auth" << std::endl;
+    if (matches.size() < 2) {
+        qWarning() << "Could not retrieve spotify auth";
         return SpotifyAuth();
     }
 
     SpotifyAuth auth;
     auth.Authorization = interceptor->Authorization;
     auth.ClientToken = interceptor->ClientToken;
-    auth.PlaylistQueryHash = matches[1];
+    auth.PlaylistQueryHash = matches[1].toStdString();
 
     interceptor->deleteLater();
 

@@ -167,6 +167,15 @@
     <ClCompile Include="UI\CustomWidgets\NoticeItem.cpp">
       <Filter>Source Files\UI\CustomWidgets</Filter>
     </ClCompile>
+    <ClCompile Include="Network\SpotifyAPINEW.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\SpotifyAuthInterceptor.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\SpotifyAuthRetriever.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
@@ -238,6 +247,15 @@
     <ClInclude Include="Network\Notices.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="Network\SpotifyAPINEW.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\SpotifyAuth.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\SpotifyAuthRetriever.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Utilities\ObjectHoverWatcher.h">
@@ -260,6 +278,9 @@
     </QtMoc>
     <QtMoc Include="UI\CustomWidgets\NoticeItem.h">
       <Filter>Header Files\UI\CustomWidgets</Filter>
+    </QtMoc>
+    <QtMoc Include="Network\SpotifyAuthInterceptor.h">
+      <Filter>Header Files\Network</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
