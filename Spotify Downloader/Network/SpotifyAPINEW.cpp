@@ -1,37 +1,40 @@
 #include "SpotifyAPINEW.h"
 
-NetworkRequest SpotifyAPI::GetRequest(const std::string& endpoint, const std::string& id)
+QNetworkRequest SpotifyAPI::GetRequest(const QString& endpoint, const QString& id)
 {
     WaitForRateLimit();
 
-    std::string url = BASE_URL + endpoint + "/" + id;
+    QString url = BASE_URL + endpoint + "/" + id;
     
-    NetworkRequest request;
-    request.Url = url;
-    request.SetHeader("User-Agent", USER_AGENT);
-	request.SetHeader("Accept", "*/*");
-	request.SetHeader("Referer", "https://open.spotify.com");
-	request.SetHeader("DNT", "1");
+    QNetworkRequest request = QNetworkRequest(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+	request.setRawHeader("Accept", "*/*");
+	request.setRawHeader("Referer", "https://open.spotify.com");
+	request.setRawHeader("DNT", "1");
     return request;
 }
 
-nlohmann::json SpotifyAPI::GetPageJson(const std::string& endpoint, const std::string& id)
+QJsonObject SpotifyAPI::GetPageJson(const QString& endpoint, QString& id)
 {
     // Get page
-    NetworkRequest request = GetRequest(endpoint, id);
-    NetworkResponse response = request.Get();
-    std::string responseHtml = response.Body;
+    QNetworkRequest request = GetRequest(endpoint, id);
+    QByteArray response = Network::Get(request);
 
     // Get json
-    HtmlParser parser(responseHtml);
-    std::string jsonString64 = parser.Select(R"(script[id="initialState"])").GetText();
-    if (jsonString64.empty()) return nlohmann::json::object();
+    QRegularExpression regex(R"(<script\sid="initialState.+?>(.+?)<)");
+    QStringList jsonMatches = regex.match(response).capturedTexts();
+
+    if (jsonMatches.size() < 2)
+        return QJsonObject();
+
+    QString jsonString64 = jsonMatches[1];
+    if (jsonString64.isEmpty()) return QJsonObject();
 
     // Decode json from base64
-    std::string jsonString = base64::decode<std::string>(jsonString64);
-    nlohmann::json json = nlohmann::json::parse(jsonString);
+    QString jsonString = QByteArray::fromBase64(jsonString64.toUtf8());
+    QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
 
-    return json["entities"]["items"].front();
+    return json["entities"].toObject()["items"].toArray().first().toObject();
 }
 
 void SpotifyAPI::WaitForRateLimit()
