@@ -1,7 +1,7 @@
-#ifndef ECODEC_H
-#define ECODEC_H
+#ifndef EEXTENSION_H
+#define EEXTENSION_H
 
-enum class ECodec
+enum class EExtension
 {
     M4A,
     AAC,

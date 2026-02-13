@@ -8,5 +8,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/AlbumTracks.h 
 	${CMAKE_CURRENT_SOURCE_DIR}/ArtistData.h
 	${CMAKE_CURRENT_SOURCE_DIR}/EAlbumType.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ECodec.h
 )
+
+add_subdirectory(codecs)

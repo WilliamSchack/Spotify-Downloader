@@ -6,6 +6,7 @@
 #include "SpotifyAPI.h"
 #include "FileUtils.h"
 #include "ImageHandler.h"
+#include "Config.h"
 
 #include "ELinkType.h"
 
