@@ -116,7 +116,8 @@
       <string>Start Download</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
+      <string notr="true">color: black;
+background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="text">
       <string>Start Download</string>
@@ -179,7 +180,8 @@ background-color: rgb(55, 55, 55);</string>
       <string>Song/Playlist URL Text Input</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);
+      <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="frame">
@@ -210,7 +212,8 @@ selection-background-color: rgb(0, 120, 215);</string>
       <string>Save Location Text Input</string>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);
+      <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
      </property>
      <property name="frame">
@@ -682,7 +685,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Codec Dropdown</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
@@ -855,7 +859,8 @@ color: rgb(0, 0, 0);</string>
               <string>Normalize Volume input decibals</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="decimals">
@@ -1100,7 +1105,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Audio Bitrate input kilobits per second</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="suffix">
@@ -1286,7 +1292,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Artist Separator Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1357,7 +1364,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Track Number Dropdown</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
@@ -1473,7 +1481,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>File Name Tag Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1519,7 +1528,8 @@ selection-background-color: rgb(0, 120, 215);</string>
               <string>File Name Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1593,7 +1603,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Sub Folders Tag Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1639,7 +1650,8 @@ selection-background-color: rgb(0, 120, 215);</string>
               <string>Sub Folders Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1778,7 +1790,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>LRC File Name Tag Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1824,7 +1837,8 @@ selection-background-color: rgb(0, 120, 215);</string>
               <string>LRC File Name Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -1895,7 +1909,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Playlist File Type Dropdown</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
@@ -1982,7 +1997,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Playlist File Name Tag Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -2028,7 +2044,8 @@ selection-background-color: rgb(0, 120, 215);</string>
               <string>Playlist File Name Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -2314,7 +2331,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Downloader Threads Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="minimum">
@@ -2393,7 +2411,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Download Speed Limit megabytes per second</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="maximum">
@@ -2499,7 +2518,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Download Timeout milliseconds</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="maximum">
@@ -2808,7 +2828,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>PO Token Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -3017,7 +3038,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Spotify Client ID Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -3223,7 +3245,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Spotify Client Secret Input</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="text">
@@ -3562,7 +3585,8 @@ background-color: rgba(0, 0, 0, 0);</string>
               <string>Downloader Thread UI Dropdown</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
+              <string notr="true">color: black;
+background-color: rgb(255, 255, 255);</string>
              </property>
              <item>
               <property name="text">
