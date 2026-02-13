@@ -9,7 +9,7 @@
 class PlatformFactory
 {
     public:
-        static std::unique_ptr<IPlatformDownloader> Create(EPlatform platform);
+        static std::unique_ptr<IPlatformDownloader> Create(const EPlatform& platform);
 };
 
 #endif

@@ -16,7 +16,7 @@
 class CodecFactory
 {
     public:
-        static std::unique_ptr<ICodec> Create(EExtension extension);
+        static std::unique_ptr<ICodec> Create(const EExtension& extension);
         static std::unique_ptr<ICodec> Create(const std::string& extension);
 };
 

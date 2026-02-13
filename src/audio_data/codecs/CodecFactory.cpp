@@ -1,6 +1,6 @@
 #include "CodecFactory.h"
 
-std::unique_ptr<ICodec> CodecFactory::Create(EExtension extension)
+std::unique_ptr<ICodec> CodecFactory::Create(const EExtension& extension)
 {
     switch (extension) {
         case EExtension::M4A:  return std::make_unique<CodecM4A>();

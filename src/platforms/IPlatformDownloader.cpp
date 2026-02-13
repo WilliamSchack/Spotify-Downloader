@@ -85,8 +85,8 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (targetCodec == nullptr) return false;
     if (downloadedCodec == nullptr) return false;
 
-    std::cout << targetCodec->GetString() << std::endl;
-    std::cout << downloadedCodec->GetString() << std::endl;
+    //if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
+    //    CONVERT
 
     // Normalise audio / Set bitrate if manual
 
