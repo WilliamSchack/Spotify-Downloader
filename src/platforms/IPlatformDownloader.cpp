@@ -23,6 +23,8 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
 
 bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
 {
+    std::cout << "Getting details..." << std::endl;
+
     // Get track details
     TrackData track = GetTrack(url);
 
@@ -47,6 +49,8 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     std::filesystem::path targetDownloadPath = targetFolder / fileName;
 
     // Get cover art
+    std::cout << "Getting cover art..." << std::endl;
+
     std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;
     if (!std::filesystem::exists(imagesFolder))
         std::filesystem::create_directory(imagesFolder);
@@ -65,12 +69,16 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     }
 
     // Get the song on the target platform
+    std::cout << "Searching on different platform..." << std::endl;
+
     std::unique_ptr<IPlatformSearcher> searcher = GetSearcher();
     if (searcher == nullptr) return false;
 
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
 
     // Download 
+    std::cout << "Downloading..." << std::endl;
+
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
     tempDownloadPath = downloadResult.Path;
 
@@ -90,11 +98,16 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
 
     // Normalise
-    bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
-
+    if (Config::NORMALISE) {
+        std::cout << "Normalising..." << std::endl;
+        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
+    }
+    
     // Set bitrate
-    if (Config::MANUAL_BITRATE)
+    if (Config::MANUAL_BITRATE) {
+        std::cout << "Setting bitrate..." << std::endl;
         bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE);
+    }
 
     // Get lyrics
 

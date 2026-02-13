@@ -172,8 +172,6 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
 {
     // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
-        std::cout << line << std::endl;
-
         if (!StringUtils::Contains(line, "out_time_ms"))
             return;
 
