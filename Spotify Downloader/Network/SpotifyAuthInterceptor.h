@@ -8,8 +8,8 @@ class SpotifyAuthInterceptor : public QWebEngineUrlRequestInterceptor
     Q_OBJECT
 
     public:
-        std::string Authorization = "";
-        std::string ClientToken = "";
+        QString Authorization = "";
+        QString ClientToken = "";
         std::string MobileJsUrl = "";
         bool FoundAll = false;
     public:

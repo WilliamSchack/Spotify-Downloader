@@ -7,9 +7,9 @@ void SpotifyAuthInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
 
     if (info.requestUrl().toString().contains("api-partner.spotify.com")) {
         const QHash<QByteArray, QByteArray>& httpHeaders = info.httpHeaders();
-        if (httpHeaders.contains("authorization") && Authorization.empty())
+        if (httpHeaders.contains("authorization") && Authorization.isEmpty())
             Authorization = info.httpHeaders()["authorization"];
-        if (httpHeaders.contains("client-token") && ClientToken.empty())
+        if (httpHeaders.contains("client-token") && ClientToken.isEmpty())
             ClientToken = info.httpHeaders()["client-token"];
     }
 
@@ -17,8 +17,8 @@ void SpotifyAuthInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
     if (info.requestUrl().toString().contains("open.spotifycdn.com/cdn/build/mobile-web-player/mobile-web-player."))
         MobileJsUrl = info.requestUrl().toString().toStdString();
 
-    if (!Authorization.empty() &&
-        !ClientToken.empty() &&
+    if (!Authorization.isEmpty() &&
+        !ClientToken.isEmpty() &&
         !MobileJsUrl.empty()) {
         emit ValuesRetrieved();
         FoundAll = true;

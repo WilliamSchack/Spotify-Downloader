@@ -2,6 +2,7 @@
 #define SPOTIFYAUTH_H
 
 #include <QByteArray>
+#include <QString>
 
 struct SpotifyAuth
 {

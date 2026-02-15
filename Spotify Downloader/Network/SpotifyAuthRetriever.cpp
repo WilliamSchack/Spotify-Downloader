@@ -40,9 +40,9 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const QUrl& url)
     }
 
     SpotifyAuth auth;
-    auth.Authorization = interceptor->Authorization;
-    auth.ClientToken = interceptor->ClientToken;
-    auth.PlaylistQueryHash = matches[1].toStdString();
+    auth.Authorization = interceptor->Authorization.toUtf8();
+    auth.ClientToken = interceptor->ClientToken.toUtf8();
+    auth.PlaylistQueryHash = matches[1];
 
     interceptor->deleteLater();
 
