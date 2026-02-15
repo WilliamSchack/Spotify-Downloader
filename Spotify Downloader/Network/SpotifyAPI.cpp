@@ -161,6 +161,12 @@ QJsonObject SpotifyAPI::GetPlaylist(const QString& id)
     return ParsePlaylist(json);
 }
 
+/*
+ * The parsing here is very scuffed, its only returning back json to keep support with the previous spotify api and the rest of the v1 app
+ * If you want a better example of parsing the data, view it in the v2 branch:
+ * https://github.com/WilliamSchack/Spotify-Downloader/blob/v2/src/network/spotify/SpotifyAPI.cpp
+*/
+
 QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
 {
     if (json.contains("track"))       json = json["track"].toObject();
