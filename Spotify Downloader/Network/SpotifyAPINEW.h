@@ -30,7 +30,7 @@ class SpotifyAPI
 
         static void WaitForRateLimit();
 
-        static TrackData ParseTrack(nlohmann::json json);
+        static QJsonObject ParseTrack(QJsonObject json);
         static std::vector<TrackData> ParseTracks(const nlohmann::json& json);
 
         static ArtistData ParseArtist(const nlohmann::json& json);
