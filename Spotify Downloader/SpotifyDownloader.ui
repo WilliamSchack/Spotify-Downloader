@@ -153,7 +153,7 @@ background-color: rgb(255, 255, 255);</string>
 background-color: rgb(55, 55, 55);</string>
      </property>
      <property name="text">
-      <string>© 2024-2025 William Schack</string>
+      <string>© 2024-2026 William Schack</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
