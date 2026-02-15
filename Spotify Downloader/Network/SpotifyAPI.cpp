@@ -1,6 +1,6 @@
 #include "SpotifyAPI.h"
 
-SpotifyAPINew::SpotifyAPINew() {
+SpotifyAPI::SpotifyAPI() {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://accounts.spotify.com/api/token");
 	
@@ -24,14 +24,14 @@ SpotifyAPINew::SpotifyAPINew() {
 	_auth = json["access_token"].toString().toLatin1();
 }
 
-bool SpotifyAPINew::CheckConnection() {
+bool SpotifyAPI::CheckConnection() {
 	if (_auth.isNull()) return false;
 
 	QUrl url = QUrl("https://api.spotify.com/v1");
 	return Network::Ping(url);
 }
 
-QJsonObject SpotifyAPINew::GetPlaylist(QString id) {
+QJsonObject SpotifyAPI::GetPlaylist(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id);
 
@@ -45,7 +45,7 @@ QJsonObject SpotifyAPINew::GetPlaylist(QString id) {
 	return json;
 }
 
-QJsonArray SpotifyAPINew::GetPlaylistTracks(QString id) {
+QJsonArray SpotifyAPI::GetPlaylistTracks(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id + "/tracks");
 
@@ -59,7 +59,7 @@ QJsonArray SpotifyAPINew::GetPlaylistTracks(QString id) {
 	return GetTracks(json);
 }
 
-QJsonObject SpotifyAPINew::GetAlbum(QString id) {
+QJsonObject SpotifyAPI::GetAlbum(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/albums/" + id);
 
@@ -73,11 +73,11 @@ QJsonObject SpotifyAPINew::GetAlbum(QString id) {
 	return json;
 }
 
-QJsonArray SpotifyAPINew::GetAlbumTracks(QJsonObject album) {
+QJsonArray SpotifyAPI::GetAlbumTracks(QJsonObject album) {
 	return GetTracks(album["tracks"].toObject());
 }
 
-QJsonObject SpotifyAPINew::GetTrack(QString id) {
+QJsonObject SpotifyAPI::GetTrack(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/tracks/" + id);
 
@@ -94,7 +94,7 @@ QJsonObject SpotifyAPINew::GetTrack(QString id) {
 	return QJsonDocument::fromJson(response).object();
 }
 
-QJsonObject SpotifyAPINew::GetEpisode(QString id) {
+QJsonObject SpotifyAPI::GetEpisode(QString id) {
 	QNetworkAccessManager* manager = new QNetworkAccessManager();
 	QUrl url = QUrl("https://api.spotify.com/v1/episodes/" + id);
 
@@ -111,7 +111,7 @@ QJsonObject SpotifyAPINew::GetEpisode(QString id) {
 	return QJsonDocument::fromJson(response).object();
 }
 
-QJsonArray SpotifyAPINew::GetTracks(QJsonObject json) {
+QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
 	QJsonArray tracks = json["items"].toArray();
 	
 	// Continue to get tracks if more than 100 are requested

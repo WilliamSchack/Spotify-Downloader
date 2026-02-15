@@ -245,8 +245,8 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.setValue("clientSecret", clientSecret);
             settings.endGroup();
 
-            SpotifyAPINew::ClientID = clientID;
-            SpotifyAPINew::ClientSecret = clientSecret;
+            SpotifyAPI::ClientID = clientID;
+            SpotifyAPI::ClientSecret = clientSecret;
 
             // Create cookies file if needed
             if (!Config::YouTubeCookies.isEmpty()) {
@@ -825,10 +825,10 @@ void SpotifyDownloader::LoadSettingsUI() {
     _ui.POTokenInput->setText(Config::POToken);
 
     // Spotify Client ID
-    _ui.SpotifyClientIDInput->setText(SpotifyAPINew::ClientID);
+    _ui.SpotifyClientIDInput->setText(SpotifyAPI::ClientID);
 
     // Spotify Client Secret
-    _ui.SpotifyClientSecretInput->setText(SpotifyAPINew::ClientSecret);
+    _ui.SpotifyClientSecretInput->setText(SpotifyAPI::ClientSecret);
 
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);

@@ -1,5 +1,5 @@
-#ifndef SPOTIFYAPI_H
-#define SPOTIFYAPI_H
+#ifndef SPOTIFYAPINEW_H
+#define SPOTIFYAPINEW_H
 
 #include "SpotifyAuthRetriever.h"
 #include "Utilities/JSONUtils.h"
