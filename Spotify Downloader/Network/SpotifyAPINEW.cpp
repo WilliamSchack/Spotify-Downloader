@@ -339,20 +339,20 @@ QJsonObject SpotifyAPI::ParsePlaylist(const QJsonObject& json)
     return playlist;
 }
 
-/*
-std::string SpotifyAPI::GetLargestImageUrl(const nlohmann::json& json)
+QString SpotifyAPI::GetLargestImageUrl(const QJsonObject& json)
 {
-    std::string imageUrl = "";
+    QString imageUrl = "";
     unsigned int highestResolution = 0;
-    for (nlohmann::json coverArtDetails : json) {
-        int resolution = coverArtDetails["width"];
+    for (QJsonValue coverArtDetailsVal : json) {
+        QJsonObject coverArtDetails = coverArtDetailsVal.toObject();
+
+        int resolution = coverArtDetails["width"].toInt();
         if (resolution < highestResolution)
             continue;
         
         highestResolution = resolution;
-        imageUrl = coverArtDetails["url"];
+        imageUrl = coverArtDetails["url"].toString();
     }
 
     return imageUrl;
 }
-*/
