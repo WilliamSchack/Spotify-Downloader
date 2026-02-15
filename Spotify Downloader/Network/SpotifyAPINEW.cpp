@@ -261,7 +261,7 @@ QJsonObject SpotifyAPI::ParseAlbum(const QJsonObject& json)
     // Cover Art
     album["images"] = QJsonArray{
         QJsonObject {
-            { "url", "" }//GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
+            { "url", GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
         }
     };
 
@@ -339,7 +339,7 @@ QJsonObject SpotifyAPI::ParsePlaylist(const QJsonObject& json)
     return playlist;
 }
 
-QString SpotifyAPI::GetLargestImageUrl(const QJsonObject& json)
+QString SpotifyAPI::GetLargestImageUrl(const QJsonArray& json)
 {
     QString imageUrl = "";
     unsigned int highestResolution = 0;

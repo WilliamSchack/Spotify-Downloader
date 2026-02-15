@@ -39,7 +39,7 @@ class SpotifyAPI
         static QJsonObject ParseAlbum(const QJsonObject& json);
         static QJsonObject ParsePlaylist(const QJsonObject& json);
 
-        static QString GetLargestImageUrl(const QJsonObject& json);
+        static QString GetLargestImageUrl(const QJsonArray& json);
     private:
         static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
         static inline const int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
