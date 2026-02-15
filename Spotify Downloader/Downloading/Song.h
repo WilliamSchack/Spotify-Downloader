@@ -58,7 +58,6 @@ class Song {
 		QString Title = "";
 		QString SpotifyId = "";
 		QString YoutubeId = "";
-		QString Isrc = "";
 		float TimeSeconds = 0;
 		bool IsExplicit;
 		QDate ReleaseDate;

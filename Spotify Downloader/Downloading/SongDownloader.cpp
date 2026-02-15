@@ -235,7 +235,7 @@ QString SongDownloader::DownloadSong(QJsonObject track, int count, QJsonObject a
 
 	// Get lyrics if setting enabled
 	if (Config::GetLyrics) {
-		qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId << "with isrc" << song.Isrc;
+		qInfo() << _threadIndex << "Getting lyrics for song" << song.SpotifyId;
 		emit SetProgressLabel(_threadIndex, "Getting Lyrics...");
 		song.GetLyrics();
 

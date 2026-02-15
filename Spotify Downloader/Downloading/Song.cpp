@@ -17,14 +17,6 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 	_fileNameDuplicated = song["file_name_duplicated"].toBool();
 
-	// If the song has external ids, look for the isrc
-	if (song.contains("external_ids")) {
-		QJsonObject externalIds = song["external_ids"].toObject();
-		if (externalIds.contains("isrc")) {
-			Isrc = externalIds["isrc"].toString();
-		}
-	}
-
 	// Handle episode, details are different (If song is episode and contains show object or album object that is a show
 	if (song["type"].toString() == "episode" && (song.contains("show") || (song.contains("album") && song["album"].toObject()["type"].toString() == "show"))) {
 		QJsonObject show;
@@ -905,6 +897,10 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::GetLyrics() {
+	/*
+	* Musixmatch lyrics cannot be retrieved as the isrc is no longer retrievable
+	* Ill see if i can find a way to get it in v2 but it was retrieved from the spotify api which is no longer possible
+	* 
 	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc, MusixmatchAPI::LoggingType::Warnings);
 	
 	// Even if type is found, musixmatch can still have bot prevention when getting the lyrics, check for that as well
@@ -922,6 +918,7 @@ void Song::GetLyrics() {
 			LyricsData = musixmatchLyrics;
 			return;
 	}
+	*/
 
 	// If lyrics not found on musixmatch, get from YouTube
 	Lyrics youtubeLyrics = YTMusicAPI().GetLyrics(YoutubeId);
