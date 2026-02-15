@@ -220,41 +220,38 @@ QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
     return track;
 }
 
-/*
-std::vector<TrackData> SpotifyAPI::ParseTracks(const nlohmann::json& json)
+QJsonArray SpotifyAPI::ParseTracks(const QJsonArray& json)
 {
-    std::vector<TrackData> tracks;
-    if (!json.is_array()) return tracks;
-
-    for (const nlohmann::json& trackJson : json) {
-        tracks.push_back(ParseTrack(trackJson));
+    QJsonArray tracks;
+    for (QJsonValue trackJsonVal : json) {
+        tracks.push_back(ParseTrack(trackJsonVal.toObject()));
     }
 
     return tracks;
 }
 
-ArtistData SpotifyAPI::ParseArtist(const nlohmann::json& json)
+QJsonObject SpotifyAPI::ParseArtist(const QJsonObject& json)
 {
-    ArtistData artist(EPlatform::Spotify);
-    artist.Id = StringUtils::Split(json["uri"], ":").back();
-    artist.Url = ARTIST_URL + artist.Id;
-    artist.Name = json["profile"]["name"];
+    QJsonObject artist;
+    artist["id"] = json["uri"].toString().split(":").last();
+    artist["name"] = json["profile"].toObject()["name"].toString();
+    artist["url"] = ARTIST_URL + artist["id"].toString();
+    artist["uri"] = json["uri"].toString();
 
     return artist;
 }
 
-std::vector<ArtistData> SpotifyAPI::ParseArtists(const nlohmann::json& json)
+QJsonArray SpotifyAPI::ParseArtists(const QJsonArray& json)
 {
-    std::vector<ArtistData> artists;
-    if (!json.is_array()) return artists;
-
-    for (const nlohmann::json& artistJson : json) {
-        artists.push_back(ParseArtist(artistJson));
+    QJsonArray artists;
+    for (QJsonValue trackJsonVal : json) {
+        artists.push_back(ParseArtist(trackJsonVal.toObject()));
     }
 
     return artists;
 }
 
+/*
 AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
 {
     AlbumTracks albumTracks;
