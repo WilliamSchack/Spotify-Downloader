@@ -251,67 +251,66 @@ QJsonArray SpotifyAPI::ParseArtists(const QJsonArray& json)
     return artists;
 }
 
-/*
-AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
+QJsonObject SpotifyAPI::ParseAlbum(const QJsonObject& json)
 {
-    AlbumTracks albumTracks;
-
-    AlbumData album(EPlatform::Spotify);
-    album.Id = StringUtils::Split(json["uri"], ":").back();
-    album.Url = ALBUM_URL + album.Id;
-    album.Name = json["name"];
-    album.Description = json.value("description", "");
-    
-    // Type
-    album.Type = EAlbumType::Album;
-    if (json.contains("type")) {
-        if      (json["type"] == "SINGLE")      album.Type = EAlbumType::Single;
-        else if (json["type"] == "COMPILATION") album.Type = EAlbumType::Compilation;
-    }
+    QJsonObject album;
+    album["id"] = json["uri"].toString().split(":").last();
+    album["url"] = ALBUM_URL + album["id"].toString();
+    album["name"] = json["name"].toString();
 
     // Cover Art
-    album.ImageUrl = GetLargestImageUrl(json["coverArt"]["sources"]);
+    album["images"] = QJsonArray{
+        QJsonObject {
+            { "url", GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
+        }
+    };
 
     // Release Date
     if (json.contains("date")) {
-        nlohmann::json dateJson = json["date"];
-        album.ReleaseYear = std::to_string(dateJson["year"].get<int>());
-        album.ReleaseDate = std::to_string(dateJson["year"].get<int>());
-        if (dateJson.contains("month")) album.ReleaseDate += "-" + std::to_string(dateJson["month"].get<int>());
-        if (dateJson.contains("day"))   album.ReleaseDate += "-" + std::to_string(dateJson["day"].get<int>());
+        QJsonObject dateJson = json["date"].toObject();
+        album["release_year"] = dateJson["year"].toString();
+        album["release_date"] = album["release_year"].toString();
+        if (dateJson.contains("month")) album["release_date"] = album["release_date"].toString() + "-" + dateJson["month"].toString();
+        if (dateJson.contains("day"))   album["release_date"] = album["release_date"].toString() + "-" + dateJson["day"].toString();
     }
 
     // Main Artist
     if (json.contains("artists")) {
-        album.SetMainArtist(ParseArtist(json["artists"]["items"][0]));
+        album["artists"] = ParseArtists(json["artists"].toObject()["items"].toArray());
     } else if (json.contains("publisher")) {
-        album.SetMainArtist(ArtistData(EPlatform::Spotify));
-        album.Artists[0].Name = json["publisher"]["name"];
+        album["artists"] = QJsonArray{
+            QJsonObject {
+                { "name", json["publusher"].toObject()["name"].toString() }
+            }
+        };
     }
 
     // Tracks
-    nlohmann::json tracksJson;
-    if      (json.contains("tracks"))   tracksJson = json["tracks"];
-    else if (json.contains("tracksV2")) tracksJson = json["tracksV2"];
+    QJsonObject tracksJson;
+    if      (json.contains("tracks"))   tracksJson = json["tracks"].toObject();
+    else if (json.contains("tracksV2")) tracksJson = json["tracksV2"].toObject();
     if (!tracksJson.empty()) {
-        tracksJson = tracksJson["items"];
-        album.TotalTracks = tracksJson.size();
-        albumTracks.Tracks = ParseTracks(tracksJson);
+        QJsonArray tracksJsonArray = tracksJson["items"].toArray();
+        album["total_tracks"] = tracksJsonArray.size();
+        QJsonArray parsedTracks = ParseTracks(tracksJsonArray);
 
         // Add release date
-        for (TrackData& track : albumTracks.Tracks) {
-            if (track.ReleaseDate == "") {
-                track.ReleaseDate = album.ReleaseDate;
-                track.ReleaseYear = album.ReleaseYear;
+        for (int i = 0; i < parsedTracks.size(); i++) {
+            QJsonObject track = parsedTracks[i].toObject();
+            if (track["release_date"].toString().isEmpty()) {
+                track["release_date"] = album["release_date"];
+                track["release_year"] = album["release_year"];
+                parsedTracks[i] = track;
             }
         }
+
+        album["tracks"] = parsedTracks;
     }
 
-    albumTracks.Data = album;
-
-    return albumTracks;
+    return album;
 }
 
+/*
 PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 {
     PlaylistTracks playlistTracks;
