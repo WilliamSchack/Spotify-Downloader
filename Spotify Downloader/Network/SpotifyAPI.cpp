@@ -166,6 +166,8 @@ QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
     if (json.contains("track"))       json = json["track"].toObject();
     else if (json.contains("itemV2")) json = json["itemV2"].toObject()["data"].toObject();
 
+    qDebug() << json;
+
     bool isEpisode = json.contains("showOrAudiobook");
 
     QJsonObject track;
@@ -272,10 +274,10 @@ QJsonObject SpotifyAPI::ParseAlbum(const QJsonObject& json)
     // Release Date
     if (json.contains("date")) {
         QJsonObject dateJson = json["date"].toObject();
-        album["release_year"] = dateJson["year"].toString();
+        album["release_year"] = QString::number(dateJson["year"].toInt());
         album["release_date"] = album["release_year"].toString();
-        if (dateJson.contains("month")) album["release_date"] = album["release_date"].toString() + "-" + dateJson["month"].toString();
-        if (dateJson.contains("day"))   album["release_date"] = album["release_date"].toString() + "-" + dateJson["day"].toString();
+        if (dateJson.contains("month")) album["release_date"] = album["release_date"].toString() + "-" + QString::number(dateJson["month"].toInt());
+        if (dateJson.contains("day"))   album["release_date"] = album["release_date"].toString() + "-" + QString::number(dateJson["day"].toInt());
     }
 
     // Main Artist
