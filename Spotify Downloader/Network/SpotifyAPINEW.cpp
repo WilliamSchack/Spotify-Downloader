@@ -21,13 +21,9 @@ QJsonObject SpotifyAPINew::GetPageJson(const QString& endpoint, const QString& i
     QNetworkRequest request = GetRequest(endpoint, id);
     QByteArray response = Network::Get(request);
 
-    qDebug() << response;
-
     // Get json
     QRegularExpression regex(R"(<script\sid="initialState.+?>(.+?)<)");
     QStringList jsonMatches = regex.match(response).capturedTexts();
-
-    qDebug() << jsonMatches;
 
     if (jsonMatches.size() < 2)
         return QJsonObject();
@@ -35,13 +31,9 @@ QJsonObject SpotifyAPINew::GetPageJson(const QString& endpoint, const QString& i
     QString jsonString64 = jsonMatches[1];
     if (jsonString64.isEmpty()) return QJsonObject();
 
-    qDebug() << jsonString64;
-
     // Decode json from base64
     QString jsonString = QByteArray::fromBase64(jsonString64.toUtf8());
     QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
-
-    qDebug() << json;
 
     return json["entities"].toObject()["items"].toObject().begin().value().toObject();
 }
@@ -64,7 +56,6 @@ bool SpotifyAPINew::CheckConnection()
 QJsonObject SpotifyAPINew::GetTrack(const QString& id)
 {
     QJsonObject json = GetPageJson("track", id);
-    qDebug() << json;
     if (json.empty()) return QJsonObject();
 
     return ParseTrack(json);
@@ -115,6 +106,7 @@ QJsonObject SpotifyAPINew::GetPlaylist(const QString& id)
         request.setRawHeader("User-Agent", USER_AGENT);
         request.setRawHeader("Authorization", _spotifyAuth.Authorization);
         request.setRawHeader("Client-Token", _spotifyAuth.ClientToken);
+        request.setRawHeader("Content-Type", "application/json");
 
         QJsonObject postJson {
             {"variables", QJsonObject {
@@ -131,7 +123,7 @@ QJsonObject SpotifyAPINew::GetPlaylist(const QString& id)
             }}
         };
 
-        QByteArray postData = QJsonDocument(postJson).toJson();
+        QByteArray postData = QJsonDocument(postJson).toJson(QJsonDocument::Compact);
         QByteArray response = Network::Post(request, postData);
         if (response.isEmpty()) break;
 
@@ -139,31 +131,29 @@ QJsonObject SpotifyAPINew::GetPlaylist(const QString& id)
 
         if (tracksJson.empty()) {
             json = currentJson;
-            tracksJson = json["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray();
-            totalTracks = tracksJson.size();
+
+            QJsonObject playlistJson = json["data"].toObject()["playlistV2"].toObject()["content"].toObject();
+            tracksJson = playlistJson["items"].toArray();
+            totalTracks = playlistJson["totalCount"].toInt();
+            retrievedTracks = tracksJson.size();
+
             continue;
         }
         
         // Add new tracks to json
-        JSONUtils::Extend(tracksJson, currentJson["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray());
+        tracksJson = JSONUtils::Extend(tracksJson, currentJson["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray());
         retrievedTracks = tracksJson.size();
     }
 
     // Merge tracks into main json
-    QJsonObject jsonToMerge = {
-        { "data", QJsonObject {
-            { "playlistV2", QJsonObject {
-                { "content", QJsonObject {
-                    { "items", tracksJson }
-                }}
-            }}
-        }}
-    };
-
-    JSONUtils::Merge(json, jsonToMerge);
-
-
-    qDebug() << json;
+    QJsonObject data = json["data"].toObject();
+    QJsonObject playlistV2 = data["playlistV2"].toObject();
+    QJsonObject content = playlistV2["content"].toObject();
+    
+    content["items"] = tracksJson;
+    playlistV2["content"] = content;
+    data["playlistV2"] = playlistV2;
+    json["data"] = data;
 
     // Incase of any error in the loop
     if (json.empty()) return QJsonObject();
@@ -230,8 +220,6 @@ QJsonObject SpotifyAPINew::ParseTrack(QJsonObject json)
             track["album"] = album;
         }
     }
-
-    qDebug() << track;
 
     return track;
 }

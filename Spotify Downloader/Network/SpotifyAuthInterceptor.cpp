@@ -14,7 +14,7 @@ void SpotifyAuthInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
     }
 
     // Cant get response body, get the url and do another request for the js
-    if (info.requestUrl().toString().contains("open.spotifycdn.com/cdn/build/mobile-web-player/mobile-web-player."))
+    if (info.requestUrl().toString().contains("open.spotifycdn.com/cdn/build/mobile-web-player/mobile-web-player.") && info.requestUrl().toString().contains("js"))
         MobileJsUrl = info.requestUrl().toString().toStdString();
 
     if (!Authorization.isEmpty() &&

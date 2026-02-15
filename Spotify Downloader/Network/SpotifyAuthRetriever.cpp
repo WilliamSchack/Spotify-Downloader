@@ -28,7 +28,6 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const QUrl& url)
     // Get mobile js for playlist query sha256Hash, cannot get response body from QWebEnginePage so this is the next best thing
     QNetworkRequest mobileJsRequest = QNetworkRequest(QString::fromStdString(interceptor->MobileJsUrl));
     mobileJsRequest.setRawHeader("User-Agent", USER_AGENT);
-    mobileJsRequest.setRawHeader("Accept-Encoding", "gzip");
     QByteArray mobileJs = Network::Get(mobileJsRequest);
 
     QRegularExpression regex(PLAYLIST_QUERY_REGEX);
