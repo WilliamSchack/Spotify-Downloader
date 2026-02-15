@@ -10,7 +10,7 @@ QByteArray Network::Get(QNetworkRequest request, QNetworkCookieJar* cookieJar) {
 	QNetworkReply* rep = manager->get(request);
 	QObject::connect(manager, &QNetworkAccessManager::finished, [&complete, &response](QNetworkReply* reply) {
 		if (reply->error() != QNetworkReply::NoError) {
-			qWarning() << reply->errorString();
+			qWarning() << reply->errorString() << reply->readAll();
 
 			response = nullptr;
 			complete = true;
@@ -40,7 +40,7 @@ QByteArray Network::Post(QNetworkRequest request, QByteArray postData, QNetworkC
 	QNetworkReply* rep = manager->post(request, postData);
 	QObject::connect(manager, &QNetworkAccessManager::finished, [&complete, &response](QNetworkReply* reply) {
 		if (reply->error() != QNetworkReply::NoError) {
-			qWarning() << reply->errorString();
+			qWarning() << reply->errorString() << reply->readAll();
 
 			response = nullptr;
 			complete = true;
