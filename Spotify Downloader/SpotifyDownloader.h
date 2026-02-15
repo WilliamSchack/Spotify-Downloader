@@ -18,7 +18,6 @@
 
 #include "Network/YTMusicAPI.h"
 #include "Network/SpotifyAPI.h"
-#include "Network/SpotifyAPINEW.h"
 #include "Network/VersionManager.h"
 
 #include "Downloading/Codec.h"

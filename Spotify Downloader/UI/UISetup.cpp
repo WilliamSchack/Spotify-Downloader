@@ -236,18 +236,6 @@ void SpotifyDownloader::SetupSetupScreen() {
             settings.setValue("saveLocation", Config::SaveLocation);
             settings.endGroup();
 
-            // Save spotify api keys
-            QByteArray clientID = _ui.SpotifyClientIDInput->text().toUtf8();
-            QByteArray clientSecret = _ui.SpotifyClientSecretInput->text().toUtf8();
-
-            settings.beginGroup("Downloading");
-            settings.setValue("clientID", clientID);
-            settings.setValue("clientSecret", clientSecret);
-            settings.endGroup();
-
-            SpotifyAPI::ClientID = clientID;
-            SpotifyAPI::ClientSecret = clientSecret;
-
             // Create cookies file if needed
             if (!Config::YouTubeCookies.isEmpty()) {
                 // Access/Create file
@@ -554,14 +542,6 @@ void SpotifyDownloader::SetupSettingsScreen() {
         Config::POToken = "";
     });
 
-    connect(_ui.SpotifyAPIClientClearButton, &QPushButton::clicked, [=] {
-        _ui.SpotifyClientIDInput->setText("");
-    });
-
-    connect(_ui.SpotifyAPISecretClearButton, &QPushButton::clicked, [=] {
-        _ui.SpotifyClientSecretInput->setText("");
-    });
-
     // Paste Buttons
     connect(_ui.YoutubeCookiesPasteButton, &QPushButton::clicked, [=] {
         // Get clipboard text
@@ -601,16 +581,6 @@ void SpotifyDownloader::SetupSettingsScreen() {
         Config::POToken = clipboard->text();
     });
 
-    connect(_ui.SpotifyAPIClientPasteButton, &QPushButton::clicked, [=] {
-        QClipboard* clipboard = qApp->clipboard();
-        _ui.SpotifyClientIDInput->setText(clipboard->text());
-    });
-
-    connect(_ui.SpotifyAPISecretPasteButton, &QPushButton::clicked, [=] {
-        QClipboard* clipboard = qApp->clipboard();
-        _ui.SpotifyClientSecretInput->setText(clipboard->text());
-    });
-
     // Help Buttons
     connect(_ui.YoutubeCookiesHelpButton, &QPushButton::clicked, [=]{
         OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "YouTube Cookies are not required. They must be in the netscape format. It is used with the PO Token to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
@@ -618,14 +588,6 @@ void SpotifyDownloader::SetupSettingsScreen() {
 
     connect(_ui.POTokenHelpButton, &QPushButton::clicked, [=] {
         OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "A PO Token is not required. It is used with the Youtube Cookies to remove age restrictions and access YouTube Premium quality. Would you like to access the help documentation?");
-    });
-
-    connect(_ui.SpotifyAPIClientHelpButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "Spotify API Keys are not required. The Client ID is used with the Secret ID to use your own Spotify API Application. Would you like to access the help documentation?");
-     });
-
-    connect(_ui.SpotifyAPISecretHelpButton, &QPushButton::clicked, [=] {
-        OpenURL(QUrl("https://github.com/WilliamSchack/Spotify-Downloader?tab=readme-ov-file#usage"), "Help", "Spotify API Keys are not required. The Secret ID is used with the Client ID to use your own Spotify API Application. Would you like to access the help documentation?");
     });
 }
 
@@ -823,12 +785,6 @@ void SpotifyDownloader::LoadSettingsUI() {
 
     // PO Token
     _ui.POTokenInput->setText(Config::POToken);
-
-    // Spotify Client ID
-    _ui.SpotifyClientIDInput->setText(SpotifyAPI::ClientID);
-
-    // Spotify Client Secret
-    _ui.SpotifyClientSecretInput->setText(SpotifyAPI::ClientSecret);
 
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);
@@ -1091,16 +1047,6 @@ bool SpotifyDownloader::ValidateSettings() {
 
             return false;
         }
-    }
-
-    // Spotify API Keys, return false if one is set without the other
-    if ((!_ui.SpotifyClientIDInput->text().isEmpty() && _ui.SpotifyClientSecretInput->text().isEmpty()) || (_ui.SpotifyClientIDInput->text().isEmpty() && !_ui.SpotifyClientSecretInput->text().isEmpty())) {
-        ShowMessageBox(
-            "Invalid API Key",
-            QString("Both the Spotify API Client ID and Secret must be set"),
-            QMessageBox::Warning
-        );
-        return false;
     }
 
     return true;

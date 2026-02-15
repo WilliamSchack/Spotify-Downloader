@@ -97,14 +97,10 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		return;
 	}
 	
-	// If one track exists that is empty, we have been rate limited
+	// If one track exists that is empty, unknown error. This should not happen.
 	else if (searchTracks.count() == 1 && searchTracks[0].toObject().isEmpty()) {
-		emit ShowMessage("App is rate limited", "Use your own API keys in the downloading settings");
-
-		QString helpMessage = SpotifyAPI::ClientID.isEmpty() ? "Use your own api keys in the downloading settings" : "Try changing your API keys or using the default ones";
-		emit SetDownloadStatus(QString(R"(App is rate limited<br><span style="font-size: 13pt">%1</span>)").arg(helpMessage));
-
-		qWarning() << "Error downloading songs, app is rate limited";
+		emit ShowMessage("Spotify tracks returned nothing", "Please submit a bug report, this is an unknown error");
+		qWarning() << "Spotify tracks returned empty with an unknown error";
 
 		Quit();
 		return;

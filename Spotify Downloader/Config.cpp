@@ -46,8 +46,6 @@ void Config::SaveSettings() {
     settings.setValue("downloadTimeout", DownloadTimeout);
     settings.setValue("youtubeCookies", YouTubeCookies);
     settings.setValue("poToken", POToken);
-    settings.setValue("clientID", SpotifyAPI::ClientID);
-    settings.setValue("clientSecret", SpotifyAPI::ClientSecret);
     settings.endGroup();
 
     settings.beginGroup("Interface");
@@ -170,8 +168,6 @@ void Config::LoadSettings() {
     DownloadTimeout = settings.value("downloadTimeout", 30000).toInt();
     YouTubeCookies = settings.value("youtubeCookies", "").toString();
     POToken = settings.value("poToken", "").toString();
-    SpotifyAPI::ClientID = settings.value("clientID", "").toByteArray();
-    SpotifyAPI::ClientSecret = settings.value("clientSecret", "").toByteArray();
     settings.endGroup();
 
     settings.beginGroup("Interface");
