@@ -48,6 +48,11 @@ void SpotifyAPINew::WaitForRateLimit()
     _lastRequestTime = std::chrono::system_clock::now();
 }
 
+bool SpotifyAPINew::CheckConnection()
+{
+    return Network::Ping(BASE_URL);
+}
+
 QJsonObject SpotifyAPINew::GetTrack(const QString& id)
 {
     QJsonObject json = GetPageJson("track", id);

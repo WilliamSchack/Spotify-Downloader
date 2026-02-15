@@ -13,6 +13,8 @@
 class SpotifyAPINew
 {
     public:
+        static bool CheckConnection();
+
         // Returns all details but disc number
         static QJsonObject GetTrack(const QString& id);
 
