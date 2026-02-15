@@ -37,7 +37,7 @@ class SpotifyAPI
         static QJsonArray ParseArtists(const QJsonArray& json);
         
         static QJsonObject ParseAlbum(const QJsonObject& json);
-        static PlaylistTracks ParsePlaylist(const nlohmann::json& json);
+        static QJsonObject ParsePlaylist(const QJsonObject& json);
 
         static std::string GetLargestImageUrl(const nlohmann::json& json);
     private:

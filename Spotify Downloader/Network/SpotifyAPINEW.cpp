@@ -261,7 +261,7 @@ QJsonObject SpotifyAPI::ParseAlbum(const QJsonObject& json)
     // Cover Art
     album["images"] = QJsonArray{
         QJsonObject {
-            { "url", GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
+            { "url", "" }//GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
         }
     };
 
@@ -310,38 +310,36 @@ QJsonObject SpotifyAPI::ParseAlbum(const QJsonObject& json)
     return album;
 }
 
-/*
-PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
+QJsonObject SpotifyAPI::ParsePlaylist(const QJsonObject& json)
 {
-    PlaylistTracks playlistTracks;
+    QJsonObject playlistJson = json["data"].toObject()["playlistV2"].toObject();
 
-    const nlohmann::json& playlistJson = json["data"]["playlistV2"];
-    PlaylistData playlist(EPlatform::Spotify);
-    playlist.Id = playlistJson["id"];
-    playlist.Url = PLAYLIST_URL + playlist.Id;
-    playlist.Name = playlistJson["name"];
-    playlist.Description = playlistJson["description"];
-    playlist.ImageUrl = GetLargestImageUrl(playlistJson["images"]["items"][0]["sources"]);
-    playlist.TotalTracks = playlistJson["content"]["totalCount"];
+    QJsonObject playlist;
+    playlist["id"] = playlistJson["id"].toString();
+    playlist["name"] = playlistJson["name"].toString();
+    
+    // Image
+    playlist["images"] = QJsonArray{
+        QJsonObject {
+            { "url", GetLargestImageUrl(playlistJson["images"].toObject()["items"].toArray()[0].toObject()["sources"].toArray()) }
+        }
+    };
 
     // Owner
-    const nlohmann::json& ownerJson = playlistJson["ownerV2"]["data"];
-    ArtistData owner(EPlatform::Spotify);
-    owner.Id = ownerJson["username"];
-    owner.Url = USER_URL + owner.Id;
-    owner.Name = ownerJson["name"];
-
-    playlist.Owner = owner;
+    QJsonObject ownerJson = playlistJson["ownerV2"].toObject()["data"].toObject();
+    QJsonObject owner;
+    owner["id"] = ownerJson["username"].toString();
+    owner["display_name"] = ownerJson["name"].toString();
+    owner["url"] = USER_URL + owner["id"].toString();
+    playlist["owner"] = owner;
 
     // Tracks
-    std::vector<TrackData> tracks = ParseTracks(playlistJson["content"]["items"]);
+    playlist["tracks"] = ParseTracks(playlistJson["content"].toObject()["items"].toArray());
 
-    playlistTracks.Data = playlist;
-    playlistTracks.Tracks = tracks;
-
-    return playlistTracks;
+    return playlist;
 }
 
+/*
 std::string SpotifyAPI::GetLargestImageUrl(const nlohmann::json& json)
 {
     std::string imageUrl = "";
