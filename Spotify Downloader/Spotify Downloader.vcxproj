@@ -29,7 +29,6 @@
     <ClCompile Include="Network\Network.cpp" />
     <ClCompile Include="Network\Notices.cpp" />
     <ClCompile Include="Network\SpotifyAPI.cpp" />
-    <ClCompile Include="Network\SpotifyAPINEW.cpp" />
     <ClCompile Include="Network\SpotifyAuthInterceptor.cpp" />
     <ClCompile Include="Network\SpotifyAuthRetriever.cpp" />
     <ClCompile Include="Network\VersionManager.cpp" />
@@ -65,7 +64,6 @@
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Network\Notices.h" />
     <ClInclude Include="Network\SpotifyAPI.h" />
-    <ClInclude Include="Network\SpotifyAPINEW.h" />
     <ClInclude Include="Network\SpotifyAuth.h" />
     <QtMoc Include="Network\SpotifyAuthInterceptor.h" />
     <ClInclude Include="Network\SpotifyAuthRetriever.h" />

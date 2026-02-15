@@ -80,9 +80,6 @@
     <ClCompile Include="Network\Network.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="Network\SpotifyAPI.cpp">
-      <Filter>Source Files\Network</Filter>
-    </ClCompile>
     <ClCompile Include="Network\YTMusicAPI.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
@@ -167,7 +164,7 @@
     <ClCompile Include="UI\CustomWidgets\NoticeItem.cpp">
       <Filter>Source Files\UI\CustomWidgets</Filter>
     </ClCompile>
-    <ClCompile Include="Network\SpotifyAPINEW.cpp">
+    <ClCompile Include="Network\SpotifyAPI.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
     <ClCompile Include="Network\SpotifyAuthInterceptor.cpp">
@@ -179,9 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\Network.h">
-      <Filter>Header Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="Network\SpotifyAPI.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="Network\YTMusicAPI.h">
@@ -247,7 +241,7 @@
     <ClInclude Include="Network\Notices.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Network\SpotifyAPINEW.h">
+    <ClInclude Include="Network\SpotifyAPI.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="Network\SpotifyAuth.h">

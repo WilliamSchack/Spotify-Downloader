@@ -25,7 +25,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QJsonObject album = QJsonObject();
 
 	_yt = new YTMusicAPI();
-	_sp = new SpotifyAPINew();
+	_sp = new SpotifyAPI();
 
 	// Check connection to servers
 	bool ytConnected = _yt->CheckConnection();

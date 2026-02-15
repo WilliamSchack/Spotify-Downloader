@@ -176,7 +176,7 @@ class PlaylistDownloader : public QObject {
 
         const SpotifyDownloader* Main;
         YTMusicAPI* _yt;
-        SpotifyAPINew* _sp;
+        SpotifyAPI* _sp;
 
         bool _earlyQuit = false;
         bool _quitting = false;

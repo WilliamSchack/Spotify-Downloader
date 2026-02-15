@@ -1,42 +1,64 @@
 #ifndef SPOTIFYAPI_H
 #define SPOTIFYAPI_H
 
-#define QT_MESSAGELOGCONTEXT
-#include "Utilities/Logger.h"
-
+#include "SpotifyAuthRetriever.h"
+#include "Utilities/JSONUtils.h"
 #include "Network/Network.h"
 
-#include <QObject>
-#include <QByteArray>
+#include <chrono>
+#include <thread>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+// Gets spotify metadata through the mobile site
+// Parses the encoded json in the bottom script tag
+class SpotifyAPI
+{
+    public:
+        static bool CheckConnection();
 
-#include <QFuture>
-#include <QtConcurrent/QtConcurrentRun>
+        // Returns all details but disc number
+        static QJsonObject GetTrack(const QString& id);
 
-class SpotifyAPI {
-	public:
-		SpotifyAPI();
+        static QJsonObject GetEpisode(const QString& id);
 
-		static inline QByteArray ClientID;
-		static inline QByteArray ClientSecret;
+        // Tracks return all details
+        static QJsonObject GetAlbum(const QString& id);
 
-		bool CheckConnection();
-		QJsonObject GetPlaylist(QString id);
-		QJsonArray GetPlaylistTracks(QString id);
-		QJsonObject GetAlbum(QString id);
-		QJsonArray GetAlbumTracks(QJsonObject album);
-		QJsonObject GetTrack(QString id);
-		QJsonObject GetEpisode(QString id);
-	private:
-		const QByteArray DEFAULT_CLIENT_ID = "DEFAULT_CLIENT_ID";
-		const QByteArray DEFAULT_CLIENT_SECRET = "DEFAULT_CLIENT_SECRET";
+        // Opens headless browser initially to get auth
+        // Tracks return all details but release date
+        static QJsonObject GetPlaylist(const QString& id);
+    private:
+        static QNetworkRequest GetRequest(const QString& endpoint, const QString& id);
+        static QJsonObject GetPageJson(const QString& endpoint, const QString& id);
 
-		QByteArray _auth;
-	private:
-		QJsonArray GetTracks(QJsonObject json);
+        static void WaitForRateLimit();
+
+        static QJsonObject ParseTrack(QJsonObject json);
+        static QJsonArray ParseTracks(const QJsonArray& json);
+
+        static QJsonObject ParseArtist(const QJsonObject& json);
+        static QJsonArray ParseArtists(const QJsonArray& json);
+        
+        static QJsonObject ParseAlbum(const QJsonObject& json);
+        static QJsonObject ParsePlaylist(const QJsonObject& json);
+
+        static QString GetLargestImageUrl(const QJsonArray& json);
+    private:
+        static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
+        static inline const int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
+        static inline const std::chrono::milliseconds RATE_LIMIT_MS = std::chrono::milliseconds(500);
+
+        static inline const QString BASE_URL = "https://open.spotify.com/";
+        static inline const QString TRACK_URL = BASE_URL + "track/";
+        static inline const QString EPISODE_URL = BASE_URL + "episode/";
+        static inline const QString ARTIST_URL = BASE_URL + "artist/";
+        static inline const QString USER_URL = BASE_URL + "user/";
+        static inline const QString ALBUM_URL = BASE_URL + "album/";
+        static inline const QString PLAYLIST_URL = BASE_URL + "playlist/";
+
+        // TODO: Make this thread safe
+        static inline SpotifyAuth _spotifyAuth;
+        
+        static inline std::chrono::time_point _lastRequestTime = std::chrono::system_clock::now();
 };
 
 #endif

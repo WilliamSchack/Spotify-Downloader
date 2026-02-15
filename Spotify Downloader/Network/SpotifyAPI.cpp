@@ -1,166 +1,363 @@
-#include "SpotifyAPI.h"
+#include "SpotifyAPINEW.h"
 
-SpotifyAPI::SpotifyAPI() {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://accounts.spotify.com/api/token");
-	
-	QByteArray postData;
-	postData.append("grant_type=client_credentials&");
 
-	// Use default api keys if not set
-	postData.append("client_id=" + (ClientID.isEmpty() ? DEFAULT_CLIENT_ID : ClientID) + "&");
-	postData.append("client_secret=" + (ClientSecret.isEmpty() ? DEFAULT_CLIENT_SECRET : ClientSecret));
-	
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+QNetworkRequest SpotifyAPINew::GetRequest(const QString& endpoint, const QString& id)
+{
+    WaitForRateLimit();
 
-	QByteArray response = Network::Post(req, postData);
-	if (response == nullptr) {
-		qWarning() << "Error Authorizing...";
-		return;
-	}
-
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-	_auth = json["access_token"].toString().toLatin1();
+    QString url = BASE_URL + endpoint + "/" + id;
+    
+    QNetworkRequest request = QNetworkRequest(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+	request.setRawHeader("Accept", "*/*");
+	request.setRawHeader("Referer", "https://open.spotify.com");
+	request.setRawHeader("DNT", "1");
+    return request;
 }
 
-bool SpotifyAPI::CheckConnection() {
-	if (_auth.isNull()) return false;
+QJsonObject SpotifyAPINew::GetPageJson(const QString& endpoint, const QString& id)
+{
+    // Get page
+    QNetworkRequest request = GetRequest(endpoint, id);
+    QByteArray response = Network::Get(request);
 
-	QUrl url = QUrl("https://api.spotify.com/v1");
-	return Network::Ping(url);
+    // Get json
+    QRegularExpression regex(R"(<script\sid="initialState.+?>(.+?)<)");
+    QStringList jsonMatches = regex.match(response).capturedTexts();
+
+    if (jsonMatches.size() < 2)
+        return QJsonObject();
+
+    QString jsonString64 = jsonMatches[1];
+    if (jsonString64.isEmpty()) return QJsonObject();
+
+    // Decode json from base64
+    QString jsonString = QByteArray::fromBase64(jsonString64.toUtf8());
+    QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
+
+    return json["entities"].toObject()["items"].toObject().begin().value().toObject();
 }
 
-QJsonObject SpotifyAPI::GetPlaylist(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id);
+void SpotifyAPINew::WaitForRateLimit()
+{
+    std::chrono::time_point currentTime = std::chrono::system_clock::now();
+    std::chrono::milliseconds msSinceLastRequest = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - _lastRequestTime);
+    if (msSinceLastRequest < RATE_LIMIT_MS)
+        std::this_thread::sleep_for(RATE_LIMIT_MS - msSinceLastRequest);
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	return json;
+    _lastRequestTime = std::chrono::system_clock::now();
 }
 
-QJsonArray SpotifyAPI::GetPlaylistTracks(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/playlists/" + id + "/tracks");
-
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	return GetTracks(json);
+bool SpotifyAPINew::CheckConnection()
+{
+    return Network::Ping(BASE_URL);
 }
 
-QJsonObject SpotifyAPI::GetAlbum(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/albums/" + id);
+QJsonObject SpotifyAPINew::GetTrack(const QString& id)
+{
+    QJsonObject json = GetPageJson("track", id);
+    if (json.empty()) return QJsonObject();
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	return json;
+    return ParseTrack(json);
 }
 
-QJsonArray SpotifyAPI::GetAlbumTracks(QJsonObject album) {
-	return GetTracks(album["tracks"].toObject());
+QJsonObject SpotifyAPINew::GetEpisode(const QString& id)
+{
+    QJsonObject json = GetPageJson("episode", id);
+    if (json.empty()) return QJsonObject();
+
+    return ParseTrack(json);
 }
 
-QJsonObject SpotifyAPI::GetTrack(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/tracks/" + id);
+QJsonObject SpotifyAPINew::GetAlbum(const QString& id)
+{
+    QJsonObject json = GetPageJson("album", id);
+    if (json.empty()) return QJsonObject();
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
-
-	QByteArray response = Network::Get(req);
-	if (response == nullptr) {
-		"Error Getting Track...";
-		return QJsonObject();
-	}
-
-	return QJsonDocument::fromJson(response).object();
+    return ParseAlbum(json);
 }
 
-QJsonObject SpotifyAPI::GetEpisode(QString id) {
-	QNetworkAccessManager* manager = new QNetworkAccessManager();
-	QUrl url = QUrl("https://api.spotify.com/v1/episodes/" + id);
+QJsonObject SpotifyAPINew::GetPlaylist(const QString& id)
+{
+    if (_spotifyAuth.Authorization.isEmpty())
+    _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).url());
+    
+    if (_spotifyAuth.Authorization.isEmpty()) {
+        // Could not get auth, return first 30 tracks
+        std::cout << "Failed to get spotify auth. Getting the first 30 playlist tracks..." << std::endl;
+        
+        QJsonObject json = GetPageJson("playlist", id);
+        if (json.empty()) return QJsonObject();
+        
+        return ParsePlaylist(json);
+    }
 
-	QNetworkRequest req(url);
-	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-	req.setRawHeader("Authorization", "Bearer " + _auth);
+    // Get playlist tracks in blocks of 100 until we get all the tracks
+    QJsonObject json;
+    QJsonArray tracksJson;
 
-	QByteArray response = Network::Get(req);
-	if (response == nullptr) {
-		"Error Getting Track...";
-		return QJsonObject();
-	}
+    unsigned int totalTracks = 1;
+    int retrievedTracks = 0;
 
-	return QJsonDocument::fromJson(response).object();
+    while (retrievedTracks < totalTracks) {
+        WaitForRateLimit();
+
+        QNetworkRequest request = QNetworkRequest(QString("https://api-partner.spotify.com/pathfinder/v2/query"));
+        request.setRawHeader("User-Agent", USER_AGENT);
+        request.setRawHeader("Authorization", _spotifyAuth.Authorization);
+        request.setRawHeader("Client-Token", _spotifyAuth.ClientToken);
+        request.setRawHeader("Content-Type", "application/json");
+
+        QJsonObject postJson {
+            {"variables", QJsonObject {
+                {"uri", "spotify:playlist:" + id},
+                {"limit", PLAYLIST_REQUEST_TRACK_LIMIT},
+                {"offset", retrievedTracks}
+            }},
+            {"operationName", "queryPlaylist"},
+            {"extensions", QJsonObject {
+                {"persistedQuery", QJsonObject {
+                    {"version", 1},
+                    {"sha256Hash", _spotifyAuth.PlaylistQueryHash}
+                }}
+            }}
+        };
+
+        QByteArray postData = QJsonDocument(postJson).toJson(QJsonDocument::Compact);
+        QByteArray response = Network::Post(request, postData);
+        if (response.isEmpty()) break;
+
+        QJsonObject currentJson = QJsonDocument::fromJson(response).object();
+
+        if (tracksJson.empty()) {
+            json = currentJson;
+
+            QJsonObject playlistJson = json["data"].toObject()["playlistV2"].toObject()["content"].toObject();
+            tracksJson = playlistJson["items"].toArray();
+            totalTracks = playlistJson["totalCount"].toInt();
+            retrievedTracks = tracksJson.size();
+
+            continue;
+        }
+        
+        // Add new tracks to json
+        tracksJson = JSONUtils::Extend(tracksJson, currentJson["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray());
+        retrievedTracks = tracksJson.size();
+    }
+
+    // Merge tracks into main json
+    QJsonObject data = json["data"].toObject();
+    QJsonObject playlistV2 = data["playlistV2"].toObject();
+    QJsonObject content = playlistV2["content"].toObject();
+    
+    content["items"] = tracksJson;
+    playlistV2["content"] = content;
+    data["playlistV2"] = playlistV2;
+    json["data"] = data;
+
+    // Incase of any error in the loop
+    if (json.empty()) return QJsonObject();
+
+    return ParsePlaylist(json);
 }
 
-QJsonArray SpotifyAPI::GetTracks(QJsonObject json) {
-	QJsonArray tracks = json["items"].toArray();
-	
-	// Continue to get tracks if more than 100 are requested
-	if (json["next"].toString() != "") {
-		QNetworkRequest req(QUrl(""));
-		req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-		req.setRawHeader("Authorization", "Bearer " + _auth);
+QJsonObject SpotifyAPINew::ParseTrack(QJsonObject json)
+{
+    if (json.contains("track"))       json = json["track"].toObject();
+    else if (json.contains("itemV2")) json = json["itemV2"].toObject()["data"].toObject();
 
-		// Get tracks in chunks of 100
-		bool finished = false;
-		while (!finished) {
-			if (json["next"].toString() == "") {
-				finished = true;
-				break;
-			}
+    bool isEpisode = json.contains("showOrAudiobook");
 
-			req.setUrl(json["next"].toString());
+    QJsonObject track;
+    track["id"] = json["uri"].toString().split(":").last();
+    track["name"] = json["name"];
+    track["explicit"] = json["contentRating"].toObject()["label"].toString() == "EXPLICIT";
+    track["disc_number"] = json["discNumber"].toInt(0);
+    track["track_number"] = json["trackNumber"].toInt(0);
+    track["duration_ms"] = json["duration"].toObject()["totalMilliseconds"].toInt();
 
-			QByteArray response = Network::Get(req);
-			if (response == nullptr) {
-				qWarning() << "Error Getting Tracks...";
-				return QJsonArray();
-			}
+    // Artists
+    if (json.contains("firstArtist")) {
+        QJsonArray artistsJson = json["firstArtist"].toObject()["items"].toArray();
+        JSONUtils::Extend(artistsJson, json["otherArtists"].toObject()["items"].toArray());
+        track["artists"] = ParseArtists(artistsJson);
+    } else {
+        track["artists"] = ParseArtists(json["artists"].toObject()["items"].toArray());
+    }
 
-			json = QJsonDocument::fromJson(response).object();
-			QJsonArray items = json["items"].toArray();
+    // Album
+    QJsonObject albumJson;
+    if      (json.contains("albumOfTrack")) albumJson = json["albumOfTrack"].toObject();
+    else if (isEpisode)                     albumJson = json["showOrAudiobook"].toObject()["data"].toObject();
+    if (!albumJson.empty()) {
+        QJsonObject album = ParseAlbum(albumJson);
+        
+        if (album["artists"].toArray().size() > 0 && track["artists"].toArray().size() > 0)
+            album["artists"] = QJsonArray{ track["artists"].toArray()[0] };
+        
+        track["album"] = album;
 
-			foreach(QJsonValue item, items) {
-				tracks.append(item);
-			}
+        if (isEpisode)
+            track["artists"] = album["artists"].toArray();
 
-			if (json["next"].toString() == "") finished = true;
-		}
-	}
+        track["release_date"] = album["release_date"];
+        track["release_year"] = album["release_year"];
+    }
 
-	// Add playlist track number, the one included is the position in the album
-	// Tracks will be positioned at its count in the spotify playlist, use index for track number
-	for (int i = 0; i < tracks.count(); i++) {
-		// Get track
-		QJsonObject track = tracks[i].toObject();
-		QJsonObject trackData = track["track"].toObject();
+    // Release date
+    if (json.contains("releaseDate")) {
+        QJsonObject dateJson = json["releaseDate"].toObject();
 
-		// Add playlist track number
-		trackData["playlist_track_number"] = i + 1;
+        track["release_year"] = dateJson["year"].toString();
+        track["release_date"] = track["release_year"].toString();
+        if (dateJson.contains("month")) track["release_date"] = track["release_date"].toString() + "-" + dateJson["month"].toString();
+        if (dateJson.contains("day"))   track["release_date"] = track["release_date"].toString() + "-" + dateJson["day"].toString();
 
-		// Add data to original track
-		track["track"] = trackData;
-		tracks[i] = track;
-	}
+        QJsonObject album = track["album"].toObject();
+        if (album["release_date"] == "") {
+            album["release_date"] = track["release_date"].toString();
+            album["release_year"] = track["release_date"].toString().split("-")[0];
+            track["album"] = album;
+        }
+    }
 
-	return tracks;
+    return track;
+}
+
+QJsonArray SpotifyAPINew::ParseTracks(const QJsonArray& json)
+{
+    QJsonArray tracks;
+    for (QJsonValue trackJsonVal : json) {
+        tracks.push_back(ParseTrack(trackJsonVal.toObject()));
+    }
+
+    return tracks;
+}
+
+QJsonObject SpotifyAPINew::ParseArtist(const QJsonObject& json)
+{
+    QJsonObject artist;
+    artist["id"] = json["uri"].toString().split(":").last();
+    artist["name"] = json["profile"].toObject()["name"].toString();
+    artist["url"] = ARTIST_URL + artist["id"].toString();
+    artist["uri"] = json["uri"].toString();
+
+    return artist;
+}
+
+QJsonArray SpotifyAPINew::ParseArtists(const QJsonArray& json)
+{
+    QJsonArray artists;
+    for (QJsonValue trackJsonVal : json) {
+        artists.push_back(ParseArtist(trackJsonVal.toObject()));
+    }
+
+    return artists;
+}
+
+QJsonObject SpotifyAPINew::ParseAlbum(const QJsonObject& json)
+{
+    QJsonObject album;
+    album["id"] = json["uri"].toString().split(":").last();
+    album["url"] = ALBUM_URL + album["id"].toString();
+    album["name"] = json["name"].toString();
+
+    // Cover Art
+    album["images"] = QJsonArray{
+        QJsonObject {
+            { "url", GetLargestImageUrl(json["coverArt"].toObject()["sources"].toArray()) }
+        }
+    };
+
+    // Release Date
+    if (json.contains("date")) {
+        QJsonObject dateJson = json["date"].toObject();
+        album["release_year"] = dateJson["year"].toString();
+        album["release_date"] = album["release_year"].toString();
+        if (dateJson.contains("month")) album["release_date"] = album["release_date"].toString() + "-" + dateJson["month"].toString();
+        if (dateJson.contains("day"))   album["release_date"] = album["release_date"].toString() + "-" + dateJson["day"].toString();
+    }
+
+    // Main Artist
+    if (json.contains("artists")) {
+        album["artists"] = ParseArtists(json["artists"].toObject()["items"].toArray());
+    } else if (json.contains("publisher")) {
+        album["artists"] = QJsonArray{
+            QJsonObject {
+                { "name", json["publusher"].toObject()["name"].toString() }
+            }
+        };
+    }
+
+    // Tracks
+    QJsonObject tracksJson;
+    if      (json.contains("tracks"))   tracksJson = json["tracks"].toObject();
+    else if (json.contains("tracksV2")) tracksJson = json["tracksV2"].toObject();
+    if (!tracksJson.empty()) {
+        QJsonArray tracksJsonArray = tracksJson["items"].toArray();
+        album["total_tracks"] = tracksJsonArray.size();
+        QJsonArray parsedTracks = ParseTracks(tracksJsonArray);
+
+        // Add release date
+        for (int i = 0; i < parsedTracks.size(); i++) {
+            QJsonObject track = parsedTracks[i].toObject();
+            if (track["release_date"].toString().isEmpty()) {
+                track["release_date"] = album["release_date"];
+                track["release_year"] = album["release_year"];
+                parsedTracks[i] = track;
+            }
+        }
+
+        album["tracks"] = parsedTracks;
+    }
+
+    return album;
+}
+
+QJsonObject SpotifyAPINew::ParsePlaylist(const QJsonObject& json)
+{
+    QJsonObject playlistJson = json;
+    if (json.contains("data")) playlistJson = json["data"].toObject()["playlistV2"].toObject();
+
+    QJsonObject playlist;
+    playlist["id"] = playlistJson["id"].toString();
+    playlist["name"] = playlistJson["name"].toString();
+    
+    // Image
+    playlist["images"] = QJsonArray {
+        QJsonObject {
+            { "url", GetLargestImageUrl(playlistJson["images"].toObject()["items"].toArray()[0].toObject()["sources"].toArray()) }
+        }
+    };
+
+    // Owner
+    QJsonObject ownerJson = playlistJson["ownerV2"].toObject()["data"].toObject();
+    QJsonObject owner;
+    owner["id"] = ownerJson["username"].toString();
+    owner["display_name"] = ownerJson["name"].toString();
+    owner["url"] = USER_URL + owner["id"].toString();
+    playlist["owner"] = owner;
+
+    // Tracks
+    playlist["tracks"] = ParseTracks(playlistJson["content"].toObject()["items"].toArray());
+
+    return playlist;
+}
+
+QString SpotifyAPINew::GetLargestImageUrl(const QJsonArray& json)
+{
+    QString imageUrl = "";
+    unsigned int highestResolution = 0;
+    for (QJsonValue coverArtDetailsVal : json) {
+        QJsonObject coverArtDetails = coverArtDetailsVal.toObject();
+
+        int resolution = coverArtDetails["width"].toInt();
+        if (resolution < highestResolution)
+            continue;
+        
+        highestResolution = resolution;
+        imageUrl = coverArtDetails["url"].toString();
+    }
+
+    return imageUrl;
 }
