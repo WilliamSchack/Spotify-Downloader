@@ -21,9 +21,13 @@ QJsonObject SpotifyAPINew::GetPageJson(const QString& endpoint, const QString& i
     QNetworkRequest request = GetRequest(endpoint, id);
     QByteArray response = Network::Get(request);
 
+    qDebug() << response;
+
     // Get json
     QRegularExpression regex(R"(<script\sid="initialState.+?>(.+?)<)");
     QStringList jsonMatches = regex.match(response).capturedTexts();
+
+    qDebug() << jsonMatches;
 
     if (jsonMatches.size() < 2)
         return QJsonObject();
@@ -31,11 +35,15 @@ QJsonObject SpotifyAPINew::GetPageJson(const QString& endpoint, const QString& i
     QString jsonString64 = jsonMatches[1];
     if (jsonString64.isEmpty()) return QJsonObject();
 
+    qDebug() << jsonString64;
+
     // Decode json from base64
     QString jsonString = QByteArray::fromBase64(jsonString64.toUtf8());
     QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
 
-    return json["entities"].toObject()["items"].toArray().first().toObject();
+    qDebug() << json;
+
+    return json["entities"].toObject()["items"].toObject().begin().value().toObject();
 }
 
 void SpotifyAPINew::WaitForRateLimit()
@@ -56,6 +64,7 @@ bool SpotifyAPINew::CheckConnection()
 QJsonObject SpotifyAPINew::GetTrack(const QString& id)
 {
     QJsonObject json = GetPageJson("track", id);
+    qDebug() << json;
     if (json.empty()) return QJsonObject();
 
     return ParseTrack(json);
@@ -170,7 +179,7 @@ QJsonObject SpotifyAPINew::ParseTrack(QJsonObject json)
     bool isEpisode = json.contains("showOrAudiobook");
 
     QJsonObject track;
-    track["id"] = json["url"].toString().split(":").last();
+    track["id"] = json["uri"].toString().split(":").last();
     track["name"] = json["name"];
     track["explicit"] = json["contentRating"].toObject()["label"].toString() == "EXPLICIT";
     track["disc_number"] = json["discNumber"].toInt(0);
@@ -221,6 +230,8 @@ QJsonObject SpotifyAPINew::ParseTrack(QJsonObject json)
             track["album"] = album;
         }
     }
+
+    qDebug() << track;
 
     return track;
 }
@@ -317,14 +328,15 @@ QJsonObject SpotifyAPINew::ParseAlbum(const QJsonObject& json)
 
 QJsonObject SpotifyAPINew::ParsePlaylist(const QJsonObject& json)
 {
-    QJsonObject playlistJson = json["data"].toObject()["playlistV2"].toObject();
+    QJsonObject playlistJson = json;
+    if (json.contains("data")) playlistJson = json["data"].toObject()["playlistV2"].toObject();
 
     QJsonObject playlist;
     playlist["id"] = playlistJson["id"].toString();
     playlist["name"] = playlistJson["name"].toString();
     
     // Image
-    playlist["images"] = QJsonArray{
+    playlist["images"] = QJsonArray {
         QJsonObject {
             { "url", GetLargestImageUrl(playlistJson["images"].toObject()["items"].toArray()[0].toObject()["sources"].toArray()) }
         }

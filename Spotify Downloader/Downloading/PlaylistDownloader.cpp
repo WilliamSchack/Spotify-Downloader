@@ -25,7 +25,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QJsonObject album = QJsonObject();
 
 	_yt = new YTMusicAPI();
-	_sp = new SpotifyAPI();
+	_sp = new SpotifyAPINew();
 
 	// Check connection to servers
 	bool ytConnected = _yt->CheckConnection();
@@ -55,14 +55,17 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	if (url.contains("playlist")) {
 		// Get Playlist Details
 		QJsonObject playlist = _sp->GetPlaylist(spotifyId);
+
 		_playlistName = playlist["name"].toString();
 		_playlistOwner = playlist["owner"].toObject()["display_name"].toString();
 
 		// Get Tracks
-		searchTracks = _sp->GetPlaylistTracks(spotifyId);
+		searchTracks = playlist["tracks"].toArray();
 	}  else if (url.contains("album")) {
 		// Get Album Details
 		album = _sp->GetAlbum(spotifyId);
+		qDebug() << album;
+
 		_playlistName = album["name"].toString();
 		
 		// Get all artists in the album for _playlistOwner
@@ -70,15 +73,18 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		foreach(QJsonValue artist, album["artists"].toArray()) {
 			artists.append(artist["name"].toString());
 		}
+
 		_playlistOwner = artists.join(Config::ArtistSeparator);
 
 		// Get Tracks
-		searchTracks = _sp->GetAlbumTracks(album);
+		searchTracks = album["tracks"].toArray();
 	}
 	else if (url.contains("episode"))
 		searchTracks = QJsonArray{ _sp->GetEpisode(spotifyId) };
 	else // Track
 		searchTracks = QJsonArray{ _sp->GetTrack(spotifyId) };
+
+	qDebug() << searchTracks;
 
 	// Check if spotify returned anything
 	if (searchTracks.isEmpty()) {
@@ -111,7 +117,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QMap<QString, QString> trackFileNames;
 	for (QJsonValue trackVal : searchTracks) {
 		QJsonObject track = trackVal.toObject();
-		if (url.contains("playlist")) track = track["track"].toObject();
 
 		// Check if track exists on spotify
 		if (track["id"] == QJsonValue::Null) {
@@ -132,7 +137,6 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 	QJsonArray tracks = QJsonArray();
 	foreach(QJsonValue trackVal, searchTracks) {
 		QJsonObject track = trackVal.toObject();
-		if (url.contains("playlist")) track = track["track"].toObject();
 
 		// Check if track exists on spotify
 		if (track["id"] == QJsonValue::Null) {
