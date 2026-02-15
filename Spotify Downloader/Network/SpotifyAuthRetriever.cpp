@@ -1,6 +1,6 @@
 #include "SpotifyAuthRetriever.h"
 
-SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
+SpotifyAuth SpotifyAuthRetriever::GetAuth(const QUrl& url)
 {
     QWebEngineProfile* webProfile = new QWebEngineProfile();
     webProfile->setHttpUserAgent(USER_AGENT);
@@ -9,7 +9,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
     webProfile->setUrlRequestInterceptor(interceptor);
 
     QWebEnginePage* webPage = new QWebEnginePage(webProfile);
-    webPage->load(QUrl(QString::fromStdString(url)));
+    webPage->load(url);
 
     // Wait for authorisation
     QEventLoop loop;

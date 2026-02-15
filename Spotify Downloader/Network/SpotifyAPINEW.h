@@ -2,7 +2,8 @@
 #define SPOTIFYAPI_H
 
 #include "SpotifyAuthRetriever.h"
-#include "Network.h"
+#include "Utilities/JSONUtils.h"
+#include "Network/Network.h"
 
 #include <chrono>
 #include <thread>
@@ -13,16 +14,16 @@ class SpotifyAPI
 {
     public:
         // Returns all details but disc number
-        static TrackData GetTrack(const std::string& id);
+        static QJsonObject GetTrack(const QString& id);
 
-        static TrackData GetEpisode(const std::string& id);
+        static QJsonObject GetEpisode(const QString& id);
 
         // Tracks return all details
-        static AlbumTracks GetAlbum(const std::string& id);
+        static QJsonObject GetAlbum(const QString& id);
 
         // Opens headless browser initially to get auth
         // Tracks return all details but release date
-        static PlaylistTracks GetPlaylist(const std::string& id);
+        static QJsonObject GetPlaylist(const QString& id);
     private:
         static QNetworkRequest GetRequest(const QString& endpoint, const QString& id);
         static QJsonObject GetPageJson(const QString& endpoint, const QString& id);
@@ -41,7 +42,7 @@ class SpotifyAPI
         static std::string GetLargestImageUrl(const nlohmann::json& json);
     private:
         static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
-        static inline const unsigned int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
+        static inline const int PLAYLIST_REQUEST_TRACK_LIMIT = 100; 
         static inline const std::chrono::milliseconds RATE_LIMIT_MS = std::chrono::milliseconds(500);
 
         static inline const QString BASE_URL = "https://open.spotify.com/";

@@ -1,5 +1,6 @@
 #include "SpotifyAPINEW.h"
 
+
 QNetworkRequest SpotifyAPI::GetRequest(const QString& endpoint, const QString& id)
 {
     WaitForRateLimit();
@@ -14,7 +15,7 @@ QNetworkRequest SpotifyAPI::GetRequest(const QString& endpoint, const QString& i
     return request;
 }
 
-QJsonObject SpotifyAPI::GetPageJson(const QString& endpoint, QString& id)
+QJsonObject SpotifyAPI::GetPageJson(const QString& endpoint, const QString& id)
 {
     // Get page
     QNetworkRequest request = GetRequest(endpoint, id);
@@ -47,96 +48,116 @@ void SpotifyAPI::WaitForRateLimit()
     _lastRequestTime = std::chrono::system_clock::now();
 }
 
-TrackData SpotifyAPI::GetTrack(const std::string& id)
+QJsonObject SpotifyAPI::GetTrack(const QString& id)
 {
-    nlohmann::json json = GetPageJson("track", id);
-    if (json.empty()) return TrackData(EPlatform::Unknown);
+    QJsonObject json = GetPageJson("track", id);
+    if (json.empty()) return QJsonObject();
 
     return ParseTrack(json);
 }
 
-TrackData SpotifyAPI::GetEpisode(const std::string& id)
+QJsonObject SpotifyAPI::GetEpisode(const QString& id)
 {
-    nlohmann::json json = GetPageJson("episode", id);
-    if (json.empty()) return TrackData(EPlatform::Unknown);
+    QJsonObject json = GetPageJson("episode", id);
+    if (json.empty()) return QJsonObject();
 
     return ParseTrack(json);
 }
 
-AlbumTracks SpotifyAPI::GetAlbum(const std::string& id)
+QJsonObject SpotifyAPI::GetAlbum(const QString& id)
 {
-    nlohmann::json json = GetPageJson("album", id);
-    if (json.empty()) return AlbumTracks();
+    QJsonObject json = GetPageJson("album", id);
+    if (json.empty()) return QJsonObject();
 
     return ParseAlbum(json);
 }
 
-PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
+QJsonObject SpotifyAPI::GetPlaylist(const QString& id)
 {
-    if (_spotifyAuth.Authorization.empty())
-    _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).Url);
+    if (_spotifyAuth.Authorization.isEmpty())
+    _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).url());
     
-    if (_spotifyAuth.Authorization.empty()) {
+    if (_spotifyAuth.Authorization.isEmpty()) {
         // Could not get auth, return first 30 tracks
         std::cout << "Failed to get spotify auth. Getting the first 30 playlist tracks..." << std::endl;
         
-        nlohmann::json json = GetPageJson("playlist", id);
-        if (json.empty()) return PlaylistTracks();
+        QJsonObject json = GetPageJson("playlist", id);
+        if (json.empty()) return QJsonObject();
         
         return ParsePlaylist(json);
     }
 
     // Get playlist tracks in blocks of 100 until we get all the tracks
-    nlohmann::json json;
+    QJsonObject json;
+    QJsonArray tracksJson;
+
     unsigned int totalTracks = 1;
-    unsigned int retrievedTracks = 0;
+    int retrievedTracks = 0;
 
     while (retrievedTracks < totalTracks) {
         WaitForRateLimit();
 
-        NetworkRequest request;
-        request.Url = "https://api-partner.spotify.com/pathfinder/v2/query";
-        request.SetHeader("User-Agent", USER_AGENT);
-        request.SetHeader("Authorization", _spotifyAuth.Authorization);
-        request.SetHeader("Client-Token", _spotifyAuth.ClientToken);
+        QNetworkRequest request = QNetworkRequest(QString("https://api-partner.spotify.com/pathfinder/v2/query"));
+        request.setRawHeader("User-Agent", USER_AGENT);
+        request.setRawHeader("Authorization", _spotifyAuth.Authorization);
+        request.setRawHeader("Client-Token", _spotifyAuth.ClientToken);
 
-        nlohmann::json postData {
-            {"variables", {
+        QJsonObject postJson {
+            {"variables", QJsonObject {
                 {"uri", "spotify:playlist:" + id},
                 {"limit", PLAYLIST_REQUEST_TRACK_LIMIT},
                 {"offset", retrievedTracks}
             }},
             {"operationName", "queryPlaylist"},
-            {"extensions", {
-                {"persistedQuery", {
+            {"extensions", QJsonObject {
+                {"persistedQuery", QJsonObject {
                     {"version", 1},
                     {"sha256Hash", _spotifyAuth.PlaylistQueryHash}
                 }}
             }}
         };
 
-        NetworkResponse response = request.Post(postData);
-        if (response.Body.empty()) break;
+        QByteArray postData = QJsonDocument(postJson).toJson();
+        QByteArray response = Network::Post(request, postData);
+        if (response.isEmpty()) break;
 
-        nlohmann::json currentJson = nlohmann::json::parse(response.Body);
+        QJsonObject currentJson = QJsonDocument::fromJson(response).object();
 
-        if (json.empty()) {
+        if (tracksJson.empty()) {
             json = currentJson;
-            totalTracks = json["data"]["playlistV2"]["content"]["totalCount"];
+            tracksJson = json["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray();
+            totalTracks = tracksJson.size();
             continue;
         }
         
         // Add new tracks to json
-        JsonUtils::ExtendArray(json["data"]["playlistV2"]["content"]["items"], currentJson["data"]["playlistV2"]["content"]["items"]);
-        retrievedTracks = json["data"]["playlistV2"]["content"]["items"].size();
+        JSONUtils::Extend(tracksJson, currentJson["data"].toObject()["playlistV2"].toObject()["content"].toObject()["items"].toArray());
+        retrievedTracks = tracksJson.size();
     }
 
+    // Merge tracks into main json
+    QJsonObject jsonToMerge = {
+        { "data", QJsonObject {
+            { "playlistV2", QJsonObject {
+                { "content", QJsonObject {
+                    { "items", tracksJson }
+                }}
+            }}
+        }}
+    };
+
+    JSONUtils::Merge(json, jsonToMerge);
+
+
+    qDebug() << json;
+
     // Incase of any error in the loop
-    if (json.empty()) return PlaylistTracks();
+    if (json.empty()) return QJsonObject();
 
     return ParsePlaylist(json);
 }
 
+/*
 TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
 {
     if (json.contains("track"))       json = json["track"];
@@ -339,3 +360,4 @@ std::string SpotifyAPI::GetLargestImageUrl(const nlohmann::json& json)
 
     return imageUrl;
 }
+*/

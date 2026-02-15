@@ -15,7 +15,7 @@
 class SpotifyAuthRetriever
 {
     public:
-        static SpotifyAuth GetAuth(const std::string& url);
+        static SpotifyAuth GetAuth(const QUrl& url);
     private:
         static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
         static inline const QString PLAYLIST_QUERY_REGEX = "\"queryPlaylist\",\"query\",\"(.*?)\"";

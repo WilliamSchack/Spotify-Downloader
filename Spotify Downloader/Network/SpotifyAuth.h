@@ -1,13 +1,13 @@
 #ifndef SPOTIFYAUTH_H
 #define SPOTIFYAUTH_H
 
-#include <string>
+#include <QByteArray>
 
 struct SpotifyAuth
 {
-    std::string Authorization = "";
-    std::string ClientToken = "";
-    std::string PlaylistQueryHash = "";
+    QByteArray Authorization = "";
+    QByteArray ClientToken = "";
+    QString PlaylistQueryHash = "";
 };
 
 #endif
