@@ -18,6 +18,7 @@
 
 #include "Network/YTMusicAPI.h"
 #include "Network/SpotifyAPI.h"
+#include "Network/SpotifyAPINEW.h"
 #include "Network/VersionManager.h"
 
 #include "Downloading/Codec.h"
@@ -175,7 +176,7 @@ class PlaylistDownloader : public QObject {
 
         const SpotifyDownloader* Main;
         YTMusicAPI* _yt;
-        SpotifyAPI* _sp;
+        SpotifyAPINew* _sp;
 
         bool _earlyQuit = false;
         bool _quitting = false;

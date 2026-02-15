@@ -10,7 +10,7 @@
 
 // Gets spotify metadata through the mobile site
 // Parses the encoded json in the bottom script tag
-class SpotifyAPI
+class SpotifyAPINew
 {
     public:
         // Returns all details but disc number
