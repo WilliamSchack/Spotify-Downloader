@@ -135,7 +135,7 @@ void MetadataManager::SetCopyright(const std::string& value)
 
     switch (_codec->GetMetadataType()) {
         case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("ICOP");
+            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
             frame->setText(taglibString);
 
             dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
