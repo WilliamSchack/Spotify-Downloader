@@ -322,3 +322,9 @@ void MetadataManager::SetCoverImage(const Image& image)
 
     _fileRef.save();
 }
+
+void MetadataManager::Close()
+{
+    // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
+    _fileRef = TagLib::FileRef();
+}

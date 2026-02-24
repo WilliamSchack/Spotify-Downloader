@@ -45,6 +45,8 @@ class MetadataManager
         void SetDiscNumber  (const unsigned int& value);
         void SetLyrics      (const std::string& value);
         void SetCoverImage  (const Image& image);
+
+        void Close();
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;
