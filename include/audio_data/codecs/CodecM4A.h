@@ -14,6 +14,7 @@ class CodecM4A : public ICodec
         std::string    GetFfmpegConversionParams() const override { return "-acodec aac"; };
         BitrateDetails GetBitrateDetails()         const override { return BitrateDetails(); }; // Default values
         
+        bool SetCoverArt(const TagLib::FileRef& fileRef, const TagLib::ByteVector& imageBytes) const override { return false; }
         TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
             return dynamic_cast<TagLib::MP4::File*>(fileRef.file())->tag();
         }

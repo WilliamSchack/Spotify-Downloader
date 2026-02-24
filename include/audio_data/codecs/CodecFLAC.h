@@ -21,6 +21,17 @@ class CodecFLAC : public ICodec
             };
         }
 
+        bool SetCoverArt(const TagLib::FileRef& fileRef, const TagLib::ByteVector& imageBytes) const override {
+            TagLib::FLAC::File* flacFile = dynamic_cast<TagLib::FLAC::File*>(fileRef.file());
+			TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
+			coverArt->setData(imageBytes);
+			coverArt->setMimeType("image/png");
+			coverArt->setType(TagLib::FLAC::Picture::Type::FrontCover);
+			flacFile->addPicture(coverArt);
+
+            return true;
+        }
+
         TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
             return dynamic_cast<TagLib::FLAC::File*>(fileRef.file())->xiphComment(true);
         }

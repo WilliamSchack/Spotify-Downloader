@@ -10,9 +10,15 @@ struct Image
     int Channels = 0;
     unsigned char* Data;
 
+    size_t GetDataSize() const
+    {
+        return Width * Height * Channels;
+    }
+
     Image() : Data{} {}
 
-    ~Image() {
+    ~Image()
+    {
         if (Data) stbi_image_free(Data);
     }
 

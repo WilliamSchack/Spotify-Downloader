@@ -20,6 +20,7 @@ class CodecWEBM : public ICodec
             };
         }
 
+        bool SetCoverArt(const TagLib::FileRef& fileRef, const TagLib::ByteVector& imageBytes) const override { return false; }
         TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override { return nullptr; }
 };
 
