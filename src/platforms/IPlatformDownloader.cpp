@@ -115,7 +115,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     std::string publisherText = "Downloaded through Spotify Downloader by William S";
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
-    copyrightText += "Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
+    copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
     // copyrightText += lyrics source
     std::string commentText = "Thanks for using my program! :) - William S";
 
@@ -142,9 +142,18 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (!std::filesystem::is_directory(targetFolder))
         std::filesystem::create_directory(targetFolder);
 
-    std::filesystem::rename(tempDownloadPath, targetDownloadPath);
+    try {
+        std::filesystem::rename(tempDownloadPath, targetDownloadPath);
+    } catch (...) {
+        // If rename fails, assume it is between drives, in that case copy
+        bool copied = std::filesystem::copy_file(tempDownloadPath, targetDownloadPath);
+        std::filesystem::remove(tempDownloadPath);
 
-    return false;
+        // Move error
+        if (!copied) return false;
+    }
+
+    return true;
 }
 
 bool IPlatformDownloader::DownloadPlaylist(const std::string& url, const std::string& directory)
