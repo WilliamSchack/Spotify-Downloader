@@ -8,7 +8,7 @@
 class PlatformUtils
 {
     public:
-        std::string GetPlatformString(EPlatform platform);
+        static std::string GetPlatformString(EPlatform platform);
 }
 
 #endif

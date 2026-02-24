@@ -112,9 +112,37 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     // Get lyrics
 
     // Assign metadata
-    
+    std::string publisherText = "Downloaded through Spotify Downloader by William S";
+    std::string copyrightText = "";
+    copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
+    copyrightText += "Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
+    // copyrightText += lyrics source
+    std::string commentText = "Thanks for using my program! :) - William S";
+
+    MetadataManager metadata(tempDownloadPath);
+    metadata.SetTitle(track.Name);
+    metadata.SetArtists(track.Artists);
+    metadata.SetAlbumName(track.Album.Name);
+    metadata.SetAlbumArtists(track.Album.Artists);
+    metadata.SetPublisher(publisherText);
+    metadata.SetCopyright(copyrightText);
+    metadata.SetComment(commentText);
+    metadata.SetReleaseDate(track.ReleaseDate);
+    metadata.SetTrackNumber(track.TrackNumber);
+    metadata.SetDiscNumber(track.DiscNumber);
+    //metadata.SetLyrics();
 
     // Check for errors
+
+
+    // Move to target path
+    if (Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
+        std::filesystem::remove(targetDownloadPath);
+    
+    if (!std::filesystem::is_directory(targetFolder))
+        std::filesystem::create_directory(targetFolder);
+
+    std::filesystem::rename(tempDownloadPath, targetDownloadPath);
 
     return false;
 }
