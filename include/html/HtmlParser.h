@@ -28,6 +28,12 @@ class HtmlParser
 
         lxb_status_t GetStatus();
     private:
+        // Assumes the parser object is passed to ctx
+        static lxb_status_t FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx);
+
+        bool CreateSelectors();
+        void CleanupSelectors();
+    private:
         static inline const int SELECT_TIMEOUT_MS = 1000;
 
         lxb_html_document* _document;
@@ -38,12 +44,6 @@ class HtmlParser
         lxb_status_t _lastStatus;
 
         std::vector<HtmlNode> _lastNodes;
-    private:
-        // Assumes the parser object is passed to ctx
-        static lxb_status_t FindCallback(lxb_dom_node_t* node, lxb_css_selector_specificity_t spec, void *ctx);
-
-        bool CreateSelectors();
-        void CleanupSelectors();
 };
 
 #endif

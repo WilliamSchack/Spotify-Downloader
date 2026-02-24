@@ -18,10 +18,10 @@ class Process
 
         std::string Execute(std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
+        std::string GetCommand();
+    private:
         std::filesystem::path _path;
         std::vector<std::string> _args;
-    private:
-        std::string GetCommand();
 };
 
 #endif

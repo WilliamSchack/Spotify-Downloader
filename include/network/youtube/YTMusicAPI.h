@@ -37,17 +37,6 @@ class YTMusicAPI {
 
 		//bool IsAgeRestricted(QString videoId);
 	private:
-		static inline const std::string YOUTUBE_URL = "https://music.youtube.com";
-        static inline const std::string API_BASE_URL = YOUTUBE_URL + "/youtubei/v1";
-		static inline const std::string VIDEO_BASE_URL = YOUTUBE_URL + "/watch?v=";
-		static inline const std::string CHANNEL_BASE_URL = YOUTUBE_URL + "/channel/";
-		static inline const std::string PLAYLIST_BASE_URL = YOUTUBE_URL + "/playlist?list=";
-
-		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {
-			"YouTube Premium",
-			"YouTube Music Premium"
-		};
-	private:
 		NetworkRequest GetRequest(const std::string& endpoint);
 		nlohmann::json GetContext();
 
@@ -73,6 +62,17 @@ class YTMusicAPI {
 		//QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
 
 		int TimeToSeconds(const std::string& time);
+	private:
+		static inline const std::string YOUTUBE_URL = "https://music.youtube.com";
+        static inline const std::string API_BASE_URL = YOUTUBE_URL + "/youtubei/v1";
+		static inline const std::string VIDEO_BASE_URL = YOUTUBE_URL + "/watch?v=";
+		static inline const std::string CHANNEL_BASE_URL = YOUTUBE_URL + "/channel/";
+		static inline const std::string PLAYLIST_BASE_URL = YOUTUBE_URL + "/playlist?list=";
+
+		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {
+			"YouTube Premium",
+			"YouTube Music Premium"
+		};
 };
 
 #endif

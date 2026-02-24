@@ -17,6 +17,9 @@ class YoutubeSearcher : public IPlatformSearcher
         AlbumTracks FindAlbum(const AlbumTracks& track) override { return AlbumTracks(); };
         PlaylistTracks FindPlaylist(const PlaylistTracks& track) override { return PlaylistTracks(); };
     private:
+        float ScoreTrack(const TrackData& src, const TrackData& track);
+        PlatformSearcherResult GetClosestTrack(const TrackData& target, std::vector<YoutubeSearchResult> tracks);
+    private:
         static inline const unsigned int SECONDS_DIFFERENCE_ALLOWED = 15;
 
         // Keywords that are not allowed in a song title if they dont exist in the source
@@ -24,10 +27,6 @@ class YoutubeSearcher : public IPlatformSearcher
         static inline const std::string BANNED_TITLE_KEYWORDS_FORMATS[] = { " % ", "(%", "%)", "%" };
 
         YTMusicAPI _yt;
-    private:
-        float ScoreTrack(const TrackData& src, const TrackData& track);
-        PlatformSearcherResult GetClosestTrack(const TrackData& target, std::vector<YoutubeSearchResult> tracks);
-
 };
 
 #endif

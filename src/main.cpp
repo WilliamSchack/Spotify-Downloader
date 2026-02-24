@@ -1,7 +1,8 @@
 #include "MainScreenGUIManager.h"
 
 #include "DownloadManager.h"
-#include "SpotifyAPINew.h"
+
+#include "Ytdlp.h"
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
@@ -24,8 +25,8 @@
 // > 1
 // > Track Amount (To get exact release dates, which is not worth it since in most cases they are released on the same day as the album)
 // Playlist
-// > Amount of albums
-// > Amount of tracks (honestly worse in all ways, takes more time and looses the disc number)
+// > Amount of tracks / 100 (ceil) (-release date)
+// > Amount of albums (to add release date)
 // Episode I dont know (havent looked into it)
 
 int main(int argc, char** argv)
@@ -39,8 +40,10 @@ int main(int argc, char** argv)
 
     engine.load(QUrl("qrc:/gui/main.qml"));
 
-    
-
+    DownloadManager::Download("https://open.spotify.com/track/31ZfD4958k80aCeMl719KC?si=58cf0c29d95f4d88", "/home/william/mnt/main/");
+    //DownloadManager::Download("https://open.spotify.com/track/3man2UTQV1DJSnxDRfKQRo?si=d371161f83294f57", "/home/william/mnt/main/");
 
     return app.exec();
+
+    return 0;
 }

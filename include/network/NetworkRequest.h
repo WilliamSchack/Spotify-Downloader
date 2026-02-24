@@ -13,8 +13,6 @@
 class NetworkRequest
 {
     public:
-        std::string Url = "";
-    public:
         ~NetworkRequest();
         
         void SetHeader(const std::string& header);
@@ -24,6 +22,8 @@ class NetworkRequest
         NetworkResponse Get();
         NetworkResponse Post(const std::string& postData);
         NetworkResponse Post(nlohmann::json postData);
+    public:
+        std::string Url = "";
     private:
         struct CurlGlobalHandler
         {
@@ -32,17 +32,17 @@ class NetworkRequest
             CURLcode GlobalInit;
         };
     private:
-        static inline const CurlGlobalHandler _globalHandler;
-        
-        struct curl_slist* _headers = NULL;
-        std::vector<std::string> _cookies;
-    private:
         CURL* InitCurl();
         NetworkResponse SendRequest(CURL* curl);
         void CleanupCurl(CURL* curl);
 
         std::string GetCookieString();
         static size_t CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp);
+    private:
+        static inline const CurlGlobalHandler _globalHandler;
+        
+        struct curl_slist* _headers = NULL;
+        std::vector<std::string> _cookies;
 };
 
 #endif

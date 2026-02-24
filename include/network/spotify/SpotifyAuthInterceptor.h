@@ -14,7 +14,6 @@ class SpotifyAuthInterceptor : public QWebEngineUrlRequestInterceptor
         bool FoundAll = false;
     public:
         void interceptRequest(QWebEngineUrlRequestInfo &info) override;
-    private:
     signals:
         void ValuesRetrieved();
 };
