@@ -3,6 +3,8 @@
 
 #include "ICodec.h"
 
+#include <taglib/mp4file.h>
+
 class CodecM4A : public ICodec
 {
     public:
@@ -11,6 +13,10 @@ class CodecM4A : public ICodec
         std::string    GetString()                 const override { return "m4a"; };
         std::string    GetFfmpegConversionParams() const override { return "-acodec aac"; };
         BitrateDetails GetBitrateDetails()         const override { return BitrateDetails(); }; // Default values
+        
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
+            return dynamic_cast<TagLib::MP4::File*>(fileRef.file())->tag();
+        }
 };
 
 #endif

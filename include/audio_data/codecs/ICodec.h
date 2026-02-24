@@ -5,6 +5,8 @@
 #include "EExtension.h"
 #include "EMetadataType.h"
 
+#include <taglib/fileref.h>
+
 #include <string>
 
 class ICodec
@@ -17,6 +19,7 @@ class ICodec
         virtual std::string GetString() const = 0;
         virtual std::string GetFfmpegConversionParams() const = 0;
         virtual BitrateDetails GetBitrateDetails() const = 0;
+        virtual TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const = 0;
 };
 
 #endif

@@ -3,6 +3,9 @@
 
 #include "ICodec.h"
 
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+
 class CodecMP3 : public ICodec
 {
     public:
@@ -10,12 +13,17 @@ class CodecMP3 : public ICodec
         EMetadataType  GetMetadataType()           const override { return EMetadataType::ID3V2; };
         std::string    GetString()                 const override { return "mp3"; };
         std::string    GetFfmpegConversionParams() const override { return "-acodec libmp3lame"; };
+        
         BitrateDetails GetBitrateDetails()         const override { 
             return BitrateDetails {
                 192, 320, false,
                 128, 160, 192,
                 192, 256, 320
             };
+        }
+
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
+            return dynamic_cast<TagLib::MPEG::File*>(fileRef.file())->ID3v2Tag(true);
         }
 };
 

@@ -3,6 +3,8 @@
 
 #include "ICodec.h"
 
+#include <taglib/vorbisfile.h>
+
 class CodecOGG : public ICodec
 {
     public:
@@ -11,6 +13,10 @@ class CodecOGG : public ICodec
         std::string    GetString()                 const override { return "ogg"; };
         std::string    GetFfmpegConversionParams() const override { return "-acodec libvorbis"; };
         BitrateDetails GetBitrateDetails()         const override { return BitrateDetails(); }; // Default values
+
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
+            return dynamic_cast<TagLib::Ogg::Vorbis::File*>(fileRef.file())->tag();
+        }
 };
 
 #endif

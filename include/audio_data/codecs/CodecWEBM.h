@@ -11,6 +11,7 @@ class CodecWEBM : public ICodec
         EMetadataType  GetMetadataType()           const override { return EMetadataType::None; };
         std::string    GetString()                 const override { return "webm"; };
         std::string    GetFfmpegConversionParams() const override { return ""; };
+        
         BitrateDetails GetBitrateDetails()         const override { 
             return BitrateDetails {
                 0, 0, false,
@@ -18,6 +19,8 @@ class CodecWEBM : public ICodec
                 0, 0, 0
             };
         }
+
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override { return nullptr; }
 };
 
 #endif

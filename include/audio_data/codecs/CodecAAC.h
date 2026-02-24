@@ -11,6 +11,8 @@ class CodecAAC : public ICodec
         std::string    GetString()                 const override { return "aac"; };
         std::string    GetFfmpegConversionParams() const override { return "-acodec aac"; };
         BitrateDetails GetBitrateDetails()         const override { return BitrateDetails(); }; // Default values
+        
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override { return nullptr; }
 };
 
 #endif

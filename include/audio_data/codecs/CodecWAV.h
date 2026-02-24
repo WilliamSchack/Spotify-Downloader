@@ -3,6 +3,8 @@
 
 #include "ICodec.h"
 
+#include <taglib/wavfile.h>
+
 class CodecWAV : public ICodec
 {
     public:
@@ -10,12 +12,17 @@ class CodecWAV : public ICodec
         EMetadataType  GetMetadataType()           const override { return EMetadataType::RIFF; };
         std::string    GetString()                 const override { return "wav"; };
         std::string    GetFfmpegConversionParams() const override { return "-acodec pcm_s16le -af aformat=s16:44100 -ac 2"; };
+        
         BitrateDetails GetBitrateDetails()         const override { 
             return BitrateDetails {
                 0, 0, true,
                 0, 0, 0,
                 0, 0, 0
             };
+        }
+
+        TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const override {
+            return dynamic_cast<TagLib::RIFF::WAV::File*>(fileRef.file())->InfoTag();
         }
 };
 

@@ -33,18 +33,18 @@ class MetadataManager
     public:
         MetadataManager(const std::filesystem::path& filePath);
 
-        static void SetTitle        (const std::string& value);
-        static void SetArtists      (const std::string& value);
-        static void SetAlbumName    (const std::string& value);
-        static void SetAlbumArtists (const std::string& value);
-        static void SetPublisher    (const std::string& value);
-        static void SetCopyright    (const std::string& value);
-        static void SetComment      (const std::string& value);
-        static void SetReleaseDate  (const std::string& value);
-        static void SetTrackNumber  (const std::string& value);
-        static void SetDiscNumber   (const std::string& value);
-        static void SetLyrics       (const std::string& value);
-        static void SetCoverImage   (const Image& image);
+        void SetTitle        (const std::string& value);
+        void SetArtists      (const std::string& value);
+        void SetAlbumName    (const std::string& value);
+        void SetAlbumArtists (const std::string& value);
+        void SetPublisher    (const std::string& value);
+        void SetCopyright    (const std::string& value);
+        void SetComment      (const std::string& value);
+        void SetReleaseDate  (const std::string& value);
+        void SetTrackNumber  (const std::string& value);
+        void SetDiscNumber   (const std::string& value);
+        void SetLyrics       (const std::string& value);
+        void SetCoverImage   (const Image& image);
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;
