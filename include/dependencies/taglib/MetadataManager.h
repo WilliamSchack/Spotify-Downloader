@@ -46,7 +46,12 @@ class MetadataManager
         void SetLyrics      (const std::string& value);
         void SetCoverImage  (const Image& image);
 
+        void SetArtists(const std::vector<std::string>& values);
+        void SetAlbumArtists(const std::vector<std::string>& values);
+
         void Close();
+    private:
+        std::string CombineArtists(const std::vector<std::string>& artists);
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;

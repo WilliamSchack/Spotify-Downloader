@@ -323,6 +323,31 @@ void MetadataManager::SetCoverImage(const Image& image)
     _fileRef.save();
 }
 
+std::string MetadataManager::CombineArtists(const std::vector<std::string>& artists)
+{
+    std::string connected = "";
+
+    unsigned int artistsSize = artists.size();
+    for (int i = 0; i < artistsSize; i++) {
+        connected += artists[i];
+
+        if (i < artistsSize - 1)
+            connected += Config::ARTISTS_SEPERATOR;
+    }
+
+    return connected;
+}
+
+void MetadataManager::SetArtists(const std::vector<std::string>& values)
+{
+    SetArtist(CombineArtists(values));
+};
+
+void MetadataManager::SetAlbumArtists(const std::vector<std::string>& values)
+{
+    SetAlbumArtist(CombineArtists(values));
+};
+
 void MetadataManager::Close()
 {
     // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
