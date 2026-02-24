@@ -323,13 +323,13 @@ void MetadataManager::SetCoverImage(const Image& image)
     _fileRef.save();
 }
 
-std::string MetadataManager::CombineArtists(const std::vector<std::string>& artists)
+std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists)
 {
     std::string connected = "";
 
     unsigned int artistsSize = artists.size();
     for (int i = 0; i < artistsSize; i++) {
-        connected += artists[i];
+        connected += artists[i].Name;
 
         if (i < artistsSize - 1)
             connected += Config::ARTISTS_SEPERATOR;
@@ -338,14 +338,14 @@ std::string MetadataManager::CombineArtists(const std::vector<std::string>& arti
     return connected;
 }
 
-void MetadataManager::SetArtists(const std::vector<std::string>& values)
+void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
 {
-    SetArtist(CombineArtists(values));
+    SetArtist(CombineArtistNames(artists));
 };
 
-void MetadataManager::SetAlbumArtists(const std::vector<std::string>& values)
+void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
 {
-    SetAlbumArtist(CombineArtists(values));
+    SetAlbumArtist(CombineArtistNames(artists));
 };
 
 void MetadataManager::Close()

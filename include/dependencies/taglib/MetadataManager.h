@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "CodecFactory.h"
 #include "TrackData.h"
+#include "ArtistData.h"
 #include "Image.h"
 
 #include <taglib/fileref.h>
@@ -46,12 +47,12 @@ class MetadataManager
         void SetLyrics      (const std::string& value);
         void SetCoverImage  (const Image& image);
 
-        void SetArtists(const std::vector<std::string>& values);
-        void SetAlbumArtists(const std::vector<std::string>& values);
+        void SetArtists(const std::vector<ArtistData>& artists);
+        void SetAlbumArtists(const std::vector<ArtistData>& artists);
 
         void Close();
     private:
-        std::string CombineArtists(const std::vector<std::string>& artists);
+        std::string CombineArtistNames(const std::vector<ArtistData>& artists);
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;
