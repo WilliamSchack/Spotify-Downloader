@@ -1,0 +1,11 @@
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/ELyricsSource.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ELyricsType.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ILyricsPlatform.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Lyrics.h
+	${CMAKE_CURRENT_SOURCE_DIR}/LyricsFinder.h
+	${CMAKE_CURRENT_SOURCE_DIR}/LyricsPlatformFactory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/SynchronisedLyric.h
+)
