@@ -3,8 +3,9 @@
 
 enum class ELyricsType
 {
-    Unsynched,
-    Synched
+    None,
+    Unsynced,
+    Synced
 };
 
 #endif

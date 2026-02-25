@@ -3,6 +3,7 @@
 
 #include "IPlatformSearcher.h"
 #include "PlatformUtils.h"
+#include "LyricsFinder.h"
 #include "Ytdlp.h"
 #include "Ffmpeg.h"
 #include "SpotifyAPI.h"

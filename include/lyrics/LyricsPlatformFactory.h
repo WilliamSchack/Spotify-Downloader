@@ -5,6 +5,8 @@
 #include "ELyricsSource.h"
 #include "EPlatform.h"
 
+#include "YoutubeLyrics.h"
+
 #include <memory>
 
 class LyricsPlatformFactory

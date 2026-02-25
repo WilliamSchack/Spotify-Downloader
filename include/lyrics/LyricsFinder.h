@@ -1,8 +1,8 @@
 #ifndef LYRICSFINDER_H
 #define LYRICSFINDER_H
 
+#include "LyricsPlatformFactory.h"
 #include "Lyrics.h"
-#include "ELyricsType.h"
 #include "TrackData.h"
 
 class LyricsFinder
@@ -14,7 +14,7 @@ class LyricsFinder
         static Lyrics GetSourceLyrics(const TrackData& source);
 
         // Gets all the lyrics in order of the config priority
-        static Lyrics GetPriorityLyrics(const TrackData& track);
+        static Lyrics GetBestLyrics(const TrackData& track);
 };
 
 #endif

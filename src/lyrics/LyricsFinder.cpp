@@ -7,10 +7,13 @@ Lyrics LyricsFinder::GetLyrics(const TrackData& track, const ELyricsType& lyrics
 
 Lyrics LyricsFinder::GetSourceLyrics(const TrackData& source)
 {
-    return Lyrics();
+    std::unique_ptr<ILyricsPlatform> lyricsPlatform = LyricsPlatformFactory::Create(source.Platform);
+    if (lyricsPlatform == nullptr) return Lyrics();
+    
+    return lyricsPlatform->GetLyrics(source);
 }
 
-Lyrics LyricsFinder::GetPriorityLyrics(const TrackData& track)
+Lyrics LyricsFinder::GetBestLyrics(const TrackData& track)
 {
     return Lyrics();
 }

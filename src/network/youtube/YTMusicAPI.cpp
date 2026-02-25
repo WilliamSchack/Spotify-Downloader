@@ -750,7 +750,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 	return finalResults;
 }
 
-Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps = true) {
+Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps) {
 	std::string lyricsBrowseId = GetLyricsBrowseId(videoId);
 
 	if (lyricsBrowseId.empty())

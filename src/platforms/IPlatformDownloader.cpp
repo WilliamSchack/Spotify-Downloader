@@ -48,6 +48,9 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     std::filesystem::path targetFolder = directory;
     std::filesystem::path targetDownloadPath = targetFolder / fileName;
 
+    if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
+        return false;
+
     // Get cover art
     std::cout << "Getting cover art..." << std::endl;
 
@@ -110,6 +113,17 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     }
 
     // Get lyrics
+
+    // Try source platform
+    Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
+    
+    // Try searched platform
+    if (lyrics.Type == ELyricsType::None)
+        lyrics = LyricsFinder::GetSourceLyrics(searchResult.Data);
+
+    // Try external platforms
+    if (lyrics.Type == ELyricsType::None)
+        lyrics = LyricsFinder::GetBestLyrics(track);
 
     // Assign metadata
     std::string publisherText = "Downloaded through Spotify Downloader by William S";
