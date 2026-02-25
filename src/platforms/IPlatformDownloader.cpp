@@ -31,7 +31,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
-    // Get paths
+    // == Get paths
     std::filesystem::path tempFolder = std::filesystem::temp_directory_path() / APP_NAME;
     if (!std::filesystem::exists(tempFolder))
         std::filesystem::create_directory(tempFolder);
@@ -51,7 +51,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
         return false;
 
-    // Get cover art
+    // == Get cover art
     std::cout << "Getting cover art..." << std::endl;
 
     std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;
@@ -71,7 +71,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
         ImageHandler::SaveImage(imageFilePath, image);
     }
 
-    // Get the song on the target platform
+    // == Get the song on the target platform
     std::cout << "Searching on different platform..." << std::endl;
 
     std::unique_ptr<IPlatformSearcher> searcher = GetSearcher();
@@ -79,7 +79,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
 
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
 
-    // Download 
+    // == Download 
     std::cout << "Downloading..." << std::endl;
 
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
@@ -100,19 +100,19 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
 
-    // Normalise
+    // == Normalise
     if (Config::NORMALISE) {
         std::cout << "Normalising..." << std::endl;
         bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
     }
     
-    // Set bitrate
+    // == Set bitrate
     if (Config::MANUAL_BITRATE) {
         std::cout << "Setting bitrate..." << std::endl;
         bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE);
     }
 
-    // Get lyrics
+    // == Get lyrics
 
     // Try source platform
     Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
@@ -125,12 +125,12 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     if (lyrics.Type == ELyricsType::None)
         lyrics = LyricsFinder::GetBestLyrics(track);
 
-    // Assign metadata
+    // == Assign metadata
     std::string publisherText = "Downloaded through Spotify Downloader by William S";
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
     copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
-    // copyrightText += lyrics source
+    copyrightText += ", Lyrics: " + lyrics.SourceMessage;
     std::string commentText = "Thanks for using my program! :) - William S";
 
     MetadataManager metadata(tempDownloadPath);
@@ -144,12 +144,12 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     metadata.SetReleaseDate(track.ReleaseDate);
     metadata.SetTrackNumber(track.TrackNumber);
     metadata.SetDiscNumber(track.DiscNumber);
-    //metadata.SetLyrics();
+    if (lyrics.Type != ELyricsType::None) metadata.SetLyrics(lyrics.GetString());
 
-    // Check for errors
+    // == Check for errors
 
 
-    // Move to target path
+    // == Move to target path
     if (Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
         std::filesystem::remove(targetDownloadPath);
     
