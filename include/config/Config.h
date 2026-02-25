@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include "EExtension.h"
+#include "ELyricsSource.h"
 
 #include <string>
 
@@ -16,6 +17,11 @@ class Config
         static inline constexpr bool MANUAL_BITRATE = true;
         static inline constexpr int BITRATE = 96;
         static inline const std::string ARTISTS_SEPERATOR = "; ";
+
+        // Has the requested lyrics sources with 0 as the highest priority
+        static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {
+
+        };
 };
 
 #endif

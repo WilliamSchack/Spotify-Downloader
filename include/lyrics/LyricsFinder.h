@@ -4,12 +4,11 @@
 #include "LyricsPlatformFactory.h"
 #include "Lyrics.h"
 #include "TrackData.h"
+#include "Config.h"
 
 class LyricsFinder
 {
     public:
-        static Lyrics GetLyrics(const TrackData& track, const ELyricsType& lyricsType);
-
         // Gets the lyrics from the source platform if it exists
         static Lyrics GetSourceLyrics(const TrackData& source);
 
