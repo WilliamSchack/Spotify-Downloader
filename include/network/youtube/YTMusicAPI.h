@@ -9,6 +9,7 @@
 #include "YoutubeSearchResult.h"
 #include "NetworkRequest.h"
 #include "AlbumTracks.h"
+#include "Lyrics.h"
 #include "StringUtils.h"
 #include "ArrayUtils.h"
 #include "JsonUtils.h"
@@ -31,7 +32,7 @@ class YTMusicAPI {
 
 		AlbumTracks GetAlbum(const std::string& browseId);
 
-		//Lyrics GetLyrics(QString videoId, bool timestamps = true);
+		Lyrics GetLyrics(const std::string& videoId, const bool& timestamps = true);
 
 		//bool HasPremium(QString cookies);
 
@@ -44,22 +45,22 @@ class YTMusicAPI {
 		ArtistData ParseArtistJson(const nlohmann::json& json);
 		AlbumTracks ParseAlbumJson(const nlohmann::json& json);
 
-		nlohmann::json ParseSongRuns(const nlohmann::json& runs, int offset = 0);
+		nlohmann::json ParseSongRuns(const nlohmann::json& runs, const int& offset = 0);
 
 		nlohmann::json ParseAlbumHeader(const nlohmann::json& response);
-		nlohmann::json ParsePlaylistItems(const nlohmann::json& results, bool isAlbum = false);
+		nlohmann::json ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum = false);
 
-		nlohmann::json ParseSongArtists(const nlohmann::json& data, int index);
-		nlohmann::json ParseSongAlbum(const nlohmann::json& data, int index);
+		nlohmann::json ParseSongArtists(const nlohmann::json& data, const int& index);
+		nlohmann::json ParseSongAlbum(const nlohmann::json& data, const int& index);
 
 		nlohmann::json ParseSearchResults(const nlohmann::json& results, std::string resultType = "", const std::string& category = "");
 
-		std::string GetItemText(const nlohmann::json& item, int index = 0, int runIndex = 0);
-		nlohmann::json GetFlexColumnItem(const nlohmann::json& item, int index);
-		nlohmann::json GetFixedColumnItem(const nlohmann::json& item, int index);
+		std::string GetItemText(const nlohmann::json& item, const int& index = 0, const int& runIndex = 0);
+		nlohmann::json GetFlexColumnItem(const nlohmann::json& item, const int& index);
+		nlohmann::json GetFixedColumnItem(const nlohmann::json& item, const int& index);
 
-		//QString GetLyricsBrowseId(QString videoId);
-		//QString GetTabBrowseId(QJsonObject watchNextRenderer, int tabId);
+		std::string GetLyricsBrowseId(const std::string& videoId);
+		std::string GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId);
 
 		int TimeToSeconds(const std::string& time);
 	private:

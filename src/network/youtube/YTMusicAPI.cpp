@@ -402,7 +402,7 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
 	return album;
 }
 
-nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, bool isAlbum) {
+nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum) {
 	nlohmann::json songs = nlohmann::json::array();
 
 	for (nlohmann::json result : results) {
@@ -513,7 +513,7 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, boo
 }
 
 
-nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset) {
+nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& offset) {
 	nlohmann::json parsed = nlohmann::json::object();
 	nlohmann::json artists = nlohmann::json::array();
 	for (int i = offset; i < runs.size(); i++) {
@@ -567,14 +567,14 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, int offset)
 	return parsed;
 }
 
-std::string YTMusicAPI::GetItemText(const nlohmann::json& item, int index, int runIndex) {
+std::string YTMusicAPI::GetItemText(const nlohmann::json& item, const int& index, const int& runIndex) {
 	nlohmann::json column = GetFlexColumnItem(item, index);
 	if (column.empty()) return "";
 
 	return column["text"]["runs"][runIndex]["text"];
 }
 
-nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, int index) {
+nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, const int& index) {
 	nlohmann::json flexColumns = item["flexColumns"];
 	if (flexColumns.size() <= index ||
 		!flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"].contains("text") ||
@@ -585,7 +585,7 @@ nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, int ind
 	return flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"];
 }
 
-nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json&  item, int index) {
+nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json& item, const int& index) {
 	nlohmann::json columnItem = item["fixedColumns"][index]["musicResponsiveListItemFixedColumnRenderer"];
 	if (!columnItem.contains("text") ||
 		!columnItem["text"].contains("runs")) {
@@ -595,7 +595,7 @@ nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json&  item, int i
 	return columnItem;
 }
 
-nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, int index) {
+nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, const int& index) {
 	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
 	if (flexItem.empty())
@@ -619,7 +619,7 @@ nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, int inde
 	return artists;
 }
 
-nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, int index) {
+nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, const int& index) {
 	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
 	if (flexItem.empty())
@@ -750,65 +750,61 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 	return finalResults;
 }
 
-/*
-Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
-	QString lyricsBrowseId = GetLyricsBrowseId(videoId);
+Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps = true) {
+	std::string lyricsBrowseId = GetLyricsBrowseId(videoId);
 
-	if (lyricsBrowseId.isEmpty())
+	if (lyricsBrowseId.empty())
 		return Lyrics();
 
-	QJsonObject context = GetContext();
+	nlohmann::json context = GetContext();
 
 	// Modify context to act as android to get timestamps
 	if (timestamps) {
-		QJsonObject clientContext = context["client"].toObject();
+		nlohmann::json& clientContext = context["client"];
 		clientContext["clientName"] = "ANDROID_MUSIC";
 		clientContext["clientVersion"] = "7.21.50";
-		context["client"] = clientContext;
 	}
 
-	QJsonObject body{
+	nlohmann::json postData {
 		{"browseId", lyricsBrowseId},
 		{"context", context}
 	};
 
-	QNetworkRequest request = GetRequest("browse");
+	NetworkRequest request = GetRequest("browse");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
 
-	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(request, postData);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
-
-	if (!response.contains("contents")) return Lyrics();
+	if (!StringUtils::Contains(response.Body, "contents"))
+		return Lyrics();
 
 	// Look for synced lyrics
-	QJsonObject data = JSONUtils::Navigate(json, { "contents", "elementRenderer", "newElement", "type", "componentType", "model", "timedLyricsModel", "lyricsData" }).toObject();
-	if (timestamps && !data.isEmpty()) {
+	nlohmann::json data = json["contents"]["elementRenderer"]["newElement"]["type"]["componentType"]["model"]["timedLyricsModel"]["lyricsData"];
+	if (timestamps && !data.empty()) {
 		if (!data.contains("timedLyricsData"))
 			return Lyrics();
 
 		// Setup lyrics source message
 		Lyrics lyrics;
-		lyrics.SourceMessage = std::format("YouTube: {}", data["sourceMessage"].toString().split("Source: ")[1].toStdString());
+		lyrics.SourceMessage = "Youtube: " + StringUtils::Split(data["sourceMessage"], "Source: ")[1];
 
 		// Get lyrics
-		QJsonArray timedLyricsData = data["timedLyricsData"].toArray();
-		std::list<Lyrics::SynchronisedLyric> lyricsList;
+		nlohmann::json timedLyricsData = data["timedLyricsData"];
+		std::vector<SynchronisedLyric> lyricsList;
 
 		bool unsyncedTimedLyrics = false;
 
-		foreach(QJsonValue lyricsValue, timedLyricsData) {
-			QJsonObject lyricsObject = lyricsValue.toObject();
-			QJsonObject cueRange = lyricsObject["cueRange"].toObject();
+		for (nlohmann::json lyricsObject : timedLyricsData) {
+			nlohmann::json cueRange = lyricsObject["cueRange"];
 
-			if (cueRange.isEmpty())
+			if (cueRange.empty())
 				unsyncedTimedLyrics = true;
 
 			// Cant do QJsonValue.toInt(), times are stored as strings convert to them first
-			int startMs = cueRange["startTimeMilliseconds"].toString().toInt();
-			int endMs = cueRange["endTimeMilliseconds"].toString().toInt();
-			std::string sentence = lyricsObject["lyricLine"].toString().toStdString();
+			int startMs = std::stoi(cueRange["startTimeMilliseconds"].get<std::string>());
+			int endMs = std::stoi(cueRange["endTimeMilliseconds"].get<std::string>());
+			std::string sentence = lyricsObject["lyricLine"];
 
-			Lyrics::SynchronisedLyric lyric(startMs, endMs, sentence);
+			SynchronisedLyric lyric(startMs, endMs, sentence);
 			lyricsList.push_back(lyric);
 		}
 
@@ -816,44 +812,45 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 		// in this case loop through the timed lyrics and return as an unsynced 
 		if (unsyncedTimedLyrics) {
 			std::string unsyncedTimedLyricsString = "";
-			foreach(Lyrics::SynchronisedLyric syncedLyric, lyricsList) {
-				unsyncedTimedLyricsString += std::format("{}\n", syncedLyric.Lyric);
+			for (SynchronisedLyric syncedLyric : lyricsList) {
+				unsyncedTimedLyricsString += syncedLyric.Lyric + "\n";
 			}
 
-			lyrics.Type = Lyrics::LyricsType::Unsynced;
+			lyrics.Type = ELyricsType::Unsynced;
 			lyrics.UnsyncedLyrics = unsyncedTimedLyricsString;
 
 			return lyrics;
 		}
 
-		lyrics.Type = Lyrics::LyricsType::Synced;
+		lyrics.Type = ELyricsType::Synced;
 		lyrics.SyncedLyrics = lyricsList;
 
 		return lyrics;
 	}
 
 	// If no synced lyrics found, look for regular lyrics
-	std::string lyricsString = JSONUtils::Navigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0, "text" }).toString().toStdString();
+	std::string lyricsString = json["contents"]["sectionListRenderer"]["contents"][0]["musicDescriptionShelfRenderer"]["description"]["runs"][0]["text"];
 
-	if (lyricsString.empty()) return Lyrics();
+	if (lyricsString.empty())
+		return Lyrics();
 
 	Lyrics lyrics;
-	lyrics.Type = Lyrics::LyricsType::Unsynced;
+	lyrics.Type = ELyricsType::Unsynced;
 	lyrics.SourceMessage = "YouTube";
 	lyrics.UnsyncedLyrics = lyricsString;
 
 	return lyrics;
 }
 
-QString YTMusicAPI::GetLyricsBrowseId(QString videoId) {
-	QJsonObject body{
+std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId) {
+	nlohmann::json postData {
 		{"enablePersistentPlaylistPanel", true},
 		{"isAudioOnly", true},
 		{"tunerSettingValue", "AUTOMIX_SETTING_NORMAL"},
 		{"videoId", videoId},
-		{"playlistId", QString("RDAMVM%1").arg(videoId)},
-		{"watchEndpointMusicSupportedConfigs", QJsonObject {
-			{"watchEndpointMusicConfig", QJsonObject {
+		{"playlistId", "RDAMVM" + videoId},
+		{"watchEndpointMusicSupportedConfigs", {
+			{"watchEndpointMusicConfig", {
 				{"hasPersistentPlaylistPanel", true},
 				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
 			}}
@@ -861,27 +858,29 @@ QString YTMusicAPI::GetLyricsBrowseId(QString videoId) {
 		{"context", GetContext()}
 	};
 
-	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(GetRequest("next"), postData);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
+	NetworkRequest request = GetRequest("next");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
 
-	if (!response.contains("contents")) return "";
+	if (!StringUtils::Contains(response.Body, "contents"))
+		return "";
 
-	QJsonObject watchNextRenderer = JSONUtils::Navigate(json, { "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer", "watchNextTabbedResultsRenderer" }).toObject();
-	QString lyricsBrowseId = GetTabBrowseId(watchNextRenderer, 1);
+	nlohmann::json watchNextRenderer = json["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"];
+	std::string lyricsBrowseId = GetTabBrowseId(watchNextRenderer, 1);
 	
 	return lyricsBrowseId;
 }
 
-QString YTMusicAPI::GetTabBrowseId(QJsonObject watchNextRenderer, int tabId) {
-	QJsonObject tabRenderer = JSONUtils::Navigate(watchNextRenderer, { "tabs", tabId, "tabRenderer" }).toObject();
+std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId) {
+	nlohmann::json tabRenderer = watchNextRenderer["tabs"][tabId]["tabRenderer"];
 	
 	if (tabRenderer.contains("unselectable"))
 		return "";
 
-	return JSONUtils::Navigate(tabRenderer, { "endpoint", "browseEndpoint", "browseId" }).toString();
+	return tabRenderer["endpoint"]["browseEndpoint"]["browseId"];
 }
 
+/*
 bool YTMusicAPI::HasPremium(QString cookies) {
 	if (cookies.isEmpty())
 		return false;
