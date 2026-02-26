@@ -63,24 +63,24 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     return details;
 }
 
-std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& currentPath, const EExtension& newExtension)
+std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, const EExtension& newExtension, const bool& deleteOriginal)
 {
-    if (!std::filesystem::exists(currentPath))
+    if (!std::filesystem::exists(filePath))
         return "";
 
     // Get the new path and details
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(newExtension);
     
-    std::filesystem::path newPath = currentPath;
+    std::filesystem::path newPath = filePath;
     newPath.replace_extension(targetCodec->GetString());
 
     if (std::filesystem::exists(newPath))
         return newPath;
 
     // Convert
-    FfmpegAudioDetails audioDetails = GetAudioDetails(currentPath, false);
+    FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     std::vector<std::string> args {
-        "-i", "\"" + currentPath.string() + "\"",
+        "-i", "\"" + filePath.string() + "\"",
         "-progress", "-",
         "-nostats",
         targetCodec->GetFfmpegConversionParams()
@@ -94,6 +94,9 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& currentPath, 
     args.push_back("\"" + newPath.string() + "\"");
 
     Execute(audioDetails, args);
+
+    if (deleteOriginal)
+        std::filesystem::remove(filePath);
 
     return newPath;
 }

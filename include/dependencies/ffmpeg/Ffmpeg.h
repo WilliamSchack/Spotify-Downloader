@@ -14,8 +14,7 @@ class Ffmpeg
     public:
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
-        // Returns the new path
-        static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension);
+        static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true);
 
         // TODO: Add better normalisation
         // > Details already gotten in GetAudioDetails
