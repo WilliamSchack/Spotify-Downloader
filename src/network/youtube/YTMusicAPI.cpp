@@ -794,14 +794,18 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 		bool unsyncedTimedLyrics = false;
 
 		for (nlohmann::json lyricsObject : timedLyricsData) {
+			int startMs = 0;
+			int endMs = 0;
+			
 			nlohmann::json cueRange = lyricsObject["cueRange"];
-
-			if (cueRange.empty())
+			if (!cueRange.empty() && !cueRange.is_null()) {
+				// Cant do QJsonValue.toInt(), times are stored as strings convert to them first
+				startMs = std::stoi(cueRange["startTimeMilliseconds"].get<std::string>());
+				endMs = std::stoi(cueRange["endTimeMilliseconds"].get<std::string>());
+			} else {
 				unsyncedTimedLyrics = true;
+			}
 
-			// Cant do QJsonValue.toInt(), times are stored as strings convert to them first
-			int startMs = std::stoi(cueRange["startTimeMilliseconds"].get<std::string>());
-			int endMs = std::stoi(cueRange["endTimeMilliseconds"].get<std::string>());
 			std::string sentence = lyricsObject["lyricLine"];
 
 			SynchronisedLyric lyric(startMs, endMs, sentence);
