@@ -1,6 +1,8 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+#include "EImageFormat.h"
+
 #include "stb_image.h"
 
 struct Image
@@ -8,6 +10,7 @@ struct Image
     int Width = 0;
     int Height = 0;
     int Channels = 0;
+    EImageFormat Format = EImageFormat::Unknown;
     unsigned char* Data;
 
     size_t GetDataSize() const
@@ -28,7 +31,7 @@ struct Image
 
     // Handle moving
     Image(Image&& other)
-        : Width(other.Width), Height(other.Height), Channels(other.Channels), Data(other.Data)
+        : Width(other.Width), Height(other.Height), Channels(other.Channels), Format(other.Format), Data(other.Data)
     {
         other.Data = nullptr;
     }
@@ -40,12 +43,14 @@ struct Image
             Width = other.Width;
             Height = other.Height;
             Channels = other.Channels;
+            Format = other.Format;
             Data = other.Data;
-            
-            other.Data = nullptr;
+
             other.Width = 0;
             other.Height = 0;
             other.Channels = 0;
+            other.Format = EImageFormat::Unknown;
+            other.Data = nullptr;
         }
 
         return *this;

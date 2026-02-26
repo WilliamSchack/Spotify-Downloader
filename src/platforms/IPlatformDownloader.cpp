@@ -55,7 +55,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     if (!std::filesystem::exists(imagesFolder))
         std::filesystem::create_directory(imagesFolder);
 
-    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover.png";
+    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover";
     imageFileName = FileUtils::ValidateFileName(imageFileName);
 
     std::filesystem::path imageFilePath = imagesFolder / imageFileName;

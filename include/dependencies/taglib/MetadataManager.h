@@ -5,7 +5,7 @@
 #include "CodecFactory.h"
 #include "TrackData.h"
 #include "ArtistData.h"
-#include "Image.h"
+#include "ImageHandler.h"
 
 #include <taglib/fileref.h>
 #include <taglib/tstringlist.h>

@@ -283,7 +283,8 @@ void MetadataManager::SetLyrics(const std::string& value)
 
 void MetadataManager::SetCoverImage(const Image& image)
 {
-    TagLib::ByteVector taglibImage(reinterpret_cast<const char*>(image.Data), image.GetDataSize());
+    std::vector<unsigned char> imageEncodedBytes = ImageHandler::EncodeImage(image);
+    TagLib::ByteVector taglibImage(reinterpret_cast<const char*>(imageEncodedBytes.data()), imageEncodedBytes.size());
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
 
     // Cover art override
