@@ -31,9 +31,10 @@ class IPlatformDownloader
         virtual std::unique_ptr<IPlatformSearcher> GetSearcher() = 0;
 
         virtual TrackData GetTrack(const std::string& url) = 0;
-        virtual PlaylistData GetPlaylist(const std::string& url) = 0;
-        virtual AlbumData GetAlbum(const std::string& url) = 0;
+        virtual PlaylistTracks GetPlaylist(const std::string& url) = 0;
+        virtual AlbumTracks GetAlbum(const std::string& url) = 0;
     private:
+        bool DownloadTrack(const TrackData& track, const std::string& directory);
         bool DownloadTrack(const std::string& url, const std::string& directory);
         bool DownloadPlaylist(const std::string& url, const std::string& directory);
         bool DownloadAlbum(const std::string& url, const std::string& directory);

@@ -21,13 +21,8 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
     return false;
 }
 
-bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
+bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::string& directory)
 {
-    std::cout << "Getting details..." << std::endl;
-
-    // Get track details
-    TrackData track = GetTrack(url);
-
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
@@ -113,6 +108,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     }
 
     // == Get lyrics
+    std::cout << "Getting Lyrics..." << std::endl;
 
     // Try source platform
     Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
@@ -130,7 +126,7 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
     copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
-    copyrightText += ", Lyrics: " + lyrics.SourceMessage;
+    if (lyrics.Type != ELyricsType::None) copyrightText += ", Lyrics: (" + lyrics.SourceMessage + ")";
     std::string commentText = "Thanks for using my program! :) - William S";
 
     MetadataManager metadata(tempDownloadPath);
@@ -145,9 +141,6 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     metadata.SetTrackNumber(track.TrackNumber);
     metadata.SetDiscNumber(track.DiscNumber);
     if (lyrics.Type != ELyricsType::None) metadata.SetLyrics(lyrics.GetString());
-
-    // == Check for errors
-
 
     // == Move to target path
     if (Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
@@ -170,14 +163,44 @@ bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::strin
     return true;
 }
 
+bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
+{
+    std::cout << "Getting details..." << std::endl;
+
+    TrackData track = GetTrack(url);
+    return DownloadTrack(track, directory);
+}
+
 bool IPlatformDownloader::DownloadPlaylist(const std::string& url, const std::string& directory)
 {
-    PlaylistData playlist = GetPlaylist(url);
+    PlaylistTracks playlist = GetPlaylist(url);
+
+    int downloadErrors = 0;
+    for (TrackData track : playlist.Tracks) {
+        bool downloaded = DownloadTrack(track, directory);
+        if (!downloaded) downloadErrors++;
+    }
+
+    if (downloadErrors == 0)
+        return true;
+    
+    std::cout << "Downloaded playlist with " << downloadErrors << " errors";
     return false;
 }   
 
 bool IPlatformDownloader::DownloadAlbum(const std::string& url, const std::string& directory)
 {
-    AlbumData album = GetAlbum(url);
+    AlbumTracks album = GetAlbum(url);
+
+    int downloadErrors = 0;
+    for (TrackData track : album.Tracks) {
+        bool downloaded = DownloadTrack(track, directory);
+        if (!downloaded) downloadErrors++;
+    }
+
+    if (downloadErrors == 0)
+        return true;
+    
+    std::cout << "Downloaded album with " << downloadErrors << " errors";
     return false;
 }

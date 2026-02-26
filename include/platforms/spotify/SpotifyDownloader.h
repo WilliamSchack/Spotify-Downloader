@@ -16,9 +16,9 @@ class SpotifyDownloader : public IPlatformDownloader
 
         std::unique_ptr<IPlatformSearcher> GetSearcher() override;
 
-        TrackData GetTrack(const std::string& url)       override;
-        PlaylistData GetPlaylist(const std::string& url) override { return PlaylistData(EPlatform::Unknown); }
-        AlbumData GetAlbum(const std::string& url)       override { return AlbumData(EPlatform::Unknown); }
+        TrackData GetTrack(const std::string& url) override;
+        PlaylistTracks GetPlaylist(const std::string& url) override;
+        AlbumTracks GetAlbum(const std::string& url) override;
     private:
         SpotifyAPI _spotify;
 };

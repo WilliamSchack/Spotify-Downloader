@@ -30,11 +30,27 @@ std::unique_ptr<IPlatformSearcher> SpotifyDownloader::GetSearcher()
 
 TrackData SpotifyDownloader::GetTrack(const std::string& url)
 {
-    std::string trackId = GetLinkId(url);
-    if (trackId.empty()) return TrackData(EPlatform::Unknown);
+    std::string id = GetLinkId(url);
+    if (id.empty()) return TrackData(EPlatform::Unknown);
 
     if (StringUtils::Contains(url, "episode"))
-        return _spotify.GetEpisode(trackId);
+        return _spotify.GetEpisode(id);
     
-    return _spotify.GetTrack(trackId);
+    return _spotify.GetTrack(id);
+}
+
+PlaylistTracks SpotifyDownloader::GetPlaylist(const std::string& url)
+{
+    std::string id = GetLinkId(url);
+    if (id.empty()) return PlaylistTracks();
+
+    return _spotify.GetPlaylist(id);
+}
+
+AlbumTracks SpotifyDownloader::GetAlbum(const std::string& url)
+{
+    std::string id = GetLinkId(url);
+    if (id.empty()) return AlbumTracks();
+
+    return _spotify.GetAlbum(id);
 }
