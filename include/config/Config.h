@@ -10,7 +10,7 @@ class Config
 {
     public:
         // Testing vars atm
-        static inline constexpr EExtension CODEC_EXTENSION = EExtension::M4A;
+        static inline constexpr EExtension CODEC_EXTENSION = EExtension::MP3;
         static inline constexpr bool NORMALISE = true;
         static inline constexpr bool OVERWRITE = true;
         static inline constexpr float NORMALISE_DB = -14.0;

@@ -41,7 +41,9 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     std::filesystem::path tempDownloadPath = downloadsFolder / fileName;
 
     std::filesystem::path targetFolder = directory;
-    std::filesystem::path targetDownloadPath = targetFolder / fileName;
+
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
+    std::filesystem::path targetDownloadPath = targetFolder / (fileName + "." + targetCodec->GetString());
 
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
         return false;
@@ -87,7 +89,8 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     }
 
     // Check if downloaded codec is different to the target, if so, convert it
-    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
+    std::cout << "Converting..." << std::endl;
+
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
     if (targetCodec == nullptr) return false;
     if (downloadedCodec == nullptr) return false;
@@ -130,6 +133,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     std::string commentText = "Thanks for using my program! :) - William S";
 
     MetadataManager metadata(tempDownloadPath);
+    metadata.SetCoverImage(image);
     metadata.SetTitle(track.Name);
     metadata.SetArtists(track.Artists);
     metadata.SetAlbumName(track.Album.Name);
@@ -141,6 +145,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     metadata.SetTrackNumber(track.TrackNumber);
     metadata.SetDiscNumber(track.DiscNumber);
     if (lyrics.Type != ELyricsType::None) metadata.SetLyrics(lyrics.GetString());
+    metadata.Close();
 
     // == Move to target path
     if (Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))

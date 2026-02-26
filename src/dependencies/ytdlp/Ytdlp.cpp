@@ -98,6 +98,8 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     // Check if the file exists
     if (!std::filesystem::exists(downloadedPath)) {
+        std::cout << output;
+
         error.Details = "Download failed with an unknown error, try downloading again";
         error.Error = EYtdlpError::Unknown;
 
