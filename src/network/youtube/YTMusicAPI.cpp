@@ -91,6 +91,8 @@ ArtistData YTMusicAPI::ParseArtistJson(const nlohmann::json& json)
 AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 {
 	AlbumTracks albumTracks;
+	if (json.empty() || json.is_null() || !json.is_object())
+		return albumTracks;
 
 	AlbumData album(EPlatform::YouTube);
 
@@ -833,8 +835,7 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 	}
 
 	// If no synced lyrics found, look for regular lyrics
-	std::string lyricsString = json["contents"]["sectionListRenderer"]["contents"][0]["musicDescriptionShelfRenderer"]["description"]["runs"][0]["text"];
-
+	std::string lyricsString = JsonUtils::SafelyNavigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0 }).value("text", "");
 	if (lyricsString.empty())
 		return Lyrics();
 

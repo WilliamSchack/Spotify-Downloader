@@ -37,6 +37,8 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     // TODO: Add validation checks here (Fix multiple of same file name)
     // https://github.com/WilliamSchack/Spotify-Downloader/blob/d0789b4713bde0751e75642e9cf373176750a522/Spotify%20Downloader/Downloading/PlaylistDownloader.cpp#L109
 
+    // TODO: Clear downloading folder before starting
+
     // Get track distribution
     int songCount = tracks.size();
     int threadCount = std::min(songCount, Config::PER_DOWNLOAD_THREADS);
@@ -61,7 +63,7 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
         currentStartIndex += currentSongCount;
     }
 
-    // Shouldnt return anything, instead have a callback when the threads are finished
+    // Have a callback when the threads are finished
     // Could wait here but it would block the main thread
 
     return true;

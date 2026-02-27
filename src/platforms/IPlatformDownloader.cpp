@@ -150,7 +150,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     metadata.SetCopyright(copyrightText);
     metadata.SetComment(commentText);
     metadata.SetReleaseDate(track.ReleaseDate);
-    metadata.SetTrackNumber(track.TrackNumber);
+    metadata.SetTrackNumber(track.TrackNumber); // Use playlist number if a playlist (might actually store playlist number in the regular track number from DownloadManager if a playlist)
     metadata.SetDiscNumber(track.DiscNumber);
     if (lyrics.Type != ELyricsType::None) metadata.SetLyrics(lyrics.GetString());
     metadata.Close();
