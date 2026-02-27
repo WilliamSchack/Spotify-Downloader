@@ -276,8 +276,10 @@ AlbumTracks SpotifyAPI::ParseAlbum(const nlohmann::json& json)
         album.TotalTracks = tracksJson.size();
         albumTracks.Tracks = ParseTracks(tracksJson);
 
-        // Add release date
+        // Add album & release date
         for (TrackData& track : albumTracks.Tracks) {
+            track.Album = album;
+
             if (track.ReleaseDate == "") {
                 track.ReleaseDate = album.ReleaseDate;
                 track.ReleaseYear = album.ReleaseYear;
