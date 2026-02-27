@@ -25,6 +25,8 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
 
 bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::string& directory)
 {
+    std::cout << "GETTING TRACK: " << track.Name << std::endl;
+
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
@@ -77,6 +79,10 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     if (searcher == nullptr) return false;
 
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
+    if (searchResult.Data.Platform == EPlatform::Unknown) {
+        std::cout << "Could not find track: " << track.Name << std::endl;
+        return false;
+    }
 
     // == Download 
     std::cout << "Downloading..." << std::endl;

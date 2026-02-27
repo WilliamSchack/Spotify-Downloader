@@ -6,7 +6,7 @@
 struct PlatformSearcherResult
 {
     TrackData Data;
-    double Confidence;
+    double Confidence = 0.0;
 
     PlatformSearcherResult() : Data(EPlatform::Unknown) {}
 };

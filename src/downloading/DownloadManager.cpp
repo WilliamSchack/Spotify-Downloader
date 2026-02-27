@@ -41,6 +41,9 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     int baseSongCount = songCount / threadCount;
     int songsRemainder = songCount % threadCount;
 
+    ThreadDownload(tracks, platformType, directory);
+
+    /*
     // Dispatch threads
     int currentStartIndex = 0;
     for (int i = 0; i < threadCount; i++) {
@@ -57,6 +60,7 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
 
         currentStartIndex += currentSongCount;
     }
+    */
 
     // Shouldnt return anything, instead have a callback when the threads are finished
     // Could wait here but it would block the main thread
@@ -72,4 +76,6 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
     platform->DownloadTracks(tracks, directory);
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
+
+    // Figure out thread redistribution
 }

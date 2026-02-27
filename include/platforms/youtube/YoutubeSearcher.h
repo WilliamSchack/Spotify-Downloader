@@ -20,7 +20,7 @@ class YoutubeSearcher : public IPlatformSearcher
         float ScoreTrack(const TrackData& src, const TrackData& track);
         PlatformSearcherResult GetClosestTrack(const TrackData& target, std::vector<YoutubeSearchResult> tracks);
     private:
-        static inline const unsigned int SECONDS_DIFFERENCE_ALLOWED = 15;
+        static inline constexpr float SECONDS_DIFFERENCE_ALLOWED = 15.0;
 
         // Keywords that are not allowed in a song title if they dont exist in the source
         static inline const std::string BANNED_TITLE_KEYWORDS[] = { "reverse", "instrumental" };
