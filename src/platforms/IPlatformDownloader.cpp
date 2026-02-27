@@ -1,5 +1,6 @@
 #include "IPlatformDownloader.h"
 
+/*
 bool IPlatformDownloader::Download(const std::string& url, const std::string& directory)
 {
     std::cout << "Downloading..." << std::endl;
@@ -20,6 +21,7 @@ bool IPlatformDownloader::Download(const std::string& url, const std::string& di
     
     return false;
 }
+*/
 
 bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::string& directory)
 {
@@ -168,6 +170,18 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     return true;
 }
 
+int IPlatformDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const std::string& directory)
+{
+    int downloadErrors = 0;
+    for (const TrackData& track : tracks) {
+        bool downloaded = DownloadTrack(track, directory);
+        if (!downloaded) downloadErrors++;
+    }
+
+    return downloadErrors;
+}
+
+/*
 bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
 {
     std::cout << "Getting details..." << std::endl;
@@ -209,3 +223,4 @@ bool IPlatformDownloader::DownloadAlbum(const std::string& url, const std::strin
     std::cout << "Downloaded album with " << downloadErrors << " errors";
     return false;
 }
+*/

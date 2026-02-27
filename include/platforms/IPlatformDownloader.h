@@ -12,32 +12,32 @@
 #include "Config.h"
 #include "CodecFactory.h"
 #include "MetadataManager.h"
-
 #include "ELinkType.h"
 
 #include <iostream>
-#include <string>
-#include <regex>
 
 class IPlatformDownloader
 {
     public:
         virtual ~IPlatformDownloader() = default;
 
-        bool Download(const std::string& url, const std::string& directory);
-    protected:
+        //bool Download(const std::string& url, const std::string& directory);
+
         virtual ELinkType GetLinkType(const std::string& url) = 0;
-
-        virtual std::unique_ptr<IPlatformSearcher> GetSearcher() = 0;
-
         virtual TrackData GetTrack(const std::string& url) = 0;
         virtual PlaylistTracks GetPlaylist(const std::string& url) = 0;
         virtual AlbumTracks GetAlbum(const std::string& url) = 0;
-    private:
+
         bool DownloadTrack(const TrackData& track, const std::string& directory);
-        bool DownloadTrack(const std::string& url, const std::string& directory);
-        bool DownloadPlaylist(const std::string& url, const std::string& directory);
-        bool DownloadAlbum(const std::string& url, const std::string& directory);
+        int DownloadTracks(const std::vector<TrackData>& tracks, const std::string& directory);
+    protected:
+
+        virtual std::unique_ptr<IPlatformSearcher> GetSearcher() = 0;
+
+    //private:
+        //bool DownloadTrack(const std::string& url, const std::string& directory);
+        //bool DownloadPlaylist(const std::string& url, const std::string& directory);
+        //bool DownloadAlbum(const std::string& url, const std::string& directory);
     private:
         static inline const std::string DOWNLOADS_FOLDER_NAME = "Downloads";
         static inline const std::string IMAGES_FOLDER_NAME = "CoverArt";

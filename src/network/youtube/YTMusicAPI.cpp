@@ -48,7 +48,7 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 	track.Name = json["title"];
 	track.ReleaseYear = json.value("year", "");
 	track.Explicit = json.value("isExplicit", false);
-	if (!json["durationSeconds"].empty())
+	if (json.contains("durationSeconds") && !json["durationSeconds"].empty())
 		track.SetDuration(json["durationSeconds"].get<int>() * 1000);
 
 	// Store the video type in the description

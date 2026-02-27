@@ -17,6 +17,7 @@ class Config
         static inline constexpr bool MANUAL_BITRATE = false;
         static inline constexpr int BITRATE = 128;
         static inline const std::string ARTISTS_SEPERATOR = "; ";
+        static inline constexpr int PER_DOWNLOAD_THREADS = 6;
 
         // Has the requested lyrics sources with 0 as the highest priority
         static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {
