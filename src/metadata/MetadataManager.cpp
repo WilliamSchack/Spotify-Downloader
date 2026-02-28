@@ -9,6 +9,12 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
     _codec = CodecFactory::Create(filePath.extension());
 }
 
+MetadataManager::~MetadataManager()
+{
+    // Cleanup the file if it wasnt closed
+    if (!_fileRef.isNull()) Close();
+}
+
 void MetadataManager::SetTitle(const std::string& value)
 {
     SetStringField(EMetadataTag::Title, value);
@@ -187,7 +193,7 @@ std::string MetadataManager::GetLyrics() const
     return GetStringField(EMetadataTag::Lyrics);
 }
 
-std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists) const
+std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists)
 {
     std::string connected = "";
 
@@ -204,7 +210,7 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
 
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
 {
-    // Tags that are handled through taglib functions are not listed here
+    // Tags that are handled through taglib functions or are not supported are not listed here
 
     EMetadataType metadataType = _codec->GetMetadataType();
     if (metadataType == EMetadataType::None) return "";

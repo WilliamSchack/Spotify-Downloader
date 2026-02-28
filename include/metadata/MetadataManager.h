@@ -34,6 +34,7 @@ class MetadataManager
 {
     public:
         MetadataManager(const std::filesystem::path& filePath);
+        ~MetadataManager();
 
         void SetTitle       (const std::string& value);
         void SetArtist      (const std::string& value);
@@ -62,10 +63,11 @@ class MetadataManager
         unsigned int GetDiscNumber()  const;
         std::string  GetLyrics()      const;
 
+        static std::string CombineArtistNames(const std::vector<ArtistData>& artists);
+
         // Saves and frees up the file for other apps to use
         void Close();
     private:
-        std::string CombineArtistNames(const std::vector<ArtistData>& artists) const;
         const char* GetTagId(const EMetadataTag& tag) const;
 
         void SetStringField(const EMetadataTag& tag, const std::string& value) const;
