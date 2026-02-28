@@ -654,17 +654,42 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	bool hasPremium = false;
 	if (cookiesAssigned) hasPremium = YTMusicAPI().HasPremium(Config::YouTubeCookies);
 
+	qDebug() << Config::POToken;
+
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
-	process->startCommand(QString(R"("%1" --ffmpeg-location "%2" --js-runtimes node:"%3" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s" --extractor-args "youtube:player_client=%4" %5 -f ba --audio-quality 0 -o "%6" "%7")")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-		.arg(QCoreApplication::applicationDirPath() + "/" + _nodejsPath)
-		.arg(cookiesAssigned ? "web_music" : "default")
-		.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\" --cookies \"%2\"").arg(Config::POToken).arg(cookiesFilePath) : "")
-		.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
-		.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
+	process->setProgram(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath);
+	QStringList ytdlpArgs;
+	ytdlpArgs << "--ffmpeg-location" << QCoreApplication::applicationDirPath() + "/" + _ffmpegPath;
+	ytdlpArgs << "--js-runtimes" << "node:" + QCoreApplication::applicationDirPath() + "/" + _nodejsPath;
+	ytdlpArgs << "-v";
+	ytdlpArgs << "--no-part";
+	ytdlpArgs << "--progress";
+	ytdlpArgs << "--no-simulate";
+	ytdlpArgs << "--print" << "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s";
+	ytdlpArgs << "--extractor-args" << QString("youtube:player_client=%1").arg(cookiesAssigned ? "web_music" : "default");
+	if (cookiesAssigned) {
+		ytdlpArgs << "--extractor-args" << "youtube:po_token=web_music.gvs+" + Config::POToken;
+		ytdlpArgs << "--cookies" << cookiesFilePath;
+	}
+	ytdlpArgs << "-f" << "ba";
+	ytdlpArgs << "--audio-quality" << "0";
+	ytdlpArgs << "-o" << QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName);
+	ytdlpArgs << QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId);
+
+	process->setArguments(ytdlpArgs);
+	process->start();
+
+
+	//process->startCommand(QString(R"("%1" --ffmpeg-location "%2" --js-runtimes node:"%3" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s" --extractor-args "youtube:player_client=%4" %5 -f ba --audio-quality 0 -o "%6" "%7")")
+	//	.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
+	//	.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+	//	.arg(QCoreApplication::applicationDirPath() + "/" + _nodejsPath)
+	//	.arg(cookiesAssigned ? "web_music" : "default")
+	//	.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\"").arg(Config::POToken) + QString(" --cookies \"%1\"").arg(cookiesFilePath) : "")
+	//	.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
+	//	.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
 
 	// If not finished by the timeout time, check if process is 0%, if so timeout download
 	if (!process->waitForFinished(Config::DownloadTimeout) && currentProgressPercent == 0.0f) {

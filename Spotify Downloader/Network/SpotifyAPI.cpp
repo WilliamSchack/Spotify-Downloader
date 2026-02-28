@@ -172,8 +172,6 @@ QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
     if (json.contains("track"))       json = json["track"].toObject();
     else if (json.contains("itemV2")) json = json["itemV2"].toObject()["data"].toObject();
 
-    qDebug() << json;
-
     bool isEpisode = json.contains("showOrAudiobook");
 
     QJsonObject track;
