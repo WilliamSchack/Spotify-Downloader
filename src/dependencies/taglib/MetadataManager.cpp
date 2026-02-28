@@ -11,44 +11,12 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
 
 void MetadataManager::SetTitle(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2:
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->setTitle(taglibString);
-            break;
-        case EMetadataType::MP4:
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setTitle(taglibString);
-            break;
-        case EMetadataType::XIPH:
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->setTitle(taglibString);
-            break;
-        case EMetadataType::RIFF:
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setTitle(taglibString);
-            break;
-    }
+    SetStringField(EMetadataTag::Title, value);
 }
 
 void MetadataManager::SetArtist(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2:
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->setArtist(taglibString);
-            break;
-        case EMetadataType::MP4:
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setArtist(taglibString);
-            break;
-        case EMetadataType::XIPH:
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->setArtist(taglibString);
-            break;
-        case EMetadataType::RIFF:
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setArtist(taglibString);
-            break;
-    }
+    SetStringField(EMetadataTag::Artist, value);
 }
 
 void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
@@ -58,45 +26,12 @@ void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
 
 void MetadataManager::SetAlbumName(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2:
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->setAlbum(taglibString);
-            break;
-        case EMetadataType::MP4:
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setAlbum(taglibString);
-            break;
-        case EMetadataType::XIPH:
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->setAlbum(taglibString);
-            break;
-        case EMetadataType::RIFF:
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setAlbum(taglibString);
-            break;
-    }
+    SetStringField(EMetadataTag::AlbumName, value);
 }
 
 void MetadataManager::SetAlbumArtist(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TPE2");
-            frame->setText(taglibString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("aART", TagLib::StringList(taglibString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("ALBUMARTIST", taglibString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::AlbumArtist, value);
 }
 
 void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
@@ -106,166 +41,49 @@ void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
 
 void MetadataManager::SetPublisher(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TPUB");
-            frame->setText(taglibString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            // test me
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("labl", TagLib::StringList(taglibString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("PUBLISHER", taglibString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::Publisher, value);
 }
 
 void MetadataManager::SetCopyright(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TCOP");
-            frame->setText(taglibString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            // test me
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("cprt", TagLib::StringList(taglibString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("COPYRIGHT", taglibString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::Copyright, value);
 }
 
 void MetadataManager::SetComment(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::CommentsFrame* frame = new TagLib::ID3v2::CommentsFrame();
-            frame->setText(taglibString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setComment(taglibString);
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->setComment(taglibString);
-            break;
-        } case EMetadataType::RIFF: {
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setComment(taglibString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::Comment, value);
 }
 
 void MetadataManager::SetReleaseDate(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TDRC");
-            frame->setText(taglibString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("\251day", TagLib::StringList(taglibString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("DATE", taglibString);
-            break;
-        } case EMetadataType::RIFF: {
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setFieldText("ICRD", taglibString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::ReleaseDate, value);
 }
 
 void MetadataManager::SetTrackNumber(const unsigned int& value)
 {
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TRCK");
-            frame->setText(std::to_string(value));
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setTrack(value);
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->setTrack(value);
-            break;
-        } case EMetadataType::RIFF: {
-            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setTrack(value);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::TrackNumber, std::to_string(value));
 }
 
 void MetadataManager::SetDiscNumber(const unsigned int& value)
 {
-    std::string valueString = std::to_string(value);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::TextIdentificationFrame* frame = new TagLib::ID3v2::TextIdentificationFrame("TPOS");
-            frame->setText(valueString);
-
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("disk", TagLib::StringList(valueString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("DISCNUMBER", valueString);
-            break;
-        }
-    }
+    SetStringField(EMetadataTag::DiscNumber, std::to_string(value));
 }
 
 void MetadataManager::SetLyrics(const std::string& value)
 {
-    TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    if (_codec->GetMetadataType() == EMetadataType::ID3V2) {
+        TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
+        TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
 
-    switch (_codec->GetMetadataType()) {
-        case EMetadataType::ID3V2: {
-            TagLib::ID3v2::UnsynchronizedLyricsFrame* frame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
-            frame->setText(taglibString);
+        TagLib::ID3v2::UnsynchronizedLyricsFrame* frame = new TagLib::ID3v2::UnsynchronizedLyricsFrame();
+        frame->setText(taglibString);
 
-            dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
-            break;
-        } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("\251lyr", TagLib::StringList(taglibString));
-            break;
-        } case EMetadataType::XIPH: {
-            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("LYRICS", taglibString);
-            break;
-        }
+        dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
+
+        return;
     }
+
+    SetStringField(EMetadataTag::Lyrics, value);
 }
 
 void MetadataManager::SetCoverImage(const Image& image)
@@ -273,6 +91,7 @@ void MetadataManager::SetCoverImage(const Image& image)
     std::vector<unsigned char> imageEncodedBytes = ImageHandler::EncodeImage(image);
     TagLib::ByteVector taglibImage(reinterpret_cast<const char*>(imageEncodedBytes.data()), imageEncodedBytes.size());
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    const char* tagId = GetTagId(EMetadataTag::CoverImage);
 
     // Cover art override
     if (_codec->SetCoverArt(_fileRef, taglibImage))
@@ -293,7 +112,7 @@ void MetadataManager::SetCoverImage(const Image& image)
             coverArtList.append(coverArt);
             TagLib::MP4::Item coverItem(coverArtList);
 
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("covr", coverItem);
+            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem(tagId, coverItem);
             break;
         } case EMetadataType::XIPH: {
             TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
@@ -366,6 +185,21 @@ unsigned int MetadataManager::GetDiscNumber() const
 std::string MetadataManager::GetLyrics() const
 {
     return GetStringField(EMetadataTag::Lyrics);
+}
+
+std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists) const
+{
+    std::string connected = "";
+
+    unsigned int artistsSize = artists.size();
+    for (int i = 0; i < artistsSize; i++) {
+        connected += artists[i].Name;
+
+        if (i < artistsSize - 1)
+            connected += Config::ARTISTS_SEPERATOR;
+    }
+
+    return connected;
 }
 
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
@@ -507,21 +341,6 @@ std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
     }
     
     return "";
-}
-
-std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists) const
-{
-    std::string connected = "";
-
-    unsigned int artistsSize = artists.size();
-    for (int i = 0; i < artistsSize; i++) {
-        connected += artists[i].Name;
-
-        if (i < artistsSize - 1)
-            connected += Config::ARTISTS_SEPERATOR;
-    }
-
-    return connected;
 }
 
 void MetadataManager::Close()
