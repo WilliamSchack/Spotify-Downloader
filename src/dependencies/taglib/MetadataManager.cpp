@@ -309,47 +309,47 @@ void MetadataManager::SetCoverImage(const Image& image)
 
 std::string MetadataManager::GetTitle() const
 {
-    return GetStringField("TIT2", "\251nam", "TITLE", "INAM");
+    return GetStringField(EMetadataTag::Title);
 }
 
 std::string MetadataManager::GetArtist() const
 {
-    return GetStringField("TPE1", "\251art", "ARTIST", "IART");
+    return GetStringField(EMetadataTag::Artist);
 }
 
 std::string MetadataManager::GetAlbumName() const
 {
-    return GetStringField("TALB", "\251alb", "ALBUM", "IPRD");
+    return GetStringField(EMetadataTag::AlbumName);
 }
 
 std::string MetadataManager::GetAlbumArtist() const
 {
-    return GetStringField("TPE2", "aART", "ALBUMARTIST", "");
+    return GetStringField(EMetadataTag::AlbumArtist);
 }
 
 std::string MetadataManager::GetPublisher() const
 {
-    return GetStringField("TPUB", "\251pub", "PUBLISHER", "");
+    return GetStringField(EMetadataTag::Publisher);
 }
 
 std::string MetadataManager::GetCopyright() const
 {
-    return GetStringField("TCOP", "cprt", "COPYRIGHT", "ICOP");
+    return GetStringField(EMetadataTag::Copyright);
 }
 
 std::string MetadataManager::GetComment() const
 {
-    return GetStringField("COMM", "\251cmt", "COMMENT", "ICMT");
+    return GetStringField(EMetadataTag::Comment);
 }
 
 std::string MetadataManager::GetReleaseDate() const
 {
-    return GetStringField("TDRC", "\251day", "DATE", "ICRD");
+    return GetStringField(EMetadataTag::ReleaseDate);
 }
 
 unsigned int MetadataManager::GetTrackNumber() const
 {
-    std::string fieldString = GetStringField("TRCK", "trkn", "TRACKNUMBER", "IPRT");
+    std::string fieldString = GetStringField(EMetadataTag::TrackNumber);
     if (fieldString.empty()) return 0;
 
     return std::stoi(fieldString);
@@ -357,7 +357,7 @@ unsigned int MetadataManager::GetTrackNumber() const
 
 unsigned int MetadataManager::GetDiscNumber() const
 {
-    std::string fieldString = GetStringField("TPOS", "disk", "DISCNUMBER", "");
+    std::string fieldString = GetStringField(EMetadataTag::DiscNumber);
     if (fieldString.empty()) return 0;
 
     return std::stoi(fieldString);
@@ -441,39 +441,33 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
     return "";
 }
 
-std::string MetadataManager::GetStringField(const char* id3v2Id, const char* mp4Id, const char* xiphId, const char* riffId) const
+std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
 {
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    const char* tagId = GetTagId(tag);
+    if (tagId == "") return "";
 
     switch (_codec->GetMetadataType()) {
         case EMetadataType::ID3V2: {
-            if (id3v2Id == "") return "";
-
-            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList(id3v2Id);
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList(tagId);
             if (frames.size() == 0) return "";
 
             return frames[0]->toString().to8Bit(true);
         } case EMetadataType::MP4: {
-            if (mp4Id == "") return "";
-
-            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item(mp4Id);
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item(tagId);
             if (!item.isValid()) return "";
 
             return item.toStringList().toString().to8Bit(true);
         } case EMetadataType::XIPH: {
-            if (xiphId == "") return "";
-
             const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
-            if (!fields.contains(xiphId)) return "";
+            if (!fields.contains(tagId)) return "";
 
-            return fields[xiphId][0].to8Bit(true);
+            return fields[tagId][0].to8Bit(true);
         } case EMetadataType::RIFF: {
-            if (riffId == "") return "";
-
             const TagLib::RIFF::Info::FieldListMap& fields = dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->fieldListMap();
-            if (!fields.contains(riffId)) return "";
+            if (!fields.contains(tagId)) return "";
 
-            return fields[riffId].to8Bit(true);
+            return fields[tagId].to8Bit(true);
         }
     }
     

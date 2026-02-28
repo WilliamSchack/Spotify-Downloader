@@ -66,7 +66,7 @@ class MetadataManager
     private:
         const char* GetTagId(const EMetadataTag& tag) const;
 
-        std::string GetStringField(const char* id3v2Id, const char* mp4Id, const char* xiphId, const char* riffId) const;
+        std::string GetStringField(const EMetadataTag& tag) const;
 
         std::string CombineArtistNames(const std::vector<ArtistData>& artists) const;
     private:
