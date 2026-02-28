@@ -28,8 +28,6 @@ void MetadataManager::SetTitle(const std::string& value)
             dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setTitle(taglibString);
             break;
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetArtist(const std::string& value)
@@ -51,8 +49,6 @@ void MetadataManager::SetArtist(const std::string& value)
             dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setArtist(taglibString);
             break;
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
@@ -79,8 +75,6 @@ void MetadataManager::SetAlbumName(const std::string& value)
             dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setAlbum(taglibString);
             break;
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetAlbumArtist(const std::string& value)
@@ -103,8 +97,6 @@ void MetadataManager::SetAlbumArtist(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
@@ -133,8 +125,6 @@ void MetadataManager::SetPublisher(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetCopyright(const std::string& value)
@@ -158,8 +148,6 @@ void MetadataManager::SetCopyright(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetComment(const std::string& value)
@@ -185,8 +173,6 @@ void MetadataManager::SetComment(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetReleaseDate(const std::string& value)
@@ -212,8 +198,6 @@ void MetadataManager::SetReleaseDate(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetTrackNumber(const unsigned int& value)
@@ -238,8 +222,6 @@ void MetadataManager::SetTrackNumber(const unsigned int& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetDiscNumber(const unsigned int& value)
@@ -255,15 +237,13 @@ void MetadataManager::SetDiscNumber(const unsigned int& value)
             dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(frame);
             break;
         } case EMetadataType::MP4: {
-            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("disc", TagLib::StringList(valueString));
+            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->setItem("disk", TagLib::StringList(valueString));
             break;
         } case EMetadataType::XIPH: {
             dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addField("DISCNUMBER", valueString);
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetLyrics(const std::string& value)
@@ -286,8 +266,6 @@ void MetadataManager::SetLyrics(const std::string& value)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 void MetadataManager::SetCoverImage(const Image& image)
@@ -297,10 +275,8 @@ void MetadataManager::SetCoverImage(const Image& image)
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
 
     // Cover art override
-    if (_codec->SetCoverArt(_fileRef, taglibImage)) {
-        _fileRef.save();
+    if (_codec->SetCoverArt(_fileRef, taglibImage))
         return;
-    }
 
     switch (_codec->GetMetadataType()) {
         case EMetadataType::ID3V2: {
@@ -329,8 +305,6 @@ void MetadataManager::SetCoverImage(const Image& image)
             break;
         }
     }
-
-    _fileRef.save();
 }
 
 std::string MetadataManager::GetTitle() const
@@ -551,7 +525,7 @@ unsigned int MetadataManager::GetDiscNumber() const
 
             return std::stoi(frames[0]->toString().to8Bit(true));
         } case EMetadataType::MP4: {
-            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("disc");
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("disk");
             if (!item.isValid()) return 0;
 
             return std::stoi(item.toStringList().toString().to8Bit(true));
@@ -568,6 +542,8 @@ unsigned int MetadataManager::GetDiscNumber() const
 
 void MetadataManager::Close()
 {
+    _fileRef.save();
+
     // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
     _fileRef = TagLib::FileRef();
 }

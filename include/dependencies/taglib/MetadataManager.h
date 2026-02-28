@@ -60,6 +60,7 @@ class MetadataManager
         unsigned int GetTrackNumber() const;
         unsigned int GetDiscNumber()  const;
 
+        // Saves and frees up the file for other apps to use
         void Close();
     private:
         std::string CombineArtistNames(const std::vector<ArtistData>& artists);
