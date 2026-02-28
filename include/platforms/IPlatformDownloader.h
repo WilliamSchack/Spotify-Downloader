@@ -31,13 +31,14 @@ class IPlatformDownloader
         bool DownloadTrack(const TrackData& track, const std::string& directory);
         int DownloadTracks(const std::vector<TrackData>& tracks, const std::string& directory);
     protected:
-
         virtual std::unique_ptr<IPlatformSearcher> GetSearcher() = 0;
 
     //private:
         //bool DownloadTrack(const std::string& url, const std::string& directory);
         //bool DownloadPlaylist(const std::string& url, const std::string& directory);
         //bool DownloadAlbum(const std::string& url, const std::string& directory);
+    private:
+        static std::filesystem::path FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath);
     private:
         static inline const std::string DOWNLOADS_FOLDER_NAME = "Downloads";
         static inline const std::string IMAGES_FOLDER_NAME = "CoverArt";

@@ -48,6 +48,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
 
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
     std::filesystem::path targetDownloadPath = targetFolder / (fileName + "." + targetCodec->GetString());
+    targetDownloadPath = FindAvailableTrackPath(track, targetDownloadPath);
 
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
         return false;
@@ -185,6 +186,35 @@ int IPlatformDownloader::DownloadTracks(const std::vector<TrackData>& tracks, co
     }
 
     return downloadErrors;
+}
+
+std::filesystem::path IPlatformDownloader::FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath)
+{
+    if (!std::filesystem::exists(originalPath))
+        return originalPath;
+
+    // Check if the existing file is the same as this track, only check the basic details
+    MetadataManager existingMetadata(originalPath);
+    if (existingMetadata.GetTitle() == track.Name &&
+        existingMetadata.GetAlbumName() == track.Album.Name &&
+        existingMetadata.GetTrackNumber() == track.TrackNumber &&
+        (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists)) &&
+        (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists))
+    ) {
+        // Return the original path, it will be handled in the main download function
+        existingMetadata.Close();
+        return originalPath;
+    }
+
+    existingMetadata.Close();
+
+    // Append the id to the file name
+    std::string fileName = originalPath.stem();
+    fileName += "_" + track.Id + originalPath.extension().string();
+
+    std::filesystem::path newPath = originalPath;
+    newPath.replace_filename(fileName);
+    return newPath;
 }
 
 /*
