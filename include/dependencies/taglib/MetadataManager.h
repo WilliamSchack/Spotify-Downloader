@@ -36,8 +36,10 @@ class MetadataManager
 
         void SetTitle       (const std::string& value);
         void SetArtist      (const std::string& value);
+        void SetArtists     (const std::vector<ArtistData>& artists);
         void SetAlbumName   (const std::string& value);
         void SetAlbumArtist (const std::string& value);
+        void SetAlbumArtists(const std::vector<ArtistData>& artists);
         void SetPublisher   (const std::string& value);
         void SetCopyright   (const std::string& value);
         void SetComment     (const std::string& value);
@@ -47,8 +49,16 @@ class MetadataManager
         void SetLyrics      (const std::string& value);
         void SetCoverImage  (const Image& image);
 
-        void SetArtists(const std::vector<ArtistData>& artists);
-        void SetAlbumArtists(const std::vector<ArtistData>& artists);
+        std::string  GetTitle()       const;
+        std::string  GetArtist()      const;
+        std::string  GetAlbumName()   const;
+        std::string  GetAlbumArtist() const;
+        std::string  GetPublisher()   const;
+        std::string  GetCopyright()   const;
+        std::string  GetComment()     const;
+        std::string  GetReleaseDate() const;
+        unsigned int GetTrackNumber() const;
+        unsigned int GetDiscNumber()  const;
 
         void Close();
     private:

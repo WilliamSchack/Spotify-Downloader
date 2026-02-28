@@ -55,6 +55,11 @@ void MetadataManager::SetArtist(const std::string& value)
     _fileRef.save();
 }
 
+void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
+{
+    SetArtist(CombineArtistNames(artists));
+};
+
 void MetadataManager::SetAlbumName(const std::string& value)
 {
     TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
@@ -101,6 +106,11 @@ void MetadataManager::SetAlbumArtist(const std::string& value)
 
     _fileRef.save();
 }
+
+void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
+{
+    SetAlbumArtist(CombineArtistNames(artists));
+};
 
 void MetadataManager::SetPublisher(const std::string& value)
 {
@@ -323,6 +333,245 @@ void MetadataManager::SetCoverImage(const Image& image)
     _fileRef.save();
 }
 
+std::string MetadataManager::GetTitle() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2:
+            return dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->title().to8Bit(true);
+        case EMetadataType::MP4:
+            return dynamic_cast<TagLib::MP4::Tag*>(fileTag)->title().to8Bit(true);
+        case EMetadataType::XIPH:
+            return dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->title().to8Bit(true);
+        case EMetadataType::RIFF:
+            return dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->title().to8Bit(true);
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetArtist() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2:
+            return dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->artist().to8Bit(true);
+        case EMetadataType::MP4:
+            return dynamic_cast<TagLib::MP4::Tag*>(fileTag)->artist().to8Bit(true);
+        case EMetadataType::XIPH:
+            return dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->artist().to8Bit(true);
+        case EMetadataType::RIFF:
+            return dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->artist().to8Bit(true);
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetAlbumName() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2:
+            return dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->album().to8Bit(true);
+        case EMetadataType::MP4:
+            return dynamic_cast<TagLib::MP4::Tag*>(fileTag)->album().to8Bit(true);
+        case EMetadataType::XIPH:
+            return dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->album().to8Bit(true);
+        case EMetadataType::RIFF:
+            return dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->album().to8Bit(true);
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetAlbumArtist() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TPE2");
+            if (frames.size() == 0) return "";
+
+            return frames[0]->toString().to8Bit(true);
+        } case EMetadataType::MP4: {
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("aART");
+            if (!item.isValid()) return "";
+
+            return item.toStringList().toString().to8Bit(true);
+        } case EMetadataType::XIPH: {
+            const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
+            if (!fields.contains("ALBUMARTIST")) return "";
+
+            return fields["ALBUMARTIST"][0].to8Bit(true);
+        }
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetPublisher() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TPUB");
+            if (frames.size() == 0) return "";
+
+            return frames[0]->toString().to8Bit(true);
+        } case EMetadataType::MP4: {
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("labl");
+            if (!item.isValid()) return "";
+
+            return item.toStringList().toString().to8Bit(true);
+        } case EMetadataType::XIPH: {
+            const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
+            if (!fields.contains("PUBLISHER")) return "";
+
+            return fields["PUBLISHER"][0].to8Bit(true);
+        }
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetCopyright() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TCOP");
+            if (frames.size() == 0) return "";
+
+            return frames[0]->toString().to8Bit(true);
+        } case EMetadataType::MP4: {
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("cprt");
+            if (!item.isValid()) return "";
+
+            return item.toStringList().toString().to8Bit(true);
+        } case EMetadataType::XIPH: {
+            const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
+            if (!fields.contains("COPYRIGHT")) return "";
+
+            return fields["COPYRIGHT"][0].to8Bit(true);
+        }
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetComment() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("COMM");
+            if (frames.size() == 0) return "";
+
+            return frames[0]->toString().to8Bit(true);
+        } case EMetadataType::MP4: {
+            return dynamic_cast<TagLib::MP4::Tag*>(fileTag)->comment().to8Bit(true);
+        } case EMetadataType::XIPH: {
+            return dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->comment().to8Bit(true);
+        } case EMetadataType::RIFF: {
+            return dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->comment().to8Bit(true);
+        }
+    }
+
+    return "";
+}
+
+std::string MetadataManager::GetReleaseDate() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TDRC");
+            if (frames.size() == 0) return "";
+
+            return frames[0]->toString().to8Bit(true);
+        } case EMetadataType::MP4: {
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("\251day");
+            if (!item.isValid()) return "";
+
+            return item.toStringList().toString().to8Bit(true);
+        } case EMetadataType::XIPH: {
+            const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
+            if (!fields.contains("DATE")) return "";
+
+            return fields["DATE"][0].to8Bit(true);
+        } case EMetadataType::RIFF: {
+            return dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->fieldText("ICRD").to8Bit();
+        }
+    }
+    
+    return "";
+}
+
+unsigned int MetadataManager::GetTrackNumber() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TRCK");
+            if (frames.size() == 0) return 0;
+
+            return std::stoi(frames[0]->toString().to8Bit(true));
+        } case EMetadataType::MP4: {
+            dynamic_cast<TagLib::MP4::Tag*>(fileTag)->track();
+            break;
+        } case EMetadataType::XIPH: {
+            dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->track();
+            break;
+        } case EMetadataType::RIFF: {
+            dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->track();
+            break;
+        }
+    }
+
+    return 0;
+}
+
+unsigned int MetadataManager::GetDiscNumber() const
+{
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+    switch (_codec->GetMetadataType()) {
+        case EMetadataType::ID3V2: {
+            const TagLib::ID3v2::FrameList& frames = dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->frameList("TPOS");
+            if (frames.size() == 0) return 0;
+
+            return std::stoi(frames[0]->toString().to8Bit(true));
+        } case EMetadataType::MP4: {
+            TagLib::MP4::Item item = dynamic_cast<TagLib::MP4::Tag*>(fileTag)->item("disc");
+            if (!item.isValid()) return 0;
+
+            return std::stoi(item.toStringList().toString().to8Bit(true));
+        } case EMetadataType::XIPH: {
+            const TagLib::Ogg::FieldListMap& fields = dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->fieldListMap();
+            if (!fields.contains("DISCNUMBER")) return 0;
+
+            return std::stoi(fields["DISCNUMBER"][0].to8Bit(true));
+        }
+    }
+
+    return 0;
+}
+
+void MetadataManager::Close()
+{
+    // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
+    _fileRef = TagLib::FileRef();
+}
+
 std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists)
 {
     std::string connected = "";
@@ -336,20 +585,4 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
     }
 
     return connected;
-}
-
-void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
-{
-    SetArtist(CombineArtistNames(artists));
-};
-
-void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
-{
-    SetAlbumArtist(CombineArtistNames(artists));
-};
-
-void MetadataManager::Close()
-{
-    // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
-    _fileRef = TagLib::FileRef();
 }
