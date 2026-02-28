@@ -63,7 +63,9 @@ class MetadataManager
         // Saves and frees up the file for other apps to use
         void Close();
     private:
-        std::string CombineArtistNames(const std::vector<ArtistData>& artists);
+        std::string GetStringField(const char* id3v2Id, const char* mp4Id, const char* xiphId, const char* riffId) const;
+
+        std::string CombineArtistNames(const std::vector<ArtistData>& artists) const;
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;
