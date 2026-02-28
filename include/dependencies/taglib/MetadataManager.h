@@ -60,12 +60,14 @@ class MetadataManager
         std::string  GetReleaseDate() const;
         unsigned int GetTrackNumber() const;
         unsigned int GetDiscNumber()  const;
+        std::string  GetLyrics()      const;
 
         // Saves and frees up the file for other apps to use
         void Close();
     private:
         const char* GetTagId(const EMetadataTag& tag) const;
 
+        void SetStringField(const EMetadataTag& tag, const std::string& value) const;
         std::string GetStringField(const EMetadataTag& tag) const;
 
         std::string CombineArtistNames(const std::vector<ArtistData>& artists) const;
