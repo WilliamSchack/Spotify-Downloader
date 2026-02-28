@@ -363,6 +363,84 @@ unsigned int MetadataManager::GetDiscNumber() const
     return std::stoi(fieldString);
 }
 
+const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
+{
+    // Tags that are handled through taglib functions are not listed here
+
+    EMetadataType metadataType = _codec->GetMetadataType();
+    if (metadataType == EMetadataType::None) return "";
+
+    if (metadataType == EMetadataType::ID3V2) {
+        switch (tag) {
+            case EMetadataTag::Title:       return "TIT2";
+            case EMetadataTag::Artist:      return "TPE1";
+            case EMetadataTag::AlbumName:   return "TALB";
+            case EMetadataTag::AlbumArtist: return "TPE2";
+            case EMetadataTag::Publisher:   return "TPUB";
+            case EMetadataTag::Copyright:   return "TCOP";
+            case EMetadataTag::Comment:     return "COMM";
+            case EMetadataTag::ReleaseDate: return "TDRC";
+            case EMetadataTag::TrackNumber: return "TRCK";
+            case EMetadataTag::DiscNumber:  return "TPOS";
+        };
+
+        return "";
+    }
+
+    if (metadataType == EMetadataType::MP4) {
+        switch (tag) {
+            case EMetadataTag::Title:       return "\251nam";
+            case EMetadataTag::Artist:      return "\251art";
+            case EMetadataTag::AlbumName:   return "\251alb";
+            case EMetadataTag::AlbumArtist: return "aART";
+            case EMetadataTag::Publisher:   return "\251pub";
+            case EMetadataTag::Copyright:   return "cprt";
+            case EMetadataTag::Comment:     return "\251cmt";
+            case EMetadataTag::ReleaseDate: return "\251day";
+            case EMetadataTag::TrackNumber: return "trkn";
+            case EMetadataTag::DiscNumber:  return "disk";
+            case EMetadataTag::Lyrics:      return "\251lyr";
+            case EMetadataTag::CoverImage:  return "covr";
+        };
+
+        return "";
+    }
+
+    if (metadataType == EMetadataType::XIPH) {
+        switch (tag) {
+            case EMetadataTag::Title:       return "TITLE";
+            case EMetadataTag::Artist:      return "ARTIST";
+            case EMetadataTag::AlbumName:   return "ALBUM";
+            case EMetadataTag::AlbumArtist: return "ALBUMARTIST";
+            case EMetadataTag::Publisher:   return "PUBLISHER";
+            case EMetadataTag::Copyright:   return "COPYRIGHT";
+            case EMetadataTag::Comment:     return "COMMENT";
+            case EMetadataTag::ReleaseDate: return "DATE";
+            case EMetadataTag::TrackNumber: return "TRACKNUMBER";
+            case EMetadataTag::DiscNumber:  return "DISCNUMBER";
+            case EMetadataTag::Lyrics:      return "LYRICS";
+        };
+
+        return "";
+    }
+
+    if (metadataType == EMetadataType::RIFF) {
+        switch (tag) {
+            case EMetadataTag::Title:       return "INAM";
+            case EMetadataTag::Artist:      return "IART";
+            case EMetadataTag::AlbumName:   return "IPRD";
+            case EMetadataTag::Copyright:   return "ICOP";
+            case EMetadataTag::Comment:     return "ICMT";
+            case EMetadataTag::ReleaseDate: return "ICRD";
+            case EMetadataTag::TrackNumber: return "IPRT";
+        };
+
+        return "";
+    }
+
+    return "";
+}
+
 std::string MetadataManager::GetStringField(const char* id3v2Id, const char* mp4Id, const char* xiphId, const char* riffId) const
 {
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);

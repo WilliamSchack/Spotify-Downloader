@@ -6,6 +6,7 @@
 #include "TrackData.h"
 #include "ArtistData.h"
 #include "ImageHandler.h"
+#include "EMetadataTag.h"
 
 #include <taglib/fileref.h>
 #include <taglib/tstringlist.h>
@@ -63,6 +64,8 @@ class MetadataManager
         // Saves and frees up the file for other apps to use
         void Close();
     private:
+        const char* GetTagId(const EMetadataTag& tag) const;
+
         std::string GetStringField(const char* id3v2Id, const char* mp4Id, const char* xiphId, const char* riffId) const;
 
         std::string CombineArtistNames(const std::vector<ArtistData>& artists) const;
