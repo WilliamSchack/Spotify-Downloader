@@ -679,16 +679,6 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	process->setArguments(ytdlpArgs);
 	process->start();
 
-
-	//process->startCommand(QString(R"("%1" --ffmpeg-location "%2" --js-runtimes node:"%3" -v --no-part --progress --no-simulate --print "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s" --extractor-args "youtube:player_client=%4" %5 -f ba --audio-quality 0 -o "%6" "%7")")
-	//	.arg(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath)
-	//	.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
-	//	.arg(QCoreApplication::applicationDirPath() + "/" + _nodejsPath)
-	//	.arg(cookiesAssigned ? "web_music" : "default")
-	//	.arg(cookiesAssigned ? QString("--extractor-args \"youtube:po_token=web_music.gvs+%1\"").arg(Config::POToken) + QString(" --cookies \"%1\"").arg(cookiesFilePath) : "")
-	//	.arg(QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName))
-	//	.arg(QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId)));
-
 	// If not finished by the timeout time, check if process is 0%, if so timeout download
 	if (!process->waitForFinished(Config::DownloadTimeout) && currentProgressPercent == 0.0f) {
 		process->kill();
