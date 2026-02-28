@@ -117,7 +117,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		}
 
 		// Create song to generate filename
-		Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::NODEJS_PATH, Config::Codec, Main);
+		Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::QUICKJS_PATH, Config::Codec, Main);
 
 		// Add to dictionary
 		QString trackId = track["id"].toString();
@@ -148,7 +148,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		if (!Config::Overwrite) {
 			// Create song to generate filename, remaking song here instead of using previous fileName since:
 			// If file name is duplicated, id will be appended, and we also require the song details for the subfolders
-			Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::NODEJS_PATH, Config::Codec, Main);
+			Song song = Song(track, album, Config::YTDLP_PATH, Config::FFMPEG_PATH, Config::QUICKJS_PATH, Config::Codec, Main);
 			
 			QString targetPath = Config::SaveLocation;
 

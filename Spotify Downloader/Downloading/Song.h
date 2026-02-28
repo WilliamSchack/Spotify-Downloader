@@ -114,7 +114,7 @@ class Song {
 		// --- Settings ---
 		QString _ytdlpPath;
 		QString _ffmpegPath;
-		QString _nodejsPath;
+		QString _quickjsPath;
 
 		// -- Search Result --
 		QJsonObject _searchResult;

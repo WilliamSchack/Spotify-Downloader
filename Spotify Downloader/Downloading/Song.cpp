@@ -5,7 +5,7 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 
 	_ytdlpPath = ytdlpPath;
 	_ffmpegPath = ffmpegPath;
-	_nodejsPath = nodejsPath;
+	_quickjsPath = nodejsPath;
 
 	// Get universal details
 	Title = song["name"].toString();
@@ -654,15 +654,13 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	bool hasPremium = false;
 	if (cookiesAssigned) hasPremium = YTMusicAPI().HasPremium(Config::YouTubeCookies);
 
-	qDebug() << Config::POToken;
-
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
 	process->setProgram(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath);
 	QStringList ytdlpArgs;
 	ytdlpArgs << "--ffmpeg-location" << QCoreApplication::applicationDirPath() + "/" + _ffmpegPath;
-	ytdlpArgs << "--js-runtimes" << "node:" + QCoreApplication::applicationDirPath() + "/" + _nodejsPath;
+	ytdlpArgs << "--js-runtimes" << "quickjs:" + QCoreApplication::applicationDirPath() + "/" + _quickjsPath;
 	ytdlpArgs << "-v";
 	ytdlpArgs << "--no-part";
 	ytdlpArgs << "--progress";

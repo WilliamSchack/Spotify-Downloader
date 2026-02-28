@@ -317,7 +317,10 @@
     <CopyFileToFolders Include="zlibd1.dll">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="node.exe">
+    <CopyFileToFolders Include="qjs.exe">
+      <Filter>Dependencies</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="libwinpthread-1.dll">
       <Filter>Dependencies</Filter>
     </CopyFileToFolders>
   </ItemGroup>
