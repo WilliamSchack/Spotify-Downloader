@@ -120,6 +120,7 @@ PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
         if (json.empty()) {
             json = currentJson;
             totalTracks = json["data"]["playlistV2"]["content"]["totalCount"];
+            retrievedTracks = json["data"]["playlistV2"]["content"]["items"].size();
             continue;
         }
         
@@ -328,7 +329,14 @@ std::string SpotifyAPI::GetLargestImageUrl(const nlohmann::json& json)
     std::string imageUrl = "";
     unsigned int highestResolution = 0;
     for (nlohmann::json coverArtDetails : json) {
-        int resolution = coverArtDetails["width"];
+        if (coverArtDetails.empty() || coverArtDetails.is_null())
+            continue;
+
+        int resolution = 0;
+        nlohmann::json widthJsonObject = coverArtDetails["width"];
+        if (!widthJsonObject.is_null())
+            resolution = widthJsonObject.get<int>();
+
         if (resolution < highestResolution)
             continue;
         
