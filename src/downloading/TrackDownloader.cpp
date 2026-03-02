@@ -1,29 +1,6 @@
-#include "IPlatformDownloader.h"
+#include "TrackDownloader.h"
 
-/*
-bool IPlatformDownloader::Download(const std::string& url, const std::string& directory)
-{
-    std::cout << "Downloading..." << std::endl;
-
-    ELinkType linkType = GetLinkType(url);
-    if (linkType == ELinkType::Unknown)
-        return false;
-
-    bool directoryValid = std::filesystem::exists(directory);
-    if (!directoryValid)
-        return false;
-
-    switch (linkType) {
-        case ELinkType::Track:    return DownloadTrack(url, directory);
-        case ELinkType::Playlist: return DownloadPlaylist(url, directory);
-        case ELinkType::Album:    return DownloadAlbum(url, directory);
-    }
-    
-    return false;
-}
-*/
-
-bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::string& directory)
+bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
 {
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
 
@@ -76,7 +53,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     // == Get the song on the target platform
     std::cout << "Searching on different platform..." << std::endl;
 
-    std::unique_ptr<IPlatformSearcher> searcher = GetSearcher();
+    std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
     if (searcher == nullptr) return false;
 
     PlatformSearcherResult searchResult = searcher->FindTrack(track);
@@ -134,7 +111,7 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
         lyrics = LyricsFinder::GetBestLyrics(track);
 
     // == Assign metadata
-    std::string publisherText = "Downloaded through Spotify Downloader by William S";
+    std::string publisherText = "Downloaded through " + std::string(APP_NAME) + " by William Schack";
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
     copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
@@ -177,19 +154,23 @@ bool IPlatformDownloader::DownloadTrack(const TrackData& track, const std::strin
     return true;
 }
 
-int IPlatformDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const std::string& directory)
+int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
 {
     int downloadErrors = 0;
     for (const TrackData& track : tracks) {
-        bool downloaded = DownloadTrack(track, directory);
+        bool downloaded = DownloadTrack(track, searchPlatform, directory);
         if (!downloaded) downloadErrors++;
     }
 
     return downloadErrors;
 }
 
-std::filesystem::path IPlatformDownloader::FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath)
+std::filesystem::path TrackDownloader::FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath)
 {
+    // TODO:
+    // > This is not thread safe, if multiple threads try to check this at the same time with the same file name, they will both write to the same file
+    // > Do this somewhere else, idealy before the download
+
     if (!std::filesystem::exists(originalPath))
         return originalPath;
 
@@ -201,7 +182,7 @@ std::filesystem::path IPlatformDownloader::FindAvailableTrackPath(const TrackDat
         (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists)) &&
         (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists))
     ) {
-        // Return the original path, it will be handled in the main download function
+        // Return the original path, it will be handled outside this function
         existingMetadata.Close();
         return originalPath;
     }
@@ -216,47 +197,3 @@ std::filesystem::path IPlatformDownloader::FindAvailableTrackPath(const TrackDat
     newPath.replace_filename(fileName);
     return newPath;
 }
-
-/*
-bool IPlatformDownloader::DownloadTrack(const std::string& url, const std::string& directory)
-{
-    std::cout << "Getting details..." << std::endl;
-
-    TrackData track = GetTrack(url);
-    return DownloadTrack(track, directory);
-}
-
-bool IPlatformDownloader::DownloadPlaylist(const std::string& url, const std::string& directory)
-{
-    PlaylistTracks playlist = GetPlaylist(url);
-
-    int downloadErrors = 0;
-    for (TrackData track : playlist.Tracks) {
-        bool downloaded = DownloadTrack(track, directory);
-        if (!downloaded) downloadErrors++;
-    }
-
-    if (downloadErrors == 0)
-        return true;
-    
-    std::cout << "Downloaded playlist with " << downloadErrors << " errors";
-    return false;
-}   
-
-bool IPlatformDownloader::DownloadAlbum(const std::string& url, const std::string& directory)
-{
-    AlbumTracks album = GetAlbum(url);
-
-    int downloadErrors = 0;
-    for (TrackData track : album.Tracks) {
-        bool downloaded = DownloadTrack(track, directory);
-        if (!downloaded) downloadErrors++;
-    }
-
-    if (downloadErrors == 0)
-        return true;
-    
-    std::cout << "Downloaded album with " << downloadErrors << " errors";
-    return false;
-}
-*/

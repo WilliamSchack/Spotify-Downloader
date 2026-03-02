@@ -23,9 +23,9 @@ std::string SpotifyDownloader::GetLinkId(const std::string& url)
     return url.substr(startIndex, endIndex - startIndex);
 }
 
-std::unique_ptr<IPlatformSearcher> SpotifyDownloader::GetSearcher()
+EPlatform SpotifyDownloader::GetSearchPlatform()
 {
-    return std::make_unique<YoutubeSearcher>();
+    return EPlatform::YouTube;
 }
 
 TrackData SpotifyDownloader::GetTrack(const std::string& url)

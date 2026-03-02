@@ -3,6 +3,7 @@
 
 #include "PlatformDetector.h"
 #include "PlatformFactory.h"
+#include "TrackDownloader.h"
 
 #include <iostream>
 #include <string>

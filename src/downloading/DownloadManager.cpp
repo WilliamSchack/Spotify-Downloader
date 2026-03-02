@@ -9,9 +9,11 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
     if (platformType == EPlatform::Unknown) return false;
 
-    // Should change this to have another middleman instead of using IPlatformDownloader and creating more later
-    std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::Create(platformType);
+    std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
     if (platform == nullptr) return false;
+
+    EPlatform searchPlatform = platform->GetSearchPlatform();
+    if (searchPlatform == EPlatform::Unknown) return false;
 
     // Get the tracks
     ELinkType linkType = platform->GetLinkType(url);
@@ -34,11 +36,6 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     if (tracks.size() == 0)
         return false;
 
-    // TODO: Add validation checks here (Fix multiple of same file name)
-    // https://github.com/WilliamSchack/Spotify-Downloader/blob/d0789b4713bde0751e75642e9cf373176750a522/Spotify%20Downloader/Downloading/PlaylistDownloader.cpp#L109
-
-    // TODO: Clear downloading folder before starting
-
     // Get track distribution
     int songCount = tracks.size();
     int threadCount = std::min(songCount, Config::PER_DOWNLOAD_THREADS);
@@ -54,8 +51,8 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
 
         std::vector<TrackData> threadTracks(tracks.begin() + currentStartIndex, tracks.begin() + currentStartIndex + currentSongCount);
         
-        std::thread thread([threadTracks, platformType, directory]() {
-            DownloadManager::ThreadDownload(threadTracks, platformType, directory);
+        std::thread thread([threadTracks, searchPlatform, directory]() {
+            DownloadManager::ThreadDownload(threadTracks, searchPlatform, directory);
         });
 
         thread.detach();
@@ -69,12 +66,11 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     return true;
 }
 
-void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory)
+void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
 {
     std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
 
-    std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::Create(platformType);
-    platform->DownloadTracks(tracks, directory);
+    TrackDownloader::DownloadTracks(tracks, searchPlatform, directory);
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 

@@ -10,15 +10,15 @@ class SpotifyDownloader : public IPlatformDownloader
 {
     public:
         SpotifyDownloader();
-    private:
+
         ELinkType GetLinkType(const std::string& url) override;
-        std::string GetLinkId(const std::string& url);
-
-        std::unique_ptr<IPlatformSearcher> GetSearcher() override;
-
+        EPlatform GetSearchPlatform() override;
+    
         TrackData GetTrack(const std::string& url) override;
         PlaylistTracks GetPlaylist(const std::string& url) override;
         AlbumTracks GetAlbum(const std::string& url) override;
+    private:
+        std::string GetLinkId(const std::string& url);
     private:
         SpotifyAPI _spotify;
 };
