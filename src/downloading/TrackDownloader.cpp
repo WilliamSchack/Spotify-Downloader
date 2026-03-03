@@ -190,7 +190,7 @@ std::filesystem::path TrackDownloader::FindAvailableTrackPath(const TrackData& t
     existingMetadata.Close();
 
     // Append the id to the file name
-    std::string fileName = originalPath.stem();
+    std::string fileName = originalPath.stem().string();
     fileName += "_" + track.Id + originalPath.extension().string();
 
     std::filesystem::path newPath = originalPath;

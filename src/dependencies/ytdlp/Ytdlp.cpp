@@ -33,7 +33,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         // Get the download progress
-        if (StringUtils::Contains(line, "[download]") && !StringUtils::Contains(line, pathNoExtension.filename())) {
+        if (StringUtils::Contains(line, "[download]") && !StringUtils::Contains(line, pathNoExtension.filename().string())) {
             std::smatch matches;
             if (!std::regex_search(line, matches, std::regex(R"(]\s*(.*)%)")))
                 return;

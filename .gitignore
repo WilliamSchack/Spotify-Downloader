@@ -99,6 +99,9 @@ CMakeUserPresets.json
 # vscode
 .vscode
 
+# vs community
+out/
+
 # pyenv / pipenv
 .pyenv/
 .venv/
@@ -108,3 +111,6 @@ appimagetool
 
 # dist
 dist/
+
+# cmake presets
+CMakePresets.json

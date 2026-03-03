@@ -60,7 +60,7 @@ bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const
 bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image)
 {
     return stbi_write_png(
-        path.c_str(),
+        path.string().c_str(),
         image.Width,
         image.Height,
         image.Channels,
@@ -72,7 +72,7 @@ bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image
 bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image, const int& quality)
 {
     return stbi_write_jpg(
-        path.c_str(),
+        path.string().c_str(),
         image.Width,
         image.Height,
         image.Channels,
@@ -86,7 +86,7 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
     Image image;
     image.Format = GetImageFormat(path);
     image.Data = stbi_load(
-        path.c_str(),
+        path.string().c_str(),
         &image.Width,
         &image.Height,
         &image.Channels,

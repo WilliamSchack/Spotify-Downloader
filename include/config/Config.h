@@ -21,7 +21,7 @@ class Config
 
         // Has the requested lyrics sources with 0 as the highest priority
         static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {
-
+            ELyricsSource::None
         };
 };
 

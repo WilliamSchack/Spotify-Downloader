@@ -35,7 +35,7 @@ endif()
 
 set(QUICKJS_URL "${QUICKJS_URL}.zip")
 set(QUICKJS_PATH "${BINARIES_DIR}/${QUICKJS_FILE_NAME}")
-set(QUICKJS_ARCHIVE_PATH "${BINARIES_DIR}/quickjs_archive")
+set(QUICKJS_ARCHIVE_PATH "${BINARIES_DIR}/quickjs_archive.zip")
 set(QUICKJS_ARCHIVE_EXTRACTED_PATH "${BINARIES_DIR}/quickjs_archive_extracted")
 
 # Download
@@ -54,9 +54,12 @@ if(NOT EXISTS ${QUICKJS_PATH})
 	# Copy from archive to binaries folder
 	message(STATUS "Copying quickjs to binaries...")
 	file(COPY "${QUICKJS_ARCHIVE_EXTRACTED_PATH}/${QUICKJS_FILE_NAME}" DESTINATION "${BINARIES_DIR}")
-	
-	# Give executable permissions
-	if(UNIX)
+
+	if(WIN32)
+		# Copy dll file
+		file(COPY "${QUICKJS_ARCHIVE_EXTRACTED_PATH}/libwinpthread-1.dll" DESTINATION "${BINARIES_DIR}")
+	elseif(UNIX)
+		# Give executable permissions
 		file(CHMOD ${QUICKJS_PATH} PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 	endif()
 

@@ -108,7 +108,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
 
     // Get details
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath); 
-    std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension());
+    std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
     std::filesystem::path tempPath = filePath;
     tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());

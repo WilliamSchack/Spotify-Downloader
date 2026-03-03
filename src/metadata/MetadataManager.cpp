@@ -6,7 +6,7 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
         return;
 
     _fileRef = TagLib::FileRef(filePath.string().c_str(), true, TagLib::AudioProperties::Accurate);
-    _codec = CodecFactory::Create(filePath.extension());
+    _codec = CodecFactory::Create(filePath.extension().string());
 }
 
 MetadataManager::~MetadataManager()
