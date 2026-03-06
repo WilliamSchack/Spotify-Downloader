@@ -35,7 +35,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         // Get the download progress
         if (StringUtils::Contains(line, "[download]") && !StringUtils::Contains(line, pathNoExtension.filename().string())) {
             std::smatch matches;
-            if (!std::regex_search(line, matches, std::regex(R"(]\s*(.*)%)")))
+            if (!std::regex_search(line, matches, std::regex(R"(\]\s*([\d.]+)%)")))
                 return;
 
             float progressPercent = std::atof(matches[1].str().c_str()) / 100;
