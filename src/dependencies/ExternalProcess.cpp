@@ -1,17 +1,17 @@
-#include "Process.h"
+#include "ExternalProcess.h"
 
-Process::Process(const std::filesystem::path& path)
+ExternalProcess::ExternalProcess(const std::filesystem::path& path)
     : _path(path) {}
 
-Process Process::GetRelativeProcess(const std::filesystem::path& relativePath)
+ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path& relativePath)
 {
     std::filesystem::path executablePath = FileUtils::GetExecutablePath();
     std::filesystem::path processPath = executablePath.parent_path() / relativePath;
 
-    return Process(processPath);
+    return ExternalProcess(processPath);
 }
 
-std::string Process::GetCommand()
+std::string ExternalProcess::GetCommand()
 {
     std::string command = "\"" + _path.string() + "\"";
 
@@ -27,18 +27,24 @@ std::string Process::GetCommand()
     return command;
 }
 
-void Process::AddArgument(const std::string& arg)
+void ExternalProcess::AddArgument(const std::string& arg)
 {
     _args.push_back(arg);
 }
 
-void Process::AddArgument(const std::string& arg, const std::string& value)
+void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
 {
     AddArgument(arg + " " + value);
 }
 
-std::string Process::Execute(std::function<void(std::string)> lineAvailableCallback)
+std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
 {
+#if WIN32
+    STARTUPINFO info;
+    PROCESS_INFORMATION processInfo;
+
+    return "";
+#else
     FILE* pipe = popen(GetCommand().c_str(), "r");
     if (pipe == NULL) {
         perror("Failed to open process");
@@ -68,4 +74,5 @@ std::string Process::Execute(std::function<void(std::string)> lineAvailableCallb
     }
 
     return output;
+#endif
 }

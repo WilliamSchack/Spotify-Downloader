@@ -1,5 +1,5 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef EXTERNALPROCESS_H
+#define EXTERNALPROCESS_H
 
 #include "FileUtils.h"
 #include "StringUtils.h"
@@ -7,11 +7,15 @@
 #include <vector>
 #include <functional>
 
-class Process
+#if WIN32
+#include <windows.h>
+#endif
+
+class ExternalProcess
 {
     public:
-        Process(const std::filesystem::path& path);
-        static Process GetRelativeProcess(const std::filesystem::path& relativePath);
+        ExternalProcess(const std::filesystem::path& path);
+        static ExternalProcess GetRelativeProcess(const std::filesystem::path& relativePath);
 
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);

@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/Process.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ExternalProcess.cpp
 )
 
 add_subdirectory(ffmpeg)

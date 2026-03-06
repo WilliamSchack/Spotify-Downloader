@@ -2,7 +2,7 @@
 
 std::string Ytdlp::GetVersion()
 {
-    Process process = Process::GetRelativeProcess(YTDLP_PATH_RELATIVE);
+    ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
     process.AddArgument("--version");
 
     std::string output = process.Execute();
@@ -74,7 +74,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     };
 
     // Download
-    Process process = Process::GetRelativeProcess(YTDLP_PATH_RELATIVE);
+    ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
     process.AddArgument("--ffmpeg-location", "\"" + ffmpegPath.string() + "\"");
     process.AddArgument("--js-runtimes", "quickjs:\"" + quickJsPath.string() + "\"");
     process.AddArgument("--print", "\"DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s\"");

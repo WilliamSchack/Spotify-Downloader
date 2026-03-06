@@ -4,7 +4,7 @@
 
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
-    Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
+    ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
     process.AddArgument("-i", "\"" + filePath.string() + "\"");
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
@@ -190,7 +190,7 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
     };
 
     // Setup command
-    Process process = Process::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
+    ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
     for (std::string arg : args) {
         process.AddArgument(arg);
     }
