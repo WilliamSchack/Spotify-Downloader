@@ -328,7 +328,7 @@ std::string SpotifyAPI::GetLargestImageUrl(const nlohmann::json& json)
 {
     std::string imageUrl = "";
     unsigned int highestResolution = 0;
-    for (nlohmann::json coverArtDetails : json.array()) {
+    for (nlohmann::json coverArtDetails : json) {
         if (coverArtDetails.empty() || coverArtDetails.is_null())
             continue;
 
