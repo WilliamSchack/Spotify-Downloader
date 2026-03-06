@@ -21,8 +21,10 @@ std::string ExternalProcess::GetCommand()
         command += _args[i];
     }
 
+#ifdef UNIX
     // Dont relay outputs to stdout
     command += " 2>&1";
+#endif
 
     return command;
 }
@@ -40,10 +42,95 @@ void ExternalProcess::AddArgument(const std::string& arg, const std::string& val
 std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
 {
 #if WIN32
-    STARTUPINFO info;
-    PROCESS_INFORMATION processInfo;
+    SECURITY_ATTRIBUTES securityAttributes; 
+    securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+    securityAttributes.bInheritHandle = TRUE; 
+    securityAttributes.lpSecurityDescriptor = NULL; 
 
-    return "";
+    HANDLE hReadPipe;
+    HANDLE hWritePipe;
+    if (!CreatePipe(&hReadPipe, &hWritePipe, &securityAttributes, 0)) {
+        std::cout << "Failed to create process pipe" << std::endl;
+        return "";
+    }
+
+    SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
+
+    STARTUPINFOA startupInfo;
+    ZeroMemory(&startupInfo, sizeof(STARTUPINFOA));
+    startupInfo.cb = sizeof(STARTUPINFOA);
+    startupInfo.hStdOutput = hWritePipe;
+    startupInfo.hStdError = hWritePipe;
+    startupInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    PROCESS_INFORMATION processInfo;
+    ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
+
+    std::string command = GetCommand();
+    bool processStarted = CreateProcessA(
+        NULL,
+        command.data(),
+        NULL,
+        NULL,
+        TRUE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &startupInfo,
+        &processInfo
+    );
+
+    CloseHandle(hWritePipe);
+
+    if (!processStarted) {
+        CloseHandle(hReadPipe);
+
+        std::cout << "Process not started" << std::endl;
+        return "";
+    }
+
+    std::string output = "";
+    char buffer[256];
+    DWORD dwBytesRead;
+
+    std::string lineBuffer = "";
+
+    while (ReadFile(hReadPipe, buffer, sizeof(buffer) - 1, &dwBytesRead, NULL) && dwBytesRead > 0) {
+        buffer[dwBytesRead] = '\0';
+        lineBuffer += buffer;
+
+        // Can return multiple lines, or not a complete line
+        size_t newLinePos;
+        while ((newLinePos = lineBuffer.find_first_of("\r\n")) != std::string::npos) {
+            std::string line = lineBuffer.substr(0, newLinePos);
+            lineBuffer = lineBuffer.substr(newLinePos + 1);
+
+            if (!line.empty() && lineBuffer[0] == '\n')
+                lineBuffer = lineBuffer.substr(1);
+
+            if (line.empty())
+                continue;
+
+            output += line;
+            if (lineAvailableCallback != nullptr)
+                lineAvailableCallback(line);
+        }
+    }
+
+    // Handle any extra output after last newline
+    if (!lineBuffer.empty()) {
+        output += lineBuffer;
+        if (lineAvailableCallback != nullptr)
+                lineAvailableCallback(lineBuffer);
+    }
+
+    WaitForSingleObject(processInfo.hProcess, INFINITE);
+
+    CloseHandle(hReadPipe);
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
+
+    return output;
 #else
     FILE* pipe = popen(GetCommand().c_str(), "r");
     if (pipe == NULL) {
