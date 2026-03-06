@@ -170,7 +170,9 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 	nlohmann::json contents = responseJson["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
 	nlohmann::json searchResults;
-	for (nlohmann::json result : contents.array()) {
+	for (nlohmann::json result : contents) {
+		nlohmann::json shelfContents;
+
 		std::string type;
 		std::string category;
 
@@ -208,18 +210,18 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 
 			searchResults.push_back(topResult);
 
-			if (!result["musicCardShelfRenderer"].contains("contents") || contents != result["musicCardShelfRenderer"]["contents"])
+			if (!data.contains("contents"))
 				continue;
 
-			contents = result["musicCardShelfRenderer"]["contents"];
+			shelfContents = result["musicCardShelfRenderer"]["contents"];
 			category = "";
-			if (contents[0].contains("messageRenderer")) {
-				contents.erase(0);
-				category = contents[0]["messageRenderer"]["text"]["runs"][0]["text"];
+			if (shelfContents[0].contains("messageRenderer")) {
+				shelfContents.erase(0);
+				category = shelfContents[0]["messageRenderer"]["text"]["runs"][0]["text"];
 			}
 
 		} else if (result.contains("musicShelfRenderer")) {
-			contents = result["musicShelfRenderer"]["contents"];
+			shelfContents = result["musicShelfRenderer"]["contents"];
 			category = JsonUtils::SafelyNavigate<std::string>(result, { "musicShelfRenderer", "title", "runs", 0, "text" });
 
 			type = "";
@@ -239,13 +241,13 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 		}
 
 		// Limit search results
-		if (contents.size() > limit) {
-			while (contents.size() > limit) {
-				contents.erase(contents.size() - 1);
+		if (shelfContents.size() > limit) {
+			while (shelfContents.size() > limit) {
+				shelfContents.erase(shelfContents.size() - 1);
 			}
 		}
 
-		nlohmann::json currentSearchResults = ParseSearchResults(contents, type, category);
+		nlohmann::json currentSearchResults = ParseSearchResults(shelfContents, type, category);
 		JsonUtils::ExtendArray(searchResults, currentSearchResults);
 
 		if (filter != EYoutubeCategory::None) {
@@ -407,7 +409,7 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
 nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum) {
 	nlohmann::json songs = nlohmann::json::array();
 
-	for (nlohmann::json result : results.array()) {
+	for (nlohmann::json result : results) {
 		if (!result.contains("musicResponsiveListItemRenderer"))
 			continue;
 
@@ -639,7 +641,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 
 	int defaultOffset = resultType.empty() ? 2 : 0;
 
-	for (nlohmann::json val : results.array()) {
+	for (nlohmann::json val : results) {
 		nlohmann::json data = val["musicResponsiveListItemRenderer"];
 
 		nlohmann::json searchResult {
@@ -795,7 +797,7 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 
 		bool unsyncedTimedLyrics = false;
 
-		for (nlohmann::json lyricsObject : timedLyricsData.array()) {
+		for (nlohmann::json lyricsObject : timedLyricsData) {
 			int startMs = 0;
 			int endMs = 0;
 			
