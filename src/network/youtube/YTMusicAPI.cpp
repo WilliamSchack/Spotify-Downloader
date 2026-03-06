@@ -166,11 +166,11 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 	nlohmann::json responseJson = nlohmann::json::parse(response.Body);
 	if (!responseJson.contains("contents"))
 		return std::vector<YoutubeSearchResult>();
-
+	
 	nlohmann::json contents = responseJson["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
 	nlohmann::json searchResults;
-	for (nlohmann::json result : contents) {
+	for (nlohmann::json result : contents.array()) {
 		std::string type;
 		std::string category;
 
@@ -407,7 +407,7 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
 nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum) {
 	nlohmann::json songs = nlohmann::json::array();
 
-	for (nlohmann::json result : results) {
+	for (nlohmann::json result : results.array()) {
 		if (!result.contains("musicResponsiveListItemRenderer"))
 			continue;
 
@@ -639,7 +639,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 
 	int defaultOffset = resultType.empty() ? 2 : 0;
 
-	for (nlohmann::json val : results) {
+	for (nlohmann::json val : results.array()) {
 		nlohmann::json data = val["musicResponsiveListItemRenderer"];
 
 		nlohmann::json searchResult {
@@ -795,7 +795,7 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 
 		bool unsyncedTimedLyrics = false;
 
-		for (nlohmann::json lyricsObject : timedLyricsData) {
+		for (nlohmann::json lyricsObject : timedLyricsData.array()) {
 			int startMs = 0;
 			int endMs = 0;
 			
