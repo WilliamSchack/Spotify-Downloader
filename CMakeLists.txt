@@ -95,11 +95,6 @@ if (WIN32)
 	)
 
 	# Add curl dll
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E echo
-			"CURL target file: $<TARGET_FILE:CURL::libcurl>"
-	)
-
 	get_target_property(CURL_DLL CURL::libcurl IMPORTED_LOCATION)
 	file(TO_CMAKE_PATH "${CURL_DLL}" CURL_DLL)
 	if (CURL_DLL MATCHES "/lib/libcurl\\.lib$")
@@ -120,6 +115,7 @@ if (WIN32)
 			--verbose 1
 			--no-translations
 			--compiler-runtime
+			--qmldir "${CMAKE_SOURCE_DIR}/gui"
 	)
 elseif(APPLE)
 	# Mac setup
