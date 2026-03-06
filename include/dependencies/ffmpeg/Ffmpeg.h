@@ -2,7 +2,7 @@
 #define FFMPEG_H
 
 #include "FfmpegAudioDetails.h"
-#include "Process.h"
+#include "ExternalProcess.h"
 #include "CodecFactory.h"
 #include "StringUtils.h"
 

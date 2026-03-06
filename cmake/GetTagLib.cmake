@@ -41,11 +41,14 @@ elseif(UNIX)
 	)
 endif()
 
-# Copy shared library to folder after build
 if(WIN32)
+	# Copy dll
+	ExternalProject_Get_Property(taglib STAMP_DIR)
+	
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${taglib_INSTALL_DIR}/bin/tag.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>
+		DEPENDS "${STAMP_DIR}/taglib-install" # Wait for install
 	)
 endif()

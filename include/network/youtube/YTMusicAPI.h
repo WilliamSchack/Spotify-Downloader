@@ -16,7 +16,6 @@
 
 #include <time.h>
 #include <regex>
-#include <format>
 
 #include <iostream>
 #include <QObject>

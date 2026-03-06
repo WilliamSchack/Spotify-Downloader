@@ -1,7 +1,7 @@
 #ifndef YTDLP_H
 #define YTDLP_H
 
-#include "Process.h"
+#include "ExternalProcess.h"
 #include "YtdlpResult.h"
 
 #include <iostream>

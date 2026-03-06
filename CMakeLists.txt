@@ -45,6 +45,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 	Core
 	Widgets
 	Qml
+	Quick
 	WebEngineCore
 )
 
@@ -76,8 +77,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Core
 	Qt6::Widgets
 	Qt6::Qml
+	Qt6::Quick
 	Qt6::WebEngineCore
-	${CURL_LIBRARIES}
+	CURL::libcurl
 )
 
 # Enable debug logging on RELWITHDEBINFO configuration
@@ -91,6 +93,25 @@ if (WIN32)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		WIN32_EXECUTABLE TRUE
 	)
+
+	# Add curl dll
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E echo
+			"CURL target file: $<TARGET_FILE:CURL::libcurl>"
+	)
+
+	get_target_property(CURL_DLL CURL::libcurl IMPORTED_LOCATION)
+	file(TO_CMAKE_PATH "${CURL_DLL}" CURL_DLL)
+	if (CURL_DLL MATCHES "/lib/libcurl\\.lib$")
+		# If the path is the .lib file, change to the dll file
+		string(REPLACE "/lib/libcurl.lib" "/bin/libcurl.dll" CURL_DLL "${CURL_DLL}")
+	endif()
+	
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CURL_DLL}
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    )
 
 	# Add qt libraries
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
