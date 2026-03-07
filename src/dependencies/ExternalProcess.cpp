@@ -11,27 +11,37 @@ ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path&
     return ExternalProcess(processPath);
 }
 
-std::string ExternalProcess::GetCommand()
+std::wstring ExternalProcess::GetCommand()
 {
-    std::string command = "\"" + _path.string() + "\"";
+    std::wstring command = L"\"" + _path.wstring() + L"\"";
 
     int argsSize = _args.size();
     for (int i = 0; i < argsSize; i++) {
-        command += " ";
+        command += L" ";
         command += _args[i];
     }
 
 #ifdef UNIX
     // Dont relay outputs to stdout
-    command += " 2>&1";
+    command += L" 2>&1";
 #endif
 
     return command;
 }
 
-void ExternalProcess::AddArgument(const std::string& arg)
+void ExternalProcess::AddArgument(const std::wstring& arg)
 {
     _args.push_back(arg);
+}
+
+void ExternalProcess::AddArgument(const std::wstring& arg, const std::wstring& value)
+{
+    AddArgument(arg + L" " + value);
+}
+
+void ExternalProcess::AddArgument(const std::string& arg)
+{
+    AddArgument(StringUtils::ToWString(arg));
 }
 
 void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
@@ -56,9 +66,9 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
 
     SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
 
-    STARTUPINFOA startupInfo;
-    ZeroMemory(&startupInfo, sizeof(STARTUPINFOA));
-    startupInfo.cb = sizeof(STARTUPINFOA);
+    STARTUPINFOW startupInfo;
+    ZeroMemory(&startupInfo, sizeof(STARTUPINFOW));
+    startupInfo.cb = sizeof(STARTUPINFOW);
     startupInfo.hStdOutput = hWritePipe;
     startupInfo.hStdError = hWritePipe;
     startupInfo.dwFlags |= STARTF_USESTDHANDLES;
@@ -66,8 +76,8 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     PROCESS_INFORMATION processInfo;
     ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 
-    std::string command = GetCommand();
-    bool processStarted = CreateProcessA(
+    std::wstring command = GetCommand();
+    bool processStarted = CreateProcessW(
         NULL,
         command.data(),
         NULL,

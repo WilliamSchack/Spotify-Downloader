@@ -27,6 +27,9 @@ class ImageHandler
         static Image DownloadImage(const std::string& url);
 
         static std::vector<unsigned char> EncodeImage(const Image& image);
+    private:
+        static FILE* GetFile(const std::filesystem::path& path);
+        static void WriteToFile(void* ctx, void* data, int size);
 };
 
 #endif

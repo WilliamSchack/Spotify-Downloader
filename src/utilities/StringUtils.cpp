@@ -1,11 +1,22 @@
 #include "StringUtils.h"
 
+std::wstring StringUtils::ToWString(const std::string& string)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(string);
+}
+
 bool StringUtils::StartsWith(const std::string& string, const std::string& value)
 {
     return string.rfind(value, 0) == 0;
 }
 
 bool StringUtils::Contains(const std::string& string, const std::string& value)
+{
+    return string.find(value) != std::string::npos;
+}
+
+bool StringUtils::Contains(const std::wstring& string, const std::wstring& value)
 {
     return string.find(value) != std::string::npos;
 }
@@ -28,6 +39,11 @@ std::string StringUtils::ReplaceAll(std::string string, const std::string& from,
 }
 
 void StringUtils::RemoveChar(std::string& string, const char& c)
+{
+    string.erase(std::remove(string.begin(), string.end(), c), string.end());
+}
+
+void StringUtils::RemoveChar(std::wstring& string, const char& c)
 {
     string.erase(std::remove(string.begin(), string.end(), c), string.end());
 }

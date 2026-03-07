@@ -1,11 +1,19 @@
-    #include "FileUtils.h"
+#include "FileUtils.h"
 
 std::string FileUtils::ValidateFileName(const std::string& fileName)
 {
     std::string copiedString = fileName;
-    std::string invalidChars = R"(<>:"/\|?*)";
+    for (const char c : INVALID_FILE_CHARS) {
+        StringUtils::RemoveChar(copiedString, c);
+    }
 
-    for (const char c : invalidChars) {
+    return copiedString;
+};
+
+std::wstring FileUtils::ValidateFileName(const std::wstring& fileName)
+{
+    std::wstring copiedString(fileName.begin(), fileName.end());
+    for (const char c : INVALID_FILE_CHARS) {
         StringUtils::RemoveChar(copiedString, c);
     }
 
@@ -20,7 +28,6 @@ std::string FileUtils::ValidateDirectoryName(const std::string& directoryName)
 std::filesystem::path FileUtils::GetExecutablePath()
 {
     #ifdef _WIN32
-    // Untested
     char buffer[MAX_PATH];
     DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
     if (len == 0) {

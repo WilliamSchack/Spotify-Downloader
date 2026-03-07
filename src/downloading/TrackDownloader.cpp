@@ -16,7 +16,7 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
     if (!std::filesystem::exists(downloadsFolder))
         std::filesystem::create_directory(downloadsFolder);
 
-    std::string fileName = track.Name + " - " + track.Artists[0].Name;
+    std::wstring fileName = StringUtils::ToWString(track.Name) + L" - " + StringUtils::ToWString(track.Artists[0].Name);
     fileName = FileUtils::ValidateFileName(fileName);
 
     std::filesystem::path tempDownloadPath = downloadsFolder / fileName;
@@ -24,7 +24,7 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
     std::filesystem::path targetFolder = directory;
 
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
-    std::filesystem::path targetDownloadPath = targetFolder / (fileName + "." + targetCodec->GetString());
+    std::filesystem::path targetDownloadPath = targetFolder / (fileName + L"." + StringUtils::ToWString(targetCodec->GetString()));
     targetDownloadPath = FindAvailableTrackPath(track, targetDownloadPath);
 
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
@@ -37,7 +37,7 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
     if (!std::filesystem::exists(imagesFolder))
         std::filesystem::create_directory(imagesFolder);
 
-    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover";
+    std::wstring imageFileName = StringUtils::ToWString(track.Album.Name) + L"(" + StringUtils::ToWString(track.Artists[0].Name) + L")_Cover";
     imageFileName = FileUtils::ValidateFileName(imageFileName);
 
     std::filesystem::path imageFilePath = imagesFolder / imageFileName;

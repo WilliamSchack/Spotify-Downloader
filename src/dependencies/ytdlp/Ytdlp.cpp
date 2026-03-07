@@ -15,8 +15,8 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     YtdlpResult result;
 
     // Check file path
-    std::filesystem::path pathM4a = pathNoExtension.string() + ".m4a";
-    std::filesystem::path pathWebm = pathNoExtension.string() + ".webm";
+    std::filesystem::path pathM4a = pathNoExtension.wstring() + L".m4a";
+    std::filesystem::path pathWebm = pathNoExtension.wstring() + L".webm";
 
     // Get dependencies paths (move to their own files)
     std::filesystem::path executablePath = FileUtils::GetExecutablePath();
@@ -33,7 +33,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         // Get the download progress
-        if (StringUtils::Contains(line, "[download]") && !StringUtils::Contains(line, pathNoExtension.filename().string())) {
+        if (StringUtils::Contains(line, "[download]") && !StringUtils::Contains(StringUtils::ToWString(line), pathNoExtension.filename().wstring())) {
             std::smatch matches;
             if (!std::regex_search(line, matches, std::regex(R"(\]\s*([\d.]+)%)")))
                 return;
@@ -64,7 +64,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
             // Extension
             if (std::regex_search(line, matches, std::regex(R"(\[extension\](\w+))"))) {
                 extension = matches[1];
-                downloadedPath = downloadedPath.string() + "." + extension;
+                downloadedPath = downloadedPath.wstring() + L"." + StringUtils::ToWString(extension);
             }
         }
 
@@ -85,7 +85,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     process.AddArgument("--no-simulate");
     process.AddArgument("-f", "ba");
     process.AddArgument("--audio-quality", "0");
-    process.AddArgument("-o", "\"" + pathNoExtension.string() + ".%(ext)s\"");
+    process.AddArgument(L"-o", L"\"" + pathNoExtension.wstring() + L".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 
     std::string output = process.Execute(newLineCallback);

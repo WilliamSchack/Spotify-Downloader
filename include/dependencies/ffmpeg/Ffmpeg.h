@@ -23,7 +23,7 @@ class Ffmpeg
         static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate);
     private:
         // TODO: Input progress callback
-        static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args);
+        static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::wstring>& args);
 };
 
 #endif

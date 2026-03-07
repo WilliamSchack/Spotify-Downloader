@@ -48,7 +48,7 @@ EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
 
 bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const Image& image)
 {
-    std::filesystem::path path = pathNoExtension.string() + "." + GetImageFormatString(image.Format);
+    std::filesystem::path path = pathNoExtension.wstring() + L"." + StringUtils::ToWString(GetImageFormatString(image.Format));
     if (image.Format == EImageFormat::PNG) return SavePng(path, image);
     if (image.Format == EImageFormat::JPG) return SaveJpg(path, image);
 
@@ -59,40 +59,59 @@ bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const
 
 bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image)
 {
-    return stbi_write_png(
-        path.string().c_str(),
+    FILE* file = GetFile(path);
+    if (!file) return false;
+
+    int result = stbi_write_png_to_func(
+        WriteToFile,
+        file,
         image.Width,
         image.Height,
         image.Channels,
         image.Data,
         image.Width * image.Channels
     );
+
+    fclose(file);
+    return result != 0;
 };
 
 bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image, const int& quality)
 {
-    return stbi_write_jpg(
-        path.string().c_str(),
+    FILE* file = GetFile(path);
+    if (!file) return false;
+
+    int result = stbi_write_jpg_to_func(
+        WriteToFile,
+        file,
         image.Width,
         image.Height,
         image.Channels,
         image.Data,
         quality
     );
+
+    fclose(file);
+    return result != 0;
 };
 
 Image ImageHandler::LoadImage(const std::filesystem::path& path)
 {
     Image image;
+
+    FILE* file = GetFile(path);
+    if (!file) return image;
+
     image.Format = GetImageFormat(path);
-    image.Data = stbi_load(
-        path.string().c_str(),
+    image.Data = stbi_load_from_file(
+        file,
         &image.Width,
         &image.Height,
         &image.Channels,
         0
     );
 
+    fclose(file);
     return image;
 };
 
@@ -157,4 +176,21 @@ std::vector<unsigned char> ImageHandler::EncodeImage(const Image& image)
     }
 
     return buffer;
+}
+
+FILE* ImageHandler::GetFile(const std::filesystem::path& path)
+{
+#if WIN32
+    // On windows the wstring is required for some file names to work correctly
+    FILE* file = _wfopen(path.wstring().c_str(), L"wb");
+#else
+    FILE* file = fopen(path.c_str(), "wb");
+#endif
+
+    return file;
+}
+
+void ImageHandler::WriteToFile(void* ctx, void* data, int size)
+{
+    fwrite(data, 1, size, static_cast<FILE*>(ctx));
 }

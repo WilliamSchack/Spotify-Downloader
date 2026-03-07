@@ -5,7 +5,7 @@
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument("-i", "\"" + filePath.string() + "\"");
+    process.AddArgument(L"-i", L"\"" + filePath.wstring() + L"\"");
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
     process.AddArgument("-"); // No output
@@ -79,19 +79,19 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
 
     // Convert
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
-    std::vector<std::string> args {
-        "-i", "\"" + filePath.string() + "\"",
-        "-progress", "-",
-        "-nostats",
-        targetCodec->GetFfmpegConversionParams()
+    std::vector<std::wstring> args {
+        L"-i", L"\"" + filePath.wstring() + L"\"",
+        L"-progress", L"-",
+        L"-nostats",
+        StringUtils::ToWString(targetCodec->GetFfmpegConversionParams())
     };
 
     if (!targetCodec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0) {
-        args.push_back("-b:a");
-        args.push_back(std::to_string(audioDetails.Bitrate) + "k");
+        args.push_back(L"-b:a");
+        args.push_back(StringUtils::ToWString(std::to_string(audioDetails.Bitrate)) + L"k");
     }
 
-    args.push_back("\"" + newPath.string() + "\"");
+    args.push_back(L"\"" + newPath.wstring() + L"\"");
 
     Execute(audioDetails, args);
 
@@ -111,24 +111,24 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
     std::filesystem::path tempPath = filePath;
-    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+    tempPath.replace_filename(filePath.stem().wstring() + L"_ffmpeg" + filePath.extension().wstring());
 
     float dbDifference = (targetDb - audioDetails.MeanDB) + 0.4;  // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why
 
     // Normalise
-    std::vector<std::string> args {
-        "-i", "\"" + filePath.string() + "\"",
-        "-progress", "-",
-        "-nostats",
-        "-af", "volume=" + std::to_string(dbDifference) + "dB"
+    std::vector<std::wstring> args {
+        L"-i", L"\"" + filePath.wstring() + L"\"",
+        L"-progress", L"-",
+        L"-nostats",
+        L"-af", L"volume=" + StringUtils::ToWString(std::to_string(dbDifference)) + L"dB"
     };
 
     if (!codec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0) {
-        args.push_back("-b:a");
-        args.push_back(std::to_string(audioDetails.Bitrate) + "k");
+        args.push_back(L"-b:a");
+        args.push_back(StringUtils::ToWString(std::to_string(audioDetails.Bitrate)) + L"k");
     }
 
-    args.push_back("\"" + tempPath.string() + "\"");
+    args.push_back(L"\"" + tempPath.wstring() + L"\"");
 
     Execute(audioDetails, args);
 
@@ -149,16 +149,16 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
 
     // Get details
     std::filesystem::path tempPath = filePath;
-    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+    tempPath.replace_filename(filePath.stem().wstring() + L"_ffmpeg" + filePath.extension().wstring());
     
     // Set bitrate
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     Execute(audioDetails, {
-        "-i", "\"" + filePath.string() + "\"",
-        "-progress", "-",
-        "-nostats",
-        "-b:a", std::to_string(bitrate) + "k",
-        "\"" + tempPath.string() + "\""
+        L"-i", L"\"" + filePath.wstring() + L"\"",
+        L"-progress", L"-",
+        L"-nostats",
+        L"-b:a", StringUtils::ToWString(std::to_string(bitrate)) + L"k",
+        L"\"" + tempPath.wstring() + L"\""
     });
 
     // Rename back to original
@@ -171,7 +171,7 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
     return true;
 }
 
-std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args)
+std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::wstring>& args)
 {
     // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
@@ -191,7 +191,7 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
 
     // Setup command
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    for (std::string arg : args) {
+    for (std::wstring arg : args) {
         process.AddArgument(arg);
     }
 
