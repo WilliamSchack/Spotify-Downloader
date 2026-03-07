@@ -6,6 +6,12 @@ std::wstring StringUtils::ToWString(const std::string& string)
     return converter.from_bytes(string);
 }
 
+std::string StringUtils::FromWString(const std::wstring& string)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(string);
+}
+
 bool StringUtils::StartsWith(const std::string& string, const std::string& value)
 {
     return string.rfind(value, 0) == 0;

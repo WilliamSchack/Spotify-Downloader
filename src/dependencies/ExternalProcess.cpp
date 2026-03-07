@@ -21,7 +21,7 @@ std::wstring ExternalProcess::GetCommand()
         command += _args[i];
     }
 
-#ifdef UNIX
+#ifndef WIN32
     // Dont relay outputs to stdout
     command += L" 2>&1";
 #endif
@@ -142,7 +142,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
 
     return output;
 #else
-    FILE* pipe = popen(GetCommand().c_str(), "r");
+    FILE* pipe = popen(StringUtils::FromWString(GetCommand()).c_str(), "r");
     if (pipe == NULL) {
         perror("Failed to open process");
         return "";
