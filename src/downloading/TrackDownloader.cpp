@@ -18,14 +18,16 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
 
     std::wstring fileName = StringUtils::ToWString(track.Name) + L" - " + StringUtils::ToWString(track.Artists[0].Name);
     fileName = FileUtils::ValidateFileName(fileName);
-
-    std::filesystem::path tempDownloadPath = downloadsFolder / fileName;
-
+    
     std::filesystem::path targetFolder = directory;
-
+    
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
     std::filesystem::path targetDownloadPath = targetFolder / (fileName + L"." + StringUtils::ToWString(targetCodec->GetString()));
-    targetDownloadPath = FindAvailableTrackPath(track, targetDownloadPath);
+    
+    FilePathReserver pathReserver;
+    targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
+
+    std::filesystem::path tempDownloadPath = downloadsFolder / targetDownloadPath.stem();
 
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
         return false;
@@ -163,37 +165,4 @@ int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const 
     }
 
     return downloadErrors;
-}
-
-std::filesystem::path TrackDownloader::FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath)
-{
-    // TODO:
-    // > This is not thread safe, if multiple threads try to check this at the same time with the same file name, they will both write to the same file
-    // > Do this somewhere else, idealy before the download
-
-    if (!std::filesystem::exists(originalPath))
-        return originalPath;
-
-    // Check if the existing file is the same as this track, only check the basic details
-    MetadataManager existingMetadata(originalPath);
-    if (existingMetadata.GetTitle() == track.Name &&
-        existingMetadata.GetAlbumName() == track.Album.Name &&
-        existingMetadata.GetTrackNumber() == track.TrackNumber &&
-        (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists)) &&
-        (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists))
-    ) {
-        // Return the original path, it will be handled outside this function
-        existingMetadata.Close();
-        return originalPath;
-    }
-
-    existingMetadata.Close();
-
-    // Append the id to the file name
-    std::string fileName = originalPath.stem().string();
-    fileName += "_" + track.Id + originalPath.extension().string();
-
-    std::filesystem::path newPath = originalPath;
-    newPath.replace_filename(fileName);
-    return newPath;
 }

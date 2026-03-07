@@ -11,6 +11,7 @@
 #include "Ytdlp.h"
 #include "Ffmpeg.h"
 #include "LyricsFinder.h"
+#include "FilePathReserver.h"
 
 #include <iostream>
 
