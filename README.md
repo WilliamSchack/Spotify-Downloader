@@ -17,9 +17,9 @@
 
 Notes:
 - This is my first app using cmake so it may have problems, if you find any please [submit an issue](https://github.com/WilliamSchack/Spotify-Downloader/issues/new/choose)
-- I am mainly testing on arch linux and windows. Im using an M1 mac for testing every major change
-- Dependency downloading does not work properly for arm based windows/linux, ill fix that later in development
+- I am mainly testing on arch linux, windows, and an an M1 mac less often (about every major change)
 - Other linux distros will be tested when I get to releasing the app
+- Dependency downloading does not work properly for arm based windows/linux, ill fix that later in development
 
 **Dependencies**
 - CMake
