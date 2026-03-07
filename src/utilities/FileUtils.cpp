@@ -27,7 +27,7 @@ std::string FileUtils::ValidateDirectoryName(const std::string& directoryName)
 
 std::filesystem::path FileUtils::GetExecutablePath()
 {
-    #ifdef _WIN32
+#ifdef WIN32
     char buffer[MAX_PATH];
     DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
     if (len == 0) {
@@ -39,8 +39,16 @@ std::filesystem::path FileUtils::GetExecutablePath()
     }
 
     return std::filesystem::path(buffer);
-    #else
-    // Need to test on mac
+#elif __APPLE__
+    char buffer[PATH_MAX];
+    uint32_t size = sizeof(buffer);
+    if (_NSGetExecutablePath(buffer, &size) != 0) {
+        std::cout << "Could not get executable path" << std::endl;
+        return {};
+    }
+
+    return std::filesystem::path(buffer);
+#else
     char buffer[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
     if (len == -1) {
@@ -50,5 +58,5 @@ std::filesystem::path FileUtils::GetExecutablePath()
 
     buffer[len] = '\0';
     return std::filesystem::path(buffer);
-    #endif
+#endif
 }

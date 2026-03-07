@@ -31,6 +31,8 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
         case ELinkType::Album:
             tracks = platform->GetAlbum(url).Tracks;
             break;
+        default:
+            return false;
     }
 
     if (tracks.size() == 0)

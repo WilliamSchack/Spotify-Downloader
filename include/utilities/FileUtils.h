@@ -7,8 +7,10 @@
 #include <string>
 #include <filesystem>
 
-#ifdef _WIN32
+#ifdef WIN32
     #include <windows.h>
+#elif __APPLE__
+    #include <mach-o/dyld.h>
 #else
     #include <unistd.h>
     #include <limits.h>
