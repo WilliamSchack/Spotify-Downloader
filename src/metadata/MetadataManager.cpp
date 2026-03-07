@@ -5,7 +5,13 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
     if (filePath.empty() || !std::filesystem::exists(filePath))
         return;
 
-    _fileRef = TagLib::FileRef(filePath.wstring().c_str(), true, TagLib::AudioProperties::Accurate);
+#if WIN32
+    TagLib::FileName taglibFilePath(filePath.wstring().c_str());
+#else
+    TagLib::FileName taglibFilePath(filePath.c_str());
+#endif
+
+    _fileRef = TagLib::FileRef(taglibFilePath, true, TagLib::AudioProperties::Accurate);
     _codec = CodecFactory::Create(filePath.extension().string());
 }
 
