@@ -17,8 +17,9 @@
 
 Notes:
 - This is my first app using cmake so it may have problems, if you find any please [submit an issue](https://github.com/WilliamSchack/Spotify-Downloader/issues/new/choose)
-- I have not tested this on mac and probably wont until the end of 2.0 development since I cant be bothered to setup a vm for it
-- This does not have arm support at the minute, I will add it near the end of 2.0 development
+- I am mainly testing on arch linux and windows. Im using an M1 mac for testing every major change
+- Dependency downloading does not work properly for arm based windows/linux, ill fix that later in development
+- Other linux distros will be tested when I get to releasing the app
 
 **Dependencies**
 - CMake
@@ -46,23 +47,6 @@ make
 `./UnnamedSongApp`
 
 --
-
-**Arguments**
-
-Environment Variables:
-- SPOTIFYAPI_KEY: The default spotify api key
-- SPOTIFYAPI_SECRET: The detauls spotify api secret
-
-Linux (For the cmake command):
-
-`SPOTIFYAPI_KEY=key SPOTIFYAPI_SECRET=secret cmake ..`
-
-Windows (For the current terminal):
-```
-set SPOTIFYAPI_KEY=key
-set SPOTIFYAPI_SECRET=secret
-cmake ..
-```
 
 # Pre-v2 Readme
 
