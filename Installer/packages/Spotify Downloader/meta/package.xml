@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>Spotify Downloader</DisplayName>
     <Description>A program that downloads songs from Spotify</Description>
-    <Version>1.11.1</Version>
-    <ReleaseDate>2026-03-01</ReleaseDate>
+    <Version>1.11.2</Version>
+    <ReleaseDate>2026-03-09</ReleaseDate>
     <Default>true</Default>
     <Required>true</Required>
     <Script>installscript.qs</Script>
