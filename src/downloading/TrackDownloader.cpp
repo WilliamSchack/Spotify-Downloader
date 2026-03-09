@@ -33,6 +33,8 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         return false;
 
     // == Get cover art
+    // TODO: Make sure it only saves one cover art per album
+
     std::cout << "Getting cover art..." << std::endl;
 
     std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;

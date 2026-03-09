@@ -169,7 +169,7 @@ TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
     if (!albumJson.empty()) {
         track.Album = ParseAlbum(albumJson).Data;
         
-        if (track.Album.Artists.size() > 0 && track.Artists.size() > 0)
+        if (track.Album.Artists.size() == 0 && track.Artists.size() > 0)
             track.Album.Artists[0] = track.Artists[0];
         
         if (isEpisode)
