@@ -19,7 +19,7 @@ class SpotifyAuthRetriever
     private:
         static inline const QByteArray USER_AGENT = "Mozilla/5.0 (Linux; Android 14) Mobile";
         static inline const QString PLAYLIST_QUERY_REGEX = "\"queryPlaylist\",\"query\",\"(.*?)\"";
-        static inline const unsigned int TIMEOUT_MS = 10000;
+        static inline const unsigned int TIMEOUT_MS = 20000;
 };
 
 #endif
