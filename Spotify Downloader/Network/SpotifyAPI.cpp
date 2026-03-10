@@ -198,8 +198,10 @@ QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
     if (!albumJson.empty()) {
         QJsonObject album = ParseAlbum(albumJson);
         
-        if (album["artists"].toArray().size() == 0 && track["artists"].toArray().size() > 0)
-            album["artists"] = QJsonArray{ track["artists"].toArray()[0] };
+        if (album["artists"].toArray().empty() && !track["artists"].toArray().empty()) {
+            QJsonObject firstTrackArtist = track["artists"].toArray()[0].toObject();
+            album["artists"] = QJsonArray{ firstTrackArtist };
+        }
         
         track["album"] = album;
 
