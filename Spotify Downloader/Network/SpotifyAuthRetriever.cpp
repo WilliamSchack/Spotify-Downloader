@@ -17,16 +17,27 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const QUrl& url)
     QTimer::singleShot(TIMEOUT_MS, &loop, &QEventLoop::quit);
     loop.exec();
 
-    webPage->deleteLater();
-    webProfile->deleteLater();
+    SpotifyAuth auth;
+    bool foundAll = interceptor->FoundAll;
+    QString mobileJsUrl = "";
 
-    if (!interceptor->FoundAll) {
+    if (foundAll) {
+        auth.Authorization = interceptor->Authorization.toUtf8();
+        auth.ClientToken = interceptor->ClientToken.toUtf8();
+        mobileJsUrl = QString::fromStdString(interceptor->MobileJsUrl);
+    }
+
+    delete webPage;
+    delete interceptor;
+    delete webProfile;
+
+    if (!foundAll) {
         qWarning() << "Could not retrieve spotify auth";
-        return SpotifyAuth();
+        return auth;
     }
 
     // Get mobile js for playlist query sha256Hash, cannot get response body from QWebEnginePage so this is the next best thing
-    QNetworkRequest mobileJsRequest = QNetworkRequest(QString::fromStdString(interceptor->MobileJsUrl));
+    QNetworkRequest mobileJsRequest = QNetworkRequest(mobileJsUrl);
     mobileJsRequest.setRawHeader("User-Agent", USER_AGENT);
     QByteArray mobileJs = Network::Get(mobileJsRequest);
 
@@ -38,12 +49,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const QUrl& url)
         return SpotifyAuth();
     }
 
-    SpotifyAuth auth;
-    auth.Authorization = interceptor->Authorization.toUtf8();
-    auth.ClientToken = interceptor->ClientToken.toUtf8();
     auth.PlaylistQueryHash = matches[1];
-
-    interceptor->deleteLater();
 
     return auth;
 }
