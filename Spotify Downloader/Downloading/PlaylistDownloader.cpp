@@ -112,7 +112,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		QJsonObject track = trackVal.toObject();
 
 		// Check if track exists on spotify
-		if (track["id"] == QJsonValue::Null) {
+		if (track["id"] == QJsonValue::Null || track["id"].toString().isEmpty()) {
 			continue;
 		}
 
@@ -132,7 +132,7 @@ void PlaylistDownloader::DownloadSongs(const SpotifyDownloader* main) {
 		QJsonObject track = trackVal.toObject();
 
 		// Check if track exists on spotify
-		if (track["id"] == QJsonValue::Null) {
+		if (track["id"] == QJsonValue::Null || track["id"].toString().isEmpty()) {
 			continue;
 		}
 
