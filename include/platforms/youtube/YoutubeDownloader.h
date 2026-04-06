@@ -1,14 +1,14 @@
-#ifndef SPOTIFYDOWNLOADER_H
-#define SPOTIFYDOWNLOADER_H
+#ifndef YOUTUBEDOWNLOADER_H
+#define YOUTUBEDOWNLOADER_H
 
 #include "IPlatformDownloader.h"
-#include "SpotifyAPI.h"
+#include "YTMusicAPI.h"
 #include "StringUtils.h"
 
-class SpotifyDownloader : public IPlatformDownloader
+class YoutubeDownloader : public IPlatformDownloader
 {
     public:
-        SpotifyDownloader();
+        YoutubeDownloader();
 
         ELinkType GetLinkType(const std::string& url) override;
         EPlatform GetSearchPlatform() override;
@@ -19,7 +19,7 @@ class SpotifyDownloader : public IPlatformDownloader
     private:
         std::string GetLinkId(const std::string& url);
     private:
-        SpotifyAPI _spotify;
+        YTMusicAPI _youtube;
 };
 
 #endif

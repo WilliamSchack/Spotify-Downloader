@@ -4,6 +4,7 @@ std::unique_ptr<IPlatformDownloader> PlatformFactory::CreateDownloader(const EPl
 {
     switch (platform) {
         case EPlatform::Spotify: return std::make_unique<SpotifyDownloader>();
+        case EPlatform::YouTube: return std::make_unique<YoutubeDownloader>();
     }
 
     return nullptr;

@@ -3,6 +3,7 @@
 
 #include "EPlatform.h"
 #include "SpotifyDownloader.h"
+#include "YoutubeDownloader.h"
 #include "YoutubeSearcher.h"
 
 #include <memory>
