@@ -98,9 +98,10 @@ CMakeUserPresets.json
 
 # vscode
 .vscode
+out/
 
 # vs community
-out/
+.vs
 
 # pyenv / pipenv
 .pyenv/
@@ -112,5 +113,10 @@ appimagetool
 # dist
 dist/
 
-# cmake presets
+# CMake Presets
 CMakePresets.json
+
+# Temp for v1
+Installer/
+x64/
+Spotify Downloader/
