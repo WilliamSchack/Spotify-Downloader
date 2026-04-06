@@ -1,6 +1,7 @@
 #include "YTMusicAPI.h"
 
-bool YTMusicAPI::CheckConnection() {
+bool YTMusicAPI::CheckConnection()
+{
     NetworkRequest request;
     request.Url = API_BASE_URL;
     NetworkResponse response = request.Get();
@@ -9,20 +10,29 @@ bool YTMusicAPI::CheckConnection() {
 	return response.CurlCode == CURLcode::CURLE_OK;
 }
 
-NetworkRequest YTMusicAPI::GetRequest(const std::string& endpoint) {
-    NetworkRequest request;
-    request.Url = API_BASE_URL + "/" + endpoint + "/?alt=json";
-	request.SetHeader("User-Agent", "Mozilla/5.0");
+NetworkRequest YTMusicAPI::GetRequestURL(const std::string& url)
+{
+	NetworkRequest request;
+	request.Url = url;
+	request.SetHeader("User-Agent", "Mozilla/5.0 (Linux x86_64; rv:149.0) Firefox/149.0");
 	request.SetHeader("Accept", "*/*");
 	request.SetHeader("Accept-encoding", "gzip, deflate");
 	request.SetHeader("Content-Type", "application/json");
 	request.SetHeader("Content-Encoding", "gzip");
-	request.SetHeader("Origin", "https://music.youtube.com/youtubei/v1/");
 
 	return request;
 }
 
-nlohmann::json YTMusicAPI::GetContext() {
+NetworkRequest YTMusicAPI::GetRequestAPI(const std::string& endpoint)
+{
+    NetworkRequest request = GetRequestURL(API_BASE_URL + "/" + endpoint + "/?alt=json");
+	request.SetHeader("Origin", API_BASE_URL + "/");
+
+	return request;
+}
+
+nlohmann::json YTMusicAPI::GetContext()
+{
 	std::time_t rawTime;
 	struct tm* timeInfo;
 	char buffer[80];
@@ -137,7 +147,8 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 	return albumTracks;
 }
 
-std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, const EYoutubeCategory& filter, int limit) {
+std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, const EYoutubeCategory& filter, int limit)
+{
 	// Get web page
 	std::string searchParams = "EgWKAQ"; // Param 1
 	switch (filter) {
@@ -160,7 +171,7 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 		{"context", GetContext()}
 	};
 
-	NetworkRequest request = GetRequest("search");
+	NetworkRequest request = GetRequestAPI("search");
 	NetworkResponse response = request.Post(postData);
 
 	nlohmann::json responseJson = nlohmann::json::parse(response.Body);
@@ -259,7 +270,7 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 				std::string ctoken = continuationResults["continuations"][0]["nextContinuationData"]["continuation"];
 				std::string additionalParams = "&ctoken=" + ctoken + "&continuation=" + ctoken;
 
-				NetworkRequest continuationRequest = GetRequest("search");
+				NetworkRequest continuationRequest = GetRequestAPI("search");
 				continuationRequest.Url += additionalParams;
 				NetworkResponse continuationResponse = continuationRequest.Post(postData);
 				nlohmann::json continuationJson = nlohmann::json::parse(continuationResponse.Body);
@@ -324,7 +335,27 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 	return finalSearchResults;
 }
 
-AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId) {
+std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
+{
+	if (!StringUtils::StartsWith(playlistId, "OLAK"))
+		return "";
+
+	NetworkRequest request = GetRequestURL(YOUTUBE_URL + "/playlist?list=" + playlistId);
+	NetworkResponse response = request.Get();
+
+	std::smatch matches;
+	if (!std::regex_search(response.Body, matches, std::regex("\"(MPRE.+?)\"")))
+		return "";
+
+	std::string browseId = matches[1];
+	if (StringUtils::Contains(browseId, "\\"))
+		StringUtils::RemoveChar(browseId, '\\');
+
+	return browseId;
+}
+
+AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId)
+{
 	if (!StringUtils::StartsWith(browseId, "MPRE"))
 		return AlbumTracks();
 
@@ -333,7 +364,7 @@ AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId) {
 		{"context", GetContext()}
 	};
 
-	NetworkRequest request = GetRequest("browse");
+	NetworkRequest request = GetRequestAPI("browse");
 	NetworkResponse response = request.Post(postData);
 	nlohmann::json json = nlohmann::json::parse(response.Body);
 
@@ -361,7 +392,8 @@ AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId) {
 	return ParseAlbumJson(album);
 }
 
-nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
+nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
+{
 	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
 
 	if (header.empty())
@@ -406,7 +438,8 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response) {
 	return album;
 }
 
-nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum) {
+nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum)
+{
 	nlohmann::json songs = nlohmann::json::array();
 
 	for (nlohmann::json result : results) {
@@ -517,7 +550,8 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, con
 }
 
 
-nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& offset) {
+nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& offset)
+{
 	nlohmann::json parsed = nlohmann::json::object();
 	nlohmann::json artists = nlohmann::json::array();
 	for (int i = offset; i < runs.size(); i++) {
@@ -571,14 +605,16 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& 
 	return parsed;
 }
 
-std::string YTMusicAPI::GetItemText(const nlohmann::json& item, const int& index, const int& runIndex) {
+std::string YTMusicAPI::GetItemText(const nlohmann::json& item, const int& index, const int& runIndex)
+{
 	nlohmann::json column = GetFlexColumnItem(item, index);
 	if (column.empty()) return "";
 
 	return column["text"]["runs"][runIndex]["text"];
 }
 
-nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, const int& index) {
+nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, const int& index)
+{
 	nlohmann::json flexColumns = item["flexColumns"];
 	if (flexColumns.size() <= index ||
 		!flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"].contains("text") ||
@@ -589,7 +625,8 @@ nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, const i
 	return flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"];
 }
 
-nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json& item, const int& index) {
+nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json& item, const int& index)
+{
 	nlohmann::json columnItem = item["fixedColumns"][index]["musicResponsiveListItemFixedColumnRenderer"];
 	if (!columnItem.contains("text") ||
 		!columnItem["text"].contains("runs")) {
@@ -599,7 +636,8 @@ nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json& item, const 
 	return columnItem;
 }
 
-nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, const int& index) {
+nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, const int& index)
+{
 	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
 	if (flexItem.empty())
@@ -623,7 +661,8 @@ nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, const in
 	return artists;
 }
 
-nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, const int& index) {
+nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, const int& index)
+{
 	nlohmann::json flexItem = GetFlexColumnItem(data, index);
 
 	if (flexItem.empty())
@@ -636,7 +675,8 @@ nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, const int&
 	};
 }
 
-nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std::string resultType, const std::string& category) {
+nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std::string resultType, const std::string& category)
+{
 	nlohmann::json finalResults = nlohmann::json::array();
 
 	int defaultOffset = resultType.empty() ? 2 : 0;
@@ -754,7 +794,8 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 	return finalResults;
 }
 
-Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps) {
+Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
+{
 	std::string lyricsBrowseId = GetLyricsBrowseId(videoId);
 
 	if (lyricsBrowseId.empty())
@@ -774,7 +815,7 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 		{"context", context}
 	};
 
-	NetworkRequest request = GetRequest("browse");
+	NetworkRequest request = GetRequestAPI("browse");
 	NetworkResponse response = request.Post(postData);
 	nlohmann::json json = nlohmann::json::parse(response.Body);
 
@@ -849,7 +890,8 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 	return lyrics;
 }
 
-std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId) {
+std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId)
+{
 	nlohmann::json postData {
 		{"enablePersistentPlaylistPanel", true},
 		{"isAudioOnly", true},
@@ -865,7 +907,7 @@ std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId) {
 		{"context", GetContext()}
 	};
 
-	NetworkRequest request = GetRequest("next");
+	NetworkRequest request = GetRequestAPI("next");
 	NetworkResponse response = request.Post(postData);
 	nlohmann::json json = nlohmann::json::parse(response.Body);
 
@@ -878,7 +920,8 @@ std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId) {
 	return lyricsBrowseId;
 }
 
-std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId) {
+std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId)
+{
 	nlohmann::json tabRenderer = watchNextRenderer["tabs"][tabId]["tabRenderer"];
 	
 	if (tabRenderer.contains("unselectable"))
@@ -888,7 +931,8 @@ std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, 
 }
 
 /*
-bool YTMusicAPI::HasPremium(QString cookies) {
+bool YTMusicAPI::HasPremium(QString cookies)
+{
 	if (cookies.isEmpty())
 		return false;
 
@@ -952,7 +996,8 @@ bool YTMusicAPI::HasPremium(QString cookies) {
 }
 
 // If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
-bool YTMusicAPI::IsAgeRestricted(QString videoId) {
+bool YTMusicAPI::IsAgeRestricted(QString videoId)
+{
 	// Get the song details
 	QJsonObject body{
 		{"playbackContext", QJsonObject{
@@ -965,7 +1010,7 @@ bool YTMusicAPI::IsAgeRestricted(QString videoId) {
 	};
 
 	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(GetRequest("player"), postData);
+	QByteArray response = Network::Post(GetRequestAPI("player"), postData);
 	QJsonObject json = QJsonDocument::fromJson(response).object();
 
 	// Get the playability status, if not returned cannot check

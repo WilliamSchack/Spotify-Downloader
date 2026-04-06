@@ -29,6 +29,7 @@ class YTMusicAPI {
 		
 		std::vector<YoutubeSearchResult> Search(const std::string& query, const EYoutubeCategory& filter, int limit);
 
+		std::string GetAlbumBrowseId(const std::string& playlistId);
 		AlbumTracks GetAlbum(const std::string& browseId);
 
 		Lyrics GetLyrics(const std::string& videoId, const bool& timestamps = true);
@@ -37,7 +38,8 @@ class YTMusicAPI {
 
 		//bool IsAgeRestricted(QString videoId);
 	private:
-		NetworkRequest GetRequest(const std::string& endpoint);
+		NetworkRequest GetRequestURL(const std::string& url);
+		NetworkRequest GetRequestAPI(const std::string& endpoint);
 		nlohmann::json GetContext();
 
 		TrackData ParseTrackJson(const nlohmann::json& json);
