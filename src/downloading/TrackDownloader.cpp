@@ -55,15 +55,23 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
     }
 
     // == Get the song on the target platform
-    std::cout << "Searching on different platform..." << std::endl;
+    PlatformSearcherResult searchResult;
+    
+    if (track.Platform == searchPlatform) {
+        // No need to search if its on the same platform
+        searchResult.Confidence = 1;
+        searchResult.Data = track;
+    } else {
+        std::cout << "Searching on different platform..." << std::endl;
 
-    std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
-    if (searcher == nullptr) return false;
+        std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
+        if (searcher == nullptr) return false;
 
-    PlatformSearcherResult searchResult = searcher->FindTrack(track);
-    if (searchResult.Data.Platform == EPlatform::Unknown) {
-        std::cout << "Could not find track: " << track.Name << std::endl;
-        return false;
+        PlatformSearcherResult searchResult = searcher->FindTrack(track);
+        if (searchResult.Data.Platform == EPlatform::Unknown) {
+            std::cout << "Could not find track: " << track.Name << std::endl;
+            return false;
+        }
     }
 
     // == Download 

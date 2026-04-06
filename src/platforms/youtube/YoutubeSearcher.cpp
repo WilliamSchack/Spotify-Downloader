@@ -6,13 +6,6 @@ YoutubeSearcher::YoutubeSearcher() : _yt() {}
 
 PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
 {
-    if (track.Platform == EPlatform::YouTube) {
-        PlatformSearcherResult result;
-        result.Confidence = 1;
-        result.Data = track;
-        return result;
-    }
-
     std::string titleSearchTerm  = track.Name;
     std::string artistSearchTerm = track.Artists[0].Name;
     std::string albumSearchTerm  = track.Album.Name;

@@ -18,8 +18,8 @@ ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 
 std::string SpotifyDownloader::GetLinkId(const std::string& url)
 {
-    unsigned short startIndex = url.find_last_of('/') + 1;
-    unsigned short endIndex = url.find('?');
+    size_t startIndex = url.find_last_of('/') + 1;
+    size_t endIndex = url.find('?');
     return url.substr(startIndex, endIndex - startIndex);
 }
 
