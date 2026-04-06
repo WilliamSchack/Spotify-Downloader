@@ -78,7 +78,7 @@ PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
         std::cout << "Failed to get spotify auth. Getting the first 30 playlist tracks..." << std::endl;
         
         nlohmann::json json = GetPageJson("playlist", id);
-        if (json.empty()) return PlaylistTracks();
+        if (json.empty() || json.is_null()) return PlaylistTracks();
         
         return ParsePlaylist(json);
     }
@@ -299,7 +299,8 @@ PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
 {
     PlaylistTracks playlistTracks;
 
-    const nlohmann::json& playlistJson = json["data"]["playlistV2"];
+    const nlohmann::json& playlistJson = json.contains("data") ? json["data"]["playlistV2"] : json;
+
     PlaylistData playlist(EPlatform::Spotify);
     playlist.Id = playlistJson["id"];
     playlist.Url = PLAYLIST_URL + playlist.Id;

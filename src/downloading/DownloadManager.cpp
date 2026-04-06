@@ -2,6 +2,8 @@
 
 bool DownloadManager::Download(const std::string& url, const std::string& directory)
 {
+    // This is done on called thread, move this to another
+
     bool directoryValid = std::filesystem::exists(directory);
     if (!directoryValid)
         return false;
