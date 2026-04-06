@@ -356,8 +356,6 @@ std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
 
 AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId)
 {
-	std::cout << browseId << std::endl;
-
 	if (!StringUtils::StartsWith(browseId, "MPRE"))
 		return AlbumTracks();
 

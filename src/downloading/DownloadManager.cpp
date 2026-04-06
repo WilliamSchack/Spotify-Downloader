@@ -11,20 +11,16 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
         return false;
 
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
-    std::cout << (int)platformType << std::endl;
     if (platformType == EPlatform::Unknown) return false;
 
     std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
     if (platform == nullptr) return false;
-    std::cout << "GOT DOWNLOADER" << std::endl;
 
     EPlatform searchPlatform = platform->GetSearchPlatform();
-    std::cout << (int)searchPlatform << std::endl;
     if (searchPlatform == EPlatform::Unknown) return false;
 
     // Get the tracks
     ELinkType linkType = platform->GetLinkType(url);
-    std::cout << (int)linkType << std::endl;
     if (linkType == ELinkType::Unknown)
         return false;
 
