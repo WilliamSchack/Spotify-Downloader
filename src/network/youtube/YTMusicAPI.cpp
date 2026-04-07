@@ -114,8 +114,8 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 
 	AlbumData album(EPlatform::YouTube);
 
-	if (json.contains("playlistId")) {
-		album.Id = json["playlistId"];
+	if (json.contains("audioPlaylistId")) {
+		album.Id = json["audioPlaylistId"];
 		album.Url = PLAYLIST_BASE_URL + album.Id;
 	} else {
 		// Use browse id as a fallback
@@ -446,7 +446,18 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
 	}
 
 	nlohmann::json buttons = header["buttons"];
-	album["audioPlaylistId"] = buttons[1]["musicPlayButtonRenderer"]["playNavigationEndpoint"]["watchEndpoint"]["playlistId"];
+	for (nlohmann::json button : buttons) {
+		if (!button.contains("musicPlayButtonRenderer"))
+			continue;
+
+		nlohmann::json playNavigationEndpoint = button["musicPlayButtonRenderer"]["playNavigationEndpoint"];
+		std::string id = JsonUtils::SafelyNavigate(playNavigationEndpoint, { "watchPlaylistEndpoint", "playlistId" });
+		if (id.empty()) id = JsonUtils::SafelyNavigate(playNavigationEndpoint, { "watchEndpoint", "playlistId" });
+
+		album["audioPlaylistId"] = id;
+
+		break;
+	}
 
 	bool isExplicit = false;
 	if (header.contains("description"))
