@@ -63,6 +63,7 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 	track.Name = json["title"];
 	track.ReleaseYear = json.value("year", "");
 	track.Explicit = json.value("isExplicit", false);
+	track.TrackNumber = json.value("trackNumber", 0);
 	if (json.contains("durationSeconds") && !json["durationSeconds"].empty())
 		track.SetDuration(json["durationSeconds"].get<int>() * 1000);
 
@@ -557,7 +558,12 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, con
 
 		song["views"] = isAlbum ? StringUtils::Split(GetItemText(data, 2), " ")[0] : "";
 
+		song["thumbnails"] = JsonUtils::SafelyNavigate(data, { "thumbnail", "musicThumbnailRenderer", "thumbnail", "thumbnails" });
+
 		song["isExplicit"] = data.contains("badges");
+
+		if (isAlbum && isAvailable)
+			song["trackNumber"] = std::stoi(data["index"]["runs"][0]["text"].get<std::string>());
 
 		if (data.contains("fixedColumns")) {
 			std::string duration = "";
