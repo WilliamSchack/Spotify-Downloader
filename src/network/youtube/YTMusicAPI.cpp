@@ -50,8 +50,13 @@ nlohmann::json YTMusicAPI::GetContext()
     };
 }
 
+#include <iostream>
+
 TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 {
+	std::cout << "TRACK" << std::endl;
+	std::cout << json << std::endl;
+
 	TrackData track(EPlatform::YouTube);
 	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
 	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
@@ -100,6 +105,9 @@ ArtistData YTMusicAPI::ParseArtistJson(const nlohmann::json& json)
 
 AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 {
+	std::cout << "ALBUM:" << std::endl;
+	std::cout << json << std::endl;
+
 	AlbumTracks albumTracks;
 	if (json.empty() || json.is_null() || !json.is_object())
 		return albumTracks;
@@ -118,6 +126,17 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 	album.TotalTracks = json.value("trackCount", 0);
 	album.ReleaseYear = json.value("year", "");
 
+	// Type
+	album.Type = EAlbumType::Album;
+	if (json.contains("type")) {
+		if (json["type"] == "Single") album.Type = EAlbumType::Single;
+		else std::cout << "UNKNOWN ALBUM TYPE: " << json["type"];
+	}
+
+	// Cover Art
+	if (json.contains("thumbnails"))
+		album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
+
 	// Artists
 	if (json.contains("artists")) {
 		std::vector<ArtistData> artists;
@@ -135,6 +154,9 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 		std::vector<TrackData> tracks;
 		for (const nlohmann::json& trackJson : json["tracks"]) {
 			TrackData track = ParseTrackJson(trackJson);
+
+			// Add album & release year
+			track.Album = album;
 			if (track.ReleaseYear.empty())
 				track.ReleaseYear = album.ReleaseYear;
 
@@ -216,7 +238,6 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 				nlohmann::json runs = data["subtitle"]["runs"];
 				nlohmann::json songInfo = ParseSongRuns(runs, 2);
 				topResult.merge_patch(songInfo);
-
 			}
 
 			searchResults.push_back(topResult);
@@ -396,26 +417,24 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
 {
 	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
 
+	std::cout << "ALBUM JSON" << std::endl;
+	std::cout << header << std::endl;
+
 	if (header.empty())
 		return nlohmann::json::object();
 
 	nlohmann::json album {
 		{"title", header["title"]["runs"][0]["text"]},
-		{"type", header["subtitle"]["runs"][0]["text"]}
+		{"type", header["subtitle"]["runs"][0]["text"]},
+		{"thumbnails", header["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]}
 	};
 
 	if (header.contains("description"))
 		album["description"] = header["description"]["musicDescriptionShelfRenderer"]["description"]["runs"][0]["text"];
 	
 	nlohmann::json albumInfo = ParseSongRuns(header["subtitle"]["runs"]);
-	if (!header["straplineTextOne"].empty()) { // If this does not pass, artists will be found for tracks individually, only happens for very few albums
-		albumInfo["artists"] = nlohmann::json {
-			{
-				{"name", header["straplineTextOne"]["runs"][0]["text"]},
-				{"id", header["straplineTextOne"]["runs"][0]["navigationEndpoint"]["browseEndpoint"]["browseId"]}
-			}
-		};
-	}
+	if (!header["straplineTextOne"].empty()) // If this does not pass, artists will be found for tracks individually, only happens for very few albums
+		albumInfo["artists"] = ParseSongRuns(header["straplineTextOne"]["runs"])["artists"];
 	
 	album.merge_patch(albumInfo);
 
@@ -440,6 +459,8 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
 
 nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum)
 {
+	std::cout << "PLAYLIST ITEMS:" << std::endl << results << std::endl;
+	
 	nlohmann::json songs = nlohmann::json::array();
 
 	for (nlohmann::json result : results) {
@@ -560,6 +581,7 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& 
 		nlohmann::json run = runs[i];
 		std::string text = run["text"];
 
+		// Artists
 		if (run.contains("navigationEndpoint")) {
 			nlohmann::json item {
 				{"name", text},
@@ -572,32 +594,33 @@ nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& 
 			else {
 				artists.push_back(item);
 			}
-		}
-		else {
-			std::smatch matches;
-			if (std::regex_match(text.c_str(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
-				parsed["views"] = StringUtils::Split(text, " ")[0];
-			}
-			else if (std::regex_match(text.c_str(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
-				parsed["duration"] = text;
-				parsed["durationSeconds"] = StringUtils::TimeToSeconds(text);
-			}
-			else if (std::regex_match(text.c_str(), std::regex(R"(^\d{4}$)"))) {
-				parsed["year"] = text;
-			}
-			else if (std::regex_search(text, matches, std::regex(R"((.+)\sviews)"))) {
-				// Sometimes views are passed here, check for that and if so set the views
-				parsed["views"] = matches[1];
-			} else {
-				// Artist without id (If multiple, seperated with " & ")
-				std::vector<std::string> artistNames = StringUtils::Split(text, " & ");
 
-				for (std::string name : artistNames) {
-					artists.push_back({
-						{"id", ""},
-						{"name", name}
-					});
-				}
+			continue;
+		}
+
+		std::smatch matches;
+		if (std::regex_match(text.c_str(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
+			parsed["views"] = StringUtils::Split(text, " ")[0];
+		}
+		else if (std::regex_match(text.c_str(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
+			parsed["duration"] = text;
+			parsed["durationSeconds"] = StringUtils::TimeToSeconds(text);
+		}
+		else if (std::regex_match(text.c_str(), std::regex(R"(^\d{4}$)"))) {
+			parsed["year"] = text;
+		}
+		else if (std::regex_search(text, matches, std::regex(R"((.+)\sviews)"))) {
+			// Sometimes views are passed here, check for that and if so set the views
+			parsed["views"] = matches[1];
+		} else {
+			// Artist without id (If multiple, seperated with " & ")
+			std::vector<std::string> artistNames = StringUtils::Split(text, " & ");
+
+			for (std::string name : artistNames) {
+				artists.push_back({
+					{"id", ""},
+					{"name", name}
+				});
 			}
 		}
 	}
@@ -928,6 +951,29 @@ std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, 
 		return "";
 
 	return tabRenderer["endpoint"]["browseEndpoint"]["browseId"];
+}
+
+std::string YTMusicAPI::GetLargestImageUrl(const nlohmann::json& json)
+{
+    std::string imageUrl = "";
+    unsigned int highestResolution = 0;
+    for (nlohmann::json coverArtDetails : json) {
+        if (coverArtDetails.empty() || coverArtDetails.is_null())
+            continue;
+
+        int resolution = 0;
+        nlohmann::json widthJsonObject = coverArtDetails["width"];
+        if (!widthJsonObject.is_null())
+            resolution = widthJsonObject.get<int>();
+
+        if (resolution < highestResolution)
+            continue;
+        
+        highestResolution = resolution;
+        imageUrl = coverArtDetails["url"];
+    }
+
+    return imageUrl;
 }
 
 /*

@@ -63,6 +63,8 @@ class YTMusicAPI {
 		std::string GetLyricsBrowseId(const std::string& videoId);
 		std::string GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId);
 
+		std::string GetLargestImageUrl(const nlohmann::json& json);
+
 		int TimeToSeconds(const std::string& time);
 	private:
 		static inline const std::string YOUTUBE_URL = "https://music.youtube.com";

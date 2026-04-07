@@ -74,6 +74,8 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         }
     }
 
+    track.Print();
+
     // == Download 
     std::cout << "Downloading..." << std::endl;
 
