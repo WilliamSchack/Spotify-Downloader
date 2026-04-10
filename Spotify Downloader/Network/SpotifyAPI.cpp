@@ -185,7 +185,7 @@ QJsonObject SpotifyAPI::ParseTrack(QJsonObject json)
     // Artists
     if (json.contains("firstArtist")) {
         QJsonArray artistsJson = json["firstArtist"].toObject()["items"].toArray();
-        JSONUtils::Extend(artistsJson, json["otherArtists"].toObject()["items"].toArray());
+        artistsJson = JSONUtils::Extend(artistsJson, json["otherArtists"].toObject()["items"].toArray());
         track["artists"] = ParseArtists(artistsJson);
     } else {
         track["artists"] = ParseArtists(json["artists"].toObject()["items"].toArray());
