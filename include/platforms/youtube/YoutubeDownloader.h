@@ -17,7 +17,7 @@ class YoutubeDownloader : public IPlatformDownloader
         PlaylistTracks GetPlaylist(const std::string& url) override;
         AlbumTracks GetAlbum(const std::string& url) override;
     private:
-        std::string GetLinkId(const std::string& url);
+        std::string GetLinkId(const std::string& url, const std::string& urlParam);
     private:
         YTMusicAPI _youtube;
 };

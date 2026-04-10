@@ -14,7 +14,7 @@
 #include "ArrayUtils.h"
 #include "JsonUtils.h"
 
-#include <time.h>
+#include <chrono>
 #include <regex>
 
 #include <iostream>
@@ -28,6 +28,8 @@ class YTMusicAPI {
 		bool CheckConnection();
 		
 		std::vector<YoutubeSearchResult> Search(const std::string& query, const EYoutubeCategory& filter, int limit);
+
+		TrackData GetTrack(const std::string& videoId);
 
 		std::string GetAlbumBrowseId(const std::string& playlistId);
 		AlbumTracks GetAlbum(const std::string& browseId);
@@ -45,6 +47,10 @@ class YTMusicAPI {
 		TrackData ParseTrackJson(const nlohmann::json& json);
 		ArtistData ParseArtistJson(const nlohmann::json& json);
 		AlbumTracks ParseAlbumJson(const nlohmann::json& json);
+
+		nlohmann::json GetWatchPlaylist(std::string id, bool isPlaylist = false);
+		nlohmann::json ParseWatchPlaylist(const nlohmann::json& json);
+		nlohmann::json ParseWatchTrack(const nlohmann::json& json);
 
 		nlohmann::json ParseSongRuns(const nlohmann::json& runs, const int& offset = 0);
 
@@ -65,6 +71,7 @@ class YTMusicAPI {
 
 		std::string GetLargestImageUrl(const nlohmann::json& json);
 
+		long GetSignatureTimestamp();
 		int TimeToSeconds(const std::string& time);
 	private:
 		static inline const std::string YOUTUBE_URL = "https://music.youtube.com";

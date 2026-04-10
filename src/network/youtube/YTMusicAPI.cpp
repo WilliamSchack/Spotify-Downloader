@@ -50,20 +50,17 @@ nlohmann::json YTMusicAPI::GetContext()
     };
 }
 
-#include <iostream>
-
 TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 {
-	std::cout << "TRACK" << std::endl;
-	std::cout << json << std::endl;
-
 	TrackData track(EPlatform::YouTube);
 	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
 	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
 	track.Name = json["title"];
 	track.ReleaseYear = json.value("year", "");
 	track.Explicit = json.value("isExplicit", false);
+	track.DiscNumber = 0; // Not a thing on ytmusic
 	track.TrackNumber = json.value("trackNumber", 0);
+	track.PlaylistTrackNumber = 0;
 	if (json.contains("durationSeconds") && !json["durationSeconds"].empty())
 		track.SetDuration(json["durationSeconds"].get<int>() * 1000);
 
@@ -106,9 +103,6 @@ ArtistData YTMusicAPI::ParseArtistJson(const nlohmann::json& json)
 
 AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 {
-	std::cout << "ALBUM:" << std::endl;
-	std::cout << json << std::endl;
-
 	AlbumTracks albumTracks;
 	if (json.empty() || json.is_null() || !json.is_object())
 		return albumTracks;
@@ -357,6 +351,33 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 	return finalSearchResults;
 }
 
+TrackData YTMusicAPI::GetTrack(const std::string& videoId)
+{
+	GetWatchPlaylist(videoId, false);
+	return TrackData(EPlatform::Unknown);
+
+	nlohmann::json postData {
+		{"browseId", {
+			"contentPlaybackContext", {
+				"signatureTimestamp", GetSignatureTimestamp()
+			}
+		}},
+		{"video_id", videoId},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("player");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	if (!json.contains("videoDetails"))
+		return TrackData(EPlatform::Unknown);
+
+	// Gonna try using GetWatchPlaylist instead, player gets barely any details
+
+	return TrackData(EPlatform::YouTube);
+}
+
 std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
 {
 	if (!StringUtils::StartsWith(playlistId, "OLAK"))
@@ -414,13 +435,103 @@ AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId)
 	return ParseAlbumJson(album);
 }
 
+nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
+{
+	nlohmann::json postData {
+		{"enablePersistentPlaylistPanel", true},
+		{"isAudioOnly", true},
+		{"tunerSettingValue", "AUTOMIX_SETTING_NORMAL"},
+		{"context", GetContext()}
+	};
+
+	if (isPlaylist) {
+		if (StringUtils::StartsWith(id, "VL"))
+		id = StringUtils::RemoveFirst(id, 2);
+		
+		isPlaylist = StringUtils::StartsWith(id, "PL") || StringUtils::StartsWith(id, "OLA");
+		postData["playlistId"] = id;
+	} else {
+		postData["videoId"] = id;
+		postData["watchEndpointMusicSupportedConfigs"] = {
+			"watchEndpointMusicConfig", {
+				{"hasPersistentPlaylistPanel", true},
+				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
+			}
+		};
+	}
+
+	NetworkRequest request = GetRequestAPI("next");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	nlohmann::json results = JsonUtils::SafelyNavigate(json, { "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer", "watchNextTabbedResultsRenderer", "tabs", 0, "tabRenderer", "content", "musicQueueRenderer", "content", "playlistPanelRenderer" });
+	std::cout << "RESULTS:" << std::endl << results << std::endl;
+	if (results.empty()) return nlohmann::json::object();
+
+	nlohmann::json tracks = ParseWatchPlaylist(results["contents"]);
+
+	std::cout << "WATCH PLAYLIST:" << std::endl << tracks << std::endl;
+
+	return nlohmann::json();
+}
+
+nlohmann::json YTMusicAPI::ParseWatchPlaylist(const nlohmann::json& json)
+{
+	std::string ppvwr = "playlistPanelVideoWrapperRenderer";
+	std::string ppvr = "playlistPanelVideoRenderer";
+
+	nlohmann::json tracks = nlohmann::json::array();
+	for (nlohmann::json result : json) {
+		nlohmann::json counterpart = nlohmann::json::object();
+
+		if (result.contains(ppvwr)) {
+			counterpart = result[ppvwr]["counterpart"][0]["counterpartRenderer"][ppvr];
+			result = result[ppvwr]["primaryRenderer"];
+		}
+
+		if (!result.contains(ppvr))
+			continue;
+		
+		nlohmann::json data = result[ppvr];
+		if (data.contains("unplayableText"))
+			continue;
+
+		nlohmann::json track = ParseWatchTrack(data);
+		if (!counterpart.empty())
+			track["counterpart"] = ParseWatchTrack(counterpart);
+		
+		tracks.push_back(track);
+	}
+
+	return tracks;
+}
+
+nlohmann::json YTMusicAPI::ParseWatchTrack(const nlohmann::json& json)
+{
+	nlohmann::json track = {
+		{"videoId", json["videoId"]},
+		{"title", json["title"]["runs"][0]["text"]},
+		{"duration", JsonUtils::SafelyNavigate(json, { "lengthText", "runs", 0, "text" })},
+		{"thumbnails", json["thumbnail"]["thumbnails"]},
+		{"videoType", JsonUtils::SafelyNavigate(json, { "navigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" })},
+		{"isExplicit", json.contains("badges")}
+	};
+
+	if (!track["duration"].empty())
+		track["durationSeconds"] = StringUtils::TimeToSeconds(track["duration"]);
+
+	nlohmann::json longByLineText = JsonUtils::SafelyNavigate(json, { "longBylineText" });
+	if (!longByLineText.empty()) {
+		nlohmann::json songInfo = ParseSongRuns(longByLineText["runs"]);
+		track.merge_patch(songInfo);
+	}
+
+	return track;
+}
+
 nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
 {
 	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
-
-	std::cout << "ALBUM JSON" << std::endl;
-	std::cout << header << std::endl;
-
 	if (header.empty())
 		return nlohmann::json::object();
 
@@ -471,8 +582,6 @@ nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
 
 nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum)
 {
-	std::cout << "PLAYLIST ITEMS:" << std::endl << results << std::endl;
-	
 	nlohmann::json songs = nlohmann::json::array();
 
 	for (nlohmann::json result : results) {
@@ -993,6 +1102,14 @@ std::string YTMusicAPI::GetLargestImageUrl(const nlohmann::json& json)
     return imageUrl;
 }
 
+long YTMusicAPI::GetSignatureTimestamp()
+{
+	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+	long secondsSinceEpoch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+	return secondsSinceEpoch - 1;
+}
+
 /*
 bool YTMusicAPI::HasPremium(QString cookies)
 {
@@ -1066,7 +1183,7 @@ bool YTMusicAPI::IsAgeRestricted(QString videoId)
 		{"playbackContext", QJsonObject{
 			{"contentPlaybackContext", QJsonObject{
 				{"signatureTimestamp", QDateTime::currentSecsSinceEpoch() / 86400 - 1}
-			}}
+			}}	
 		}},
 		{"video_id", videoId},
 		{"context", GetContext()}

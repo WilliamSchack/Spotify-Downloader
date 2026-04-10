@@ -2,6 +2,9 @@
 
 bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
 {
+    if (track.Id.empty())
+        return false;
+
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
 
     // Todo: Move below into seperate files and functions

@@ -54,9 +54,14 @@ void StringUtils::RemoveChar(std::wstring& string, const char& c)
     string.erase(std::remove(string.begin(), string.end(), c), string.end());
 }
 
-std::string StringUtils::RemoveLast(const std::string& string)
+std::string StringUtils::RemoveFirst(const std::string& string, const int& charAmount)
 {
-    return string.substr(0, string.size() - 1);
+    return string.substr(charAmount, string.size() - charAmount - 1);
+}
+
+std::string StringUtils::RemoveLast(const std::string& string, const int& charAmount)
+{
+    return string.substr(0, string.size() - charAmount);
 }
 
 std::vector<std::string> StringUtils::Split(const std::string& string, const std::string& delimiter)
