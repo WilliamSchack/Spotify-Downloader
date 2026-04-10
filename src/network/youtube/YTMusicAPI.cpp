@@ -87,6 +87,9 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 
 		if (album.Artists.size() == 0 && artists.size() > 0)
 			album.SetMainArtist(artists[0]);
+
+		if (album.ImageUrl.empty() && json.contains("thumbnails"))
+			album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
 	}
 
 	track.Album = album;
@@ -453,12 +456,12 @@ nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
 	nlohmann::json json = nlohmann::json::parse(response.Body);
 
 	nlohmann::json results = JsonUtils::SafelyNavigate(json, { "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer", "watchNextTabbedResultsRenderer", "tabs", 0, "tabRenderer", "content", "musicQueueRenderer", "content", "playlistPanelRenderer" });
-	std::cout << "RESULTS:" << std::endl << results << std::endl;
 	if (results.empty()) return nlohmann::json::object();
 
 	nlohmann::json tracks = ParseWatchPlaylist(results["contents"]);
 
-	std::cout << "WATCH PLAYLIST:" << std::endl << tracks << std::endl;
+	// Need to check for continuations here
+	// Only used for single tracks atm so its not currently required
 
 	return tracks;
 }
