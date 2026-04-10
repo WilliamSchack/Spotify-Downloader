@@ -20,7 +20,8 @@ class StringUtils
         static std::string ReplaceAll(std::string string, const std::string& from, const std::string& to);
         static void RemoveChar(std::string& string, const char& c);
         static void RemoveChar(std::wstring& string, const char& c);
-        static std::string RemoveLast(const std::string& string);
+        static std::string RemoveFirst(const std::string& string, const int& charAmount = 1);
+        static std::string RemoveLast(const std::string& string, const int& charAmount = 1);
         static std::vector<std::string> Split(const std::string& string, const std::string& delimiter);
         static double LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2);
         static unsigned int TimeToSeconds(const std::string& string);
