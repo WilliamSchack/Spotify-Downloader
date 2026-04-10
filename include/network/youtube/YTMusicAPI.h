@@ -78,6 +78,7 @@ class YTMusicAPI {
         static inline const std::string API_BASE_URL = YOUTUBE_URL + "/youtubei/v1";
 		static inline const std::string VIDEO_BASE_URL = YOUTUBE_URL + "/watch?v=";
 		static inline const std::string CHANNEL_BASE_URL = YOUTUBE_URL + "/channel/";
+		static inline const std::string BROWSE_BASE_URL = YOUTUBE_URL + "/browse/";
 		static inline const std::string PLAYLIST_BASE_URL = YOUTUBE_URL + "/playlist?list=";
 
 		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {

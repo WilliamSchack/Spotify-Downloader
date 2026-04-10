@@ -6,6 +6,7 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         return false;
 
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
+    track.Print();
 
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment

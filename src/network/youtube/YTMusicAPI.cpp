@@ -52,6 +52,10 @@ nlohmann::json YTMusicAPI::GetContext()
 
 TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 {
+	if (json.is_null() || json.empty())
+		return TrackData(EPlatform::Unknown);
+
+
 	TrackData track(EPlatform::YouTube);
 	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
 	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
@@ -114,7 +118,12 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 		album.Url = PLAYLIST_BASE_URL + album.Id;
 	} else {
 		// Use browse id as a fallback
-		album.Id = !json.contains("videoId") || json["videoId"].is_null() ? "" : json["videoId"];
+		if (json.contains("id"))
+			album.Id = json["id"];
+		else if (json.contains("videoId") && !json["videoId"].is_null())
+			album.Id = json["videoId"];
+
+		album.Url = BROWSE_BASE_URL + album.Id;
 	}
 
 	album.Name = json.contains("name") ? json["name"] : json["title"];
@@ -353,29 +362,8 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 
 TrackData YTMusicAPI::GetTrack(const std::string& videoId)
 {
-	GetWatchPlaylist(videoId, false);
-	return TrackData(EPlatform::Unknown);
-
-	nlohmann::json postData {
-		{"browseId", {
-			"contentPlaybackContext", {
-				"signatureTimestamp", GetSignatureTimestamp()
-			}
-		}},
-		{"video_id", videoId},
-		{"context", GetContext()}
-	};
-
-	NetworkRequest request = GetRequestAPI("player");
-	NetworkResponse response = request.Post(postData);
-	nlohmann::json json = nlohmann::json::parse(response.Body);
-
-	if (!json.contains("videoDetails"))
-		return TrackData(EPlatform::Unknown);
-
-	// Gonna try using GetWatchPlaylist instead, player gets barely any details
-
-	return TrackData(EPlatform::YouTube);
+	nlohmann::json trackWatchDetails = GetWatchPlaylist(videoId, false);
+	return ParseTrackJson(trackWatchDetails[0]);
 }
 
 std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
@@ -472,7 +460,7 @@ nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
 
 	std::cout << "WATCH PLAYLIST:" << std::endl << tracks << std::endl;
 
-	return nlohmann::json();
+	return tracks;
 }
 
 nlohmann::json YTMusicAPI::ParseWatchPlaylist(const nlohmann::json& json)
