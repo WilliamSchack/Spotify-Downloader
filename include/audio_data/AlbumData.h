@@ -5,6 +5,8 @@
 #include "EAlbumType.h"
 #include "ArtistData.h"
 
+#include <nlohmann/json.hpp>
+
 #include <string>
 #include <vector>
 
@@ -53,5 +55,22 @@ struct AlbumData
         }
     }
 };
+
+inline void to_json(nlohmann::json& json, const AlbumData& data)
+{
+    json = {
+        {"platform", (int)data.Platform},
+        {"id", data.Id},
+        {"url", data.Url},
+        {"name", data.Name},
+        {"description", data.Description},
+        {"total_tracks", data.TotalTracks},
+        {"image_url", data.ImageUrl},
+        {"release_date", data.ReleaseDate},
+        {"release_year", data.ReleaseYear},
+        {"type", (int)data.Type},
+        {"artists", data.Artists}
+    };
+}
 
 #endif

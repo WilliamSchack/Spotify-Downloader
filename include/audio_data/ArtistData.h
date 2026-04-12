@@ -3,6 +3,8 @@
 
 #include "EPlatform.h"
 
+#include <nlohmann/json.hpp>
+
 #include <string>
 
 #include <iostream>
@@ -24,5 +26,15 @@ struct ArtistData
         std::cout << Name << std::endl;
     }
 };
+
+inline void to_json(nlohmann::json& json, const ArtistData& data)
+{
+    json = {
+        {"platform", (int)data.Platform},
+        {"id", data.Id},
+        {"url", data.Url},
+        {"name", data.Name}
+    };
+}
 
 #endif
