@@ -57,8 +57,12 @@ if(NOT EXISTS ${FFMPEG_PATH})
 	elseif(APPLE)
 		file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg" DESTINATION "${BINARIES_DIR}")
 	elseif(UNIX)
-		file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
-		
+		if (IS_ARM_CPU)
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linuxarm64-gpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
+		else()
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
+		endif()
+
 		# Give executable permissions
 		file(CHMOD ${FFMPEG_PATH} PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 	endif()
