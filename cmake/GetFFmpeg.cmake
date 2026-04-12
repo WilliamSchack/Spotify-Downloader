@@ -26,7 +26,12 @@ elseif(APPLE)
 	set(FFMPEG_URL "https://evermeet.cx/ffmpeg/get/zip")
 elseif(UNIX)
 	# Latest build with master has tag "latest"
-	set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz")
+	set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux")
+	if(IS_ARM_CPU)
+		set(FFMPEG_URL "${FFMPEG_URL}arm64-gpl.tar.xz")
+	else()
+		set(FFMPEG_URL "${FFMPEG_URL}64-gpl.tar.xz")
+	endif()
 endif()
 
 set(FFMPEG_PATH "${BINARIES_DIR}/${FFMPEG_FILE_NAME}")
