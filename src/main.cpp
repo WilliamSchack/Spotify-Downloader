@@ -1,3 +1,4 @@
+#include "ArgumentParser.h"
 #include "MainScreenGUIManager.h"
 
 #include "DownloadManager.h"
@@ -37,7 +38,11 @@
 
 int main(int argc, char** argv)
 {
+    // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
+
+    bool argsUsed = ArgumentParser::Parse(argc, argv);
+    if (argsUsed) return 0;
 
     QQmlApplicationEngine engine;
     
@@ -46,22 +51,13 @@ int main(int argc, char** argv)
 
     engine.load(QUrl("qrc:/gui/main.qml"));
 
-    //MetadataManager metadata("/home/william/mnt/main/Music/PlaylistTest/Dance of the Moonlight Jellies - ConcernedApe.wav");
-    //std::cout << metadata.GetTitle() << std::endl;
-    //std::cout << metadata.GetArtist() << std::endl;
-    //std::cout << metadata.GetAlbumName() << std::endl;
-    //std::cout << metadata.GetAlbumArtist() << std::endl;
-    //std::cout << metadata.GetPublisher() << std::endl;
-    //std::cout << metadata.GetCopyright() << std::endl;
-    //std::cout << metadata.GetComment() << std::endl;
-    //std::cout << metadata.GetReleaseDate() << std::endl;
-    //std::cout << metadata.GetTrackNumber() << std::endl;
-    //std::cout << metadata.GetDiscNumber() << std::endl;
-    //DownloadManager::Download("https://open.spotify.com/track/1qHX3JQefKOvy64bIWEAhS?si=3268660088e84f6a", "/home/william/mnt/main/Music/PlaylistTest");
+    //DownloadManager::Download("https://music.youtube.com/watch?v=kky1L2jzc8c", "/home/william/mnt/main/Music/Test");
 
+    //DownloadManager::Download("https://open.spotify.com/playlist/6xetLvEBK7k13730fmA1yP?si=UBrtGqnmS32xVmgd0PWJ0g", "/home/william/mnt/main/Music/Test");
+    //DownloadManager::Download("https://open.spotify.com/playlist/4E5YNtoIyQrhtGuHr3Eb9U?si=beead3b4ce3845ad", "/home/william/mnt/main/Music/PlaylistTest");
     //DownloadManager::Download("https://open.spotify.com/track/31ZfD4958k80aCeMl719KC?si=58cf0c29d95f4d88", "/home/william/mnt/main/Music");
     //DownloadManager::Download("https://open.spotify.com/track/4d1CObMrwGif0yDhphYeO1?si=c498829f2829498a", "/home/william/mnt/main/Music");
-    //DownloadManager::Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "/home/william/mnt/main/Music/AlbumTest");
+    //DownloadManager::Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "/home/william/mnt/main/Music");
     //DownloadManager::Download("https://open.spotify.com/album/4GRPvwkbXfKXNGfrIJAGCE?si=BfZ1WHfnTkG_P8J9quPtIw", "/home/william/mnt/main/Music/AlbumTest");
     //DownloadManager::Download("https://open.spotify.com/album/1JLclTNvD2eXpJ0BiJXmpy?si=dbpaiLrmTnKj2VYxzsiLgg", "/home/william/mnt/main/Music/AlbumTest");
     //DownloadManager::Download("https://open.spotify.com/playlist/1P95wXqcWer0Lsw8Mr5CXL?si=e77e7abc77be4a9f", "/home/william/mnt/main/Music/AlbumTest");
