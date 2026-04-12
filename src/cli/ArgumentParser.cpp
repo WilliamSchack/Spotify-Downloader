@@ -39,17 +39,28 @@ bool ArgumentParser::Parse(int argc, char** argv)
         return true;
     }
 
-    if (command == "trackinfo" && argc == 3) {
+    if (command == "getinfo" && argc == 3) {
         std::string url = argv[2];
         EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
         if (platformType == EPlatform::Unknown) return true;
 
         std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
         ELinkType linkType = platform->GetLinkType(url);
-        if (linkType != ELinkType::Track) return false;
+        if (linkType == ELinkType::Unknown) return true;
         
-        TrackData track = platform->GetTrack(url);
-        track.Print();
+        switch (linkType) {
+            case ELinkType::Track:
+                platform->GetTrack(url).Print();
+                break;
+            case ELinkType::Playlist:
+                platform->GetPlaylist(url).Print();
+                break;
+            case ELinkType::Album:
+                platform->GetAlbum(url).Print();
+                break;
+            default:
+                return false;
+        }
 
         return true;
     }
