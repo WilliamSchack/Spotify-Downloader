@@ -5,6 +5,8 @@
 #include "TrackData.h"
 #include "ArtistData.h"
 
+#include <nlohmann/json.hpp>
+
 #include <string>
 #include <vector>
 
@@ -17,24 +19,32 @@ struct PlaylistData
     std::string Url = "";
     std::string Name = "";
     std::string Description = "";
-    std::string ImageUrl = "";
     unsigned int TotalTracks = 0;
+    std::string ImageUrl = "";
     ArtistData Owner;
 
     PlaylistData(EPlatform platform) : Platform(platform), Owner(platform) {}
-
-    void Print() const
-    {
-        std::cout << (int)Platform << std::endl;
-        std::cout << Id << std::endl;
-        std::cout << Url << std::endl;
-        std::cout << Name << std::endl;
-        std::cout << Description << std::endl;
-        std::cout << ImageUrl << std::endl;
-        std::cout << TotalTracks << std::endl;
-        std::cout << "OWNER:" << std::endl;
-        Owner.Print();
-    }
+    void Print() const;
 };
+
+inline void to_json(nlohmann::json& json, const PlaylistData& data)
+{
+    json = {
+        {"platform", (int)data.Platform},
+        {"id", data.Id},
+        {"url", data.Url},
+        {"name", data.Name},
+        {"description", data.Description},
+        {"total_tracks", data.TotalTracks},
+        {"image_url", data.ImageUrl},
+        {"owner", data.Owner}
+    };
+}
+
+inline void PlaylistData::Print() const
+{
+    nlohmann::json json = *this;
+    std::cout << json.dump(4) << std::endl;
+}
 
 #endif
