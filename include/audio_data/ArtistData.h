@@ -17,14 +17,7 @@ struct ArtistData
     std::string Name = "";
 
     ArtistData(EPlatform platform) : Platform(platform) {}
-
-    void Print() const
-    {
-        std::cout << (int)Platform << std::endl;
-        std::cout << Id << std::endl;
-        std::cout << Url << std::endl;
-        std::cout << Name << std::endl;
-    }
+    void Print() const;
 };
 
 inline void to_json(nlohmann::json& json, const ArtistData& data)
@@ -35,6 +28,12 @@ inline void to_json(nlohmann::json& json, const ArtistData& data)
         {"url", data.Url},
         {"name", data.Name}
     };
+}
+
+inline void ArtistData::Print() const
+{
+    nlohmann::json json = *this;
+    std::cout << json.dump(4) << std::endl;
 }
 
 #endif
