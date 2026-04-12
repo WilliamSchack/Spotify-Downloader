@@ -58,10 +58,32 @@ bool ArgumentParser::Parse(int argc, char** argv)
             case ELinkType::Album:
                 platform->GetAlbum(url).Print();
                 break;
-            default:
-                return false;
         }
 
+        return true;
+    }
+
+    if (command == "search" && argc == 3) {
+        std::string url = argv[2];
+        EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
+        if (platformType == EPlatform::Unknown) return true;
+
+        std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
+        ELinkType linkType = platform->GetLinkType(url);
+        if (linkType != ELinkType::Track) return true;
+
+        EPlatform searchPlatform = platform->GetSearchPlatform();
+        if (searchPlatform == EPlatform::Unknown) return true;
+
+        std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
+        if (searcher == nullptr) return true;
+
+        TrackData track = platform->GetTrack(url);
+        if (track.Platform == EPlatform::Unknown) return true;
+
+        PlatformSearcherResult searchResult = searcher->FindTrack(track);
+        searchResult.Print();
+        
         return true;
     }
 
