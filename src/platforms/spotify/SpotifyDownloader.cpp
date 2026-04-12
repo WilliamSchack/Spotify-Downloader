@@ -4,7 +4,7 @@ SpotifyDownloader::SpotifyDownloader() : _spotify() {}
 
 ELinkType SpotifyDownloader::GetLinkType(const std::string& url)
 {
-    if (StringUtils::Contains(url, "track"))
+    if (StringUtils::Contains(url, "track") || StringUtils::Contains(url, "episode"))
         return ELinkType::Track;
 
     if (StringUtils::Contains(url, "playlist"))
