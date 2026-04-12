@@ -71,14 +71,12 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
         if (searcher == nullptr) return false;
 
-        PlatformSearcherResult searchResult = searcher->FindTrack(track);
+        searchResult = searcher->FindTrack(track);
         if (searchResult.Data.Platform == EPlatform::Unknown) {
             std::cout << "Could not find track: " << track.Name << std::endl;
             return false;
         }
     }
-
-    track.Print();
 
     // == Download 
     std::cout << "Downloading..." << std::endl;

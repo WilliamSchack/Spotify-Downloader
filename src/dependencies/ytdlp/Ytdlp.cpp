@@ -14,6 +14,11 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 {
     YtdlpResult result;
 
+    if (url.empty()) {
+        std::cout << "Cannot download, no url was passed" << std::endl;
+        return result;
+    }
+
     // Check file path
     std::filesystem::path pathM4a = pathNoExtension.wstring() + L".m4a";
     std::filesystem::path pathWebm = pathNoExtension.wstring() + L".webm";
@@ -98,7 +103,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     // Check if the file exists
     if (!std::filesystem::exists(downloadedPath)) {
-        std::cout << output;
+        std::cout << output << std::endl;
 
         error.Details = "Download failed with an unknown error, try downloading again";
         error.Error = EYtdlpError::Unknown;
