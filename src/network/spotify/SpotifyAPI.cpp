@@ -144,7 +144,7 @@ TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
 
     TrackData track(EPlatform::Spotify);
     track.Id = StringUtils::Split(json["uri"], ":").back();
-    track.Url = (isEpisode ? TRACK_URL : EPISODE_URL) + track.Id;
+    track.Url = (isEpisode ? EPISODE_URL : TRACK_URL) + track.Id;
     track.Name = json["name"];
     track.Description = json.value("description", "");
     track.Explicit = json["contentRating"]["label"] == "EXPLICIT";
