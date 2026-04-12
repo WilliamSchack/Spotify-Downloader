@@ -11,7 +11,7 @@
 class ArgumentParser
 {
     public:
-        static bool Parse(const int& argc, const char** argv);
+        static bool Parse(int argc, char** argv);
 };
 
 #endif
