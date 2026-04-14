@@ -10,6 +10,9 @@ ELinkType YoutubeDownloader::GetLinkType(const std::string& url)
     if (StringUtils::Contains(url, "playlist") && StringUtils::Contains(url, "OLAK"))
         return ELinkType::Album;
 
+    if (StringUtils::Contains(url, "playlist"))
+        return ELinkType::Playlist;
+
     return ELinkType::Unknown;
 }
 
@@ -39,7 +42,10 @@ TrackData YoutubeDownloader::GetTrack(const std::string& url)
 
 PlaylistTracks YoutubeDownloader::GetPlaylist(const std::string& url)
 {
-    return PlaylistTracks();
+    std::string id = GetLinkId(url, "list");
+    if (id.empty()) return PlaylistTracks();
+
+    return _youtube.GetPlaylist(id);
 }
 
 AlbumTracks YoutubeDownloader::GetAlbum(const std::string& url)
