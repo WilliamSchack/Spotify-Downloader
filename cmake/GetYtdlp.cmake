@@ -39,6 +39,9 @@ if(NOT EXISTS ${YTDLP_PATH})
 	if(UNIX)
 		file(CHMOD ${YTDLP_PATH} PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 	endif()
+else()
+	# Update if available
+	execute_process(COMMAND ${YTDLP_PATH} -U)
 endif()
 
 set(YTDLP_PATH_RELATIVE "${BINARIES_DIR_NAME}/${YTDLP_FILE_NAME}")
