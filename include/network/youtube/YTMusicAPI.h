@@ -51,9 +51,10 @@ class YTMusicAPI {
 		TrackData ParseTrackJson(const nlohmann::json& json);
 		ArtistData ParseArtistJson(const nlohmann::json& json);
 		AlbumTracks ParseAlbumJson(const nlohmann::json& json);
+		PlaylistTracks ParsePlaylistJson(const nlohmann::json& json);
 
-		nlohmann::json ParsePlaylistHeaderMeta(const nlohmann::json& json);
-		nlohmann::json ParseAudioPlaylist(const nlohmann::json& json, std::function<nlohmann::json(nlohmann::json)> requestFunc);
+		nlohmann::json ParsePlaylistHeaderMeta(const nlohmann::json& header);
+		nlohmann::json ParseAudioPlaylist(const nlohmann::json& response, std::function<nlohmann::json(nlohmann::json)> requestFunc);
 
 		nlohmann::json GetContinuations(const nlohmann::json& json, std::function<nlohmann::json(nlohmann::json)> requestFunc, std::function<nlohmann::json(nlohmann::json)> parseFunc);
 		std::string GetContinuationToken(const nlohmann::json& json);
