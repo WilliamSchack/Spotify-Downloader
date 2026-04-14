@@ -87,5 +87,16 @@ bool ArgumentParser::Parse(int argc, char** argv)
         return true;
     }
 
+    if (command == "getmetadata" && argc == 3) {
+        std::string filePath = argv[2];
+
+        MetadataManager metadata(filePath);
+        TrackData trackData = metadata.GetAll();
+
+        trackData.Print();
+
+        return true;
+    }
+
     return false;
 }

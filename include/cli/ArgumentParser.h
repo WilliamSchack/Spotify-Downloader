@@ -2,6 +2,7 @@
 #define ARGUMENTPARSER_H
 
 #include "DownloadManager.h"
+#include "MetadataManager.h"
 
 #include <string>
 
