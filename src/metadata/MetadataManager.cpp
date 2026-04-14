@@ -288,7 +288,7 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
     if (metadataType == EMetadataType::MP4) {
         switch (tag) {
             case EMetadataTag::Title:       return "\251nam";
-            case EMetadataTag::Artist:      return "\251art";
+            case EMetadataTag::Artist:      return "\251ART";
             case EMetadataTag::AlbumName:   return "\251alb";
             case EMetadataTag::AlbumArtist: return "aART";
             case EMetadataTag::Publisher:   return "\251pub";
