@@ -199,6 +199,48 @@ std::string MetadataManager::GetLyrics() const
     return GetStringField(EMetadataTag::Lyrics);
 }
 
+unsigned int MetadataManager::GetMilliseconds() const
+{
+    return _fileRef.audioProperties()->lengthInMilliseconds();
+}
+
+unsigned int MetadataManager::GetSeconds() const
+{
+    return _fileRef.audioProperties()->lengthInSeconds();
+}
+
+TrackData MetadataManager::GetAll() const
+{
+    TrackData data(EPlatform::Unknown);
+    
+    std::vector<ArtistData> artists;
+    std::vector<std::string> artistNames = SplitArtistNames(GetArtist());
+    for (std::string artistName : artistNames) {
+        ArtistData artistData(EPlatform::Unknown);
+        artistData.Name = artistName;
+        artists.push_back(artistData);
+    }
+
+    AlbumData album(EPlatform::Unknown);
+    album.Name = GetAlbumName();
+    
+    ArtistData albumArtist(EPlatform::Unknown);
+    albumArtist.Name = GetAlbumArtist();
+    album.Artists = { albumArtist };
+
+    data.Name = GetTitle();
+    data.ReleaseDate = GetReleaseDate();
+    data.ReleaseYear = StringUtils::Split(data.ReleaseDate, "-")[0];
+    data.TrackNumber = GetTrackNumber();
+    data.DiscNumber = GetDiscNumber();
+    data.Artists = artists;
+    data.Album = album;
+    data.DurationMilliseconds = GetMilliseconds();
+    data.DurationSeconds = GetSeconds();
+
+    return data;
+}
+
 std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists)
 {
     std::string connected = "";
@@ -212,6 +254,11 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
     }
 
     return connected;
+}
+
+std::vector<std::string> MetadataManager::SplitArtistNames(const std::string& artists)
+{
+    return StringUtils::Split(artists, Config::ARTISTS_SEPERATOR);
 }
 
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const

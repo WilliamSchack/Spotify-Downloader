@@ -7,9 +7,11 @@
 #include "ArtistData.h"
 #include "ImageHandler.h"
 #include "EMetadataTag.h"
+#include "StringUtils.h"
 
 #include <taglib/fileref.h>
 #include <taglib/tstringlist.h>
+#include <taglib/audioproperties.h>
 
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2frame.h>
@@ -29,6 +31,7 @@
 #include <taglib/xiphcomment.h>
 
 #include <filesystem>
+#include <vector>
 
 class MetadataManager
 {
@@ -51,19 +54,24 @@ class MetadataManager
         void SetLyrics      (const std::string& value);
         void SetCoverImage  (const Image& image);
 
-        std::string  GetTitle()       const;
-        std::string  GetArtist()      const;
-        std::string  GetAlbumName()   const;
-        std::string  GetAlbumArtist() const;
-        std::string  GetPublisher()   const;
-        std::string  GetCopyright()   const;
-        std::string  GetComment()     const;
-        std::string  GetReleaseDate() const;
-        unsigned int GetTrackNumber() const;
-        unsigned int GetDiscNumber()  const;
-        std::string  GetLyrics()      const;
+        std::string  GetTitle()        const;
+        std::string  GetArtist()       const;
+        std::string  GetAlbumName()    const;
+        std::string  GetAlbumArtist()  const;
+        std::string  GetPublisher()    const;
+        std::string  GetCopyright()    const;
+        std::string  GetComment()      const;
+        std::string  GetReleaseDate()  const;
+        unsigned int GetTrackNumber()  const;
+        unsigned int GetDiscNumber()   const;
+        std::string  GetLyrics()       const;
+        unsigned int GetMilliseconds() const;
+        unsigned int GetSeconds()      const;
+
+        TrackData GetAll() const;
 
         static std::string CombineArtistNames(const std::vector<ArtistData>& artists);
+        static std::vector<std::string> SplitArtistNames(const std::string& artists);
 
         // Saves and frees up the file for other apps to use
         void Close();
