@@ -17,6 +17,7 @@
 
 #include <chrono>
 #include <regex>
+#include <functional>
 
 #include <iostream>
 #include <QObject>
@@ -51,6 +52,12 @@ class YTMusicAPI {
 		ArtistData ParseArtistJson(const nlohmann::json& json);
 		AlbumTracks ParseAlbumJson(const nlohmann::json& json);
 
+		nlohmann::json ParsePlaylistHeaderMeta(const nlohmann::json& json);
+		nlohmann::json ParseAudioPlaylist(const nlohmann::json& json, std::function<nlohmann::json(nlohmann::json)> requestFunc);
+
+		nlohmann::json GetContinuations(const nlohmann::json& json, std::function<nlohmann::json(nlohmann::json)> requestFunc, std::function<nlohmann::json(nlohmann::json)> parseFunc);
+		std::string GetContinuationToken(const nlohmann::json& json);
+
 		nlohmann::json GetWatchPlaylist(std::string id, bool isPlaylist = false);
 		nlohmann::json ParseWatchPlaylist(const nlohmann::json& json);
 		nlohmann::json ParseWatchTrack(const nlohmann::json& json);
@@ -58,7 +65,7 @@ class YTMusicAPI {
 		nlohmann::json ParseSongRuns(const nlohmann::json& runs, const int& offset = 0);
 
 		nlohmann::json ParseAlbumHeader(const nlohmann::json& response);
-		nlohmann::json ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum = false);
+		nlohmann::json ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum = false, const bool& isCollaborative = false);
 
 		nlohmann::json ParseSongArtists(const nlohmann::json& data, const int& index);
 		nlohmann::json ParseSongAlbum(const nlohmann::json& data, const int& index);
