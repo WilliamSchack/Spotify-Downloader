@@ -1,9 +1,11 @@
 #include "TrackDownloader.h"
 
-bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
+DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
 {
+    DownloadResult result;
+
     if (track.Id.empty())
-        return false;
+        return result;
 
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
     track.Print();
@@ -33,8 +35,10 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
 
     std::filesystem::path tempDownloadPath = downloadsFolder / targetDownloadPath.stem();
 
+    result.FilePath = targetDownloadPath;
+
     if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
-        return false;
+        return result;
 
     // == Get cover art
     // TODO: Make sure it only saves one cover art per album
@@ -69,12 +73,12 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         std::cout << "Searching on different platform..." << std::endl;
 
         std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
-        if (searcher == nullptr) return false;
+        if (searcher == nullptr) return result;
 
         searchResult = searcher->FindTrack(track);
         if (searchResult.Data.Platform == EPlatform::Unknown) {
             std::cout << "Could not find track: " << track.Name << std::endl;
-            return false;
+            return result;
         }
     }
 
@@ -87,15 +91,15 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
     // TODO: Handle errors properly
     if (downloadResult.Error.Error != EYtdlpError::None) {
         std::cout << downloadResult.Error.Details << std::endl;
-        return false;
+        return result;
     }
 
     // Check if downloaded codec is different to the target, if so, convert it
     std::cout << "Converting..." << std::endl;
 
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
-    if (targetCodec == nullptr) return false;
-    if (downloadedCodec == nullptr) return false;
+    if (targetCodec == nullptr) return result;
+    if (downloadedCodec == nullptr) return result;
 
     if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
@@ -164,18 +168,19 @@ bool TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& sea
         std::filesystem::remove(tempDownloadPath);
 
         // Move error
-        if (!copied) return false;
+        if (!copied) return result;
     }
 
-    return true;
+    result.Success = true;
+    return result;
 }
 
 int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
 {
     int downloadErrors = 0;
     for (const TrackData& track : tracks) {
-        bool downloaded = DownloadTrack(track, searchPlatform, directory);
-        if (!downloaded) downloadErrors++;
+        DownloadResult downloadResult = DownloadTrack(track, searchPlatform, directory);
+        if (!downloadResult.Success) downloadErrors++;
     }
 
     return downloadErrors;

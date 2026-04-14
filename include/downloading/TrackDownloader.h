@@ -12,13 +12,14 @@
 #include "Ffmpeg.h"
 #include "LyricsFinder.h"
 #include "FilePathReserver.h"
+#include "DownloadResult.h"
 
 #include <iostream>
 
 class TrackDownloader
 {
     public:
-        static bool DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory);
+        static DownloadResult DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory);
         static int DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory);
     private:
         static std::filesystem::path FindAvailableTrackPath(const TrackData& track, const std::filesystem::path& originalPath);

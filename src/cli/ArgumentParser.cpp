@@ -27,10 +27,10 @@ bool ArgumentParser::Parse(int argc, char** argv)
         if (searchPlatform == EPlatform::Unknown) return true;
 
         TrackData track = platform->GetTrack(url);
-        bool downloaded = TrackDownloader::DownloadTrack(track, searchPlatform, downloadFolder);
+        DownloadResult downloadedResult = TrackDownloader::DownloadTrack(track, searchPlatform, downloadFolder);
 
-        if (downloaded) {
-            std::cout << "Successfully downloaded" << std::endl;
+        if (downloadedResult.Success) {
+            std::cout << "Successfully downloaded (" << downloadedResult.FilePath << ")" << std::endl;
             // Will output download results for each track with file names etc. when properly implementing the cli
         } else {
             std::cout << "Failed to download" << std::endl;
