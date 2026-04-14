@@ -428,6 +428,26 @@ AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId)
 	return ParseAlbumJson(album);
 }
 
+PlaylistTracks YTMusicAPI::GetPlaylist(const std::string& playlistId)
+{
+	std::string browseId = playlistId;
+	if (!StringUtils::StartsWith(browseId, "VL"))
+		browseId = "VL" + browseId;
+
+	nlohmann::json postData {
+		{"browseId", browseId},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("browse");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	std::cout << json << std::endl;
+
+	return PlaylistTracks();
+}
+
 nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
 {
 	nlohmann::json postData {

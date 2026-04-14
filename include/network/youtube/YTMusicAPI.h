@@ -8,6 +8,7 @@
 #include "EYoutubeCategory.h"
 #include "YoutubeSearchResult.h"
 #include "NetworkRequest.h"
+#include "PlaylistTracks.h"
 #include "AlbumTracks.h"
 #include "Lyrics.h"
 #include "StringUtils.h"
@@ -33,6 +34,8 @@ class YTMusicAPI {
 
 		std::string GetAlbumBrowseId(const std::string& playlistId);
 		AlbumTracks GetAlbum(const std::string& browseId);
+
+		PlaylistTracks GetPlaylist(const std::string& playlistId);
 
 		Lyrics GetLyrics(const std::string& videoId, const bool& timestamps = true);
 
