@@ -69,7 +69,8 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 		track.SetDuration(json["durationSeconds"].get<int>() * 1000);
 
 	// Store the video type in the description
-	track.Description = json.value("videoType", "");
+	if (json.contains("videoType") && !json["videoType"].is_null())
+		track.Description = json["videoType"];
 
 	// Artists
 	std::vector<ArtistData> artists;
