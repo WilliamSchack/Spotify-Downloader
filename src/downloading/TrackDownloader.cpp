@@ -3,6 +3,7 @@
 DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
 {
     DownloadResult result;
+    result.Success = false;
 
     if (track.Id.empty())
         return result;
@@ -22,13 +23,24 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!std::filesystem::exists(downloadsFolder))
         std::filesystem::create_directory(downloadsFolder);
 
-    std::wstring fileName = StringUtils::ToWString(track.Name) + L" - " + StringUtils::ToWString(track.Artists[0].Name);
-    fileName = FileUtils::ValidateFileName(fileName);
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
+
+#ifdef WIN32
+    std::wstring validatedTrackName = FileUtils::ValidateFileName(StringUtils::ToWString(track.Name));
+    std::wstring validatedArtistName = FileUtils::ValidateFileName(StringUtils::ToWString(track.Artists[0].Name));
+    std::wstring codecString = StringUtils::ToWString(targetCodec->GetString());
+    
+    std::wstring fileName = validatedTrackName + L" - " + validatedArtistName + L"." + codecString;
+#else
+    std::string validatedTrackName = FileUtils::ValidateFileName(track.Name);
+    std::string validatedArtistName = FileUtils::ValidateFileName(track.Artists[0].Name);
+    std::string codecString = targetCodec->GetString();
+    
+    std::string fileName = validatedTrackName + " - " + validatedArtistName + "." + codecString;
+#endif
     
     std::filesystem::path targetFolder = directory;
-    
-    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
-    std::filesystem::path targetDownloadPath = targetFolder / (fileName + L"." + StringUtils::ToWString(targetCodec->GetString()));
+    std::filesystem::path targetDownloadPath = targetFolder / fileName;
     
     FilePathReserver pathReserver;
     targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
