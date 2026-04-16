@@ -124,7 +124,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
     std::filesystem::path tempPath = filePath;
-#ifdef
+#ifdef WIN32
     tempPath.replace_filename(filePath.stem().wstring() + L"_ffmpeg" + filePath.extension().wstring());
 #else
     tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
