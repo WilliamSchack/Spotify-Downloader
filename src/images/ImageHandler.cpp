@@ -48,7 +48,11 @@ EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
 
 bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const Image& image)
 {
+#ifdef WIN32
     std::filesystem::path path = pathNoExtension.wstring() + L"." + StringUtils::ToWString(GetImageFormatString(image.Format));
+#else
+    std::filesystem::path path = pathNoExtension.string() + "." + GetImageFormatString(image.Format);
+#endif
     if (image.Format == EImageFormat::PNG) return SavePng(path, image);
     if (image.Format == EImageFormat::JPG) return SaveJpg(path, image);
 
@@ -180,7 +184,7 @@ std::vector<unsigned char> ImageHandler::EncodeImage(const Image& image)
 
 FILE* ImageHandler::GetFile(const std::filesystem::path& path)
 {
-#if WIN32
+#ifdef WIN32
     // On windows the wstring is required for some file names to work correctly
     FILE* file = _wfopen(path.wstring().c_str(), L"wb");
 #else
