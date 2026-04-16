@@ -6,6 +6,11 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
     process.AddArgument(L"-i", L"\"" + filePath.wstring() + L"\"");
+#ifdef WIN32
+        process.AddArgument(L"-i", L"\"" + filePath.wstring() + L"\"");
+#else
+        process.AddArgument("-i", "\"" + filePath.string() + "\"");
+#endif
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
     process.AddArgument("-"); // No output
@@ -80,7 +85,11 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
     // Convert
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     std::vector<std::variant<std::string, std::wstring>> args {
+#ifdef WIN32
         "-i", L"\"" + filePath.wstring() + L"\"",
+#else
+        "-i", "\"" + filePath.string() + "\"",
+#endif
         "-progress", "-",
         "-nostats",
         targetCodec->GetFfmpegConversionParams()
@@ -91,7 +100,11 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
         args.push_back(std::to_string(audioDetails.Bitrate) + "k");
     }
 
+#ifdef WIN32
     args.push_back(L"\"" + newPath.wstring() + L"\"");
+#else
+    args.push_back("\"" + newPath.string() + "\"");
+#endif
 
     Execute(audioDetails, args);
 
@@ -111,13 +124,21 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
     std::filesystem::path tempPath = filePath;
+#ifdef
     tempPath.replace_filename(filePath.stem().wstring() + L"_ffmpeg" + filePath.extension().wstring());
+#else
+    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+#endif
 
     float dbDifference = (targetDb - audioDetails.MeanDB) + 0.4;  // Adding 0.4 here since normalized is always average 0.4-0.5 off of normalized target IDK why
 
     // Normalise
     std::vector<std::variant<std::string, std::wstring>> args {
+#ifdef WIN32
         "-i", L"\"" + filePath.wstring() + L"\"",
+#else
+        "-i", "\"" + filePath.string() + "\"",
+#endif
         "-progress", "-",
         "-nostats",
         "-af", "volume=" + std::to_string(dbDifference) + "dB"
@@ -128,7 +149,11 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
         args.push_back(std::to_string(audioDetails.Bitrate) + "k");
     }
 
+#ifdef WIN32
     args.push_back(L"\"" + tempPath.wstring() + L"\"");
+#else
+    args.push_back("\"" + tempPath.string() + "\"");
+#endif
 
     Execute(audioDetails, args);
 
@@ -149,16 +174,28 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
 
     // Get details
     std::filesystem::path tempPath = filePath;
+#ifdef WIN32
     tempPath.replace_filename(filePath.stem().wstring() + L"_ffmpeg" + filePath.extension().wstring());
+#else
+    tempPath.replace_filename(filePath.stem().string() + "_ffmpeg" + filePath.extension().string());
+#endif
     
     // Set bitrate
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     Execute(audioDetails, {
+#ifdef WIN32
         "-i", L"\"" + filePath.wstring() + L"\"",
+#else
+        "-i", "\"" + filePath.string() + "\"",
+#endif
         "-progress", "-",
         "-nostats",
         "-b:a", std::to_string(bitrate) + "k",
+#ifdef WIN32
         L"\"" + tempPath.wstring() + L"\""
+#else
+        "\"" + tempPath.string() + "\""
+#endif
     });
 
     // Rename back to original
