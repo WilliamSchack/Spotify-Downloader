@@ -5,7 +5,6 @@
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument(L"-i", L"\"" + filePath.wstring() + L"\"");
 #ifdef WIN32
         process.AddArgument(L"-i", L"\"" + filePath.wstring() + L"\"");
 #else
@@ -234,7 +233,11 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
             continue;
         }
 
+#if WIN32
         process.AddArgument(std::get<std::wstring>(arg));
+#else
+        std::cout << "WString args are not supported on unix..." << std::endl;
+#endif
     }
 
     // Execute command

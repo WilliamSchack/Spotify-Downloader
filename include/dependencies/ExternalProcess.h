@@ -17,17 +17,28 @@ class ExternalProcess
         ExternalProcess(const std::filesystem::path& path);
         static ExternalProcess GetRelativeProcess(const std::filesystem::path& relativePath);
 
+#ifdef WIN32
         void AddArgument(const std::wstring& arg);
         void AddArgument(const std::wstring& arg, const std::wstring& value);
+#else
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);
+#endif
 
         std::string Execute(std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
+#ifdef WIN32
         std::wstring GetCommand();
-    private:
+#else
+        std::string GetCommand();
+#endif
+        private:
         std::filesystem::path _path;
+#ifdef WIN32
         std::vector<std::wstring> _args;
+#else
+        std::vector<std::string> _args;
+#endif
 };
 
 #endif

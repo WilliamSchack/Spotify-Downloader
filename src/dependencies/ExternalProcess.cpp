@@ -11,6 +11,7 @@ ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path&
     return ExternalProcess(processPath);
 }
 
+#ifdef WIN32
 std::wstring ExternalProcess::GetCommand()
 {
     std::wstring command = L"\"" + _path.wstring() + L"\"";
@@ -21,14 +22,30 @@ std::wstring ExternalProcess::GetCommand()
         command += _args[i];
     }
 
-#ifndef WIN32
     // Dont relay outputs to stdout
     command += L" 2>&1";
-#endif
 
     return command;
 }
+#else
+std::string ExternalProcess::GetCommand()
+{
+    std::string command = "\"" + _path.string() + "\"";
 
+    int argsSize = _args.size();
+    for (int i = 0; i < argsSize; i++) {
+        command += " ";
+        command += _args[i];
+    }
+
+    // Dont relay outputs to stdout
+    command += " 2>&1";
+
+    return command;
+}
+#endif
+
+#ifdef WIN32
 void ExternalProcess::AddArgument(const std::wstring& arg)
 {
     _args.push_back(arg);
@@ -38,16 +55,17 @@ void ExternalProcess::AddArgument(const std::wstring& arg, const std::wstring& v
 {
     AddArgument(arg + L" " + value);
 }
-
+#else
 void ExternalProcess::AddArgument(const std::string& arg)
 {
-    AddArgument(StringUtils::ToWString(arg));
+    _args.push_back(arg);
 }
 
 void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
 {
     AddArgument(arg + " " + value);
 }
+#endif
 
 std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
 {
@@ -142,7 +160,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
 
     return output;
 #else
-    FILE* pipe = popen(StringUtils::FromWString(GetCommand()).c_str(), "r");
+    FILE* pipe = popen(GetCommand().c_str(), "r");
     if (pipe == NULL) {
         perror("Failed to open process");
         return "";
