@@ -26,18 +26,11 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
 
 #ifdef WIN32
-    std::wstring validatedTrackName = FileUtils::ValidateFileName(StringUtils::ToWString(track.Name));
-    std::wstring validatedArtistName = FileUtils::ValidateFileName(StringUtils::ToWString(track.Artists[0].Name));
-    std::wstring codecString = StringUtils::ToWString(targetCodec->GetString());
-    
-    std::wstring fileName = validatedTrackName + L" - " + validatedArtistName + L"." + codecString;
+    std::wstring fileName = StringUtils::ToWString(track.Name) + L" - " + StringUtils::ToWString(track.Artists[0].Name) + L"." + StringUtils::ToWString(targetCodec->GetString());
 #else
-    std::string validatedTrackName = FileUtils::ValidateFileName(track.Name);
-    std::string validatedArtistName = FileUtils::ValidateFileName(track.Artists[0].Name);
-    std::string codecString = targetCodec->GetString();
-    
-    std::string fileName = validatedTrackName + " - " + validatedArtistName + "." + codecString;
+    std::string fileName = track.Name + " - " + track.Artists[0].Name + "." + targetCodec->GetString();
 #endif
+    fileName = FileUtils::ValidateFileName(fileName);
     
     std::filesystem::path targetFolder = directory;
     std::filesystem::path targetDownloadPath = targetFolder / fileName;
@@ -61,7 +54,11 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!std::filesystem::exists(imagesFolder))
         std::filesystem::create_directory(imagesFolder);
 
+#ifdef WIN32
     std::wstring imageFileName = StringUtils::ToWString(track.Album.Name) + L"(" + StringUtils::ToWString(track.Artists[0].Name) + L")_Cover";
+#else
+    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover";
+#endif
     imageFileName = FileUtils::ValidateFileName(imageFileName);
 
     std::filesystem::path imageFilePath = imagesFolder / imageFileName;
