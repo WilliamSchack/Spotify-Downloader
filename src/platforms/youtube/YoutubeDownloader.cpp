@@ -2,15 +2,30 @@
 
 YoutubeDownloader::YoutubeDownloader() : _youtube() {}
 
+std::string YoutubeDownloader::ProcessUrl(const std::string& url)
+{
+    // Convert youtu.be links
+    std::string processedUrl = url;
+    if (StringUtils::Contains(url, "youtu.be")) {
+        size_t videoIdStartIndex = url.find_last_of("/") + 1;
+        std::string videoId = url.substr(videoIdStartIndex);
+        processedUrl = "https://www.youtube.com/watch?v=" + videoId;
+    }
+
+    return processedUrl;
+}
+
 ELinkType YoutubeDownloader::GetLinkType(const std::string& url)
 {
-    if (StringUtils::Contains(url, "watch"))
+    std::string processedUrl = ProcessUrl(url);
+
+    if (StringUtils::Contains(processedUrl, "watch"))
         return ELinkType::Track;
 
-    if (StringUtils::Contains(url, "playlist") && StringUtils::Contains(url, "OLAK"))
+    if (StringUtils::Contains(processedUrl, "playlist") && StringUtils::Contains(processedUrl, "OLAK"))
         return ELinkType::Album;
 
-    if (StringUtils::Contains(url, "playlist"))
+    if (StringUtils::Contains(processedUrl, "playlist"))
         return ELinkType::Playlist;
 
     return ELinkType::Unknown;
@@ -18,13 +33,15 @@ ELinkType YoutubeDownloader::GetLinkType(const std::string& url)
 
 std::string YoutubeDownloader::GetLinkId(const std::string& url, const std::string& urlParam)
 {
-    size_t startIndex = url.find("?" + urlParam + "=") + urlParam.size() + 2;
-    size_t endIndex = url.find("&", startIndex);
+    std::string processedUrl = ProcessUrl(url);
+
+    size_t startIndex = processedUrl.find("?" + urlParam + "=") + urlParam.size() + 2;
+    size_t endIndex = processedUrl.find("&", startIndex);
 
     if (endIndex == std::string::npos)
-        return url.substr(startIndex);
+        return processedUrl.substr(startIndex);
 
-    return url.substr(startIndex, endIndex - startIndex);
+    return processedUrl.substr(startIndex, endIndex - startIndex);
 }
 
 EPlatform YoutubeDownloader::GetSearchPlatform()
@@ -35,6 +52,7 @@ EPlatform YoutubeDownloader::GetSearchPlatform()
 TrackData YoutubeDownloader::GetTrack(const std::string& url)
 {
     std::string id = GetLinkId(url, "v");
+    std::cout << id << std::endl;
     if (id.empty()) return TrackData(EPlatform::Unknown);
 
     return _youtube.GetTrack(id);
