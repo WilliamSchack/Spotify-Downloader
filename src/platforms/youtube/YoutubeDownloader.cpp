@@ -7,8 +7,15 @@ std::string YoutubeDownloader::ProcessUrl(const std::string& url)
     // Convert youtu.be links
     std::string processedUrl = url;
     if (StringUtils::Contains(url, "youtu.be")) {
-        size_t videoIdStartIndex = url.find_last_of("/") + 1;
-        std::string videoId = url.substr(videoIdStartIndex);
+        size_t startIndex = url.find_last_of("/") + 1;
+        size_t endIndex = processedUrl.find("?", startIndex);
+
+        std::string videoId; 
+        if (endIndex == std::string::npos)
+            videoId = url.substr(startIndex);
+        else
+            videoId = url.substr(startIndex, endIndex - startIndex);
+        
         processedUrl = "https://www.youtube.com/watch?v=" + videoId;
     }
 
@@ -52,7 +59,6 @@ EPlatform YoutubeDownloader::GetSearchPlatform()
 TrackData YoutubeDownloader::GetTrack(const std::string& url)
 {
     std::string id = GetLinkId(url, "v");
-    std::cout << id << std::endl;
     if (id.empty()) return TrackData(EPlatform::Unknown);
 
     return _youtube.GetTrack(id);
