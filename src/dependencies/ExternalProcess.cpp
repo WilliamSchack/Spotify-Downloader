@@ -55,17 +55,21 @@ void ExternalProcess::AddArgument(const std::wstring& arg, const std::wstring& v
 {
     AddArgument(arg + L" " + value);
 }
-#else
+#endif
+
 void ExternalProcess::AddArgument(const std::string& arg)
 {
+#ifdef WIN32
+    _args.push_back(StringUtils::ToWString(arg));
+#else
     _args.push_back(arg);
+#endif
 }
 
 void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
 {
     AddArgument(arg + " " + value);
 }
-#endif
 
 std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
 {

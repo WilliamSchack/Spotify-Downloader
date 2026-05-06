@@ -20,10 +20,9 @@ class ExternalProcess
 #ifdef WIN32
         void AddArgument(const std::wstring& arg);
         void AddArgument(const std::wstring& arg, const std::wstring& value);
-#else
+#endif
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);
-#endif
 
         std::string Execute(std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
