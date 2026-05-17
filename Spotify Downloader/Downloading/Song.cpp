@@ -681,6 +681,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 
 	// If not finished by the timeout time, check if process is 0%, if so timeout download
 	if (!process->waitForFinished(Config::DownloadTimeout) && currentProgressPercent == 0.0f) {
+		qWarning() << "Yt-dlp timed out with the error:" << process->readAllStandardError();
+
 		process->kill();
 		delete process;
 		process = nullptr;
