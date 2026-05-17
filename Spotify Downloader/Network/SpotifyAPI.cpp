@@ -347,7 +347,17 @@ QJsonObject SpotifyAPI::ParsePlaylist(const QJsonObject& json)
     playlist["owner"] = owner;
 
     // Tracks
-    playlist["tracks"] = ParseTracks(playlistJson["content"].toObject()["items"].toArray());
+    QJsonArray tracks = ParseTracks(playlistJson["content"].toObject()["items"].toArray());
+
+    for (int i = 0; i < tracks.size(); i++) {
+        // Add playlist track number
+        QJsonObject track = tracks[i].toObject();
+        track["playlist_track_number"] = i + 1;
+
+        tracks[i] = track;
+    }
+
+    playlist["tracks"] = tracks;
 
     return playlist;
 }
