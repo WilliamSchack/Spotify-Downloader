@@ -366,7 +366,9 @@ bool PlaylistDownloader::DistributeTracks() {
 	}
 
 	// Get differences between current total and target total
-	QList<int> differenceInTracksPerThread = QList<int>(_threadCount);
+	QList<int> differenceInTracksPerThread;
+	for (int i = 0; i < _threadCount; i++)
+		differenceInTracksPerThread.append(0);
 
 	for (int i = 0; i < _threadCount; i++) {
 		SongDownloader* downloader = _threads[i]->Downloader;

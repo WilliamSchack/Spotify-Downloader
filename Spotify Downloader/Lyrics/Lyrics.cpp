@@ -23,13 +23,11 @@ std::string Lyrics::GetString() {
 				paddedSecondsStream << std::setw(2) << std::setfill('0') << seconds;
 				paddedHuntredthsStream << std::setw(2) << std::setfill('0') << hundredths;
 
-				std::string lyricTimestamped = std::format(
-					"[{}:{}.{}]{}\n",
-					paddedMinutesStream.str(),
-					paddedSecondsStream.str(),
-					paddedHuntredthsStream.str(),
-					lyric.Lyric
-				);
+				std::string lyricTimestamped =
+					"[" + paddedMinutesStream.str() +
+					":" + paddedSecondsStream.str() +
+					"." + paddedHuntredthsStream.str() +
+					"]" + lyric.Lyric + "\n";
 
 				lyricsString += lyricTimestamped;
 			}

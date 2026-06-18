@@ -1,7 +1,9 @@
 #ifndef SPOTIFYAUTHINTERCEPTOR_H
 #define SPOTIFYAUTHINTERCEPTOR_H
 
-#include <QtWebEngineCore>
+#include <QWebEngineUrlRequestInfo>
+#include <QWebEngineUrlRequestInterceptor>
+#include <QHash>
 
 class SpotifyAuthInterceptor : public QWebEngineUrlRequestInterceptor
 {

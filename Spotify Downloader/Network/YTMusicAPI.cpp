@@ -121,7 +121,10 @@ QJsonArray YTMusicAPI::Search(QString query, QString filter, int limit) {
 		} else if (result.contains("musicShelfRenderer")) {
 			contents = JSONUtils::Navigate(result, { "musicShelfRenderer", "contents" }).toArray();
 			category = JSONUtils::Navigate(result, { "musicShelfRenderer", "title", "runs", 0, "text" }).toString();
-			type = filter.removeLast().toLower();
+			type = filter;
+			if (!type.isEmpty())
+				type.chop(1);
+			type = type.toLower();
 		} else {
 			continue;
 		}
@@ -664,7 +667,7 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 
 		// Setup lyrics source message
 		Lyrics lyrics;
-		lyrics.SourceMessage = std::format("YouTube: {}", data["sourceMessage"].toString().split("Source: ")[1].toStdString());
+		lyrics.SourceMessage = QString("YouTube: %1").arg(data["sourceMessage"].toString().split("Source: ")[1]).toStdString();
 
 		// Get lyrics
 		QJsonArray timedLyricsData = data["timedLyricsData"].toArray();
@@ -693,7 +696,7 @@ Lyrics YTMusicAPI::GetLyrics(QString videoId, bool timestamps) {
 		if (unsyncedTimedLyrics) {
 			std::string unsyncedTimedLyricsString = "";
 			foreach(Lyrics::SynchronisedLyric syncedLyric, lyricsList) {
-				unsyncedTimedLyricsString += std::format("{}\n", syncedLyric.Lyric);
+				unsyncedTimedLyricsString += syncedLyric.Lyric + "\n";
 			}
 
 			lyrics.Type = Lyrics::LyricsType::Unsynced;

@@ -1,5 +1,7 @@
 #include "SongErrorItem.h"
 
+#include <QUrl>
+
 SongErrorItem::SongErrorItem(QWidget* parent) : QWidget(parent) {
 	// Fonts
 	QFont font1 = QFont();
@@ -109,7 +111,7 @@ void SongErrorItem::AddLinkInput(QString searchQuery, const std::function<void(Q
 	searchButton->setIcon(QIcon(":/SpotifyDownloader/Icons/Search_Icon_B.png"));
 
 	QByteArray queryPercentEncoding = QUrl::toPercentEncoding(searchQuery);
-	QUrl searchUrl = QUrl(QString("https://music.youtube.com/search?q=%1").arg(queryPercentEncoding));
+	QUrl searchUrl = QUrl(QString("https://music.youtube.com/search?q=%1").arg(QString::fromUtf8(queryPercentEncoding)));
 	connect(searchButton, &QPushButton::clicked, [searchUrl] {
 		QDesktopServices::openUrl(searchUrl);
 	});

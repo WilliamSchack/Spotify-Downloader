@@ -1,0 +1,23 @@
+name: spotify-downloader-macos
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - cmake
+  - ninja
+  - pkg-config
+  - ffmpeg
+  - yt-dlp
+  - quickjs
+  - pyinstaller
+
+# Notes:
+# - This environment intentionally keeps CLI/runtime tools isolated from
+#   Homebrew and the Anaconda base environment.
+# - PyInstaller is used during packaging to produce a standalone yt-dlp binary
+#   for the macOS app bundle.
+# - conda-forge osx-64 currently does not provide TagLib as `taglib`.
+# - conda-forge osx-64 provides `qt6-main`, but not Qt 6 WebEngine. For the
+#   full Spotify auth path, use the official Qt 6 installer or another Qt 6
+#   distribution that includes WebEngine.

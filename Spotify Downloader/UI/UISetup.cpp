@@ -406,7 +406,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
     }
 
     // Set combo box variables on change
-    connect(_ui.CodecInput, &QComboBox::currentIndexChanged, [=](int index) {
+    connect(_ui.CodecInput, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         // Set codec
         Config::SetCodecIndex(index);
 
@@ -442,7 +442,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
         _ui.AudioBitrateFileSizeLabel_Value->setText(fileSizeText);
     });
 
-    connect(_ui.TrackNumberInput, &QComboBox::currentIndexChanged, [=](int index) {
+    connect(_ui.TrackNumberInput, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) {
         Config::TrackNumberIndex = index;
 
         // Update warning if set to playlist track number and line indicator height if changed
@@ -460,8 +460,8 @@ void SpotifyDownloader::SetupSettingsScreen() {
         }
     });
 
-    connect(_ui.PlaylistFileTypeInput, &QComboBox::currentIndexChanged, [=](int index) { Config::PlaylistFileTypeIndex = index; });
-    connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
+    connect(_ui.PlaylistFileTypeInput, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) { Config::PlaylistFileTypeIndex = index; });
+    connect(_ui.DownloaderThreadUIInput, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Update PO Token on text change
     connect(_ui.POTokenInput, &QLineEdit::textChanged, [=](QString text) { Config::POToken = text; });
@@ -1121,6 +1121,7 @@ bool SpotifyDownloader::ValidateDirectory() {
                 );
 
                 if (adminInput == QMessageBox::Yes) {
+#if defined(Q_OS_WIN)
                     // Restart with admin perms
                     QString exePath = QCoreApplication::applicationFilePath();
                     QStringList args = QStringList({ "-Command", QString("Start-Process '%1' -Verb runAs").arg(exePath) });
@@ -1130,6 +1131,15 @@ bool SpotifyDownloader::ValidateDirectory() {
                     // Wait for elevated process to open, then close this one
                     elevatedApplication->waitForFinished();
                     QCoreApplication::quit();
+#else
+                    ShowMessageBoxWithButtons(
+                        "Directory Error",
+                        "Automatic permission elevation is only available on Windows.\nPlease choose a writable folder.",
+                        QMessageBox::Critical,
+                        QMessageBox::Ok
+                    );
+                    return false;
+#endif
                 } else if (adminInput == QMessageBox::No) {
                     return false;
                 }

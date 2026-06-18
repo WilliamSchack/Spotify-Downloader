@@ -54,10 +54,10 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 		PlaylistFileTrack track{
 			absolutePath,
 			encodedPath,
-			QString::fromUtf8(title),
-			QString::fromUtf8(artist),
-			QString::fromUtf8(album),
-			QString::fromUtf8(comment),
+			QString::fromStdString(title),
+			QString::fromStdString(artist),
+			QString::fromStdString(album),
+			QString::fromStdString(comment),
 			trackNum,
 			durationSeconds,
 			durationMilliseconds

@@ -1,0 +1,32 @@
+name: macOS Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install cmake ninja qt taglib ffmpeg yt-dlp quickjs pkg-config
+
+      - name: Build and package
+        run: |
+          QT_PREFIX="$(brew --prefix qt)" BUILD_DIR="$PWD/build" scripts/package-macos.sh
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpotifyDownloader-macOS
+          path: build/SpotifyDownloader.app
+          if-no-files-found: error

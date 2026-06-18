@@ -7,7 +7,10 @@
 
 #include <QUrl>
 #include <QEventLoop>
-#include <QtWebEngineCore>
+#include <QRegularExpression>
+#include <QTimer>
+#include <QWebEnginePage>
+#include <QWebEngineProfile>
 
 #include <iostream>
 #include <regex>

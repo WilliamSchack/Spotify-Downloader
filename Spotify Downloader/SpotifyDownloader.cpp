@@ -2,7 +2,9 @@
 
 #include <QMovie>
 
+#if defined(Q_OS_WIN)
 #include <qt_windows.h>
+#endif
 
 // Ui Setup
 SpotifyDownloader::SpotifyDownloader(QWidget* parent) : QDialog(parent)
@@ -177,6 +179,7 @@ void SpotifyDownloader::closeEvent(QCloseEvent* closeEvent) {
 }
 
 bool SpotifyDownloader::IsElevated() {
+#if defined(Q_OS_WIN)
     BOOL fRet = false;
     HANDLE hToken = NULL;
     if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
@@ -192,6 +195,9 @@ bool SpotifyDownloader::IsElevated() {
     }
 
     return fRet;
+#else
+    return false;
+#endif
 }
 
 // Application Exit

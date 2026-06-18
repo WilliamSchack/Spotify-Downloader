@@ -92,7 +92,7 @@ QString MusixmatchAPI::GenerateSignature(QString url) {
 	QByteArray urlEncodedHash = QUrl::toPercentEncoding(hashOutputBase64);
 
 	// Return the signature url params
-	return QString("&signature=%1&signature_protocol=sha256").arg(urlEncodedHash);
+	return QString("&signature=%1&signature_protocol=sha256").arg(QString::fromUtf8(urlEncodedHash));
 }
 
 QJsonObject MusixmatchAPI::Request(QString endpoint, QString isrc) {

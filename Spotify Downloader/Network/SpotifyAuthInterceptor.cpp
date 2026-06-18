@@ -6,11 +6,13 @@ void SpotifyAuthInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info)
         return;
 
     if (info.requestUrl().toString().contains("api-partner.spotify.com")) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         const QHash<QByteArray, QByteArray>& httpHeaders = info.httpHeaders();
         if (httpHeaders.contains("authorization") && Authorization.isEmpty())
-            Authorization = info.httpHeaders()["authorization"];
+            Authorization = httpHeaders["authorization"];
         if (httpHeaders.contains("client-token") && ClientToken.isEmpty())
-            ClientToken = info.httpHeaders()["client-token"];
+            ClientToken = httpHeaders["client-token"];
+#endif
     }
 
     // Cant get response body, get the url and do another request for the js

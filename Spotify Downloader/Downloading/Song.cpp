@@ -657,10 +657,10 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Download song
 	// Using --no-part because after killing mid-download, .part files stay in use and cant be deleted
 	// web client is currently not working, use default when no po token assigned (https://github.com/yt-dlp/yt-dlp/issues/12482)
-	process->setProgram(QCoreApplication::applicationDirPath() + "/" + _ytdlpPath);
+	process->setProgram(Config::ExecutablePath(_ytdlpPath));
 	QStringList ytdlpArgs;
-	ytdlpArgs << "--ffmpeg-location" << QCoreApplication::applicationDirPath() + "/" + _ffmpegPath;
-	ytdlpArgs << "--js-runtimes" << "quickjs:" + QCoreApplication::applicationDirPath() + "/" + _quickjsPath;
+	ytdlpArgs << "--ffmpeg-location" << Config::ExecutablePath(_ffmpegPath);
+	ytdlpArgs << "--js-runtimes" << "quickjs:" + Config::ExecutablePath(_quickjsPath);
 	ytdlpArgs << "-v";
 	ytdlpArgs << "--no-part";
 	ytdlpArgs << "--progress";
@@ -777,7 +777,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	
 	// Convert downloaded format to desired format
 	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	QObject::connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, &QProcess::deleteLater);
 	QObject::connect(process, &QProcess::readyRead, process, [&]() {
 		QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
 		int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
@@ -786,8 +786,8 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 		onProgressUpdate(progress);
 	});
 
-	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 %4 "%5")")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+	process->start(QString(R"("%1" -i "%2" -progress - -nostats %3 %4 "%5")")
+		.arg(Config::ExecutablePath(_ffmpegPath))
 		.arg(downloadedPath)
 		.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(bitrate))
 		.arg(Codec::Data[Codec].FFMPEGConversionParams)
@@ -816,9 +816,9 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 
 	// Get duration for progress bar calculations
 	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-	process->startCommand(QString(R"("%1" -i "%2" -f null -)")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+	QObject::connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, &QProcess::deleteLater);
+	process->start(QString(R"("%1" -i "%2" -f null -)")
+		.arg(Config::ExecutablePath(_ffmpegPath))
 		.arg(_downloadingPath));
 	process->waitForFinished(-1);
 
@@ -828,7 +828,7 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 
 	// Set bitrate
 	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+	QObject::connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, &QProcess::deleteLater);
 	QObject::connect(process, &QProcess::readyRead, process, [&]() {
 		QString msProgressString = QString(process->readAll()).split("\n")[3].split("=")[1];
 		int msProgress = int(msProgressString.toInt() / 1000); // Remove last 3 digits
@@ -838,8 +838,8 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 	});
 
 	QString newQualityFullPath = QString("%1/%2.%3").arg(_downloadingFolder).arg(FileName + "_A").arg(Codec::Data[Codec].String);
-	process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+	process->start(QString(R"("%1" -i "%2" -progress - -nostats -b:a %3k "%4")")
+		.arg(Config::ExecutablePath(_ffmpegPath))
 		.arg(_downloadingPath)
 		.arg(bitrate)
 		.arg(newQualityFullPath));
@@ -852,9 +852,9 @@ void Song::SetBitrate(QProcess*& process, int bitrate, std::function<void(float)
 void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int bitrate, bool* quitting, std::function<void(float)> onProgressUpdate) {
 	// Get Audio Data
 	process = new QProcess();
-	QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
-	process->startCommand(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
-		.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+	QObject::connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, &QProcess::deleteLater);
+	process->start(QString(R"("%1" -i "%2" -af "volumedetect" -vn -sn -dn -f null -)")
+		.arg(Config::ExecutablePath(_ffmpegPath))
 		.arg(_downloadingPath));
 	process->waitForFinished(-1);
 
@@ -881,7 +881,7 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 			}
 
 			process = new QProcess();
-			QObject::connect(process, &QProcess::finished, process, &QProcess::deleteLater);
+			QObject::connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), process, &QProcess::deleteLater);
 			QObject::connect(process, &QProcess::readyRead, process, [&]() {
 				QString progressS = process->readAll();
 
@@ -891,8 +891,8 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 
 				onProgressUpdate(progress);
 			});
-			process->startCommand(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
-				.arg(QCoreApplication::applicationDirPath() + "/" + _ffmpegPath)
+			process->start(QString(R"("%1" -i "%2" -progress - -nostats %3 -af "volume=%4dB" "%5")")
+				.arg(Config::ExecutablePath(_ffmpegPath))
 				.arg(_downloadingPath)
 				.arg(Codec::Data[Codec].LockedBitrate ? "" : QString("-b:a %1k").arg(normaliseBitrate))
 				.arg(volumeApply)
@@ -975,7 +975,8 @@ void Song::AssignMetadata() {
 										.toUtf8().data();
 		TagLib::String commentText = "Thanks for using my program! :) - William S";
 
-		TagLib::String compressedComment = QString("%1\n%2\n%3").arg(copyrightText.toWString()).arg(publisherText.toWString()).arg(commentText.toWString()).toUtf8().data();
+		QString compressedCommentText = QString("%1\n%2\n%3").arg(QString::fromStdWString(copyrightText.toWString())).arg(QString::fromStdWString(publisherText.toWString())).arg(QString::fromStdWString(commentText.toWString()));
+		TagLib::String compressedComment(compressedCommentText.toUtf8().constData(), TagLib::String::UTF8);
 
 		TagLib::String releaseDate = QString("%1-%2-%3").arg(ReleaseDate.year()).arg(ReleaseDate.month()).arg(ReleaseDate.day()).toUtf8().data();
 		TagLib::String trackNumber = QString::number(TrackNumber()).toUtf8().data();

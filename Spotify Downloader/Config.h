@@ -15,6 +15,11 @@
 #include <QMap>
 #include <QIcon>
 #include <QMovie>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QStandardPaths>
+#include <QStringList>
 
 class Config {
     public:
@@ -27,9 +32,34 @@ class Config {
         static inline const QString ORGANIZATION_NAME = "WilliamSchack";
         static inline const QString APPLICATION_NAME = "Spotify Downloader";
 
+#if defined(Q_OS_WIN)
         static inline const QString YTDLP_PATH = "yt-dlp.exe";
         static inline const QString FFMPEG_PATH = "ffmpeg.exe";
         static inline const QString QUICKJS_PATH = "qjs.exe";
+#else
+        static inline const QString YTDLP_PATH = "yt-dlp";
+        static inline const QString FFMPEG_PATH = "ffmpeg";
+        static inline const QString QUICKJS_PATH = "qjs";
+#endif
+
+        static inline QString ExecutablePath(QString executableName) {
+            const QDir applicationDir(QCoreApplication::applicationDirPath());
+            const QStringList bundledPaths {
+                applicationDir.filePath(executableName),
+#if defined(Q_OS_MACOS)
+                applicationDir.filePath("../Resources/bin/" + executableName),
+                applicationDir.filePath("../Resources/" + executableName),
+#endif
+            };
+
+            for (const QString& bundledPath : bundledPaths) {
+                if (QFileInfo::exists(bundledPath))
+                    return QFileInfo(bundledPath).absoluteFilePath();
+            }
+
+            QString systemPath = QStandardPaths::findExecutable(executableName);
+            return systemPath.isEmpty() ? bundledPaths.first() : systemPath;
+        }
 
         static const int SETUP_SCREEN_INDEX = 0;
         static const int SETTINGS_SCREEN_INDEX = 1;

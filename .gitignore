@@ -35,6 +35,8 @@ Makefile*
 *build-*
 *.qm
 *.prl
+*.app
+.DS_Store
 
 # Qt unit tests
 target_wrapper.*
@@ -74,6 +76,7 @@ saves/
 mono_crash.*
 
 # Build results
+[Bb]uild*/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

@@ -84,13 +84,13 @@ void Config::LoadSettings() {
 
         // Get current metadata type bitrate
         QString codecBitrateKey = QString("audioBitrate%1").arg(Codec::Data[currentExtension].String.toUpper());
-        int audioBitrate = settings.value(codecBitrateKey, NULL).toInt();
+        QVariant audioBitrateValue = settings.value(codecBitrateKey);
 
         // If bitrate is not assigned, set to default
-        if (audioBitrate == NULL) {
+        if (!audioBitrateValue.isValid()) {
             // If MP3 is not assigned and bitrate was set in a previous version, set it to that
-            QVariant previousAudioBitrate = settings.value("audioBitrate", NULL);
-            if (currentExtension == Codec::Extension::MP3 && previousAudioBitrate != NULL) {
+            QVariant previousAudioBitrate = settings.value("audioBitrate");
+            if (currentExtension == Codec::Extension::MP3 && previousAudioBitrate.isValid()) {
                 AudioBitrate[currentExtension] = previousAudioBitrate.toInt();
 
                 // Remove previous value, not needed anymore
@@ -100,12 +100,12 @@ void Config::LoadSettings() {
             }
 
             // If previous bitrate is null, set to default
-            AudioBitrate[currentExtension] = Codec::Data[currentExtension].MaxBitrate;\
+            AudioBitrate[currentExtension] = Codec::Data[currentExtension].MaxBitrate;
             continue;
         }
 
         // Set bitrate
-        AudioBitrate[currentExtension] = audioBitrate;
+        AudioBitrate[currentExtension] = audioBitrateValue.toInt();
     }
 
     SaveLocation = settings.value("saveLocation", "").toString();
@@ -118,8 +118,8 @@ void Config::LoadSettings() {
     QString subFolders = settings.value("subFolders", "").toString();
 
     // Check if folder sorting index was set in previous version
-    QVariant previousFolderSortingIndex = settings.value("folderSortingIndex", NULL);
-    if (previousFolderSortingIndex != NULL) {
+    QVariant previousFolderSortingIndex = settings.value("folderSortingIndex");
+    if (previousFolderSortingIndex.isValid()) {
         // If it was set, assign new folder sorting to it
         int folderSortingIndex = previousFolderSortingIndex.toInt();
 
