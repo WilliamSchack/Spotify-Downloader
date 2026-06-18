@@ -31,6 +31,7 @@ Spotify Downloader is an application that allows you to easily download spotify 
 - [Usage](#usage)
 - [Features](#features)
 - [Roadmap](#roadmap)
+- [Contributing](#contributing)
 - [License](#license)
 - [FAQ](#faq)
 - [Credits](#credits)
@@ -724,6 +725,24 @@ The next few updates will take a fair amount of work and time so figured I would
    - There are a few features that are poorly implemented and could be much better so I for those I want to go through a proper process to implement them
    - From v2.0.0 I will start properly planning out features and I will re-do some that are currently implemented to make them better to use
 
+## Contributing
+
+Contributions to the macOS port are welcome.
+
+1. Fork this repository and create a branch from `macos-port`.
+2. Follow the setup and build instructions in
+   [`docs/MACOS.md`](docs/MACOS.md).
+3. Keep generated files out of Git. Do not commit `build/`, `*.app`, `*.dmg`,
+   `Makefile`, object files, or generated Qt files.
+4. Build and test the app before opening a pull request.
+5. Open the pull request against this repository's `macos-port` branch and
+   include the Mac model, CPU architecture, macOS version, and test results.
+
+Changes that are not specific to the macOS port may be better contributed to
+the [upstream project](https://github.com/WilliamSchack/Spotify-Downloader).
+Please explain any cross-platform behavior changes clearly so they can be
+reviewed without breaking the upstream Windows build.
+
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
 
@@ -780,6 +799,14 @@ When I first created this project I has a lot of free time on my hands and was a
 </details>
 
 ## Credits
+
+**Project**
+
+- Original Spotify Downloader application by
+  [William Schack](https://github.com/WilliamSchack).
+- macOS port by [Gary Lee](https://github.com/garylee909), developed in
+  collaboration with OpenAI Codex.
+
 **Packages Used**
 - [Qt](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6/lgpl.html)
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT License](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
