@@ -110,7 +110,10 @@ On newer Xcode/macOS SDKs, Qt 5.15 may emit warnings about unsupported SDK versi
 
 ## Environment Hygiene
 
-The conda environment keeps the CLI tools isolated under `/Users/garylee/anaconda3/envs/spotify-downloader-macos` when created locally. Homebrew packages are installed globally under `/usr/local`; this is normal for Homebrew, but it is not isolated. For cleaner development, prefer one of these approaches:
+The conda environment keeps the CLI tools isolated under its own
+`$CONDA_PREFIX`. Homebrew packages are installed in the active Homebrew
+prefix; this is normal for Homebrew, but it is not isolated. For cleaner
+development, prefer one of these approaches:
 
 - Use GitHub Actions or a dedicated macOS VM for release builds.
 - Use a dedicated Homebrew prefix, CI runner, or separate user account for local macOS dependency experiments.

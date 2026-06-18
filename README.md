@@ -1,20 +1,19 @@
 <img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
 
 # Spotify Downloader
-[![Latest Release](https://img.shields.io/github/v/release/garylee909/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/garylee909/Spotify-Downloader/releases)
-[![Downloads](https://img.shields.io/github/downloads/garylee909/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/garylee909/Spotify-Downloader/releases)
-[![Open Issues](https://img.shields.io/github/issues/garylee909/Spotify-Downloader?label=Issues)](https://github.com/garylee909/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
-[![Closed Issues](https://img.shields.io/github/issues-closed/garylee909/Spotify-Downloader?label=Issues)](https://github.com/garylee909/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
-[![Stars](https://img.shields.io/github/stars/garylee909/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/garylee909/Spotify-Downloader/stargazers)
+[![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/WilliamSchack/Spotify-Downloader/releases)
+[![Downloads](https://img.shields.io/github/downloads/WilliamSchack/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/WilliamSchack/Spotify-Downloader/releases)
+[![Open Issues](https://img.shields.io/github/issues/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/WilliamSchack/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/WilliamSchack/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
+[![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/WilliamSchack/Spotify-Downloader/stargazers)
 [![Ko-Fi](https://img.shields.io/badge/Support%20Development-FF5a16?style=flat&logo=Ko-fi&logoColor=FF5a16&label=ko-fi)](https://ko-fi.com/williamschack)
 
 Spotify Downloader is an application that allows you to easily download spotify playlists and songs through YouTube without the need of Spotify Premium through an easy to use GUI and many customisable settings to get the output that you desire.
 
 > [!IMPORTANT]
-> This repository contains an unofficial macOS port of
-> [WilliamSchack/Spotify-Downloader](https://github.com/WilliamSchack/Spotify-Downloader).
-> The macOS build is currently an Intel (`x86_64`) preview and is not signed
-> with an Apple Developer ID or notarized by Apple.
+> macOS support is currently experimental. The tested preview was built for
+> Intel (`x86_64`) and is not signed with an Apple Developer ID or notarized
+> by Apple.
 
 > [!CAUTION]
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
@@ -41,22 +40,19 @@ Spotify Downloader is an application that allows you to easily download spotify 
 ### macOS
 
 > [!WARNING]
-> The current preview build targets Intel Macs running macOS 26 or later.
-> Apple Silicon Macs require Rosetta 2. Wider macOS compatibility and a native
-> Apple Silicon build are not included in the current DMG.
+> No prebuilt macOS release is currently available. The preview has only been
+> tested on an Intel Mac running macOS 26. Other macOS versions and Apple
+> Silicon builds have not yet been verified.
 
-1. Open this repository's [Releases](https://github.com/garylee909/Spotify-Downloader/releases).
-2. Download `SpotifyDownloader-macOS.dmg` from the latest macOS release.
-3. Open the DMG and copy `SpotifyDownloader.app` to the `Applications` folder.
-4. Eject the DMG, then open Spotify Downloader from `Applications`.
-
-The app includes `ffmpeg`, `yt-dlp`, and QuickJS. Users installing the DMG do
-not need Homebrew, Anaconda, Qt, or a separate Python installation.
+Build and package the app from source by following
+[`docs/MACOS.md`](docs/MACOS.md). The packaging script creates a standalone
+app bundle and can optionally create `SpotifyDownloader-macOS.dmg`. Packaged
+builds include `ffmpeg`, `yt-dlp`, and QuickJS.
 
 #### First launch
 
-The preview is ad-hoc signed but not notarized. macOS may prevent a normal
-double-click launch:
+Locally packaged preview builds are ad-hoc signed but not notarized. macOS may
+prevent a normal double-click launch:
 
 1. In Finder, open `Applications`.
 2. Control-click or right-click `SpotifyDownloader.app`, then select **Open**.
@@ -64,28 +60,12 @@ double-click launch:
 4. If **Open** is not offered, go to **System Settings > Privacy & Security**,
    find the blocked Spotify Downloader message, and select **Open Anyway**.
 
-Only use a DMG downloaded from this repository's Releases page. A future
-Developer ID signed and notarized release will remove this extra first-launch
-step.
-
-#### Apple Silicon
-
-When prompted, allow macOS to install Rosetta 2. It can also be installed from
-Terminal:
-
-```sh
-softwareupdate --install-rosetta
-```
-
-Rosetta is an Apple compatibility component. It is only needed because the
-current preview is an Intel build.
+A future Developer ID signed and notarized release will remove this extra
+first-launch step.
 
 ### Windows
 
-The Windows packages and instructions below are maintained by the
-[upstream project](https://github.com/WilliamSchack/Spotify-Downloader).
-
-The latest upstream Windows release can be found
+The latest Windows release can be found
 [here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest).
 **For multiple use Installer Recommended, for single use Portable Recommended**
 
@@ -729,19 +709,17 @@ The next few updates will take a fair amount of work and time so figured I would
 
 Contributions to the macOS port are welcome.
 
-1. Fork this repository and create a branch from `macos-port`.
+1. Fork this repository and create a feature branch from the target branch.
 2. Follow the setup and build instructions in
    [`docs/MACOS.md`](docs/MACOS.md).
 3. Keep generated files out of Git. Do not commit `build/`, `*.app`, `*.dmg`,
    `Makefile`, object files, or generated Qt files.
 4. Build and test the app before opening a pull request.
-5. Open the pull request against this repository's `macos-port` branch and
-   include the Mac model, CPU architecture, macOS version, and test results.
+5. Include the Mac model, CPU architecture, macOS version, and test results in
+   the pull request.
 
-Changes that are not specific to the macOS port may be better contributed to
-the [upstream project](https://github.com/WilliamSchack/Spotify-Downloader).
 Please explain any cross-platform behavior changes clearly so they can be
-reviewed without breaking the upstream Windows build.
+reviewed without breaking the Windows build.
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
