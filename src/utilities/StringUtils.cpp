@@ -80,7 +80,7 @@ std::vector<std::string> StringUtils::Split(const std::string& string, const std
     return tokens;
 }
 
-// Levenshtein Distance Algorithim From Geeks For Geeks
+// Levenshtein Distance Algorithm From Geeks For Geeks
 // https://www.geeksforgeeks.org/introduction-to-levenshtein-distance/
 double StringUtils::LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2)
 {

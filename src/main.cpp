@@ -57,7 +57,7 @@ int main(int argc, char** argv)
     //DownloadManager::Download("https://open.spotify.com/playlist/4E5YNtoIyQrhtGuHr3Eb9U?si=beead3b4ce3845ad", "/home/william/mnt/main/Music/PlaylistTest");
     //DownloadManager::Download("https://open.spotify.com/track/31ZfD4958k80aCeMl719KC?si=58cf0c29d95f4d88", "/home/william/mnt/main/Music");
     //DownloadManager::Download("https://open.spotify.com/track/4d1CObMrwGif0yDhphYeO1?si=c498829f2829498a", "/home/william/mnt/main/Music");
-    //DownloadManager::Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "/home/william/mnt/main/Music");
+    DownloadManager::Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "/home/william/mnt/main/Music");
     //DownloadManager::Download("https://open.spotify.com/album/4GRPvwkbXfKXNGfrIJAGCE?si=BfZ1WHfnTkG_P8J9quPtIw", "/home/william/mnt/main/Music/AlbumTest");
     //DownloadManager::Download("https://open.spotify.com/album/1JLclTNvD2eXpJ0BiJXmpy?si=dbpaiLrmTnKj2VYxzsiLgg", "/home/william/mnt/main/Music/AlbumTest");
     //DownloadManager::Download("https://open.spotify.com/playlist/1P95wXqcWer0Lsw8Mr5CXL?si=e77e7abc77be4a9f", "/home/william/mnt/main/Music/AlbumTest");
@@ -65,6 +65,4 @@ int main(int argc, char** argv)
     //DownloadManager::Download("https://open.spotify.com/playlist/62MNXgDSeAT8DPUWhdUifC?si=6f6b66ac97c4407c", "/home/william/mnt/main/Music/PlaylistTest");
 
     return app.exec();
-
-    return 0;
 }

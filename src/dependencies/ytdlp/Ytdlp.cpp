@@ -19,11 +19,16 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         return result;
     }
 
-    // Check file path
-    std::filesystem::path pathM4a = FileUtils::PathToUtf8(pathNoExtension) + ".m4a";
-    std::filesystem::path pathWebm = FileUtils::PathToUtf8(pathNoExtension) + ".webm";
+    // Remove leftover download if it exists
+    std::filesystem::path pathM4a = pathNoExtension;
+    std::filesystem::path pathWebm = pathNoExtension;
+    pathM4a += ".m4a";
+    pathWebm += ".webm";
 
-    std::cout << "CHECK IF FILES EXIST AND REMOVE" << std::endl;
+    if (std::filesystem::exists(pathM4a))
+        std::filesystem::remove(pathM4a);
+    if (std::filesystem::exists(pathWebm))
+        std::filesystem::remove(pathWebm);
 
     // Get dependencies paths (move to their own files)
     std::filesystem::path executablePath = FileUtils::GetExecutablePath();
