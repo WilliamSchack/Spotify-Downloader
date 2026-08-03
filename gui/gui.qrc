@@ -1,6 +1,6 @@
-<!DOCTYPE RCC>
 <RCC version="1.0">
-  <qresource prefix="/gui">
-    <file>main.qml</file>
-  </qresource>
+    <qresource prefix="/gui">
+        <file>main.qml</file>
+        <file>new.qml</file>
+    </qresource>
 </RCC>
