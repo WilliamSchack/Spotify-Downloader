@@ -7,6 +7,7 @@
 #include "Image.h"
 #include "NetworkRequest.h"
 #include "StringUtils.h"
+#include "FileUtils.h"
 
 #include <iostream>
 #include <filesystem>

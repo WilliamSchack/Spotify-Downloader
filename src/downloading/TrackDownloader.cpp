@@ -25,15 +25,11 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
 
-#ifdef WIN32
-    std::wstring fileName = StringUtils::ToWString(track.Name) + L" - " + StringUtils::ToWString(track.Artists[0].Name) + L"." + StringUtils::ToWString(targetCodec->GetString());
-#else
     std::string fileName = track.Name + " - " + track.Artists[0].Name + "." + targetCodec->GetString();
-#endif
     fileName = FileUtils::ValidateFileName(fileName);
     
     std::filesystem::path targetFolder = directory;
-    std::filesystem::path targetDownloadPath = targetFolder / fileName;
+    std::filesystem::path targetDownloadPath = targetFolder / FileUtils::PathFromUtf8(fileName);
     
     FilePathReserver pathReserver;
     targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
@@ -54,14 +50,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!std::filesystem::exists(imagesFolder))
         std::filesystem::create_directory(imagesFolder);
 
-#ifdef WIN32
-    std::wstring imageFileName = StringUtils::ToWString(track.Album.Name) + L"(" + StringUtils::ToWString(track.Artists[0].Name) + L")_Cover";
-#else
     std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover";
-#endif
     imageFileName = FileUtils::ValidateFileName(imageFileName);
 
-    std::filesystem::path imageFilePath = imagesFolder / imageFileName;
+    std::filesystem::path imageFilePath = imagesFolder / FileUtils::PathFromUtf8(imageFileName);
 
     Image image;
     if (std::filesystem::exists(imageFilePath)) {

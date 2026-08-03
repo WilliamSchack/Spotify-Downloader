@@ -8,6 +8,7 @@
 #include "ImageHandler.h"
 #include "EMetadataTag.h"
 #include "StringUtils.h"
+#include "FileUtils.h"
 
 #include <taglib/fileref.h>
 #include <taglib/tstringlist.h>

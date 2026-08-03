@@ -17,13 +17,10 @@ std::wstring ExternalProcess::GetCommand()
     std::wstring command = L"\"" + _path.wstring() + L"\"";
 
     int argsSize = _args.size();
-    for (int i = 0; i < argsSize; i++) {
+    for (const std::string& arg : _args) {
         command += L" ";
-        command += _args[i];
+        command += StringUtils::ToWString(arg);
     }
-
-    // Dont relay outputs to stdout
-    command += L" 2>&1";
 
     return command;
 }
@@ -33,9 +30,9 @@ std::string ExternalProcess::GetCommand()
     std::string command = "\"" + _path.string() + "\"";
 
     int argsSize = _args.size();
-    for (int i = 0; i < argsSize; i++) {
+    for (const std::string& arg : _args) {
         command += " ";
-        command += _args[i];
+        command += arg;
     }
 
     // Dont relay outputs to stdout
@@ -45,25 +42,9 @@ std::string ExternalProcess::GetCommand()
 }
 #endif
 
-#ifdef WIN32
-void ExternalProcess::AddArgument(const std::wstring& arg)
-{
-    _args.push_back(arg);
-}
-
-void ExternalProcess::AddArgument(const std::wstring& arg, const std::wstring& value)
-{
-    AddArgument(arg + L" " + value);
-}
-#endif
-
 void ExternalProcess::AddArgument(const std::string& arg)
 {
-#ifdef WIN32
-    _args.push_back(StringUtils::ToWString(arg));
-#else
     _args.push_back(arg);
-#endif
 }
 
 void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
@@ -73,7 +54,7 @@ void ExternalProcess::AddArgument(const std::string& arg, const std::string& val
 
 std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
 {
-#if WIN32
+#ifdef WIN32
     SECURITY_ATTRIBUTES securityAttributes; 
     securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
     securityAttributes.bInheritHandle = TRUE; 

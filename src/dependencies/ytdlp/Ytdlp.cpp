@@ -20,13 +20,10 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     }
 
     // Check file path
-#ifdef WIN32
-    std::filesystem::path pathM4a = pathNoExtension.wstring() + L".m4a";
-    std::filesystem::path pathWebm = pathNoExtension.wstring() + L".webm";
-#else
-    std::filesystem::path pathM4a = pathNoExtension.string() + ".m4a";
-    std::filesystem::path pathWebm = pathNoExtension.string() + ".webm";
-#endif
+    std::filesystem::path pathM4a = FileUtils::PathToUtf8(pathNoExtension) + ".m4a";
+    std::filesystem::path pathWebm = FileUtils::PathToUtf8(pathNoExtension) + ".webm";
+
+    std::cout << "CHECK IF FILES EXIST AND REMOVE" << std::endl;
 
     // Get dependencies paths (move to their own files)
     std::filesystem::path executablePath = FileUtils::GetExecutablePath();
@@ -44,11 +41,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         // Get the download progress
         if (StringUtils::Contains(line, "[download]") &&
-#ifdef WIN32
-            !StringUtils::Contains(StringUtils::ToWString(line), pathNoExtension.filename().wstring())
-#else
-            !StringUtils::Contains(line, pathNoExtension.filename().string())
-#endif
+            !StringUtils::Contains(line, FileUtils::PathToUtf8(pathNoExtension.filename()))
             ) {
 
             std::smatch matches;
@@ -81,11 +74,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
             // Extension
             if (std::regex_search(line, matches, std::regex(R"(\[extension\](\w+))"))) {
                 extension = matches[1];
-#ifdef WIN32
-                downloadedPath = downloadedPath.wstring() + L"." + StringUtils::ToWString(extension);
-#else
-                downloadedPath = downloadedPath.string() + "." + extension;
-#endif
+                downloadedPath += "." + extension;
             }
         }
 
@@ -106,11 +95,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     process.AddArgument("--no-simulate");
     process.AddArgument("-f", "ba");
     process.AddArgument("--audio-quality", "0");
-#ifdef WIN32
-    process.AddArgument(L"-o", L"\"" + pathNoExtension.wstring() + L".%(ext)s\"");
-#else
-    process.AddArgument("-o", "\"" + pathNoExtension.string() + ".%(ext)s\"");
-#endif
+    process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 
     std::string output = process.Execute(newLineCallback);

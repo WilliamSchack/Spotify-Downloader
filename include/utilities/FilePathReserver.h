@@ -2,6 +2,7 @@
 #define FILEPATHRESERVER_H
 
 #include "MetadataManager.h"
+#include "FileUtils.h"
 #include "VectorUtils.h"
 #include "TrackData.h"
 

@@ -10,20 +10,38 @@ std::string FileUtils::ValidateFileName(const std::string& fileName)
     return copiedString;
 };
 
-std::wstring FileUtils::ValidateFileName(const std::wstring& fileName)
-{
-    std::wstring copiedString(fileName.begin(), fileName.end());
-    for (const char c : INVALID_FILE_CHARS) {
-        StringUtils::RemoveChar(copiedString, c);
-    }
-
-    return copiedString;
-};
-
 std::string FileUtils::ValidateDirectoryName(const std::string& directoryName)
 {
     return ValidateFileName(directoryName);
 };
+
+std::string FileUtils::PathToUtf8(const std::filesystem::path& path)
+{
+#ifdef WIN32
+    return StringUtils::FromWString(path.wstring());
+#else
+    return path.string();
+#endif
+}
+
+std::filesystem::path FileUtils::PathFromUtf8(const std::string& path)
+{
+#ifdef WIN32
+    return std::filesystem::path(StringUtils::ToWString(path));
+#else
+    return std::filesystem::path(path);
+#endif
+}
+
+FILE* FileUtils::OpenFile(const std::filesystem::path& path, const std::string& mode)
+{
+#ifdef WIN32
+    return _wfopen(path.wstring().c_str(), StringUtils::ToWString(mode).c_str());
+#else
+    return fopen(path.c_str(), mode.c_str());
+#endif
+}
+
 
 std::filesystem::path FileUtils::GetExecutablePath()
 {

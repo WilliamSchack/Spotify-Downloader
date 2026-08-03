@@ -43,8 +43,8 @@ std::filesystem::path FilePathReserver::FindAvailableTrackPath(const TrackData& 
     }
 
     // Append the id to the file name
-    std::string fileName = originalPath.stem().string();
-    fileName += "_" + track.Id + originalPath.extension().string();
+    std::string fileName = FileUtils::PathToUtf8(originalPath.stem());
+    fileName += "_" + track.Id + FileUtils::PathToUtf8(originalPath.extension());
 
     std::filesystem::path newPath = originalPath;
     newPath.replace_filename(fileName);

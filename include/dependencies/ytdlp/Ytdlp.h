@@ -2,6 +2,7 @@
 #define YTDLP_H
 
 #include "ExternalProcess.h"
+#include "FileUtils.h"
 #include "YtdlpResult.h"
 
 #include <iostream>

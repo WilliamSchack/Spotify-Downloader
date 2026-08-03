@@ -20,8 +20,13 @@ class FileUtils
 {
     public:
         static std::string ValidateFileName(const std::string& fileName);
-        static std::wstring ValidateFileName(const std::wstring& fileName);
         static std::string ValidateDirectoryName(const std::string& fileName);
+
+        static std::string PathToUtf8(const std::filesystem::path& path);
+        static std::filesystem::path PathFromUtf8(const std::string& path);
+
+        static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
+
         static std::filesystem::path GetExecutablePath();
     private:
         inline static const std::string INVALID_FILE_CHARS = R"(<>:"/\|?*)";

@@ -5,7 +5,7 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
     if (filePath.empty() || !std::filesystem::exists(filePath))
         return;
 
-#if WIN32
+#ifdef WIN32
     TagLib::FileName taglibFilePath(filePath.wstring().c_str());
 #else
     TagLib::FileName taglibFilePath(filePath.c_str());
