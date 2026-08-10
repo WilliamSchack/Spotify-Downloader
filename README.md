@@ -24,7 +24,7 @@ Notes:
 **Dependencies**
 - CMake
 - Curl
-- Qt6
+- Qt6 (6.7+)
   - Qt Quick
   - QtWebEngine (required by spotify to get >30 songs from a playlist)
 
