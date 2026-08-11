@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Rectangle {
     id: root
@@ -18,6 +19,18 @@ Rectangle {
     implicitWidth: layout.implicitWidth + 2 * padding
     implicitHeight: layout.implicitHeight + 2 * padding
 
+    // Outer Shadow
+    layer.enabled: true
+    layer.effect: MultiEffect {
+        shadowEnabled: true
+        shadowColor: "black"
+        shadowOpacity: 0.25
+        shadowBlur: 0.4
+        shadowHorizontalOffset: 2
+        shadowVerticalOffset: 2
+    }
+
+    // Contents
     GridLayout {
         id: layout
         anchors.fill: parent
@@ -29,7 +42,7 @@ Rectangle {
         // Icon
         Rectangle {
             id: icon
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
             Layout.topMargin: root.iconPadding
             Layout.bottomMargin: root.iconPadding
             Layout.fillHeight: true
@@ -47,7 +60,7 @@ Rectangle {
             color: "white"
             text: ""
 
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
             Layout.column: root.iconRight ? 0 : 1
         }
     }

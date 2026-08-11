@@ -10,7 +10,7 @@ Window
     width: 1400
     height: 800
     title: qsTr("Minimal Qml")
-    color: "purple"
+    color: "#8f95d3"
 
     // Outer Margin
     Rectangle {
@@ -27,21 +27,28 @@ Window
                 Layout.maximumHeight: 30
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignLeft
+                Layout.bottomMargin: 4
                 spacing: 15
 
                 // Buttons (testing)
                 Button {
                     text: "Music"
+                    color: "#A16583"
+
                     Layout.fillHeight: true
                 }
 
                 Button {
                     text: "Info"
+                    color: Qt.alpha("#3A3A3A", 0.5)
+
                     Layout.fillHeight: true
                 }
 
                 Button {
                     text: "Settings"
+                    color: Qt.alpha("#3A3A3A", 0.5)
+
                     Layout.fillHeight: true
                 }
 
@@ -51,12 +58,13 @@ Window
                 // Buttons (testing)
                 Repeater {
                     model: 3
-                    Rectangle {
+                    Button {
+                        radius: 20
+                        color: "#434343"
+                        hasIcon: false
+
                         Layout.preferredWidth: parent.height
                         Layout.fillHeight: true
-
-                        radius: 20
-                        color: "green"
                     }
                 }
             }
@@ -72,7 +80,11 @@ Window
                     Layout.preferredWidth: 260
 
                     radius: 10
-                    color: "blue"
+                    
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
+                        GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
+                    }
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -96,20 +108,15 @@ Window
 
                                 Rectangle { Layout.fillWidth: true }
 
-                                Rectangle {
+                                Button {
+                                    text: "+"
+                                    hasIcon: false
+                                    color: "#A16583"
+                                    radius: 5
+                                    padding: 0
+
                                     Layout.preferredHeight: 25
                                     Layout.preferredWidth: 25
-
-                                    radius: 5
-                                    color: "green"
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        font.family: "Roboto"
-                                        font.pixelSize: 20
-                                        color: "white"
-                                        text: "+"
-                                    }
                                 }
                             }
 
@@ -117,7 +124,7 @@ Window
                             Rectangle {
                                 Layout.preferredHeight: 1
                                 Layout.fillWidth: true
-                                color: "green"
+                                color: "#A16583"
                             }
                         }
 
@@ -129,7 +136,7 @@ Window
                                 Layout.fillWidth: true
 
                                 radius: 6
-                                color: "grey"
+                                color: Qt.alpha("white", 0.2)
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -198,7 +205,7 @@ Window
                     Layout.fillWidth: true
 
                     radius: 10
-                    color: "red"
+                    color: "transparent"
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -218,7 +225,7 @@ Window
                                 topLeftRadius: 10
                                 topRightRadius: 10
                                 
-                                color: "black"
+                                color: Qt.alpha("#262626", 0.9)
                             }
 
                             // Items
@@ -236,6 +243,7 @@ Window
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
+                                    color: "#A16583"
 
                                     Layout.fillHeight: true
                                 }
@@ -245,6 +253,7 @@ Window
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
+                                    color: "#A16583"
                                     
                                     Layout.fillHeight: true
                                 }
@@ -254,6 +263,7 @@ Window
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
+                                    color: "#A16583"
                                     
                                     Layout.fillHeight: true
                                 }
@@ -263,6 +273,7 @@ Window
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
+                                    color: "#A16583"
                                     
                                     Layout.fillHeight: true
                                 }
@@ -272,10 +283,10 @@ Window
                                 // Search should be changed to its own thing
                                 Button {
                                     text: "Search"
-                                    color: "grey"
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
+                                    color: Qt.alpha("#707070", 0.4)
                                     
                                     Layout.preferredWidth: 150
                                     Layout.fillHeight: true
@@ -283,22 +294,22 @@ Window
 
                                 Button {
                                     text: "Track Number"
-                                    color: "grey"
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
                                     iconRight: true
+                                    color: Qt.alpha("#707070", 0.4)
                                     
                                     Layout.fillHeight: true
                                 }
 
                                 Button {
                                     text: "Filter"
-                                    color: "grey"
                                     font.pixelSize: 14
                                     spacing: 5
                                     radius: 8
                                     iconRight: true
+                                    color: Qt.alpha("#707070", 0.4)
                                     
                                     Layout.fillHeight: true
                                 }
@@ -312,6 +323,11 @@ Window
                             bottomLeftRadius: 10
                             bottomRightRadius: 10
 
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
+                                GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
+                            }
+
                             // Column Widths (Will be adjustable later)
                             // Idealy change these to a percentage of the window width
                             QtObject {
@@ -322,16 +338,16 @@ Window
                                 property real sources: 100
                             }
 
-                            // Top Section
                             ColumnLayout {
                                 anchors.fill: parent
                                 spacing: 0
 
+                                // Top Section
                                 Rectangle {
                                     Layout.fillWidth: true
                                     Layout.minimumHeight: 40
 
-                                    color: "grey"
+                                    color: "transparent"
 
                                     Row {
                                         anchors.fill: parent
@@ -402,7 +418,7 @@ Window
                                             Layout.fillWidth: true
                                             Layout.minimumHeight: 40
 
-                                            color: "green"
+                                            color: "transparent"
 
                                             Row {
                                                 anchors.fill: parent
