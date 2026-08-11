@@ -7,8 +7,8 @@ import QtQuick.Layouts
 Window
 {
     visible: true
-    width: 1000
-    height: 600
+    width: 1400
+    height: 800
     title: qsTr("Minimal Qml")
     color: "purple"
 
@@ -269,23 +269,38 @@ Window
 
                                 Rectangle { Layout.fillWidth: true }
 
-                                Rectangle {
+                                // Search should be changed to its own thing
+                                Button {
+                                    text: "Search"
+                                    color: "grey"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    
                                     Layout.preferredWidth: 150
                                     Layout.fillHeight: true
-
-                                    radius: 8
-                                    color: "grey"
                                 }
 
-                                Repeater {
-                                    model: 2
-                                    Rectangle {
-                                        Layout.preferredWidth: 50
-                                        Layout.fillHeight: true
+                                Button {
+                                    text: "Track Number"
+                                    color: "grey"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    iconRight: true
+                                    
+                                    Layout.fillHeight: true
+                                }
 
-                                        radius: 8
-                                        color: "grey"
-                                    }
+                                Button {
+                                    text: "Filter"
+                                    color: "grey"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    iconRight: true
+                                    
+                                    Layout.fillHeight: true
                                 }
                             }
                         }
