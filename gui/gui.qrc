@@ -2,5 +2,6 @@
     <qresource prefix="/gui">
         <file>main.qml</file>
         <file>new.qml</file>
+        <file>Button.qml</file>
     </qresource>
 </RCC>

@@ -30,15 +30,19 @@ Window
                 spacing: 15
 
                 // Buttons (testing)
-                Repeater {
-                    model: 3
-                    Rectangle {
-                        Layout.preferredWidth: 120
-                        Layout.fillHeight: true
+                Button {
+                    text: "Music"
+                    Layout.fillHeight: true
+                }
 
-                        radius: 10
-                        color: "green"
-                    }
+                Button {
+                    text: "Info"
+                    Layout.fillHeight: true
+                }
+
+                Button {
+                    text: "Settings"
+                    Layout.fillHeight: true
                 }
 
                 // Space
@@ -48,7 +52,7 @@ Window
                 Repeater {
                     model: 3
                     Rectangle {
-                        Layout.preferredWidth: 30
+                        Layout.preferredWidth: parent.height
                         Layout.fillHeight: true
 
                         radius: 20
@@ -98,6 +102,14 @@ Window
 
                                     radius: 5
                                     color: "green"
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        font.family: "Roboto"
+                                        font.pixelSize: 20
+                                        color: "white"
+                                        text: "+"
+                                    }
                                 }
                             }
 
@@ -219,15 +231,40 @@ Window
 
                                 spacing: 8
 
-                                Repeater {
-                                    model: 4
-                                    Rectangle {
-                                        Layout.preferredWidth: 100
-                                        Layout.fillHeight: true
+                                Button {
+                                    text: "Sync"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
 
-                                        radius: 8
-                                        color: "green"
-                                    }
+                                    Layout.fillHeight: true
+                                }
+
+                                Button {
+                                    text: "Add Tracks"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    
+                                    Layout.fillHeight: true
+                                }
+
+                                Button {
+                                    text: "Export"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    
+                                    Layout.fillHeight: true
+                                }
+
+                                Button {
+                                    text: "Download Tracks (4/8)"
+                                    font.pixelSize: 14
+                                    spacing: 5
+                                    radius: 8
+                                    
+                                    Layout.fillHeight: true
                                 }
 
                                 Rectangle { Layout.fillWidth: true }
