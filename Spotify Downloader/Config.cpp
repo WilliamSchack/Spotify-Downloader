@@ -46,6 +46,7 @@ void Config::SaveSettings() {
     settings.setValue("downloadTimeout", DownloadTimeout);
     settings.setValue("youtubeCookies", YouTubeCookies);
     settings.setValue("poToken", POToken);
+    settings.setValue("forceIPVersionIndex", ForceIPVersionIndex);
     settings.endGroup();
 
     settings.beginGroup("Interface");
@@ -168,6 +169,7 @@ void Config::LoadSettings() {
     DownloadTimeout = settings.value("downloadTimeout", 30000).toInt();
     YouTubeCookies = settings.value("youtubeCookies", "").toString();
     POToken = settings.value("poToken", "").toString();
+    ForceIPVersionIndex = settings.value("forceIPVersionIndex", 0).toInt();
     settings.endGroup();
 
     settings.beginGroup("Interface");

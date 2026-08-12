@@ -673,6 +673,15 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	}
 	ytdlpArgs << "-f" << "ba";
 	ytdlpArgs << "--audio-quality" << "0";
+	switch (Config::ForceIPVersionIndex) {
+		case 1: // IPv4
+			ytdlpArgs << "--force-ipv4";
+			break;
+		case 2: // IPv6
+			ytdlpArgs << "--force-ipv6";
+			break;
+	}
+
 	ytdlpArgs << "-o" << QString("%1/%2.%(ext)s").arg(_downloadingFolder).arg(FileName);
 	ytdlpArgs << QString("https://music.youtube.com/watch?v=%1").arg(YoutubeId);
 
@@ -764,7 +773,7 @@ QString Song::Download(YTMusicAPI*& yt, QProcess*& process, bool overwrite, std:
 	// Check if song downloaded incase error wasn't previously picked up
 	if (!QFile::exists(downloadedPath)) {
 		qWarning() << SpotifyId << "Download Failed. YT-DLP Output:" << errorOutput;
-		return "Download failed with an unknown error, try downloading again";
+		return "Download failed with an unknown error, try downloading again or change your IPv setting";
 	}
 
 	// No need to convert if codec is set to the extension

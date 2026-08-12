@@ -394,7 +394,8 @@ void SpotifyDownloader::SetupSettingsScreen() {
     // Set combo box dropdown items font size to 12, cannot do in stylesheet
     QList<QComboBox*> dropdownWidgets {
         _ui.CodecInput,
-        _ui.DownloaderThreadUIInput
+        _ui.DownloaderThreadUIInput,
+        _ui.ForceIPVersionInput
     };
 
     QFont dropdownItemFont = dropdownWidgets[0]->font();
@@ -461,6 +462,7 @@ void SpotifyDownloader::SetupSettingsScreen() {
     });
 
     connect(_ui.PlaylistFileTypeInput, &QComboBox::currentIndexChanged, [=](int index) { Config::PlaylistFileTypeIndex = index; });
+    connect(_ui.ForceIPVersionInput, &QComboBox::currentIndexChanged, [=](int index) { Config::ForceIPVersionIndex = index; });
     connect(_ui.DownloaderThreadUIInput, &QComboBox::currentIndexChanged, [=](int index) { Config::DownloaderThreadUIIndex = index; });
 
     // Update PO Token on text change
@@ -785,6 +787,9 @@ void SpotifyDownloader::LoadSettingsUI() {
 
     // PO Token
     _ui.POTokenInput->setText(Config::POToken);
+
+    // Force IP Version
+    _ui.ForceIPVersionInput->setCurrentIndex(Config::ForceIPVersionIndex);
 
     // Downloader Thread UI
     _ui.DownloaderThreadUIInput->setCurrentIndex(Config::DownloaderThreadUIIndex);

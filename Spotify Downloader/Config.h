@@ -147,6 +147,8 @@ class Config {
 
         static inline QString YouTubeCookies;
         static inline QString POToken;
+
+        static inline int ForceIPVersionIndex;
     
         // Interface
         static inline int DownloaderThreadUIIndex;
