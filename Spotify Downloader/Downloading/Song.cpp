@@ -74,8 +74,13 @@ Song::Song(QJsonObject song, QJsonObject album, QString ytdlpPath, QString ffmpe
 		DiscNumber = song["disc_number"].toInt();
 
 		// Artists
-		ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
-		ArtistsList = song["artists"].toArray();
+		if (song["artists"].toArray().size() == 0) {
+			ArtistName = "";
+			ArtistsList = QJsonArray();
+		} else {
+			ArtistName = song["artists"].toArray()[0].toObject()["name"].toString();
+			ArtistsList = song["artists"].toArray();
+		}
 
 		ArtistNamesList = QStringList();
 		foreach(QJsonValue artist, ArtistsList) {
