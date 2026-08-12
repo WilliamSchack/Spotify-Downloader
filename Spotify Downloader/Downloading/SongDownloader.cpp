@@ -384,6 +384,7 @@ void SongDownloader::Quit() {
 	qInfo() << "Thread" << _threadIndex << "quitting...";
 
 	_quitting = true;
+	this->thread()->quit();
 }
 
 SongDownloader::~SongDownloader() {

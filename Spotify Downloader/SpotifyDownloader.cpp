@@ -42,6 +42,7 @@ void SpotifyDownloader::SetupDownloaderThread() {
     // Get thread ready to be started
     _playlistDownloader = new PlaylistDownloader();
     _playlistDownloader->moveToThread(&workerThread);
+
     connect(&workerThread, &QThread::finished, &workerThread, &QThread::quit);
     connect(&workerThread, &QThread::finished, _playlistDownloader, &PlaylistDownloader::deleteLater);
 
@@ -62,6 +63,8 @@ void SpotifyDownloader::SetupDownloaderThread() {
     connect(_playlistDownloader, &PlaylistDownloader::SetThreadFinished, this, &SpotifyDownloader::SetThreadFinished);
     connect(_playlistDownloader, &PlaylistDownloader::ResetDownloadingVariables, this, &SpotifyDownloader::ResetDownloadingVariables);
     connect(_playlistDownloader, &PlaylistDownloader::OpenURL, this, QOverload<QUrl>::of(& SpotifyDownloader::OpenURL));
+
+    workerThread.start();
 
     qInfo() << "Successfully Setup Playlist Worker Thread";
 }
@@ -105,9 +108,6 @@ void SpotifyDownloader::ResetDownloadingVariables() {
 
     _ui.SongCount->setText("0/0");
     _ui.SongCount->adjustSize();
-
-    // Setup Threads
-    SetupDownloaderThread();
 
     VariablesResetting = false;
 }

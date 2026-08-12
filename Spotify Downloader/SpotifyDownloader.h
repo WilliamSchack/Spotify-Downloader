@@ -158,8 +158,6 @@ class PlaylistDownloader : public QObject {
     public:
         bool PauseNewDownloads = false;
     public:
-        ~PlaylistDownloader();
-
         int DownloadErrors();
     public slots:
         void DownloadSongs(const SpotifyDownloader* main);
@@ -196,6 +194,7 @@ class PlaylistDownloader : public QObject {
     private:
         void SetupThreads(QList<QJsonArray> tracks, QJsonObject album);
         bool DistributeTracks();
+        void FinishDownload();
         void ClearDirFiles(const QString& path);
 
         std::tuple<QString, bool> PlaylistFileNameTagHandler(QString tag);

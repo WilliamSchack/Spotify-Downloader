@@ -276,8 +276,7 @@ void SpotifyDownloader::SetupSetupScreen() {
 
             qInfo() << "Starting download for playlist" << Config::PlaylistURL;
 
-            // Start thread
-            workerThread.start();
+            // Start download
             emit operate(this);
         }
         else {

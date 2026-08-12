@@ -318,7 +318,6 @@ void PlaylistDownloader::FinishThread(int threadIndex, QJsonArray downloadErrors
 	}
 
 	_threads[threadIndex]->Downloader->FinishedDownloading(true);
-
 	_threadsFinished++;
 	_threadsCleaned++;
 
@@ -413,19 +412,12 @@ bool PlaylistDownloader::DistributeTracks() {
 }
 
 void PlaylistDownloader::Quit() {
+	if (_quitting) return;
 	_quitting = true;
-	this->thread()->quit();
-}
 
-void PlaylistDownloader::CleanedUp(int threadIndex) {
-	emit SetThreadFinished(threadIndex);
-
-	_threadsCleaned++;
-}
-
-PlaylistDownloader::~PlaylistDownloader() {
 	qInfo() << "Playlist Downloader Quitting";
 
+	// Cleanup Threads
 	foreach(Worker* worker, _threads) {
 		worker->Downloader->Quit();
 	}
@@ -436,6 +428,31 @@ PlaylistDownloader::~PlaylistDownloader() {
 			QCoreApplication::processEvents();
 	}
 
+	foreach(Worker* worker, _threads) {
+		worker->Thread.wait();
+		delete worker;
+	}
+	_threads.clear();
+
+	// Cleanup Download
+	FinishDownload();
+
+	_threadsCleaned = 0;
+	_poTokenErrorShown = false;
+
+	_quitting = false;
+
+	if (Main->ExitingApplication)
+		this->thread()->quit();
+}
+
+void PlaylistDownloader::CleanedUp(int threadIndex) {
+	emit SetThreadFinished(threadIndex);
+
+	_threadsCleaned++;
+}
+
+void PlaylistDownloader::FinishDownload() {
 	// Cleanup variables
 	if (!Main->ExitingApplication) {
 		emit ResetDownloadingVariables();
@@ -451,6 +468,8 @@ PlaylistDownloader::~PlaylistDownloader() {
 	// Cleanup
 	delete _yt;
 	delete _sp;
+	_yt = nullptr;
+	_sp = nullptr;
 
 	// Remove all temp files
 	QString tempFolder = QString("%1/SpotifyDownloader").arg(QDir::temp().path());
@@ -480,15 +499,15 @@ PlaylistDownloader::~PlaylistDownloader() {
 			// Create the playlist file
 			PlaylistFile* playlistFile = nullptr;
 			switch (Config::PlaylistFileTypeIndex) {
-				case 1: // M3U
-					playlistFile = new M3UFile();
-					break;
-				case 2: // XSPF
-					playlistFile = new XSPFFile();
-					break;
-				case 3: // PLS
-					playlistFile = new PLSFile();
-					break;
+			case 1: // M3U
+				playlistFile = new M3UFile();
+				break;
+			case 2: // XSPF
+				playlistFile = new XSPFFile();
+				break;
+			case 3: // PLS
+				playlistFile = new PLSFile();
+				break;
 			}
 
 			// Create the file
@@ -518,7 +537,7 @@ PlaylistDownloader::~PlaylistDownloader() {
 
 			// Change screen
 			emit ChangeScreen(Config::ERROR_SCREEN_INDEX);
-			
+
 			// Log error items
 			QList<QString> trackIds = QList<QString>();
 			for (int i = 0; i < _downloadErrors.count(); i++) {
