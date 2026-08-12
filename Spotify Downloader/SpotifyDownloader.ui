@@ -2523,7 +2523,7 @@ background-color: rgb(255, 255, 255);
 selection-background-color: rgb(0, 120, 215);</string>
              </property>
              <property name="minimum">
-              <number>0</number>
+              <number>5000</number>
              </property>
              <property name="maximum">
               <number>999999999</number>
