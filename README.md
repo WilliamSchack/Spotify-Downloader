@@ -637,23 +637,35 @@ In this menu click the "View client secret" button to access the secret and now 
 
 ## Roadmap
 
-The next few updates will take a fair amount of work and time so figured I would put this here so you all know what is going on. No time frames because I dont know how long everything will take and im doing this project on the side so I dont have much time to put into it, but hopefully at least v2.0.0 will be out by the end of this year
+The next few updates will take a fair amount of work and time so figured I would put this here so you all know what is going on. No time frames because I dont know how long everything will take and im doing this project on the side so I dont have much time to put into it, but hopefully at least v2 will be out by the end of this year or early next year
 
-- **Complete refactor**
-   - Doing this because the codebase has become a mess, this will make it much easier to work on and add new features
-   - Not going to release it as its own update as there will be no new features, will be released with v2.0.0
-- **v2.0.0 UI Redesign, Rebrand, Linux/Mac Support, New Features**
-   - Im completely redesigning and remaking the UI since the current one is becoming a bit hard to work with. It has also been planned for a while and the current one was only meant to be temporary, its been needed for a while now
-   - YouTube downloading support
-   - Multi-Platform playlists
-   - Get platform links from local files
-   - Metadata editing
-   - Support for Linux & Mac
-   - Because of the major changes the app will be going through a rebrand, I do not have a name at the moment but I'll get around to it
-   - Since this update will be the first with the refactor as well, expect more issues then other updates but I will try to find and fix as many as I can before release
-- **v2.0.0 - v3.0.0 Feature Reworks**
-   - There are a few features that are poorly implemented and could be much better so I for those I want to go through a proper process to implement them
-   - From v2.0.0 I will start properly planning out features and I will re-do some that are currently implemented to make them better to use
+**v2**
+- Complete Refactor, including CMake and QML
+  - Doing this because the codebase has become a mess, this will make it much easier to work on and add new features
+  - Not going to release it as its own update as there will be no new features, will be released with v2.0.0
+- Linux, Mac support
+- YouTube support
+- Easy app & dependency updating
+- App rename/rebrand
+  - I will put out another notice when getting closer to v2 about the new name
+- Complete UI redesign
+  - Will be similar to what I was going to do for the features now planned in v3 so its easier to update in the future, but it will be a lot more simple to fit with the app currently
+
+**Post v2**
+- CLI support
+- Further platform support
+- More metadata and lyric providers
+- Better normalisation
+- Download error exporting
+- Local file processing
+- Local file metadata finding and editing
+
+**v3**
+- Support for multiple playlists with local storage/caching
+- Combining multiple platforms and local files into one playlist
+- Convert playlists/links to different platforms
+- Further UI redesign
+  - This will complete the ui redesign to allow for the new features
 
 ## License
 ***Spotify Downloader is distributed under the GNU General Public License v3.0 from 17/04/2024 and Release v1.1.3***
