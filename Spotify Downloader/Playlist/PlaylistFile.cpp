@@ -41,6 +41,8 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 
 		// Get the file details
 		TagLib::FileRef tagFileRef(FileUtils::ToNativeFilePathTagLib(absolutePath), true, TagLib::AudioProperties::Accurate);
+		if (tagFileRef.isNull())
+			continue;
 
 		std::string title = tagFileRef.tag()->title().to8Bit(true).c_str();
 		std::string artist = tagFileRef.tag()->artist().to8Bit(true).c_str();
@@ -70,7 +72,7 @@ void PlaylistFile::CreatePlaylistFileFromTracks(QStringList trackFilePaths, QStr
 	// Sort files by their track number
 	std::sort(tracks.begin(), tracks.end(), [](const PlaylistFileTrack t1, const PlaylistFileTrack t2) -> bool {
 		return (t1.TrackNumber < t2.TrackNumber);
-		});
+	});
 
 	// Write sorted files
 	foreach(PlaylistFileTrack track, tracks) {
