@@ -1,11 +1,11 @@
 <RCC version="1.0">
     <qresource prefix="/gui">
-        <file>Button.qml</file>
         <file>MusicScreen.qml</file>
         <file>Main.qml</file>
         <file>testing.qml</file>
         <file>InfoScreen.qml</file>
         <file>SettingsScreen.qml</file>
         <file>Track.qml</file>
+        <file>CustomButton.qml</file>
     </qresource>
 </RCC>

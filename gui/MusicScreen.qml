@@ -28,7 +28,7 @@ Rectangle {
                 
                 color: Qt.alpha("#262626", 0.9)
             }
-
+    
             // Items
             RowLayout {
                 anchors.fill: parent
@@ -39,7 +39,7 @@ Rectangle {
 
                 spacing: 8
 
-                Button {
+                CustomButton {
                     text: "Download Tracks (4/8)"
                     font.pixelSize: 14
                     spacing: 5
@@ -49,7 +49,7 @@ Rectangle {
                     Layout.fillHeight: true
                 }
 
-                Button {
+                CustomButton {
                     text: "Export"
                     font.pixelSize: 14
                     spacing: 5
@@ -62,7 +62,7 @@ Rectangle {
                 Rectangle { Layout.fillWidth: true }
 
                 // Search should be changed to its own thing
-                Button {
+                CustomButton {
                     text: "Search"
                     font.pixelSize: 14
                     spacing: 5
@@ -73,7 +73,7 @@ Rectangle {
                     Layout.fillHeight: true
                 }
 
-                Button {
+                CustomButton {
                     text: "Track Number"
                     font.pixelSize: 14
                     spacing: 5
@@ -84,7 +84,7 @@ Rectangle {
                     Layout.fillHeight: true
                 }
 
-                Button {
+                CustomButton {
                     text: "Filter"
                     font.pixelSize: 14
                     spacing: 5
