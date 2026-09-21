@@ -16,6 +16,8 @@ Rectangle {
     property real iconPadding: 4
     property bool iconRight: false
 
+    signal clicked()
+
     implicitWidth: layout.implicitWidth + 2 * padding
     implicitHeight: layout.implicitHeight + 2 * padding
 
@@ -28,6 +30,14 @@ Rectangle {
         shadowBlur: 0.4
         shadowHorizontalOffset: 2
         shadowVerticalOffset: 2
+    }
+
+    // Mouse area
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+
+        onClicked: root.clicked()
     }
 
     // Contents
