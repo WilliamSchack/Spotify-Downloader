@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>new.qml</file>
         <file>Button.qml</file>
+        <file>MusicScreen.qml</file>
     </qresource>
 </RCC>
