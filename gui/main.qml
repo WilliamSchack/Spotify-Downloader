@@ -1,6 +1,3 @@
-// TEMPORARY, only used for repeaters
-pragma ComponentBehavior: Bound
-
 import QtQuick
 import QtQuick.Layouts
 
@@ -12,6 +9,9 @@ Window
     height: 800
     title: qsTr("Minimal Qml")
     color: "#8f95d3"
+
+    readonly property string selectedButtonColour: "#A16583";
+    readonly property string unselectedButtonColour: Qt.alpha("#3A3A3A", 0.5);
 
     enum EScreen
     {
@@ -26,12 +26,27 @@ Window
             case Main.EScreen.Main:
                 console.log("Switching to music screen")
                 screenLoader.source = "MusicScreen.qml"
+
+                // Should replace this and below with a new button group class
+                headerButtonMusic.color = selectedButtonColour
+                headerButtonInfo.color = unselectedButtonColour
+                headerButtonSettings.color = unselectedButtonColour
                 break;
             case Main.EScreen.Info:
                 console.log("Switching to info screen")
+
+                screenLoader.source = "InfoScreen.qml"
+                headerButtonMusic.color = unselectedButtonColour
+                headerButtonInfo.color = selectedButtonColour
+                headerButtonSettings.color = unselectedButtonColour
                 break;
             case Main.EScreen.Settings:
                 console.log("Switching to settings screen")
+
+                screenLoader.source = "SettingsScreen.qml"
+                headerButtonMusic.color = unselectedButtonColour
+                headerButtonInfo.color = unselectedButtonColour
+                headerButtonSettings.color = selectedButtonColour
                 break;
             default:
                 return;
@@ -58,6 +73,7 @@ Window
 
                 // Buttons (testing)
                 Button {
+                    id: headerButtonMusic
                     text: "Music"
                     color: "#A16583"
 
@@ -67,6 +83,7 @@ Window
                 }
 
                 Button {
+                    id: headerButtonInfo
                     text: "Info"
                     color: Qt.alpha("#3A3A3A", 0.5)
 
@@ -76,6 +93,7 @@ Window
                 }
 
                 Button {
+                    id: headerButtonSettings
                     text: "Settings"
                     color: Qt.alpha("#3A3A3A", 0.5)
 
