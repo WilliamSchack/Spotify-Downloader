@@ -6,5 +6,6 @@
         <file>testing.qml</file>
         <file>InfoScreen.qml</file>
         <file>SettingsScreen.qml</file>
+        <file>Track.qml</file>
     </qresource>
 </RCC>
