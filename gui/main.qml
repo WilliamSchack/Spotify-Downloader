@@ -1,80 +1,115 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
+// TEMPORARY, only used for repeaters
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Layouts
 
 Window
 {
+    id: root
     visible: true
-    width: 640
-    height: 480
+    width: 1400
+    height: 800
     title: qsTr("Minimal Qml")
+    color: "#8f95d3"
 
-    // Background
-    Rectangle {
-        anchors.fill: parent
-        color: "lightblue"
+    enum EScreen
+    {
+        Main,
+        Info,
+        Settings
     }
 
-    ColumnLayout {
+    // screen is type of EScreen
+    function switchScreen(screen: int) {
+        switch (screen) {
+            case Main.EScreen.Main:
+                console.log("Switching to music screen")
+                screenLoader.source = "MusicScreen.qml"
+                break;
+            case Main.EScreen.Info:
+                console.log("Switching to info screen")
+                break;
+            case Main.EScreen.Settings:
+                console.log("Switching to settings screen")
+                break;
+            default:
+                return;
+        }
+    }
+
+    // Outer Margin
+    Rectangle {
         anchors.fill: parent
+        anchors.margins: 5
+        color: "transparent"
 
-        // Filler
-        Rectangle {
-            Layout.fillHeight: true
-        }
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: 5
 
-        // Download Link
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.leftMargin: 100
-            Layout.rightMargin: 100
-
-            TextField {
+            // Header
+            RowLayout {
+                Layout.maximumHeight: 30
                 Layout.fillWidth: true
-                placeholderText: qsTr("Download Link")
-                text: _manager.linkInputText
-                onTextChanged: _manager.linkInputText = text
+                Layout.alignment: Qt.AlignLeft
+                Layout.bottomMargin: 4
+                spacing: 15
+
+                // Buttons (testing)
+                Button {
+                    text: "Music"
+                    color: "#A16583"
+
+                    Layout.fillHeight: true
+
+                    onClicked: switchScreen(Main.EScreen.Main)
+                }
+
+                Button {
+                    text: "Info"
+                    color: Qt.alpha("#3A3A3A", 0.5)
+
+                    Layout.fillHeight: true
+
+                    onClicked: switchScreen(Main.EScreen.Info)
+                }
+
+                Button {
+                    text: "Settings"
+                    color: Qt.alpha("#3A3A3A", 0.5)
+
+                    Layout.fillHeight: true
+
+                    onClicked: switchScreen(Main.EScreen.Settings)
+                }
+
+                // Space
+                Rectangle { Layout.fillWidth: true }
+
+                // Buttons (testing)
+                Repeater {
+                    model: 3
+                    Button {
+                        radius: 20
+                        color: "#434343"
+                        hasIcon: false
+
+                        Layout.preferredWidth: parent.height
+                        Layout.fillHeight: true
+                    }
+                }
             }
 
-            Button {
-                Layout.preferredWidth: 30
-                icon.source: "qrc:/icons/Icons/Clipboard_Icon_B.png"
-                onClicked: _manager.PasteButtonClicked()
-            }
-        }
+            // Main screen
+            Loader {
+                id: screenLoader
 
-        // Folder Path
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.leftMargin: 100
-            Layout.rightMargin: 100
-
-            TextField {
+                Layout.fillHeight: true
                 Layout.fillWidth: true
-                placeholderText: qsTr("Folder Path")
-                text: _manager.folderInputText
-                onTextChanged: _manager.folderInputText = text
+
+                source: "MusicScreen.qml"
             }
-
-            Button {
-                Layout.preferredWidth: 30
-                icon.source: "qrc:/icons/Icons/Folder_Icon_B.png"
-                onClicked: _manager.FolderButtonClicked()
-            }
-        }
-
-        Button {
-            Layout.fillWidth: true
-            Layout.leftMargin: 100
-            Layout.rightMargin: 100
-
-            text: qsTr("Download")
-            onClicked: _manager.DownloadButtonClicked()
-        }
-
-        // Filler
-        Rectangle {
-            Layout.fillHeight: true
         }
     }
 }
