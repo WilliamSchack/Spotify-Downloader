@@ -207,8 +207,8 @@ Window
                                 color: "white"
                             }
 
-                            //text: _manager.linkInputText
-                            //onTextChanged: _manager.linkInputText = text
+                            text: _manager.music.addTracksPopup.linkInputText
+                            onTextChanged: _manager.music.addTracksPopup.linkInputText = text
                         }
 
                         CustomButton {
@@ -219,7 +219,7 @@ Window
                             hasIcon: false
                             color: "white"
                             //icon.source: "qrc:/icons/Icons/Clipboard_Icon_B.png"
-                            // onClicked: _manager.PasteButtonClicked()
+                            onClicked: _manager.music.addTracksPopup.PasteButtonClicked()
                         }
                     }
 
@@ -243,8 +243,8 @@ Window
                                 color: "white"
                             }
 
-                            //text: _manager.folderInputText
-                            //onTextChanged: _manager.folderInputText = text
+                            text: _manager.music.addTracksPopup.folderInputText
+                            onTextChanged: _manager.music.addTracksPopup.folderInputText = text
                         }
 
                         CustomButton {
@@ -256,7 +256,7 @@ Window
                             hasIcon: false
                             color: "white"
                             //icon.source: "qrc:/icons/Icons/Folder_Icon_B.png"
-                            //onClicked: _manager.FolderButtonClicked()
+                            onClicked: _manager.music.addTracksPopup.FolderButtonClicked()
                         }
                     }
                 }
@@ -269,6 +269,8 @@ Window
                     font.bold: true
                     font.pixelSize: 16
                     color: "#9A607D"
+
+                    onClicked: _manager.music.addTracksPopup.DownloadButtonClicked()
                 }
             }
         }

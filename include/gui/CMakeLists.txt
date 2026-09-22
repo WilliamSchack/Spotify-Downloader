@@ -1,5 +1,7 @@
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_sources(${PROJECT_NAME} PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/MainScreenGUIManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/GUIManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MusicScreenGUI.h
+	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.h
 )

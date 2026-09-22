@@ -1,3 +1,5 @@
 target_sources(${PROJECT_NAME} PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/MainScreenGUIManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/GUIManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MusicScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.cpp
 )

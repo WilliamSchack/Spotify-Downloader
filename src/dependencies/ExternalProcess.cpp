@@ -134,7 +134,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     if (!lineBuffer.empty()) {
         output += lineBuffer;
         if (lineAvailableCallback != nullptr)
-                lineAvailableCallback(lineBuffer);
+            lineAvailableCallback(lineBuffer);
     }
 
     WaitForSingleObject(processInfo.hProcess, INFINITE);
