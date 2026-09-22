@@ -2,7 +2,6 @@
     <qresource prefix="/gui">
         <file>MusicScreen.qml</file>
         <file>Main.qml</file>
-        <file>testing.qml</file>
         <file>InfoScreen.qml</file>
         <file>SettingsScreen.qml</file>
         <file>Track.qml</file>
