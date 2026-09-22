@@ -2,6 +2,20 @@
 
 AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent) {}
 
+bool AddTracksPopup::GetVisible() const
+{
+    return _visible;
+}
+
+void AddTracksPopup::SetVisible(const bool& visible)
+{
+    if (visible == _visible)
+        return;
+    
+    _visible = visible;
+    emit VisibleChanged();
+}
+
 QString AddTracksPopup::GetLinkInputText() const
 {
     return _linkInputText;

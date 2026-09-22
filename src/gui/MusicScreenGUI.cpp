@@ -14,4 +14,10 @@ AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
     std::cout << link << " || " << destinationFolder << std::endl;
+
+    bool downloadStarted = DownloadManager::Download(link, destinationFolder);
+    if (!downloadStarted)
+        return;
+
+    _addTracksPopup->SetVisible(false);
 }

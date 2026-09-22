@@ -6,5 +6,6 @@
         <file>SettingsScreen.qml</file>
         <file>Track.qml</file>
         <file>CustomButton.qml</file>
+        <file>AddTracksPopup.qml</file>
     </qresource>
 </RCC>
