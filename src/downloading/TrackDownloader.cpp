@@ -126,7 +126,9 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::cout << "Normalising..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Normalising Audio..."));
 
-        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
+        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB, [&](float progress) {
+            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Normalising Audio..."));
+        });
     }
     
     // == Set bitrate
@@ -134,7 +136,9 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::cout << "Setting bitrate..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Setting Bitrate..."));
 
-        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE);
+        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE, [&](float progress) {
+            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate..."));
+        });
     }
 
     // == Get lyrics
