@@ -146,21 +146,19 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::cout << "Getting Lyrics..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
 
-        // TODO: Get lyrics
+        // Try source platform
+        Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
+        
+        // Try searched platform
+        if (lyrics.Type == ELyricsType::None)
+            lyrics = LyricsFinder::GetSourceLyrics(searchResult.Data);
+
+        // Try external platforms
+        if (lyrics.Type == ELyricsType::None)
+            lyrics = LyricsFinder::GetBestLyrics(track);
 
         // TODO: Create LRC File
     }
-
-    // Try source platform
-    Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
-    
-    // Try searched platform
-    if (lyrics.Type == ELyricsType::None)
-        lyrics = LyricsFinder::GetSourceLyrics(searchResult.Data);
-
-    // Try external platforms
-    if (lyrics.Type == ELyricsType::None)
-        lyrics = LyricsFinder::GetBestLyrics(track);
 
     // == Assign metadata
     SetProgress(progressCallback, DownloadProgress(1.0, "Assigning Metadata..."));
