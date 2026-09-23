@@ -13,6 +13,7 @@ class Config
         static inline constexpr EExtension CODEC_EXTENSION = EExtension::MP3;
         static inline constexpr bool OVERWRITE = false;
         static inline constexpr bool NORMALISE = true;
+        static inline constexpr bool GET_LYRICS = true;
         static inline constexpr float NORMALISE_DB = -14.0;
         static inline constexpr bool MANUAL_BITRATE = false;
         static inline constexpr int BITRATE = 128;

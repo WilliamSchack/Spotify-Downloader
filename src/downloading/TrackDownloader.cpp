@@ -1,6 +1,6 @@
 #include "TrackDownloader.h"
 
-DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory)
+DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, std::function<void(DownloadProgress)> progressCallback)
 {
     DownloadResult result;
     result.Success = false;
@@ -8,8 +8,11 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (track.Id.empty())
         return result;
 
+    // Should be removed later
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
     track.Print();
+
+    SetProgress(progressCallback, DownloadProgress(0.0, "Setting Up..."));
 
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
@@ -44,7 +47,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // == Get cover art
     // TODO: Make sure it only saves one cover art per album
 
-    std::cout << "Getting cover art..." << std::endl;
+    std::cout << "Getting Cover Art..." << std::endl;
+    SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 
     std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;
     if (!std::filesystem::exists(imagesFolder))
@@ -64,6 +68,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // == Get the song on the target platform
+    SetProgress(progressCallback, DownloadProgress(0.1, "Searching..."));
+
     PlatformSearcherResult searchResult;
     
     if (track.Platform == searchPlatform) {
@@ -85,6 +91,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // == Download 
     std::cout << "Downloading..." << std::endl;
+    SetProgress(progressCallback, DownloadProgress(0.3, "Downloading Track..."));
 
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
     tempDownloadPath = downloadResult.Path;
@@ -106,19 +113,33 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
 
     // == Normalise
+    float progressStartPercentage = 0.7;
+    float progressEndPercentage = Config::GET_LYRICS ? 0.9 : 1.0;
+
     if (Config::NORMALISE) {
         std::cout << "Normalising..." << std::endl;
+        SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Normalising Audio..."));
+
         bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB);
     }
     
     // == Set bitrate
-    if (Config::MANUAL_BITRATE) {
+    else if (Config::MANUAL_BITRATE) {
         std::cout << "Setting bitrate..." << std::endl;
+        SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Setting Bitrate..."));
+
         bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE);
     }
 
     // == Get lyrics
-    std::cout << "Getting Lyrics..." << std::endl;
+    if (Config::GET_LYRICS) {
+        std::cout << "Getting Lyrics..." << std::endl;
+        SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
+
+        // TODO: Get lyrics
+
+        // TODO: Create LRC File
+    }
 
     // Try source platform
     Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
@@ -132,6 +153,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         lyrics = LyricsFinder::GetBestLyrics(track);
 
     // == Assign metadata
+    SetProgress(progressCallback, DownloadProgress(1.0, "Assigning Metadata..."));
+
     std::string publisherText = "Downloaded through " + std::string(APP_NAME) + " by William Schack";
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
@@ -176,11 +199,28 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     return result;
 }
 
-int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
+void TrackDownloader::SetProgress(const std::function<void(DownloadProgress)>& progressCallback, const DownloadProgress& progress)
+{
+    if (progressCallback == nullptr)
+        return;
+
+    progressCallback(progress);
+}
+
+int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory, std::function<void(int, DownloadProgress)> progressCallback, std::function<void(int, DownloadResult)> trackDownloadedCallback)
 {
     int downloadErrors = 0;
-    for (const TrackData& track : tracks) {
-        DownloadResult downloadResult = DownloadTrack(track, searchPlatform, directory);
+    for (int i = 0; i < tracks.size(); i++) {
+        const TrackData& track = tracks[i];
+
+        std::function<void(DownloadProgress)> callback = nullptr;
+        if (progressCallback != nullptr)
+            callback = [&](DownloadProgress p) { progressCallback(i, p); };
+
+        DownloadResult downloadResult = DownloadTrack(track, searchPlatform, directory, callback);
+        if (trackDownloadedCallback != nullptr)
+            trackDownloadedCallback(i, downloadResult);
+
         if (!downloadResult.Success) downloadErrors++;
     }
 

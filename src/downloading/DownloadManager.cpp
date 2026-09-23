@@ -78,7 +78,11 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 {
     std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
 
-    TrackDownloader::DownloadTracks(tracks, searchPlatform, directory);
+    TrackDownloader::DownloadTracks(tracks, searchPlatform, directory, [&](int index, DownloadProgress p) {
+        std::cout << "PROGRESS >> " + std::to_string(index) + ": " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
+    }, [&](int index, DownloadResult result) {
+        std::cout << "RESULT >> " + std::to_string(result.Success ? 1 : 0) + ": " + result.FilePath.string() << std::endl;
+    });
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 
