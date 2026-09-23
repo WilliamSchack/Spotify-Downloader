@@ -14,7 +14,7 @@ class Ytdlp
     public:
         static std::string GetVersion();
 
-        static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension);
+        static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension, std::function<void(float)> progressCallback = nullptr);
     private:
         static YtdlpError GetError(const std::string& errorString);
 };

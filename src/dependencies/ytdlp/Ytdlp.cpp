@@ -10,7 +10,7 @@ std::string Ytdlp::GetVersion()
 }
 
 // Assumes the path has no extension
-YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension)
+YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension, std::function<void(float)> progressCallback)
 {
     YtdlpResult result;
 
@@ -45,7 +45,8 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         // Get the download progress
-        if (StringUtils::Contains(line, "[download]") &&
+        if (progressCallback != nullptr &&
+            StringUtils::Contains(line, "[download]") &&
             !StringUtils::Contains(line, FileUtils::PathToUtf8(pathNoExtension.filename()))
             ) {
 
@@ -54,9 +55,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
                 return;
 
             float progressPercent = std::atof(matches[1].str().c_str()) / 100;
-
-            // Output this to a progress callback
-            std::cout << progressPercent << std::endl;
+            progressCallback(progressPercent);
             
             return;
         }

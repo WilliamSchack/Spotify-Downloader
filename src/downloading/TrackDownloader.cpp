@@ -96,7 +96,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::cout << "Downloading..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.3, "Downloading Track..."));
 
-    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath);
+    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, [&](float progress) {
+        SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track..."));
+    });
+
     tempDownloadPath = downloadResult.Path;
 
     // TODO: Handle errors properly

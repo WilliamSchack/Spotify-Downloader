@@ -37,10 +37,12 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::f
         const std::string& query = searchQueries[i];
 
         ArrayUtils::ExtendVector(searchResults, _yt.Search(query, EYoutubeCategory::Songs, 4));
-        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 1) / totalSearches));
+        if (progressCallback != nullptr)
+            progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 1) / totalSearches));
 
         ArrayUtils::ExtendVector(searchResults, _yt.Search(query, EYoutubeCategory::Videos, 4));
-        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 2) / totalSearches));
+        if (progressCallback != nullptr)
+            progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 2) / totalSearches));
 
         // Search through first album result
         std::vector<YoutubeSearchResult> albumResults = _yt.Search(query, EYoutubeCategory::Albums, 1);
@@ -61,14 +63,17 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::f
             searchResults.push_back(youtubeTrackResult);
         }
 
-        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
+        if (progressCallback != nullptr)
+            progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
     }
 
-    progressCallback(0.9);
+    if (progressCallback != nullptr)
+        progressCallback(0.9);
 
     // Get the best result
     PlatformSearcherResult result = GetClosestTrack(track, searchResults);
-    progressCallback(1.0);
+    if (progressCallback != nullptr)
+        progressCallback(1.0);
 
     return result;
 }
