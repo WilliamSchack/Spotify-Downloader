@@ -82,7 +82,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
         if (searcher == nullptr) return result;
 
-        searchResult = searcher->FindTrack(track);
+        searchResult = searcher->FindTrack(track, [&](float progress) {
+            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.1, 0.3, progress), "Searching..."));
+        });
+
         if (searchResult.Data.Platform == EPlatform::Unknown) {
             std::cout << "Could not find track: " << track.Name << std::endl;
             return result;

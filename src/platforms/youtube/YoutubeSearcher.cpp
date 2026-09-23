@@ -4,7 +4,7 @@
 
 YoutubeSearcher::YoutubeSearcher() : _yt() {}
 
-PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
+PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::function<void(float)> progressCallback)
 {
     std::string titleSearchTerm  = track.Name;
     std::string artistSearchTerm = track.Artists[0].Name;
@@ -23,17 +23,24 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
     if (albumSearchTerm.empty())  albumSearchTerm = track.Album.Name;
 
     // Multiple queries as song songs only match with quotes, etc.
-    std::string searchQueries[] {
+    std::vector<std::string> searchQueries {
         artistSearchTerm + " - " + titleSearchTerm + " - " + albumSearchTerm,
         artistSearchTerm + " - \"" + titleSearchTerm + "\" - " + albumSearchTerm,
         titleSearchTerm + " - " + artistSearchTerm
     };
 
+    float totalSearches = searchQueries.size() * 3;
+
     // Search for the song
     std::vector<YoutubeSearchResult> searchResults;
-    for (const std::string& query : searchQueries) {
+    for (int i = 0; i < searchQueries.size(); i++) {
+        const std::string& query = searchQueries[i];
+
         ArrayUtils::ExtendVector(searchResults, _yt.Search(query, EYoutubeCategory::Songs, 4));
+        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 1) / totalSearches));
+
         ArrayUtils::ExtendVector(searchResults, _yt.Search(query, EYoutubeCategory::Videos, 4));
+        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 2) / totalSearches));
 
         // Search through first album result
         std::vector<YoutubeSearchResult> albumResults = _yt.Search(query, EYoutubeCategory::Albums, 1);
@@ -53,10 +60,17 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track)
 
             searchResults.push_back(youtubeTrackResult);
         }
+
+        progressCallback(MathUtils::Lerp(0, 0.8, (i * 3 + 3) / totalSearches));
     }
 
+    progressCallback(0.9);
+
     // Get the best result
-    return GetClosestTrack(track, searchResults);
+    PlatformSearcherResult result = GetClosestTrack(track, searchResults);
+    progressCallback(1.0);
+
+    return result;
 }
 
 // TODO: Normalise the score
@@ -86,7 +100,7 @@ float YoutubeSearcher::ScoreTrack(const TrackData& src, const TrackData& track)
     totalScore += titleScore;
 
     // Time score
-    double timeScore = MathUtils::Lerp(0, 1, (SECONDS_DIFFERENCE_ALLOWED - std::abs((int)track.DurationSeconds - (int)src.DurationSeconds)) / SECONDS_DIFFERENCE_ALLOWED);
+    double timeScore = (SECONDS_DIFFERENCE_ALLOWED - std::abs((int)track.DurationSeconds - (int)src.DurationSeconds)) / SECONDS_DIFFERENCE_ALLOWED;
     totalScore += timeScore;
 
     // If the title and time scores are low, no point continuing

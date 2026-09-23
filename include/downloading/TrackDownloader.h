@@ -6,6 +6,7 @@
 #include "CodecFactory.h"
 #include "PlatformFactory.h"
 #include "PlatformUtils.h"
+#include "MathUtils.h"
 #include "ImageHandler.h"
 #include "MetadataManager.h"
 #include "Ytdlp.h"

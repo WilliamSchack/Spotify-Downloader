@@ -13,7 +13,7 @@ class YoutubeSearcher : public IPlatformSearcher
     public:
         YoutubeSearcher();
 
-        PlatformSearcherResult FindTrack(const TrackData& track) override;
+        PlatformSearcherResult FindTrack(const TrackData& track, std::function<void(float)> progressCallback = nullptr) override;
         AlbumTracks FindAlbum(const AlbumTracks& track) override { return AlbumTracks(); };
         PlaylistTracks FindPlaylist(const PlaylistTracks& track) override { return PlaylistTracks(); };
     private:
