@@ -15,16 +15,15 @@ class Ffmpeg
     public:
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
-        static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true);
+        static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true, std::function<void(float)> progressCallback = nullptr);
 
         // TODO: Add better normalisation
         // > Details already gotten in GetAudioDetails
         // > https://github.com/WilliamSchack/Spotify-Downloader/issues/101)
-        static bool Normalise(const std::filesystem::path& filePath, const float& targetDb);
-        static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate);
+        static bool Normalise(const std::filesystem::path& filePath, const float& targetDb, std::function<void(float)> progressCallback = nullptr);
+        static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate, std::function<void(float)> progressCallback = nullptr);
     private:
-        // TODO: Input progress callback
-        static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args);
+        static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback = nullptr);
 };
 
 #endif

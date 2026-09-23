@@ -64,7 +64,7 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     return details;
 }
 
-std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, const EExtension& newExtension, const bool& deleteOriginal)
+std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, const EExtension& newExtension, const bool& deleteOriginal, std::function<void(float)> progressCallback)
 {
     if (!std::filesystem::exists(filePath))
         return "";
@@ -94,7 +94,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
 
     args.push_back("\"" + FileUtils::PathToUtf8(newPath) + "\"");
 
-    Execute(audioDetails, args);
+    Execute(audioDetails, args, progressCallback);
 
     if (deleteOriginal)
         std::filesystem::remove(filePath);
@@ -102,7 +102,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
     return newPath;
 }
 
-bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targetDb)
+bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targetDb, std::function<void(float)> progressCallback)
 {
     if (!std::filesystem::exists(filePath))
         return false;
@@ -131,7 +131,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
 
     args.push_back("\"" + FileUtils::PathToUtf8(tempPath.string()) + "\"");
 
-    Execute(audioDetails, args);
+    Execute(audioDetails, args, progressCallback);
 
     // Rename back to original
     if (!std::filesystem::exists(tempPath))
@@ -143,7 +143,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     return true;
 }
 
-bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate)
+bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate, std::function<void(float)> progressCallback)
 {
     if (!std::filesystem::exists(filePath))
         return false;
@@ -160,7 +160,7 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
         "-nostats",
         "-b:a", std::to_string(bitrate) + "k",
         "\"" + FileUtils::PathToUtf8(tempPath) + "\""
-    });
+    }, progressCallback);
 
     // Rename back to original
     if (!std::filesystem::exists(tempPath))
@@ -172,10 +172,13 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
     return true;
 }
 
-std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args)
+std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback)
 {
     // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
+        if (progressCallback == nullptr)
+            return;
+
         if (!StringUtils::Contains(line, "out_time_ms"))
             return;
 
@@ -185,9 +188,7 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
 
         int msProgress = std::stoi(matches[1]) / 1000;
         float progressPercent = (float)msProgress / (float)audioDetails.DurationMilliseconds;
-
-        // Output this to a progress callback
-        std::cout << progressPercent << std::endl;
+        progressCallback(progressPercent);
     };
 
     // Setup command
