@@ -5,7 +5,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     DownloadResult result;
     result.Success = false;
 
-    if (track.Id.empty())
+    if (track.Platform == EPlatform::Unknown || track.Id.empty())
         return result;
 
     // Should be removed later

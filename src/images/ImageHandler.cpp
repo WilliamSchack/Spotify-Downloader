@@ -18,6 +18,7 @@ EImageFormat ImageHandler::GetImageFormat(const std::string& string)
     if (format == "png")                     return EImageFormat::PNG;
     if (format == "jpg" || format == "jpeg") return EImageFormat::JPG;
 
+    std::cout << "Found unkown image format: " << format << std::endl;
     return EImageFormat::Unknown;
 }
 
@@ -43,6 +44,7 @@ EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
     if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
         return EImageFormat::JPG;
 
+    std::cout << "Found unknown image format: " << bytes << std::endl;
     return EImageFormat::Unknown;
 }
 
