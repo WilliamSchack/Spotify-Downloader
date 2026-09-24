@@ -142,12 +142,13 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // == Get lyrics
+    Lyrics lyrics;
     if (Config::GET_LYRICS) {
         std::cout << "Getting Lyrics..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
 
         // Try source platform
-        Lyrics lyrics = LyricsFinder::GetSourceLyrics(track);
+        lyrics = LyricsFinder::GetSourceLyrics(track);
         
         // Try searched platform
         if (lyrics.Type == ELyricsType::None)
