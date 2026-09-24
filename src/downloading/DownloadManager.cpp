@@ -59,7 +59,7 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
 
         std::vector<TrackData> threadTracks(tracks.begin() + currentStartIndex, tracks.begin() + currentStartIndex + currentSongCount);
         
-        std::thread thread([threadTracks, searchPlatform, directory]() {
+        std::thread thread([&]() {
             DownloadManager::ThreadDownload(threadTracks, searchPlatform, directory);
         });
 

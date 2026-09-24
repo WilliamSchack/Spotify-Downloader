@@ -15,9 +15,9 @@
 class DownloadManager {
     public:
         // Returns if the download started
-        static bool Download(const std::string& url, const std::string& directory);
+        bool Download(const std::string& url, const std::string& directory);
     private:
-        static void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
+        void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
 };
 
 #endif
