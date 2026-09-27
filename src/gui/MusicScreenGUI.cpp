@@ -11,13 +11,33 @@ AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
     return _addTracksPopup;
 }
 
+// debugging
+#include "DownloadEvents.h"
+
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
     std::cout << link << " || " << destinationFolder << std::endl;
 
-    bool downloadStarted = DownloadManager().Download(link, destinationFolder);
+    DownloadManager downloader;
+    bool downloadStarted = downloader.Download(link, destinationFolder);
     if (!downloadStarted)
         return;
 
     _addTracksPopup->SetVisible(false);
+
+    // DEBUGGING:
+
+    bool finished = false;
+    while (!finished) {
+        while (std::optional<DownloadEvent> eventOpt = downloader.GetEvents().TryGetEvent()) {
+            if (!eventOpt.has_value())
+                break;
+
+            DownloadEvent event = eventOpt.value();
+            std::cout << "OUTSIDER GOT THE EVENTS!! >> " << event.Type << " " << event.TrackId << " " << event.Progress << " " << event.Message << std::endl;
+
+            if (event.Type == EDownloadEventType::ThreadFinished)
+                finished = true;
+        }
+    }
 }

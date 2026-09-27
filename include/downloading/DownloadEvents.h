@@ -2,6 +2,9 @@
 #define DOWNLOADEVENTS_H
 
 #include <string>
+#include <queue>
+#include <mutex>
+#include <optional>
 
 enum EDownloadEventType
 {
@@ -25,9 +28,12 @@ struct DownloadEvent
 class DownloadEvents
 {
     public:
-        void Process();
-        static void ProcessAll();
         void Send(DownloadEvent event);
+        std::optional<DownloadEvent> TryGetEvent();
+    private:
+        std::queue<DownloadEvent> _events;
+        std::mutex _mutex;
+
 };
 
 #endif

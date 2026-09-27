@@ -23,6 +23,7 @@ class DownloadManager
 
         // Returns if the download started
         bool Download(const std::string& url, const std::string& directory);
+        DownloadEvents& GetEvents() { return _events; }
     private:
         void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
     private:
