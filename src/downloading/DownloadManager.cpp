@@ -11,8 +11,23 @@ DownloadManager::~DownloadManager()
     }
 }
 
+DownloadEvents& DownloadManager::GetEvents()
+{
+    return _events;
+}
+
+bool DownloadManager::IsDownloading()
+{
+    return _tracksRemaining > 0;
+}
+
 bool DownloadManager::Download(const std::string& url, const std::string& directory)
 {
+    if (IsDownloading()) {
+        std::cout << "This DownloadManager is already downloading, use another or wait for this to finish to start a new download" << std::endl;
+        return false;
+    }
+
     // This is done on called thread, move this to another
 
     bool directoryValid = std::filesystem::exists(directory);
@@ -63,6 +78,7 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     // Setup
     _tracksRemaining = songCount;
     _failedDownloads = 0;
+    _events.ClearAll();
 
     // Dispatch threads
     int currentStartIndex = 0;
@@ -91,8 +107,7 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 
     for (const TrackData& track : tracks) {
         DownloadResult result = TrackDownloader::DownloadTrack(track, searchPlatform, directory, [&](DownloadProgress p) {
-            std::cout << "PROGRESS >> " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
-
+            //std::cout << "PROGRESS >> " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
             DownloadEvent event;
             event.Type = EDownloadEventType::TrackProgress;
             event.TrackId = track.Id;
@@ -112,9 +127,12 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
             _failedDownloads++;
 
         if (--_tracksRemaining == 0) {
-            // Finish
+            // Download is finished
             DownloadEvent event;
-            event.Type = EDownloadEventType::ThreadFinished;
+            event.Type = EDownloadEventType::Finished;
+            event.TrackId = "";
+            event.Progress = 1.0;
+            event.Message = "";
             _events.Send(event);
         }
     }

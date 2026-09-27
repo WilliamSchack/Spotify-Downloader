@@ -6,6 +6,12 @@ void DownloadEvents::Send(DownloadEvent event)
     _events.push(event);
 }
 
+void DownloadEvents::ClearAll()
+{
+    std::queue<DownloadEvent> empty;
+    std::swap(_events, empty);
+}
+
 std::optional<DownloadEvent> DownloadEvents::TryGetEvent()
 {
     std::lock_guard<std::mutex> lock(_mutex);
@@ -14,6 +20,6 @@ std::optional<DownloadEvent> DownloadEvents::TryGetEvent()
 
     DownloadEvent event = _events.front();
     _events.pop();
-    
+
     return event;
 }

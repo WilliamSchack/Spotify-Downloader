@@ -2,6 +2,7 @@
 #define MUSICSCREENGUI_H
 
 #include "DownloadManager.h"
+#include "DownloadEvents.h"
 
 #include "AddTracksPopup.h"
 
@@ -20,8 +21,14 @@ class MusicScreenGUI : public QObject
         AddTracksPopup* GetAddTracksPopup() const;
     private:
         void OnDownloadRequested(const std::string& link, const std::string& destinationFolder);
+        void CheckDownloadEvents();
     private:
+        inline static const int DOWNLOAD_EVENTS_POLL_INTERVAL_MS = 100;
+
         AddTracksPopup* _addTracksPopup;
+        
+        DownloadManager _downloader;
+
 };
 
 #endif

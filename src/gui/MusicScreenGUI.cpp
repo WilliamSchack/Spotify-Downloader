@@ -4,6 +4,12 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
 {
     _addTracksPopup = new AddTracksPopup(this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
+
+    // Frequently check download events
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MusicScreenGUI::CheckDownloadEvents);
+
+    timer->start(DOWNLOAD_EVENTS_POLL_INTERVAL_MS);
 }
 
 AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
@@ -11,33 +17,27 @@ AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
     return _addTracksPopup;
 }
 
-// debugging
-#include "DownloadEvents.h"
-
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
     std::cout << link << " || " << destinationFolder << std::endl;
 
-    DownloadManager downloader;
-    bool downloadStarted = downloader.Download(link, destinationFolder);
+    bool downloadStarted = _downloader.Download(link, destinationFolder);
     if (!downloadStarted)
         return;
 
     _addTracksPopup->SetVisible(false);
+}
 
-    // DEBUGGING:
+void MusicScreenGUI::CheckDownloadEvents()
+{
+    if (!_downloader.IsDownloading())
+        return;
 
-    bool finished = false;
-    while (!finished) {
-        while (std::optional<DownloadEvent> eventOpt = downloader.GetEvents().TryGetEvent()) {
-            if (!eventOpt.has_value())
-                break;
+    while (std::optional<DownloadEvent> eventOpt = _downloader.GetEvents().TryGetEvent()) {
+        if (!eventOpt.has_value())
+            break;
 
-            DownloadEvent event = eventOpt.value();
-            std::cout << "OUTSIDER GOT THE EVENTS!! >> " << event.Type << " " << event.TrackId << " " << event.Progress << " " << event.Message << std::endl;
-
-            if (event.Type == EDownloadEventType::ThreadFinished)
-                finished = true;
-        }
+        DownloadEvent event = eventOpt.value();
+        std::cout << "MAIN THREAD GOT EVENTS >> " << event.Type << " " << event.TrackId << " " << event.Progress << " " << event.Message << std::endl;
     }
 }

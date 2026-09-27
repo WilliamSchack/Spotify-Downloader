@@ -11,12 +11,14 @@ enum EDownloadEventType
     TrackProgress,
     TrackSucceeded,
     TrackFailed,
-    ThreadFinished
+    Finished
 };
 
 struct DownloadEvent
 {
     EDownloadEventType Type;
+    
+    // Should be a better way to pass data depending on the event type
     
     // May change to internal id that is unique to each track to make it easier to identify which one is being used in the gui
     std::string TrackId;
@@ -29,6 +31,7 @@ class DownloadEvents
 {
     public:
         void Send(DownloadEvent event);
+        void ClearAll();
         std::optional<DownloadEvent> TryGetEvent();
     private:
         std::queue<DownloadEvent> _events;
