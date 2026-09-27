@@ -140,7 +140,8 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 		std::string albumType = json["type"];
 		if      (albumType == "Album")  album.Type = EAlbumType::Album;
 		else if (albumType == "Single") album.Type = EAlbumType::Single;
-		else std::cout << "UNKNOWN ALBUM TYPE: " << json["type"];
+		else std::cout << "UNKNOWN ALBUM TYPE: " << json["type"] << std::endl;
+        // TODO: ADD TYPE "EP"
 	}
 
 	// Cover Art
@@ -812,7 +813,7 @@ nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, con
 
 		if (data.contains("menu")) {
 			nlohmann::json menuItems = data["menu"]["menuRenderer"]["items"];
-			foreach(nlohmann::json item, menuItems) {
+			for(nlohmann::json item : menuItems) {
 				if (item.contains("menuServiceItemRenderer")) {
 					nlohmann::json menuService = item["menuServiceItemRenderer"]["menuServiceItemRenderer"];
 					if (menuService.contains("playlistEditEndpoint")) {

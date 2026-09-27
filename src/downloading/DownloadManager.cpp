@@ -1,6 +1,15 @@
 #include "DownloadManager.h"
 
+// debugging
 #include <iostream>
+
+DownloadManager::~DownloadManager()
+{
+    for (std::thread& thread : _threads) {
+        if (thread.joinable())
+            thread.join();
+    }
+}
 
 bool DownloadManager::Download(const std::string& url, const std::string& directory)
 {
@@ -51,6 +60,10 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     int baseSongCount = songCount / threadCount;
     int songsRemainder = songCount % threadCount;
 
+    // Setup
+    _tracksRemaining = songCount;
+    _failedDownloads = 0;
+
     // Dispatch threads
     int currentStartIndex = 0;
     for (int i = 0; i < threadCount; i++) {
@@ -58,12 +71,10 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
         if (songsRemainder > 0) songsRemainder--;
 
         std::vector<TrackData> threadTracks(tracks.begin() + currentStartIndex, tracks.begin() + currentStartIndex + currentSongCount);
-        
-        std::thread thread([threadTracks = std::move(threadTracks), searchPlatform, directory]() {
-            DownloadManager::ThreadDownload(threadTracks, searchPlatform, directory);
-        });
 
-        thread.detach();
+        _threads.emplace_back([this, threadTracks = std::move(threadTracks), searchPlatform, directory]() {
+            ThreadDownload(threadTracks, searchPlatform, directory);
+        });
 
         currentStartIndex += currentSongCount;
     }
@@ -78,11 +89,41 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 {
     std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
 
-    TrackDownloader::DownloadTracks(tracks, searchPlatform, directory, [&](int index, DownloadProgress p) {
-        std::cout << "PROGRESS >> " + std::to_string(index) + ": " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
-    }, [&](int index, DownloadResult result) {
-        std::cout << "RESULT >> " + std::to_string(result.Success ? 1 : 0) + ": " + result.FilePath.string() << std::endl;
-    });
+    for (const TrackData& track : tracks) {
+        DownloadResult result = TrackDownloader::DownloadTrack(track, searchPlatform, directory, [&](DownloadProgress p) {
+            std::cout << "PROGRESS >> " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
+
+            DownloadEvent event;
+            event.Type = EDownloadEventType::TrackProgress;
+            event.TrackId = track.Id;
+            event.Progress = p.Progress;
+            event.Message = p.Message;
+            _events.Send(event);
+        });
+
+        DownloadEvent event;
+        event.Type = result.Success ? EDownloadEventType::TrackSucceeded : EDownloadEventType::TrackFailed;
+        event.TrackId = track.Id;
+        event.Progress = 1.0;
+        event.Message = "";
+        _events.Send(event);
+
+        if (!result.Success)
+            _failedDownloads++;
+
+        if (--_tracksRemaining == 0) {
+            // Finish
+            DownloadEvent event;
+            event.Type = EDownloadEventType::ThreadFinished;
+            _events.Send(event);
+        }
+    }
+
+    //TrackDownloader::DownloadTracks(tracks, searchPlatform, directory, [&](int index, DownloadProgress p) {
+    //    std::cout << "PROGRESS >> " + std::to_string(index) + ": " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
+    //}, [&](int index, DownloadResult result) {
+    //    std::cout << "RESULT >> " + std::to_string(result.Success ? 1 : 0) + ": " + result.FilePath.string() << std::endl;
+    //});
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 

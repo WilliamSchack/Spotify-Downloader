@@ -53,6 +53,8 @@ int main(int argc, char** argv)
 
     //DownloadManager::Download("https://music.youtube.com/watch?v=kky1L2jzc8c", "/home/william/mnt/main/Music/Test");
 
+    //DownloadManager().Download("https://open.spotify.com/track/1Jq89qHEa2S1bu9ah1wavm?si=34745d9cea014987", "/home/william/mnt/main/Music/Test");
+    //DownloadManager().Download("https://open.spotify.com/playlist/2MFRaOYBqQRIWjWEQfTiAD?si=b35674a40943425c", "/home/william/mnt/main/Music/Test");
     //DownloadManager::Download("https://open.spotify.com/playlist/6xetLvEBK7k13730fmA1yP?si=UBrtGqnmS32xVmgd0PWJ0g", "/home/william/mnt/main/Music/Test");
     //DownloadManager::Download("https://open.spotify.com/playlist/4E5YNtoIyQrhtGuHr3Eb9U?si=beead3b4ce3845ad", "/home/william/mnt/main/Music/PlaylistTest");
     //DownloadManager::Download("https://open.spotify.com/track/31ZfD4958k80aCeMl719KC?si=58cf0c29d95f4d88", "/home/william/mnt/main/Music");
