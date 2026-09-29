@@ -1,0 +1,51 @@
+#include "TrackUI.h"
+
+TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data) {}
+
+int TrackUI::GetTrackNumber() const
+{
+    return _data.TrackNumber;
+}
+
+QString TrackUI::GetName() const
+{
+    return QString::fromStdString(_data.Name);
+}
+
+QString TrackUI::GetArtistNames() const
+{
+    return QString::fromStdString(MetadataManager::CombineArtistNames(_data.Artists));
+}
+
+QString TrackUI::GetAlbumName() const
+{
+    return QString::fromStdString(_data.Album.Name);
+}
+
+float TrackUI::GetProgress() const
+{
+    return _progress;
+}
+
+QString TrackUI::GetStatus() const
+{
+    return _status;
+}
+
+void TrackUI::SetProgress(float progress)
+{
+    if (MathUtils::FloatsEqual(progress, _progress))
+        return;
+
+    _progress = progress;
+    emit ProgressChanged();
+}
+
+void TrackUI::SetStatus(const std::string& status)
+{
+    if (status == _status)
+        return;
+
+    _status = QString::fromStdString(status);
+    emit StatusChanged();
+}

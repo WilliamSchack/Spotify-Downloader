@@ -33,7 +33,8 @@ void MusicScreenGUI::CheckDownloadEvents()
     if (!_downloader.IsDownloading())
         return;
 
-    while (std::optional<DownloadEvent> eventOpt = _downloader.GetEvents().TryGetEvent()) {
+    DownloadEvents& downloadEvents = _downloader.GetEvents();
+    while (std::optional<DownloadEvent> eventOpt = downloadEvents.TryGetEvent()) {
         if (!eventOpt.has_value())
             break;
 

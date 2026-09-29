@@ -55,7 +55,7 @@ void AddTracksPopup::PasteButtonClicked()
 
 void AddTracksPopup::FolderButtonClicked()
 {
-    QString folder = QFileDialog::getExistingDirectory(nullptr, "Choose test directory", "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString folder = QFileDialog::getExistingDirectory(nullptr, "Choose output directory", "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (!folder.isEmpty())
         SetFolderInputText(folder);
 }
