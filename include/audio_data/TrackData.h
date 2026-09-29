@@ -40,7 +40,7 @@ struct TrackData
         DurationSeconds = ms / 1000;
     }
 
-    std::string GetUniqueId()
+    std::string GetUniqueId() const
     {
         // Id could be the same across platforms
         return std::to_string((int)Platform) + Id;

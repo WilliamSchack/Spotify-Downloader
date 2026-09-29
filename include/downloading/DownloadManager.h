@@ -6,7 +6,7 @@
 #include "TrackDownloader.h"
 #include "DownloadProgress.h"
 #include "DownloadResult.h"
-#include "DownloadEvents.h"
+#include "DownloadEventsQueue.h"
 
 #include <iostream>
 #include <string>
@@ -24,7 +24,7 @@ class DownloadManager
         // Returns if the download started
         bool Download(const std::string& url, const std::string& directory);
 
-        DownloadEvents& GetEvents();
+        DownloadEventsQueue& GetEvents();
         bool IsDownloading();
     private:
         void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
@@ -32,7 +32,7 @@ class DownloadManager
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
 
-        DownloadEvents _events;
+        DownloadEventsQueue _events;
         std::vector<std::thread> _threads;
 };
 

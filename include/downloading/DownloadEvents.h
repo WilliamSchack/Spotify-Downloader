@@ -1,42 +1,46 @@
 #ifndef DOWNLOADEVENTS_H
 #define DOWNLOADEVENTS_H
 
+#include "TrackData.h"
+
 #include <string>
-#include <queue>
-#include <mutex>
-#include <optional>
+#include <variant>
+#include <vector>
 
-enum EDownloadEventType
+struct TrackProgressEvent
 {
-    TrackProgress,
-    TrackSucceeded,
-    TrackFailed,
-    Finished
-};
-
-struct DownloadEvent
-{
-    EDownloadEventType Type;
-    
-    // Should be a better way to pass data depending on the event type
-    
-    // May change to internal id that is unique to each track to make it easier to identify which one is being used in the gui
-    std::string TrackId;
-
+    std::string TrackUniqueId;
     float Progress;
     std::string Message;
 };
 
-class DownloadEvents
+struct TrackSucceededEvent
 {
-    public:
-        void Send(DownloadEvent event);
-        void ClearAll();
-        std::optional<DownloadEvent> TryGetEvent();
-    private:
-        std::queue<DownloadEvent> _events;
-        std::mutex _mutex;
-
+    std::string TrackUniqueId;
 };
+
+struct TrackFailedEvent
+{
+    std::string TrackUniqueId;
+    std::string Reason;
+};
+
+struct DownloadStartedEvent
+{
+    std::vector<TrackData> Tracks;
+};
+
+struct DownloadFailedToStartEvent {};
+
+struct DownloadsFinishedEvent {};
+
+using DownloadEvent = std::variant<
+    TrackProgressEvent,
+    TrackSucceededEvent,
+    TrackFailedEvent,
+    DownloadStartedEvent,
+    DownloadFailedToStartEvent,
+    DownloadsFinishedEvent
+>;
 
 #endif

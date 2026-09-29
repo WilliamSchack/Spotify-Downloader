@@ -11,7 +11,7 @@ DownloadManager::~DownloadManager()
     }
 }
 
-DownloadEvents& DownloadManager::GetEvents()
+DownloadEventsQueue& DownloadManager::GetEvents()
 {
     return _events;
 }
@@ -107,41 +107,33 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 
     for (const TrackData& track : tracks) {
         DownloadResult result = TrackDownloader::DownloadTrack(track, searchPlatform, directory, [&](DownloadProgress p) {
-            //std::cout << "PROGRESS >> " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
-            DownloadEvent event;
-            event.Type = EDownloadEventType::TrackProgress;
-            event.TrackId = track.Id;
+            TrackProgressEvent event;
+            event.TrackUniqueId = track.GetUniqueId();
             event.Progress = p.Progress;
             event.Message = p.Message;
             _events.Send(event);
         });
 
-        DownloadEvent event;
-        event.Type = result.Success ? EDownloadEventType::TrackSucceeded : EDownloadEventType::TrackFailed;
-        event.TrackId = track.Id;
-        event.Progress = 1.0;
-        event.Message = "";
-        _events.Send(event);
+        if (result.Success) {
+            TrackSucceededEvent event;
+            event.TrackUniqueId = track.GetUniqueId();
+            _events.Send(event);
+        } else {
+            TrackFailedEvent event;
+            event.TrackUniqueId = track.GetUniqueId();
+            event.Reason = "";
+            _events.Send(event);
+        }
 
         if (!result.Success)
             _failedDownloads++;
 
         if (--_tracksRemaining == 0) {
             // Download is finished
-            DownloadEvent event;
-            event.Type = EDownloadEventType::Finished;
-            event.TrackId = "";
-            event.Progress = 1.0;
-            event.Message = "";
+            DownloadsFinishedEvent event;
             _events.Send(event);
         }
     }
-
-    //TrackDownloader::DownloadTracks(tracks, searchPlatform, directory, [&](int index, DownloadProgress p) {
-    //    std::cout << "PROGRESS >> " + std::to_string(index) + ": " + std::to_string(p.Progress) + " (" + p.Message + ")" << std::endl;
-    //}, [&](int index, DownloadResult result) {
-    //    std::cout << "RESULT >> " + std::to_string(result.Success ? 1 : 0) + ": " + result.FilePath.string() << std::endl;
-    //});
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 

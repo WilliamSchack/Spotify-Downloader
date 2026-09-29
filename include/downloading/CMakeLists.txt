@@ -4,6 +4,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/TrackDownloader.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadEvents.h
+	${CMAKE_CURRENT_SOURCE_DIR}/DownloadEventsQueue.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadProgress.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadResult.h
 )

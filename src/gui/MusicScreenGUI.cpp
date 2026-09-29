@@ -33,12 +33,27 @@ void MusicScreenGUI::CheckDownloadEvents()
     if (!_downloader.IsDownloading())
         return;
 
-    DownloadEvents& downloadEvents = _downloader.GetEvents();
-    while (std::optional<DownloadEvent> eventOpt = downloadEvents.TryGetEvent()) {
-        if (!eventOpt.has_value())
-            break;
+    DownloadEventsQueue& downloadEvents = _downloader.GetEvents();
+    while (std::optional<DownloadEvent> event = downloadEvents.TryGetEvent()) {
+        std::visit(Overloaded {
+            [&](const TrackProgressEvent& e) {
 
-        DownloadEvent event = eventOpt.value();
-        std::cout << "MAIN THREAD GOT EVENTS >> " << event.Type << " " << event.TrackId << " " << event.Progress << " " << event.Message << std::endl;
+            },
+            [&](const TrackSucceededEvent& e) {
+
+            },
+            [&](const TrackFailedEvent& e) {
+
+            },
+            [&](const DownloadStartedEvent& e) {
+
+            },
+            [&](const DownloadFailedToStartEvent& e) {
+
+            },
+            [&](const DownloadsFinishedEvent& e) {
+
+            }
+        }, event.value());
     }
 }

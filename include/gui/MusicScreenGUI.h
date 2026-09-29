@@ -1,9 +1,9 @@
 #ifndef MUSICSCREENGUI_H
 #define MUSICSCREENGUI_H
 
+#include "VariantUtils.h"
 #include "DownloadManager.h"
 #include "DownloadEvents.h"
-
 #include "AddTracksPopup.h"
 
 #include <iostream>

@@ -1,24 +1,24 @@
-#include "DownloadEvents.h"
+#include "DownloadEventsQueue.h"
 
-void DownloadEvents::Send(DownloadEvent event)
+void DownloadEventsQueue::Send(DownloadEvent event)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _events.push(event);
 }
 
-void DownloadEvents::ClearAll()
+void DownloadEventsQueue::ClearAll()
 {
     std::queue<DownloadEvent> empty;
     std::swap(_events, empty);
 }
 
-std::optional<DownloadEvent> DownloadEvents::TryGetEvent()
+std::optional<DownloadEvent> DownloadEventsQueue::TryGetEvent()
 {
     std::lock_guard<std::mutex> lock(_mutex);
     if (_events.empty())
         return std::nullopt;
 
-    DownloadEvent event = _events.front();
+    DownloadEvent event = std::move(_events.front());
     _events.pop();
 
     return event;

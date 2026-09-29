@@ -1,5 +1,5 @@
 target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadManager.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/TrackDownloader.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/DownloadEvents.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/DownloadEventsQueue.cpp
 )
