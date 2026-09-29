@@ -5,10 +5,7 @@
 
 DownloadManager::~DownloadManager()
 {
-    for (std::thread& thread : _threads) {
-        if (thread.joinable())
-            thread.join();
-    }
+    CleanupThreads();
 }
 
 DownloadEventsQueue& DownloadManager::GetEvents()
@@ -16,37 +13,56 @@ DownloadEventsQueue& DownloadManager::GetEvents()
     return _events;
 }
 
-bool DownloadManager::IsDownloading()
+bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)
 {
-    return _tracksRemaining > 0;
-}
-
-bool DownloadManager::Download(const std::string& url, const std::string& directory)
-{
-    if (IsDownloading()) {
+    if (_downloading) {
         std::cout << "This DownloadManager is already downloading, use another or wait for this to finish to start a new download" << std::endl;
         return false;
     }
 
-    // This is done on called thread, move this to another
+    CleanupThreads();
+    _downloading = true;
+    _events.ClearAll();
 
+    _threads.emplace_back([this, url, directory]() {
+        StartDownload(url, directory);
+    });
+
+    return true;
+}
+
+void DownloadManager::StartDownload(const std::string& url, const std::string& directory)
+{
     bool directoryValid = std::filesystem::exists(directory);
-    if (!directoryValid)
-        return false;
+    if (!directoryValid) {
+        _downloading = false;
+        return;
+    }
 
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
-    if (platformType == EPlatform::Unknown) return false;
+    if (platformType == EPlatform::Unknown) {
+        _downloading = false;
+        return;
+    }
 
     std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
-    if (platform == nullptr) return false;
+    if (platform == nullptr) {
+        _downloading = false;
+        return;
+    }
 
     EPlatform searchPlatform = platform->GetSearchPlatform();
-    if (searchPlatform == EPlatform::Unknown) return false;
+    if (searchPlatform == EPlatform::Unknown) {
+        _downloading = false;
+        return;
+    }
 
     // Get the tracks
     ELinkType linkType = platform->GetLinkType(url);
-    if (linkType == ELinkType::Unknown)
-        return false;
+    if (linkType == ELinkType::Unknown) {
+        _downloading = false;
+        return;
+    }
 
     std::vector<TrackData> tracks;
     switch (linkType) {
@@ -60,13 +76,16 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
             tracks = platform->GetAlbum(url).Tracks;
             break;
         default:
-            return false;
+            _downloading = false;
+            return;
     }
 
     std::cout << tracks.size() << std::endl;
 
-    if (tracks.size() == 0)
-        return false;
+    if (tracks.size() == 0){
+        _downloading = false;
+        return;
+    }
 
     // Get track distribution
     int songCount = tracks.size();
@@ -78,7 +97,6 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
     // Setup
     _tracksRemaining = songCount;
     _failedDownloads = 0;
-    _events.ClearAll();
 
     // Dispatch threads
     int currentStartIndex = 0;
@@ -97,8 +115,6 @@ bool DownloadManager::Download(const std::string& url, const std::string& direct
 
     // Have a callback when the threads are finished
     // Could wait here but it would block the main thread
-
-    return true;
 }
 
 void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
@@ -132,10 +148,21 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
             // Download is finished
             DownloadsFinishedEvent event;
             _events.Send(event);
+            _downloading = false;
         }
     }
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 
     // Figure out thread redistribution
+}
+
+void DownloadManager::CleanupThreads()
+{
+    for (std::thread& thread : _threads) {
+        if (thread.joinable())
+            thread.join();
+    }
+
+    _threads.clear();
 }

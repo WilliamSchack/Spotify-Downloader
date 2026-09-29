@@ -14,21 +14,23 @@
 #include <thread>
 #include <atomic>
 
-// Object must be alive for the duration of the download
-// otherwise the thread that created it will be blocked until the download finishes
+// Object must be alive for the duration of the download otherwise the thread that created it will be blocked until the download finishes
+// Events must also be watched for download progress and to check if it started or failed
 class DownloadManager
 {
     public:
         ~DownloadManager();
 
-        // Returns if the download started
-        bool Download(const std::string& url, const std::string& directory);
+        // Returns if the download was dispatched
+        bool RequestDownload(const std::string& url, const std::string& directory);
 
         DownloadEventsQueue& GetEvents();
-        bool IsDownloading();
     private:
+        void StartDownload(const std::string& url, const std::string& directory);
         void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
+        void CleanupThreads();
     private:
+        std::atomic<bool> _downloading = true;
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
 

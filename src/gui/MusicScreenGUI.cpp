@@ -21,7 +21,7 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
 {
     std::cout << link << " || " << destinationFolder << std::endl;
 
-    bool downloadStarted = _downloader.Download(link, destinationFolder);
+    bool downloadStarted = _downloader.RequestDownload(link, destinationFolder);
     if (!downloadStarted)
         return;
 
