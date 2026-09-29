@@ -39,6 +39,12 @@ struct TrackData
         DurationMilliseconds = ms;
         DurationSeconds = ms / 1000;
     }
+
+    std::string GetUniqueId()
+    {
+        // Id could be the same across platforms
+        return std::to_string((int)Platform) + Id;
+    }
 };
 
 inline void to_json(nlohmann::json& json, const TrackData& data)
