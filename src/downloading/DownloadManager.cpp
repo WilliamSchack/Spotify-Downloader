@@ -13,6 +13,11 @@ DownloadEventsQueue& DownloadManager::GetEvents()
     return _events;
 }
 
+bool DownloadManager::IsDownloading()
+{
+    return _downloading;
+}
+
 bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)
 {
     if (_downloading) {

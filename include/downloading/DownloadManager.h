@@ -23,6 +23,7 @@ class DownloadManager
 
         // Returns if the download was dispatched
         bool RequestDownload(const std::string& url, const std::string& directory);
+        bool IsDownloading();
 
         DownloadEventsQueue& GetEvents();
     private:
