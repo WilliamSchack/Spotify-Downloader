@@ -140,8 +140,8 @@ AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
 		std::string albumType = json["type"];
 		if      (albumType == "Album")  album.Type = EAlbumType::Album;
 		else if (albumType == "Single") album.Type = EAlbumType::Single;
-		else std::cout << "UNKNOWN ALBUM TYPE: " << json["type"] << std::endl;
-        // TODO: ADD TYPE "EP"
+        else if (albumType == "EP")     album.Type = EAlbumType::ExtendedPlay;
+		else std::cout << "UNKNOWN ALBUM TYPE: " << json << std::endl;
 	}
 
 	// Cover Art

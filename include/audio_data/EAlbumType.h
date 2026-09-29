@@ -3,8 +3,9 @@
 
 enum class EAlbumType
 {
-    Album,
     Single,
+    Album,
+    ExtendedPlay,
     Compilation
 };
 
