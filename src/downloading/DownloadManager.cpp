@@ -40,24 +40,36 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 {
     bool directoryValid = std::filesystem::exists(directory);
     if (!directoryValid) {
+        DownloadFailedToStartEvent event;
+        event.Reason = "The chosen directory is invalid";
+        _events.Send(event);
         _downloading = false;
         return;
     }
 
     EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
     if (platformType == EPlatform::Unknown) {
+        DownloadFailedToStartEvent event;
+        event.Reason = "This platform is unknown, please enter an implemented platform";
+        _events.Send(event);
         _downloading = false;
         return;
     }
 
     std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
     if (platform == nullptr) {
+        DownloadFailedToStartEvent event;
+        event.Reason = "I forgot to implement this platform... please inform me of this, thanks :)";
+        _events.Send(event);
         _downloading = false;
         return;
     }
 
     EPlatform searchPlatform = platform->GetSearchPlatform();
     if (searchPlatform == EPlatform::Unknown) {
+        DownloadFailedToStartEvent event;
+        event.Reason = "I forgot to add a search platform to this platform... please inform me of this, thanks :)";
+        _events.Send(event);
         _downloading = false;
         return;
     }
@@ -65,6 +77,9 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     // Get the tracks
     ELinkType linkType = platform->GetLinkType(url);
     if (linkType == ELinkType::Unknown) {
+        DownloadFailedToStartEvent event;
+        event.Reason = "This link type is unknown, please send this link to me so I can add it";
+        _events.Send(event);
         _downloading = false;
         return;
     }
@@ -88,6 +103,9 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     std::cout << tracks.size() << std::endl;
 
     if (tracks.size() == 0){
+        DownloadFailedToStartEvent event;
+        event.Reason = "This link returned 0 tracks";
+        _events.Send(event);
         _downloading = false;
         return;
     }
@@ -118,8 +136,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         currentStartIndex += currentSongCount;
     }
 
-    // Have a callback when the threads are finished
-    // Could wait here but it would block the main thread
+    _events.Send(DownloadStartedEvent());
 }
 
 void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)

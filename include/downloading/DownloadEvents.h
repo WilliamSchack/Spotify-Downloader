@@ -30,7 +30,10 @@ struct DownloadStartedEvent
     std::vector<TrackData> Tracks;
 };
 
-struct DownloadFailedToStartEvent {};
+struct DownloadFailedToStartEvent
+{
+    std::string Reason;
+};
 
 struct DownloadsFinishedEvent {};
 
