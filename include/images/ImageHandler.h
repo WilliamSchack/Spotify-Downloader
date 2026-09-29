@@ -20,7 +20,7 @@ class ImageHandler
         static EImageFormat GetImageFormat(const std::filesystem::path& path);
         static EImageFormat GetImageFormat(const NetworkResponse& response);
 
-        static bool SaveImage(const std::filesystem::path& pathNoExtension, const Image& image);
+        static std::filesystem::path SaveImage(const std::filesystem::path& pathNoExtension, const Image& image);
         static bool SavePng(const std::filesystem::path& path, const Image& image);
         static bool SaveJpg(const std::filesystem::path& path, const Image& image, const int& quality = 100);
 

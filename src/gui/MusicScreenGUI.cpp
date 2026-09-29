@@ -44,6 +44,9 @@ void MusicScreenGUI::CheckDownloadEvents()
             [&](const TrackProgressEvent& e) {
 
             },
+            [&](const TrackCoverArtDownloadedEvent& e) {
+                _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
+            },
             [&](const TrackSucceededEvent& e) {
                 
             },

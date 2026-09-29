@@ -14,6 +14,12 @@ struct TrackProgressEvent
     std::string Message;
 };
 
+struct TrackCoverArtDownloadedEvent
+{
+    std::string TrackUniqueId;
+    std::filesystem::path FilePath;
+};
+
 struct TrackSucceededEvent
 {
     std::string TrackUniqueId;
@@ -39,6 +45,7 @@ struct DownloadsFinishedEvent {};
 
 using DownloadEvent = std::variant<
     TrackProgressEvent,
+    TrackCoverArtDownloadedEvent,
     TrackSucceededEvent,
     TrackFailedEvent,
     DownloadStartedEvent,

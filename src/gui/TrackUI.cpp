@@ -2,12 +2,7 @@
 
 TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data)
 {
-    std::filesystem::path coverArtPath = TemporaryPaths::FindExistingTrackImagePath(data);
-    if (coverArtPath.empty())
-        return;
-
-    QString coverArtPathString = QString::fromStdString(FileUtils::PathToUtf8(coverArtPath));
-    _coverArtUrl = QUrl::fromLocalFile(coverArtPathString).toString();
+    FindCoverArtUrl();
 }
 
 int TrackUI::GetTrackNumber() const
@@ -43,6 +38,23 @@ float TrackUI::GetProgress() const
 QString TrackUI::GetStatus() const
 {
     return _status;
+}
+
+void TrackUI::SetCoverArtUrl(const std::filesystem::path& path)
+{
+    QString pathString = QString::fromStdString(FileUtils::PathToUtf8(path));
+    _coverArtUrl = QUrl::fromLocalFile(pathString).toString();
+
+    emit CoverArtUrlChanged();
+}
+
+void TrackUI::FindCoverArtUrl()
+{
+    std::filesystem::path path = TemporaryPaths::FindExistingTrackImagePath(_data);
+    if (path.empty())
+        return;
+
+    SetCoverArtUrl(path);
 }
 
 void TrackUI::SetProgress(float progress)

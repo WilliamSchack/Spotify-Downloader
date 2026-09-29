@@ -48,15 +48,20 @@ EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
     return EImageFormat::Unknown;
 }
 
-bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const Image& image)
+std::filesystem::path ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const Image& image)
 {
     std::filesystem::path path = FileUtils::PathToUtf8(pathNoExtension) + "." + GetImageFormatString(image.Format);
-    if (image.Format == EImageFormat::PNG) return SavePng(path, image);
-    if (image.Format == EImageFormat::JPG) return SaveJpg(path, image);
+    
+    bool imageSaved = false;
+    if (image.Format == EImageFormat::PNG) imageSaved = SavePng(path, image);
+    if (image.Format == EImageFormat::JPG) imageSaved = SaveJpg(path, image);
 
-    std::cout << "Unable to save image, format is not implemented" << std::endl;
+    if (!imageSaved) {
+        std::cout << "Unable to save image, format is not implemented" << std::endl;
+        return {};
+    }
 
-    return false;
+    return path;
 }
 
 bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image)

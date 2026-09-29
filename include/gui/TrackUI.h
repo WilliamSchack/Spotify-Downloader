@@ -6,6 +6,8 @@
 #include "MathUtils.h"
 #include "TemporaryPaths.h"
 
+#include <filesystem>
+
 #include <QObject>
 #include <QUrl>
 
@@ -16,7 +18,7 @@ class TrackUI : public QObject
     Q_PROPERTY(QString name READ GetName CONSTANT)
     Q_PROPERTY(QString artistNames READ GetArtistNames CONSTANT)
     Q_PROPERTY(QString albumName READ GetAlbumName CONSTANT)
-    Q_PROPERTY(QString coverArtUrl READ GetCoverArtUrl CONSTANT)
+    Q_PROPERTY(QString coverArtUrl READ GetCoverArtUrl NOTIFY CoverArtUrlChanged)
     Q_PROPERTY(float progress READ GetProgress NOTIFY ProgressChanged)
     Q_PROPERTY(QString status READ GetStatus NOTIFY StatusChanged)
 
@@ -32,6 +34,9 @@ class TrackUI : public QObject
         float GetProgress() const;
         QString GetStatus() const;
 
+        void SetCoverArtUrl(const std::filesystem::path& path);
+        void FindCoverArtUrl();
+
         void SetProgress(float progress);
         void SetStatus(const std::string& status);
     private:
@@ -41,6 +46,7 @@ class TrackUI : public QObject
         float _progress = 0.0f;
         QString _status = "";
     signals:
+        void CoverArtUrlChanged();
         void ProgressChanged();
         void StatusChanged();
 };

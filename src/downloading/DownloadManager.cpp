@@ -153,6 +153,11 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
             event.Progress = p.Progress;
             event.Message = p.Message;
             _events.Send(event);
+        }, [&](std::filesystem::path coverArtPath) {
+            TrackCoverArtDownloadedEvent event;
+            event.TrackUniqueId = track.GetUniqueId();
+            event.FilePath = coverArtPath;
+            _events.Send(event);
         });
 
         if (result.Success) {
