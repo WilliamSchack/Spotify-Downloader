@@ -78,7 +78,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     ELinkType linkType = platform->GetLinkType(url);
     if (linkType == ELinkType::Unknown) {
         DownloadFailedToStartEvent event;
-        event.Reason = "This link type is unknown, please send this link to me so I can add it";
+        event.Reason = "Could not get the link type, please send this link to me so I can add it";
         _events.Send(event);
         _downloading = false;
         return;
@@ -96,11 +96,12 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
             tracks = platform->GetAlbum(url).Tracks;
             break;
         default:
+            DownloadFailedToStartEvent event;
+            event.Reason = "I forgot to implement this link type... please inform me of this, thanks :)";
+            _events.Send(event);
             _downloading = false;
             return;
     }
-
-    std::cout << tracks.size() << std::endl;
 
     if (tracks.size() == 0){
         DownloadFailedToStartEvent event;
@@ -136,7 +137,9 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         currentStartIndex += currentSongCount;
     }
 
-    _events.Send(DownloadStartedEvent());
+    DownloadStartedEvent startedEvent;
+    startedEvent.Tracks = std::move(tracks);
+    _events.Send(startedEvent);
 }
 
 void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
