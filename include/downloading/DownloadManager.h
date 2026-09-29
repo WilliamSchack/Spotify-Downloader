@@ -31,7 +31,7 @@ class DownloadManager
         void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
         void CleanupThreads();
     private:
-        std::atomic<bool> _downloading = true;
+        std::atomic<bool> _downloading = false;
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
 

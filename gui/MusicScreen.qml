@@ -188,16 +188,32 @@ Rectangle {
                 }
 
                 // Tracks
-                ColumnLayout {
+                ListView {
+                    id: trackList
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    clip: true
                     spacing: 0
 
-                    Repeater {
-                        model: 3
-                        Track {}
+                    model: _manager.music.tracks
+
+                    delegate: Track {
+                        required property QtObject modelData
+                        trackData: modelData
+                        width: ListView.view.width
                     }
                 }
+
+                //ColumnLayout {
+                //    Layout.fillWidth: true
+                //    Layout.fillHeight: true
+                //    spacing: 0
+//
+                //    Repeater {
+                //        model: 3
+                //        Track {}
+                //    }
+                //}
 
                 Rectangle { Layout.fillHeight: true }
             }

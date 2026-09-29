@@ -17,15 +17,20 @@ AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
     return _addTracksPopup;
 }
 
+QList<QObject*> MusicScreenGUI::GetTracks() const
+{
+    return _tracks;
+}
+
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
     std::cout << link << " || " << destinationFolder << std::endl;
 
-    bool downloadStarted = _downloader.RequestDownload(link, destinationFolder);
-    if (!downloadStarted)
+    bool downloadDispatched = _downloader.RequestDownload(link, destinationFolder);
+    if (!downloadDispatched)
         return;
 
-    _addTracksPopup->SetVisible(false);
+    //_addTracksPopup->SetVisible(false);
 }
 
 void MusicScreenGUI::CheckDownloadEvents()
@@ -40,16 +45,32 @@ void MusicScreenGUI::CheckDownloadEvents()
 
             },
             [&](const TrackSucceededEvent& e) {
-
+                
             },
             [&](const TrackFailedEvent& e) {
 
             },
             [&](const DownloadStartedEvent& e) {
+                // Remove old tracks
+                for (QObject* oldTrack : _tracks)
+                    oldTrack->deleteLater();
+                    
+                _tracks.clear();
+                _tracksFromId.clear();
 
+                // Add new tracks
+                for (const TrackData& trackData : e.Tracks) {
+                    TrackUI* trackUI = new TrackUI(trackData, this);
+                    _tracks.push_back(trackUI);
+                    _tracksFromId.insert({trackData.GetUniqueId(), trackUI});
+                }
+
+                emit TracksChanged();
+                
+                _addTracksPopup->SetVisible(false);
             },
             [&](const DownloadFailedToStartEvent& e) {
-
+                // Show error popup
             },
             [&](const DownloadsFinishedEvent& e) {
 

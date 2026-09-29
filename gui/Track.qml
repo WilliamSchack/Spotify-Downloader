@@ -2,9 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 
 Rectangle {
-    Layout.fillWidth: true
-    Layout.minimumHeight: 40
+    id: root
 
+    required property QtObject trackData
+    
+    height: 40
     color: "transparent"
 
     Row {
@@ -17,7 +19,7 @@ Rectangle {
             height: parent.height
             Text {
                 anchors.centerIn: parent
-                text: "1"
+                text: root.trackData.trackNumber
                 color: "white"
                 font.pixelSize: 12
             }
@@ -42,14 +44,14 @@ Rectangle {
                 Column {
                     // Title
                     Text {
-                        text: "no complaints"
+                        text: root.trackData.name
                         color: "white"
                         font.pixelSize: 14
                     }
 
                     // Artist
                     Text {
-                        text: "BONESAW"
+                        text: root.trackData.artistNames
                         color: "white"
                         font.pixelSize: 12
                     }
@@ -64,7 +66,7 @@ Rectangle {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
 
-                text: "no complaints"
+                text: root.trackData.albumName
                 color: "white"
                 font.pixelSize: 14
             }

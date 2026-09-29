@@ -25,9 +25,9 @@ bool DownloadManager::RequestDownload(const std::string& url, const std::string&
         return false;
     }
 
-    CleanupThreads();
     _downloading = true;
     _events.ClearAll();
+    CleanupThreads();
 
     _threads.emplace_back([this, url, directory]() {
         StartDownload(url, directory);

@@ -30,14 +30,14 @@ class TrackUI : public QObject
 
         void SetProgress(float progress);
         void SetStatus(const std::string& status);
-    signals:
-        void ProgressChanged();
-        void StatusChanged();
     private:
         TrackData _data;
 
         float _progress = 0.0f;
         QString _status = "";
+    signals:
+        void ProgressChanged();
+        void StatusChanged();
 };
 
 #endif
