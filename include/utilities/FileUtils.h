@@ -28,6 +28,8 @@ class FileUtils
         static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
 
         static std::filesystem::path GetExecutablePath();
+
+        static std::filesystem::path FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName);
     private:
         inline static const std::string INVALID_FILE_CHARS = R"(<>:"/\|?*)";
 };

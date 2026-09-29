@@ -78,3 +78,19 @@ std::filesystem::path FileUtils::GetExecutablePath()
     return std::filesystem::path(buffer);
 #endif
 }
+
+std::filesystem::path FileUtils::FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName)
+{
+    if (!std::filesystem::exists(directory))
+        return {};
+
+    for (const std::filesystem::directory_entry& file : std::filesystem::directory_iterator(directory)) {
+        if (!file.is_regular_file())
+            continue;
+
+        if (file.path().stem() == fileName)
+            return file.path();
+    }
+
+    return {};
+}

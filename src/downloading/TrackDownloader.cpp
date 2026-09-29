@@ -41,11 +41,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::cout << "Getting Cover Art..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 
-    std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePath(track);
-    
+    std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePathNoExtension(track);
+    std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
+
     Image image;
-    if (std::filesystem::exists(imageFilePath)) {
-        image = ImageHandler::LoadImage(imageFilePath);
+    if (!existingImageFilePath.empty()) {
+        image = ImageHandler::LoadImage(existingImageFilePath);
     } else {
         image = ImageHandler::DownloadImage(track.Album.ImageUrl);
         ImageHandler::SaveImage(imageFilePath, image);

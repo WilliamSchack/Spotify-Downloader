@@ -29,7 +29,7 @@ class ImageHandler
 
         static std::vector<unsigned char> EncodeImage(const Image& image);
     private:
-        static FILE* GetFile(const std::filesystem::path& path);
+        static FILE* GetFile(const std::filesystem::path& path, const std::string& mode);
         static void WriteToFile(void* ctx, void* data, int size);
 };
 

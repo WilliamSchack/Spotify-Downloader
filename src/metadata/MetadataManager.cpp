@@ -105,6 +105,16 @@ void MetadataManager::SetCoverImage(const Image& image)
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
     const char* tagId = GetTagId(EMetadataTag::CoverImage);
 
+    std::string mimeType = "";
+    switch (image.Format) {
+        case EImageFormat::PNG:
+            mimeType = "image/png";
+            break;
+        case EImageFormat::JPG:
+            mimeType = "image/jpeg";
+            break;
+    }
+
     // Cover art override
     if (_codec->SetCoverArt(_fileRef, taglibImage))
         return;
@@ -113,7 +123,7 @@ void MetadataManager::SetCoverImage(const Image& image)
         case EMetadataType::ID3V2: {
             TagLib::ID3v2::AttachedPictureFrame* picFrame = new TagLib::ID3v2::AttachedPictureFrame();
             picFrame->setPicture(taglibImage);
-            picFrame->setMimeType("image/png");
+            picFrame->setMimeType(mimeType);
             picFrame->setType(TagLib::ID3v2::AttachedPictureFrame::FrontCover);
 
             dynamic_cast<TagLib::ID3v2::Tag*>(fileTag)->addFrame(picFrame);
@@ -129,7 +139,7 @@ void MetadataManager::SetCoverImage(const Image& image)
         } case EMetadataType::XIPH: {
             TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
 				coverArt->setData(taglibImage);
-				coverArt->setMimeType("image/png");
+				coverArt->setMimeType(mimeType);
 				coverArt->setType(TagLib::FLAC::Picture::Type::FrontCover);
 
             dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addPicture(coverArt);

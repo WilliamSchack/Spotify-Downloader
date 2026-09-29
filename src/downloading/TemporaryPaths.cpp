@@ -34,10 +34,10 @@ std::filesystem::path TemporaryPaths::GetTrackDownloadPath(const TrackData& trac
     std::string fileName = track.GetUniqueId() + "." + codec.GetString();
     fileName = FileUtils::ValidateFileName(fileName);
 
-    return tempDownloadsFolder / FileUtils::PathToUtf8(fileName);
+    return tempDownloadsFolder / FileUtils::PathFromUtf8(fileName);
 }
 
-std::filesystem::path TemporaryPaths::GetTrackImagePath(const TrackData& track)
+std::filesystem::path TemporaryPaths::GetTrackImagePathNoExtension(const TrackData& track)
 {
     std::filesystem::path tempImagesFolder = GetImagesDir();
 
@@ -45,4 +45,10 @@ std::filesystem::path TemporaryPaths::GetTrackImagePath(const TrackData& track)
     imageFileName = FileUtils::ValidateFileName(imageFileName);
 
     return tempImagesFolder / FileUtils::PathFromUtf8(imageFileName);
+}
+
+std::filesystem::path TemporaryPaths::FindExistingTrackImagePath(const TrackData& track)
+{
+    std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePathNoExtension(track);
+    return FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
 }

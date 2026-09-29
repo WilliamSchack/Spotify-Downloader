@@ -61,7 +61,7 @@ bool ImageHandler::SaveImage(const std::filesystem::path& pathNoExtension, const
 
 bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image)
 {
-    FILE* file = GetFile(path);
+    FILE* file = GetFile(path, "wb");
     if (!file) return false;
 
     int result = stbi_write_png_to_func(
@@ -80,7 +80,7 @@ bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image
 
 bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image, const int& quality)
 {
-    FILE* file = GetFile(path);
+    FILE* file = GetFile(path, "wb");
     if (!file) return false;
 
     int result = stbi_write_jpg_to_func(
@@ -101,7 +101,7 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
 {
     Image image;
 
-    FILE* file = GetFile(path);
+    FILE* file = GetFile(path, "rb");
     if (!file) return image;
 
     image.Format = GetImageFormat(path);
@@ -180,9 +180,9 @@ std::vector<unsigned char> ImageHandler::EncodeImage(const Image& image)
     return buffer;
 }
 
-FILE* ImageHandler::GetFile(const std::filesystem::path& path)
+FILE* ImageHandler::GetFile(const std::filesystem::path& path, const std::string& mode)
 {
-    return FileUtils::OpenFile(path, "wb");
+    return FileUtils::OpenFile(path, mode);
 }
 
 void ImageHandler::WriteToFile(void* ctx, void* data, int size)
