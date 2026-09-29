@@ -114,8 +114,8 @@ Rectangle {
             QtObject {
                 id: columnWidths
                 property real number: 30
-                property real title: 200
-                property real album: 200
+                property real title: 350
+                property real album: 350
                 property real sources: 100
             }
 
@@ -200,6 +200,7 @@ Rectangle {
                     delegate: Track {
                         required property QtObject modelData
                         trackData: modelData
+                        columnWidths: columnWidths
                         width: ListView.view.width
                     }
                 }

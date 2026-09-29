@@ -5,6 +5,7 @@ Rectangle {
     id: root
 
     required property QtObject trackData
+    required property QtObject columnWidths
     
     height: 40
     color: "transparent"
@@ -15,7 +16,7 @@ Rectangle {
 
         // Number
         Item {
-            width: columnWidths.number
+            width: root.columnWidths.number
             height: parent.height
             Text {
                 anchors.centerIn: parent
@@ -27,7 +28,7 @@ Rectangle {
 
         // Title / Artist
         Item {
-            width: columnWidths.title
+            width: root.columnWidths.title
             height: parent.height
             
             Row {
@@ -61,7 +62,7 @@ Rectangle {
 
         // Album
         Item {
-            width: columnWidths.album
+            width: root.columnWidths.album
             height: parent.height
             Text {
                 anchors.verticalCenter: parent.verticalCenter
@@ -74,7 +75,7 @@ Rectangle {
 
         // Sources
         Item {
-            width: columnWidths.sources
+            width: root.columnWidths.sources
             height: parent.height
 
             Row {
