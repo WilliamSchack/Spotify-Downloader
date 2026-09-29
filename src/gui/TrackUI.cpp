@@ -43,9 +43,10 @@ void TrackUI::SetProgress(float progress)
 
 void TrackUI::SetStatus(const std::string& status)
 {
-    if (status == _status)
+    QString qStatus = QString::fromStdString(status);
+    if (qStatus == _status)
         return;
 
-    _status = QString::fromStdString(status);
+    _status = qStatus;
     emit StatusChanged();
 }
