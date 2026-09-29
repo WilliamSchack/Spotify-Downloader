@@ -34,6 +34,12 @@ struct AlbumData
         Artists = std::vector<ArtistData>();
         Artists.push_back(artist);
     }
+
+    std::string GetUniqueId() const
+    {
+        // Id could be the same across platforms
+        return std::to_string((int)Platform) + Id;
+    }
 };
 
 inline void to_json(nlohmann::json& json, const AlbumData& data)

@@ -18,14 +18,6 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     //       Just getting it working at the moment
 
     // == Get paths
-    std::filesystem::path tempFolder = std::filesystem::temp_directory_path() / APP_NAME;
-    if (!std::filesystem::exists(tempFolder))
-        std::filesystem::create_directory(tempFolder);
-
-    std::filesystem::path downloadsFolder = tempFolder / DOWNLOADS_FOLDER_NAME;
-    if (!std::filesystem::exists(downloadsFolder))
-        std::filesystem::create_directory(downloadsFolder);
-
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
 
     std::string fileName = track.Name + " - " + track.Artists[0].Name + "." + targetCodec->GetString();
@@ -37,7 +29,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     FilePathReserver pathReserver;
     targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
 
-    std::filesystem::path tempDownloadPath = downloadsFolder / targetDownloadPath.stem();
+    std::filesystem::path tempDownloadPath = TemporaryPaths::GetTrackDownloadPath(track, *targetCodec);
 
     result.FilePath = targetDownloadPath;
 
@@ -45,20 +37,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
 
     // == Get cover art
-    // TODO: Make sure it only saves one cover art per album
 
     std::cout << "Getting Cover Art..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 
-    std::filesystem::path imagesFolder = tempFolder / IMAGES_FOLDER_NAME;
-    if (!std::filesystem::exists(imagesFolder))
-        std::filesystem::create_directory(imagesFolder);
-
-    std::string imageFileName = track.Album.Name + "(" + track.Artists[0].Name + ")_Cover";
-    imageFileName = FileUtils::ValidateFileName(imageFileName);
-
-    std::filesystem::path imageFilePath = imagesFolder / FileUtils::PathFromUtf8(imageFileName);
-
+    std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePath(track);
+    
     Image image;
     if (std::filesystem::exists(imageFilePath)) {
         image = ImageHandler::LoadImage(imageFilePath);
