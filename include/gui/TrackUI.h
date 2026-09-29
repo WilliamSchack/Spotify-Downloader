@@ -4,8 +4,10 @@
 #include "TrackData.h"
 #include "MetadataManager.h"
 #include "MathUtils.h"
+#include "TemporaryPaths.h"
 
 #include <QObject>
+#include <QUrl>
 
 class TrackUI : public QObject
 {
@@ -14,6 +16,7 @@ class TrackUI : public QObject
     Q_PROPERTY(QString name READ GetName CONSTANT)
     Q_PROPERTY(QString artistNames READ GetArtistNames CONSTANT)
     Q_PROPERTY(QString albumName READ GetAlbumName CONSTANT)
+    Q_PROPERTY(QString coverArtUrl READ GetCoverArtUrl CONSTANT)
     Q_PROPERTY(float progress READ GetProgress NOTIFY ProgressChanged)
     Q_PROPERTY(QString status READ GetStatus NOTIFY StatusChanged)
 
@@ -24,7 +27,8 @@ class TrackUI : public QObject
         QString GetName() const;
         QString GetArtistNames() const;
         QString GetAlbumName() const;
-        
+        QString GetCoverArtUrl() const;
+
         float GetProgress() const;
         QString GetStatus() const;
 
@@ -32,6 +36,7 @@ class TrackUI : public QObject
         void SetStatus(const std::string& status);
     private:
         TrackData _data;
+        QString _coverArtUrl = "";
 
         float _progress = 0.0f;
         QString _status = "";

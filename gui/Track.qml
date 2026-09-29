@@ -35,11 +35,16 @@ Rectangle {
                 spacing: 10
 
                 // Cover Art
-                Rectangle {
-                    anchors.verticalCenter: parent.verticalCenter
+                Image {
                     width: 30
                     height: width
-                    radius: 4
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    source: root.trackData.coverArtUrl
+                    sourceSize.width: width * 2
+                    sourceSize.height: height * 2
+                    asynchronous: true
+                    fillMode: Image.PreserveAspectCrop
                 }
 
                 Column {

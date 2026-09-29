@@ -1,6 +1,14 @@
 #include "TrackUI.h"
 
-TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data) {}
+TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data)
+{
+    std::filesystem::path coverArtPath = TemporaryPaths::FindExistingTrackImagePath(data);
+    if (coverArtPath.empty())
+        return;
+
+    QString coverArtPathString = QString::fromStdString(FileUtils::PathToUtf8(coverArtPath));
+    _coverArtUrl = QUrl::fromLocalFile(coverArtPathString).toString();
+}
 
 int TrackUI::GetTrackNumber() const
 {
@@ -20,6 +28,11 @@ QString TrackUI::GetArtistNames() const
 QString TrackUI::GetAlbumName() const
 {
     return QString::fromStdString(_data.Album.Name);
+}
+
+QString TrackUI::GetCoverArtUrl() const
+{
+    return _coverArtUrl;
 }
 
 float TrackUI::GetProgress() const
