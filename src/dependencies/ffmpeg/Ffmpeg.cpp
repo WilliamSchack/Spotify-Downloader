@@ -82,6 +82,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     std::vector<std::string> args {
         "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-y",
         "-progress", "-",
         "-nostats",
         targetCodec->GetFfmpegConversionParams()
@@ -119,6 +120,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     // Normalise
     std::vector<std::string> args {
         "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-y",
         "-progress", "-",
         "-nostats",
         "-af", "volume=" + std::to_string(dbDifference) + "dB"
@@ -156,6 +158,7 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     Execute(audioDetails, {
         "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-y",
         "-progress", "-",
         "-nostats",
         "-b:a", std::to_string(bitrate) + "k",

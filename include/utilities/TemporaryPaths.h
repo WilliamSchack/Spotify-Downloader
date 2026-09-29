@@ -11,7 +11,7 @@ class TemporaryPaths
         static std::filesystem::path GetTempDir();
         static std::filesystem::path GetDownloadsDir();
         static std::filesystem::path GetImagesDir();
-        static std::filesystem::path GetTrackDownloadPath(const TrackData& track, const ICodec& codec);
+        static std::filesystem::path GetTrackDownloadPathNoExtension(const TrackData& track);
         static std::filesystem::path GetTrackImagePathNoExtension(const TrackData& track);
         static std::filesystem::path FindExistingTrackImagePath(const TrackData& track);
     private:

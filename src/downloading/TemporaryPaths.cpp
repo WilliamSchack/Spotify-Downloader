@@ -27,11 +27,11 @@ std::filesystem::path TemporaryPaths::GetImagesDir()
     return imagesFolder;
 }
 
-std::filesystem::path TemporaryPaths::GetTrackDownloadPath(const TrackData& track, const ICodec& codec)
+std::filesystem::path TemporaryPaths::GetTrackDownloadPathNoExtension(const TrackData& track)
 {
     std::filesystem::path tempDownloadsFolder = GetDownloadsDir();
 
-    std::string fileName = track.GetUniqueId() + "." + codec.GetString();
+    std::string fileName = track.GetUniqueId();
     fileName = FileUtils::ValidateFileName(fileName);
 
     return tempDownloadsFolder / FileUtils::PathFromUtf8(fileName);

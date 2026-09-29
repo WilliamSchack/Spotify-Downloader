@@ -29,7 +29,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     FilePathReserver pathReserver;
     targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
 
-    std::filesystem::path tempDownloadPath = TemporaryPaths::GetTrackDownloadPath(track, *targetCodec);
+    std::filesystem::path tempDownloadPath = TemporaryPaths::GetTrackDownloadPathNoExtension(track);
 
     result.FilePath = targetDownloadPath;
 
