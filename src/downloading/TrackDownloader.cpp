@@ -37,7 +37,6 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
 
     // == Get cover art
-
     std::cout << "Getting Cover Art..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 

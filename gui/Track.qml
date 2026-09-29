@@ -31,14 +31,15 @@ Rectangle {
             width: root.columnWidths.title
             height: parent.height
             
-            Row {
+            RowLayout {
+                width: parent.width
                 spacing: 10
 
                 // Cover Art
                 Image {
-                    width: 30
-                    height: width
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.preferredWidth: 30
+                    Layout.preferredHeight: 30
+                    Layout.alignment: Qt.AlignVCenter
 
                     source: root.trackData.coverArtUrl
                     sourceSize.width: width * 2
@@ -48,18 +49,27 @@ Rectangle {
                 }
 
                 Column {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
                     // Title
                     Text {
+                        width: parent.width
+                        rightPadding: 20
                         text: root.trackData.name
                         color: "white"
                         font.pixelSize: 14
+                        elide: Text.ElideRight
                     }
 
                     // Artist
                     Text {
+                        width: parent.width
+                        rightPadding: 20
                         text: root.trackData.artistNames
                         color: "white"
                         font.pixelSize: 12
+                        elide: Text.ElideRight
                     }
                 }
             }
@@ -70,11 +80,14 @@ Rectangle {
             width: root.columnWidths.album
             height: parent.height
             Text {
+                width: parent.width
                 anchors.verticalCenter: parent.verticalCenter
+                rightPadding: 20
 
                 text: root.trackData.albumName
                 color: "white"
                 font.pixelSize: 14
+                elide: Text.ElideRight
             }
         }
 

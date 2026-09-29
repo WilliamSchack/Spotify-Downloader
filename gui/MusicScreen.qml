@@ -204,19 +204,6 @@ Rectangle {
                         width: ListView.view.width
                     }
                 }
-
-                //ColumnLayout {
-                //    Layout.fillWidth: true
-                //    Layout.fillHeight: true
-                //    spacing: 0
-//
-                //    Repeater {
-                //        model: 3
-                //        Track {}
-                //    }
-                //}
-
-                Rectangle { Layout.fillHeight: true }
             }
         }
     }
