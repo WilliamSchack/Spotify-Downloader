@@ -79,7 +79,7 @@ Window
 
                     Layout.fillHeight: true
 
-                    onClicked: switchScreen(Main.EScreen.Main)
+                    onClicked: root.switchScreen(Main.EScreen.Main)
                 }
 
                 CustomButton {
@@ -89,7 +89,7 @@ Window
 
                     Layout.fillHeight: true
 
-                    onClicked: switchScreen(Main.EScreen.Info)
+                    onClicked: root.switchScreen(Main.EScreen.Info)
                 }
 
                 CustomButton {
@@ -99,7 +99,7 @@ Window
 
                     Layout.fillHeight: true
 
-                    onClicked: switchScreen(Main.EScreen.Settings)
+                    onClicked: root.switchScreen(Main.EScreen.Settings)
                 }
 
                 CustomButton {
@@ -109,7 +109,7 @@ Window
 
                     Layout.fillHeight: true
 
-                    onClicked: popup.visible = true
+                    onClicked: addTracksPopups.visible = true
                 }
 
                 // Space

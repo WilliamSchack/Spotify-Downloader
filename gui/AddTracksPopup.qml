@@ -91,7 +91,7 @@ Rectangle {
                     TextField {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        placeholderText: qsTr("Select a Save Location ...")
+                        placeholderText: qsTr("Select a Save Location...")
                         font.pixelSize: 18
 
                         verticalAlignment: TextInput.AlignVCenter

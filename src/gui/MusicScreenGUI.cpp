@@ -29,8 +29,6 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
     bool downloadDispatched = _downloader.RequestDownload(link, destinationFolder);
     if (!downloadDispatched)
         return;
-
-    //_addTracksPopup->SetVisible(false);
 }
 
 void MusicScreenGUI::CheckDownloadEvents()
@@ -42,16 +40,16 @@ void MusicScreenGUI::CheckDownloadEvents()
     while (std::optional<DownloadEvent> event = downloadEvents.TryGetEvent()) {
         std::visit(Overloaded {
             [&](const TrackProgressEvent& e) {
-
+                _tracksFromId[e.TrackUniqueId]->SetProgress(e.Progress);
             },
             [&](const TrackCoverArtDownloadedEvent& e) {
                 _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
             },
             [&](const TrackSucceededEvent& e) {
-                
+                _tracksFromId[e.TrackUniqueId]->SetProgress(1.0);
             },
             [&](const TrackFailedEvent& e) {
-
+                _tracksFromId[e.TrackUniqueId]->SetProgress(1.0);
             },
             [&](const DownloadStartedEvent& e) {
                 // Remove old tracks
