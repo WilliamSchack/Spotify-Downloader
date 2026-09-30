@@ -122,6 +122,10 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     _tracksRemaining = songCount;
     _failedDownloads = 0;
 
+    DownloadStartedEvent startedEvent;
+    startedEvent.Tracks = tracks;
+    _events.Send(startedEvent);
+
     // Dispatch threads
     int currentStartIndex = 0;
     for (int i = 0; i < threadCount; i++) {
@@ -136,10 +140,6 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 
         currentStartIndex += currentSongCount;
     }
-
-    DownloadStartedEvent startedEvent;
-    startedEvent.Tracks = std::move(tracks);
-    _events.Send(startedEvent);
 }
 
 void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
