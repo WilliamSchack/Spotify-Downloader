@@ -116,6 +116,7 @@ Rectangle {
                 property real number: 30
                 property real title: 350
                 property real album: 350
+                property real downloadStatus: 200
                 property real sources: 100
             }
 
@@ -167,6 +168,19 @@ Rectangle {
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: "Album"
+                                color: "white"
+                                font.pixelSize: 14
+                            }
+                        }
+
+                        // Download Status
+                        Item {
+                            width: columnWidths.downloadStatus
+                            height: parent.height
+                            
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Download Status"
                                 color: "white"
                                 font.pixelSize: 14
                             }

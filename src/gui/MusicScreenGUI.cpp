@@ -40,16 +40,22 @@ void MusicScreenGUI::CheckDownloadEvents()
     while (std::optional<DownloadEvent> event = downloadEvents.TryGetEvent()) {
         std::visit(Overloaded {
             [&](const TrackProgressEvent& e) {
-                _tracksFromId[e.TrackUniqueId]->SetProgress(e.Progress);
+                TrackUI* track = _tracksFromId[e.TrackUniqueId];
+                track->SetProgress(e.Progress);
+                track->SetStatus(e.Message);
             },
             [&](const TrackCoverArtDownloadedEvent& e) {
                 _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
             },
             [&](const TrackSucceededEvent& e) {
-                _tracksFromId[e.TrackUniqueId]->SetProgress(1.0);
+                TrackUI* track = _tracksFromId[e.TrackUniqueId];
+                track->SetProgress(1.0);
+                track->SetStatus("Download Succeeded!");
             },
             [&](const TrackFailedEvent& e) {
-                _tracksFromId[e.TrackUniqueId]->SetProgress(1.0);
+                TrackUI* track = _tracksFromId[e.TrackUniqueId];
+                track->SetProgress(1.0);
+                track->SetStatus(e.Reason);
             },
             [&](const DownloadStartedEvent& e) {
                 // Remove old tracks

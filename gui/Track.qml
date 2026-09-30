@@ -107,6 +107,22 @@ Rectangle {
             }
         }
 
+        // Download Status
+        Item {
+            width: root.columnWidths.downloadStatus
+            height: parent.height
+            Text {
+                width: parent.width
+                anchors.verticalCenter: parent.verticalCenter
+                rightPadding: 20
+
+                text: root.trackData.status
+                color: "white"
+                font.pixelSize: 14
+                elide: Text.ElideRight
+            }
+        }
+
         // Sources
         Item {
             width: root.columnWidths.sources
