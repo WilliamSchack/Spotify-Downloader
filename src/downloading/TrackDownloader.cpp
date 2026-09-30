@@ -19,6 +19,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // == Get paths
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
+    if (targetCodec == nullptr) {
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CODEC_EXTENSION) + "), please inform me of this error";
+        return result;
+    }
 
     std::string fileName = track.Name + " - " + track.Artists[0].Name + "." + targetCodec->GetString();
     fileName = FileUtils::ValidateFileName(fileName);
@@ -33,8 +37,13 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     result.FilePath = targetDownloadPath;
 
-    if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
+    if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath)) {
+        std::cout << "Not downloading as it already exists: " << track.Name << std::endl;
+
+        // Showing as a success since its already downloaded
+        result.Success = true;
         return result;
+    }
 
     // == Get cover art
     std::cout << "Getting Cover Art..." << std::endl;
@@ -73,9 +82,14 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
         if (searchResult.Data.Platform == EPlatform::Unknown) {
             std::cout << "Could not find track: " << track.Name << std::endl;
+
+            // TODO: Insert which search platform
+            result.FailReason = "Track cannot be found on the search platform";
             return result;
         }
     }
+
+    // TODO: Check for youtube flagging your ip
 
     // == Download 
     std::cout << "Downloading..." << std::endl;
@@ -90,6 +104,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // TODO: Handle errors properly
     if (downloadResult.Error.Error != EYtdlpError::None) {
         std::cout << downloadResult.Error.Details << std::endl;
+        result.FailReason = downloadResult.Error.Details;
         return result;
     }
 
@@ -97,8 +112,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::cout << "Converting..." << std::endl;
 
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
-    if (targetCodec == nullptr) return result;
-    if (downloadedCodec == nullptr) return result;
+    if (downloadedCodec == nullptr) {
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CODEC_EXTENSION) + "), please inform me of this error";
+        return result;
+    }
 
     if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
         tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
@@ -186,7 +203,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::filesystem::remove(tempDownloadPath);
 
         // Move error
-        if (!copied) return result;
+        if (!copied) {
+            result.FailReason = "Could not move the file from the temporary folder";
+            return result;
+        }
     }
 
     result.Success = true;

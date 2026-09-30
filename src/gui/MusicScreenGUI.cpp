@@ -33,9 +33,6 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
 
 void MusicScreenGUI::CheckDownloadEvents()
 {
-    if (!_downloader.IsDownloading())
-        return;
-
     DownloadEventsQueue& downloadEvents = _downloader.GetEvents();
     while (std::optional<DownloadEvent> event = downloadEvents.TryGetEvent()) {
         std::visit(Overloaded {
@@ -55,7 +52,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             [&](const TrackFailedEvent& e) {
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->SetProgress(1.0);
-                track->SetStatus(e.Reason);
+                track->SetStatus("FAILED: " + e.Reason);
             },
             [&](const DownloadStartedEvent& e) {
                 // Remove old tracks

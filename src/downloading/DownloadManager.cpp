@@ -167,12 +167,11 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
         } else {
             TrackFailedEvent event;
             event.TrackUniqueId = track.GetUniqueId();
-            event.Reason = "";
+            event.Reason = event.Reason;
             _events.Send(event);
-        }
 
-        if (!result.Success)
             _failedDownloads++;
+        }
 
         if (--_tracksRemaining == 0) {
             // Download is finished

@@ -116,8 +116,8 @@ Rectangle {
                 property real number: 30
                 property real title: 350
                 property real album: 350
-                property real downloadStatus: 200
                 property real sources: 100
+                property real downloadStatus: 200
             }
 
             ColumnLayout {
@@ -173,19 +173,6 @@ Rectangle {
                             }
                         }
 
-                        // Download Status
-                        Item {
-                            width: columnWidths.downloadStatus
-                            height: parent.height
-                            
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "Download Status"
-                                color: "white"
-                                font.pixelSize: 14
-                            }
-                        }
-
                         // Sources
                         Item {
                             width: columnWidths.sources
@@ -194,6 +181,19 @@ Rectangle {
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: "Sources"
+                                color: "white"
+                                font.pixelSize: 14
+                            }
+                        }
+
+                        // Download Status
+                        Item {
+                            width: columnWidths.downloadStatus
+                            height: parent.height
+                            
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "Download Status"
                                 color: "white"
                                 font.pixelSize: 14
                             }
