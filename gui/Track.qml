@@ -18,6 +18,7 @@ Rectangle {
         height: parent.width
         anchors.centerIn: parent
         rotation: -90
+        visible: root.trackData.progress > 0
 
         gradient: Gradient {
             GradientStop { position: 0.0; color: root.progressBarColour }

@@ -44,7 +44,7 @@ class TrackUI : public QObject
         QString _coverArtUrl = "";
 
         float _progress = 0.0f;
-        QString _status = "";
+        QString _status = "Queued For Download...";
     signals:
         void CoverArtUrlChanged();
         void ProgressChanged();
