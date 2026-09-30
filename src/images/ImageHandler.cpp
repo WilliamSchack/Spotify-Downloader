@@ -129,7 +129,19 @@ Image ImageHandler::DownloadImage(const std::string& url)
     NetworkRequest request;
     request.Url = url;
     NetworkResponse response = request.Get();
-    if (response.Body.empty()) return image;
+
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to download image: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return image;
+    }
+
+    if (response.HTTPCode != 200) {
+        std::cout << "Failed to download image: HTTP " << response.HTTPCode << std::endl;
+        return image;
+    }
+
+    if (response.Body.empty())
+        return image;
 
     image.Format = GetImageFormat(response);
     image.Data = stbi_load_from_memory(

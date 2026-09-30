@@ -50,15 +50,25 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 
     std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePathNoExtension(track);
-    std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
-
     Image image;
-    if (!existingImageFilePath.empty()) {
-        image = ImageHandler::LoadImage(existingImageFilePath);
-    } else {
-        image = ImageHandler::DownloadImage(track.Album.ImageUrl);
-        std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
-        coverArtDownloadedCallback(imagePath);
+
+    {
+        // In the case that multiple threads try to download the same cover art at the same time, the image will corrupt
+        // This prevents that
+        // TODO: Cleanup these mutexes as they are only deleted when the app closes
+        std::lock_guard<std::mutex> getCoverArtLock(GetCoverArtMutex(track.Album.GetUniqueId()));
+        
+        std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
+
+        if (!existingImageFilePath.empty()) {
+            image = ImageHandler::LoadImage(existingImageFilePath);
+        } else {
+            image = ImageHandler::DownloadImage(track.Album.ImageUrl);
+            std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
+
+            if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
+                coverArtDownloadedCallback(imagePath);
+        }
     }
 
     // == Get the song on the target platform
@@ -219,6 +229,12 @@ void TrackDownloader::SetProgress(const std::function<void(DownloadProgress)>& p
         return;
 
     progressCallback(progress);
+}
+
+std::mutex& TrackDownloader::GetCoverArtMutex(const std::string& albumUniqueId)
+{
+    std::lock_guard<std::mutex> lock(_coverArtMapMutex);
+    return _coverArtMutexes[albumUniqueId];
 }
 
 int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory, std::function<void(int, DownloadProgress)> progressCallback, std::function<void(int, std::filesystem::path)> coverArtDownloadedCallback, std::function<void(int, DownloadResult)> trackDownloadedCallback)
