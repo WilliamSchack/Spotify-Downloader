@@ -73,7 +73,7 @@ RowLayout {
                 RowLayout {
                     width: parent.width
                     height: 20
-                    
+
                     Text {
                         Layout.alignment: Qt.AlignVCenter
                         text: "Codec"
@@ -89,14 +89,41 @@ RowLayout {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 300
 
+                        font.pixelSize: 12
+
                         model: ["MP3", "M4A", "WAV"/*, ...*/]
 
                         background: Rectangle {
                             width: parent.width
                             radius: 3
                         }
+                        
+                        indicator: Canvas {
+                            id: canvas
+                            x: parent.width - width - parent.rightPadding
+                            y: parent.topPadding + (parent.availableHeight - height) / 2
+                            width: 12
+                            height: 8
+                            contextType: "2d"
 
-                        // Customise me later
+                            onPaint: {
+                                // Drawing with inset to not clip
+                                var lw = 2
+                                var inset = lw / 2
+
+                                context.reset();
+                                context.strokeStyle = "black";
+                                context.lineWidth = lw
+                                context.lineCap = "round"
+                                context.lineJoin = "round"
+                                context.beginPath();
+                                context.moveTo(inset, inset);
+                                context.lineTo(width / 2, height - inset);
+                                context.lineTo(width - inset, inset);
+                                context.stroke();
+                            }
+
+                        }
                     }
                 }
 
@@ -119,7 +146,14 @@ RowLayout {
                     TextField {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 300
+
+                        topPadding: 0
+                        bottomPadding: 0
+                        leftPadding: 8
                         rightPadding: rightLabel.width + rightLabel.anchors.rightMargin * 2
+
+                        font.pixelSize: 12
+                        color: "black"
 
                         validator: DoubleValidator {
                             bottom: -50.0
@@ -165,8 +199,14 @@ RowLayout {
                         Layout.fillHeight: true
                         Layout.preferredWidth: parent.height
 
+                        padding: 0
+                        leftPadding: 0 // Needs to be set for text to be centered for some reason
+
                         horizontalAlignment: TextInput.AlignHCenter
                         verticalAlignment: TextInput.AlignVCenter
+
+                        font.pixelSize: 12
+                        color: "black"
 
                         maximumLength: 1
 
@@ -198,8 +238,24 @@ RowLayout {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 40
 
-                        // damn this is basically already what i wanted it to look like lol
-                        // (im just such a great designer fsfs)
+                        contentItem: Item {}
+
+                        indicator: Rectangle {
+                            anchors.fill: parent
+                            radius: 3
+                            color: parent.checked ? "#9A607D" : "#9F9F9F"
+
+                            // Knob thing
+                            Rectangle {
+                                width: parent.height - 4
+                                height: parent.height - 4
+                                y: 2
+                                radius: 3
+                                color: "white"
+
+                                x: parent.parent.checked ? parent.width - width - 2 : 2
+                            }
+                        }
                     }
                 }
             }
