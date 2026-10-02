@@ -93,6 +93,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         if (searchResult.Data.Platform == EPlatform::Unknown) {
             std::cout << "Could not find track: " << track.Name << std::endl;
 
+            // TODO: let the user input a platform url to download in this case
+
             // TODO: Insert which search platform
             result.FailReason = "Track cannot be found on the search platform";
             return result;

@@ -102,16 +102,6 @@ Window
                     onClicked: root.switchScreen(Main.EScreen.Settings)
                 }
 
-                CustomButton {
-                    id: headerButtonTest
-                    text: "TESTING"
-                    color: Qt.alpha("#3A3A3A", 0.5)
-
-                    Layout.fillHeight: true
-
-                    onClicked: addTracksPopups.visible = true
-                }
-
                 // Space
                 Rectangle { Layout.fillWidth: true }
 
@@ -139,10 +129,5 @@ Window
                 source: "MusicScreen.qml"
             }
         }
-    }
-
-    // Popups
-    AddTracksPopup {
-        id: addTracksPopups
     }
 }

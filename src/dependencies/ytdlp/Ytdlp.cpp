@@ -145,7 +145,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString)
     // Check for error 403, means cookies have expired if set, otherwise forbidden
     if (StringUtils::Contains(errorLower, "http error 403: forbidden")) {
 
-        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::endl;
+        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR: " << errorString << std::endl;
         //if (cookiesAssigned) {
         //  error.Details = "Your cookies have expired. Please reset them and the PO Token";
         //	error.Error = EYtdlpError::CookiesExpired;
@@ -153,6 +153,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString)
         //}
 
         // This shouldnt happen but return just incase
+        // TODO: Fix this damn issue, it happens a lot so maybe have multiple download attempts or just figure out a workaround to this
         error.Details = "HTTP Error 403: Forbidden. Please try downloading again or setting cookies";
         error.Error = EYtdlpError::Forbidden;
         return error;

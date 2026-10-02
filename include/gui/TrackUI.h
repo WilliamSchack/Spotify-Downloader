@@ -21,6 +21,7 @@ class TrackUI : public QObject
     Q_PROPERTY(QString coverArtUrl READ GetCoverArtUrl NOTIFY CoverArtUrlChanged)
     Q_PROPERTY(float progress READ GetProgress NOTIFY ProgressChanged)
     Q_PROPERTY(QString status READ GetStatus NOTIFY StatusChanged)
+    // TODO: Add Explicit
 
     public:
         explicit TrackUI(const TrackData& data, QObject* parent = nullptr);
