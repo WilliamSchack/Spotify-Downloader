@@ -53,6 +53,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 	Widgets
 	Qml
 	Quick
+    QuickControls2
 	WebEngineCore
 )
 
@@ -85,6 +86,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	Qt6::Widgets
 	Qt6::Qml
 	Qt6::Quick
+	Qt6::QuickControls2
 	Qt6::WebEngineCore
 	CURL::libcurl
 )

@@ -4,6 +4,7 @@
 #include "MusicScreenGUI.h"
 
 #include <QObject>
+#include <QQuickStyle>
 
 class GUIManager : public QObject
 {
