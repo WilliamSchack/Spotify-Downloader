@@ -16,5 +16,8 @@
         <file>IntTextField.qml</file>
         <file>DoubleTextField.qml</file>
         <file>SettingsMinorSection.qml</file>
+        <file>SettingsSidebarLink.qml</file>
+        <file>SettingsSidebarTrack.qml</file>
+        <file>SettingsSidebarGroup.qml</file>
     </qresource>
 </RCC>

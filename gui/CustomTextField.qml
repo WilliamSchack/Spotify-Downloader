@@ -14,7 +14,7 @@ TextField {
     rightPadding: hasRightLabel ? rightLabel.width + rightLabel.anchors.rightMargin * 2 : 8
 
     font.pixelSize: 14
-    color: "black"
+    color: enabled ? "black" : "grey"
 
     property bool hasRightLabel: false
     property alias rightText: rightLabel.text

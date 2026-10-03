@@ -15,6 +15,114 @@ RowLayout {
             GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
             GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
         }
+
+        Item {
+            id: sidebarRoot
+            anchors.fill: parent
+            anchors.margins: 20
+
+            property real indicatorAnimationTime: 200
+
+            property SettingsSidebarLink activeLink: null
+            property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading]
+            property int activeGroupIndex: 0
+
+            function setActiveLink(link, group) {
+                activeLink = link
+                var targetY = link.mapToItem(group.track, 0, 0).y
+
+                var newGroupIndex = groups.indexOf(group)
+                if (newGroupIndex === activeGroupIndex) {
+                    group.track.indicator.y = targetY
+                    return
+                }
+
+                // Move the old indicator off the item up or down depending on location of the next track
+                // Do the same but opposite for the next track
+
+                var movingDown = newGroupIndex > activeGroupIndex
+                var oldTrack = groups[activeGroupIndex].track
+                var newTrack = group.track
+
+                oldTrack.indicator.y = movingDown ? oldTrack.height : -oldTrack.indicator.height
+                newTrack.indicator.y = movingDown ? -newTrack.indicator.height : newTrack.height
+
+                activeGroupIndex = newGroupIndex
+
+                // Offset the next indicator so the first one has time to move off the original track
+                relayTimer.targetY = targetY
+                relayTimer.targetTrack = newTrack
+                relayTimer.start()
+            }
+
+            Timer {
+                id: relayTimer
+                interval: sidebarRoot.indicatorAnimationTime / 4
+                property real targetY: 0
+                property SettingsSidebarTrack targetTrack: null
+                onTriggered: targetTrack.indicator.y = targetY
+            }
+
+            Flickable {
+                id: settingsFlickableLeft
+                anchors.fill: parent
+                clip: true
+
+                contentWidth: width
+                contentHeight: settingsColumnLeft.height
+                
+                property bool scrollBarActive: contentHeight > height
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: settingsFlickableLeft.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                }
+
+                Column {
+                    id: settingsColumnLeft
+                    width: parent.width - (settingsFlickableLeft.scrollBarActive ? 20 : 0)
+                    spacing: 20
+
+                    SettingsSidebarGroup {
+                        id: sidebarGroupOutput
+                        label: "Output"
+                        animationTime: sidebarRoot.indicatorAnimationTime
+                        flickable: settingsFlickableRight
+                        activeLink: sidebarRoot.activeLink
+                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+
+                        SettingsSidebarLink {
+                            label: "Audio"
+                            target: sectionAudio
+                            activeByDefault: true
+                        }
+
+                        SettingsSidebarLink {
+                            label: "Metadata"
+                            target: sectionMetadata
+                        }
+
+                        SettingsSidebarLink {
+                            label: "File Management"
+                            target: sectionFileManagement
+                        }
+                    }
+
+                    SettingsSidebarGroup {
+                        id: sidebarGroupDownloading
+                        label: "Downloading"
+                        animationTime: sidebarRoot.indicatorAnimationTime
+                        flickable: settingsFlickableRight
+                        activeLink: sidebarRoot.activeLink
+                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+
+                        SettingsSidebarLink {
+                            label: "General"
+                            target: sectionDownloadingGeneral
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Right Area
@@ -35,28 +143,36 @@ RowLayout {
 
             // Using Flickable for mouse drag
             Flickable {
-                id: settingsFlickable
+                id: settingsFlickableRight
                 anchors.fill: parent
                 clip: true
 
                 contentWidth: width
-                contentHeight: settingsColumn.height
+                contentHeight: settingsColumnRight.height
 
                 property bool scrollBarActive: contentHeight > height
 
+                Behavior on contentY {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
                 ScrollBar.vertical: ScrollBar {
-                    policy: settingsFlickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                    policy: settingsFlickableRight.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                 }
 
                 Column {
-                    id: settingsColumn
-                    width: parent.width - (settingsFlickable.scrollBarActive ? 20 : 0)
+                    id: settingsColumnRight
+                    width: parent.width - (settingsFlickableRight.scrollBarActive ? 20 : 0)
                     spacing: 20
 
                     SettingsMajorSection {
                         label: "Output"
 
                         SettingsMinorSection {
+                            id: sectionAudio
                             label: "Audio"
 
                             SettingsItem {
@@ -117,6 +233,7 @@ RowLayout {
                         }
 
                         SettingsMinorSection {
+                            id: sectionMetadata
                             label: "Metadata"
 
                             SettingsItem {
@@ -147,12 +264,16 @@ RowLayout {
                         }
 
                         SettingsMinorSection {
+                            id: sectionFileManagement
                             label: "File Management"
 
                             SettingsItem {
                                 label: "Overwrite"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.overwrite
+                                    onClicked: _manager.settings.overwrite = checked
+                                }
                             }
 
                             SettingsItem {
@@ -173,6 +294,7 @@ RowLayout {
                         }
 
                         SettingsMinorSection {
+                            id: sectionLyricsFile
                             label: "Lyrics File"
 
                             SettingsItem {
@@ -191,6 +313,7 @@ RowLayout {
                         }
 
                         SettingsMinorSection {
+                            id: sectionPlaylistFile
                             label: "Playlist File"
 
                             SettingsItem {
@@ -221,6 +344,7 @@ RowLayout {
                         label: "Downloading"
 
                         SettingsMinorSection {
+                            id: sectionDownloadingGeneral
                             label: "General"
 
                             SettingsItem {
@@ -263,6 +387,7 @@ RowLayout {
                         label: "Platforms"
 
                         SettingsMinorSection {
+                            id: sectionLYouTube
                             label: "YouTube"
 
                             SettingsItem {
@@ -285,6 +410,7 @@ RowLayout {
                         label: "Interface"
 
                         SettingsMinorSection {
+                            id: sectionInterfaceGeneral
                             label: "General"
 
                             SettingsItem {
@@ -301,6 +427,7 @@ RowLayout {
                         }
 
                         SettingsMinorSection {
+                            id: sectionUpdates
                             label: "Updates"
 
                             SettingsItem {
