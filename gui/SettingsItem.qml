@@ -5,7 +5,7 @@ RowLayout {
     id: root
 
     width: parent.width
-    height: 30
+    height: 25
     spacing: 10
 
     property alias label: text.text

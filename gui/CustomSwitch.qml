@@ -5,7 +5,7 @@ Switch {
     id: root
     
     implicitHeight: parent.height
-    implicitWidth: 60
+    implicitWidth: 50
 
     contentItem: Item {}
 

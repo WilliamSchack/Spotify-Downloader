@@ -27,96 +27,65 @@ RowLayout {
             GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
             GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
         }
-
-        // Will be changed to a list later
+        
         Column {
             anchors.fill: parent
             anchors.margins: 20
             spacing: 20
 
-            // Header
-            Column {
-                width: parent.width
-                height: 34
-                spacing: 10
+            SettingsMajorSection {
+                label: "Output"
 
-                Text {
-                    text: "Output"
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 20
-                }
+                SettingsSubSection {
+                    label: "Audio"
 
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: "#E2A5C4"
-                }
-            }
+                    SettingsItem {
+                        label: "Codec"
 
-            // Each subsection has its own column for lower spacing
-            Column {
-                width: parent.width
-                spacing: 10
+                        CustomComboBox {
+                            Layout.fillHeight: true
 
-                // Subheader
-                Text {
-                    text: "Audio"
-                    color: "white"
-                    font.bold: true
-                    font.pixelSize: 14
-                }
-
-                // Each setting should be able to have multiple of the below inputs stacked in a row
-
-                // Dropdown
-                SettingsItem {
-                    label: "Codec"
-
-                    CustomComboBox {
-                        Layout.fillHeight: true
-
-                        model: ["MP3", "M4A", "WAV"/*, ...*/]
-                    }
-                }
-
-                // Input
-                SettingsItem {
-                    label: "Normalise Volume"
-
-                    CustomComboBox {
-                        Layout.fillHeight: true
-
-                        model: ["1", "2", "3"/*, ...*/]
+                            model: ["MP3", "M4A", "WAV"/*, ...*/]
+                        }
                     }
 
-                    NumberTextField {
-                        Layout.fillHeight: true
-                        
-                        min: -50.0
-                        max: 50.0
-                        decimals: 1
-                        rightText: "dB"
-                        hasRightLabel: true
+                    SettingsItem {
+                        label: "Normalise Volume"
+
+                        CustomSwitch {
+                            width: 100
+                        }
+
+                        NumberTextField {
+                            Layout.fillHeight: true
+                            
+                            min: -50.0
+                            max: 50.0
+                            decimals: 1
+                            rightText: "dB"
+                            hasRightLabel: true
+                        }
                     }
-                }
 
-                // Single Input
-                SettingsItem {
-                    label: "Single Input"
+                    SettingsItem {
+                        label: "Audio Bitrate"
 
-                    SingleCharTextField {
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: parent.height
-                    }
-                }
+                        CustomComboBox {
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: 150
 
-                // Toggle Button
-                SettingsItem {
-                    label: "Codec"
+                            model: ["Best Quality", "Manual"/*, ...*/]
+                        }
 
-                    CustomSwitch {
-                        Layout.fillHeight: true
+                        NumberTextField {
+                            Layout.fillHeight: true
+                            
+                            min: 0
+                            max: 128 // Should change based on codec and premium status (Same as v1)
+                            decimals: 0
+                            rightText: "kb/s"
+                            hasRightLabel: true
+                        }
                     }
                 }
             }
