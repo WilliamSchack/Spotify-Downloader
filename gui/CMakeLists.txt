@@ -10,6 +10,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SingleCharTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/NumberTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomComboBox.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/SettingsItem.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.qml
 )
 

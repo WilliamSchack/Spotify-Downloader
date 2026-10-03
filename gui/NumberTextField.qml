@@ -38,7 +38,6 @@ TextField {
     Text {
         id: rightLabel
         visible: root.hasRightLabel
-        text: ""
         color: root.color
         font: root.font
         anchors.right: root.right

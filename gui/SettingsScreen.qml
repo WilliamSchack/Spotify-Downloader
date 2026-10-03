@@ -70,21 +70,9 @@ RowLayout {
                 // Each setting should be able to have multiple of the below inputs stacked in a row
 
                 // Dropdown
-                RowLayout {
-                    width: parent.width
-                    height: 30
+                SettingsItem {
+                    label: "Codec"
 
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "Codec"
-                        color: "white"
-                        font.pixelSize: 14
-                    }
-
-                    // Filler
-                    Rectangle { Layout.fillWidth: true }
-
-                    // Dropdown
                     CustomComboBox {
                         Layout.fillHeight: true
 
@@ -93,21 +81,15 @@ RowLayout {
                 }
 
                 // Input
-                RowLayout {
-                    width: parent.width
-                    height: 30
+                SettingsItem {
+                    label: "Normalise Volume"
 
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "Normalise Volume"
-                        color: "white"
-                        font.pixelSize: 14
+                    CustomComboBox {
+                        Layout.fillHeight: true
+
+                        model: ["1", "2", "3"/*, ...*/]
                     }
 
-                    // Filler
-                    Rectangle { Layout.fillWidth: true }
-
-                    // Input
                     NumberTextField {
                         Layout.fillHeight: true
                         
@@ -120,21 +102,9 @@ RowLayout {
                 }
 
                 // Single Input
-                RowLayout {
-                    width: parent.width
-                    height: 30
-                    
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "Single Input"
-                        color: "white"
-                        font.pixelSize: 14
-                    }
+                SettingsItem {
+                    label: "Single Input"
 
-                    // Filler
-                    Rectangle { Layout.fillWidth: true }
-
-                    // Single Input
                     SingleCharTextField {
                         Layout.fillHeight: true
                         Layout.preferredWidth: parent.height
@@ -142,21 +112,9 @@ RowLayout {
                 }
 
                 // Toggle Button
-                RowLayout {
-                    width: parent.width
-                    height: 30
-                    
-                    Text {
-                        Layout.alignment: Qt.AlignVCenter
-                        text: "Codec"
-                        color: "white"
-                        font.pixelSize: 14
-                    }
+                SettingsItem {
+                    label: "Codec"
 
-                    // Filler
-                    Rectangle { Layout.fillWidth: true }
-
-                    // Toggle Button
                     CustomSwitch {
                         Layout.fillHeight: true
                     }

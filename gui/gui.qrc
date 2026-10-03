@@ -11,5 +11,6 @@
         <file>SingleCharTextField.qml</file>
         <file>NumberTextField.qml</file>
         <file>CustomComboBox.qml</file>
+        <file>SettingsItem.qml</file>
     </qresource>
 </RCC>
