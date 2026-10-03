@@ -63,21 +63,30 @@ RowLayout {
                                 label: "Codec"
 
                                 CustomComboBox {
-                                    model: ["MP3", "M4A", "WAV"/*, ...*/]
+                                    model: _manager.settings.GetCodecOptions()
+                                    currentIndex: _manager.settings.codec
+                                    onActivated: function(index) { _manager.settings.codec = index }
                                 }
                             }
 
                             SettingsItem {
                                 label: "Normalise Volume"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.normalise
+                                    onClicked: _manager.settings.normalise = checked
+                                }
 
                                 DoubleTextField {
+                                    enabled: _manager.settings.normalise
                                     min: -50.0
                                     max: 50.0
                                     decimals: 1
                                     rightText: "dB"
                                     hasRightLabel: true
+
+                                    text: _manager.settings.normaliseDb
+                                    onTextEdited: function() { _manager.settings.normaliseDb = parseFloat(text) }
                                 }
                             }
 
@@ -87,14 +96,22 @@ RowLayout {
                                 CustomComboBox {
                                     width: 150
 
-                                    model: ["Best Quality", "Manual"/*, ...*/]
+                                    model: ["Best Quality", "Manual"]
+
+                                    currentIndex: _manager.settings.manualBitrate ? 1 : 0
+                                    onActivated: function(index) { _manager.settings.manualBitrate = index == 1 }
                                 }
 
                                 IntTextField {
+                                    // Should change based on codec, premium status, and auto update when manualBitrate (Same as v1)
+                                    enabled: _manager.settings.manualBitrate
                                     min: 0
-                                    max: 128 // Should change based on codec and premium status (Same as v1)
+                                    max: 128
                                     rightText: "kb/s"
                                     hasRightLabel: true
+
+                                    text: _manager.settings.bitrate
+                                    onTextEdited: function(index) { _manager.settings.bitrate = parseInt(text) }
                                 }
                             }
                         }
@@ -103,15 +120,21 @@ RowLayout {
                             label: "Metadata"
 
                             SettingsItem {
-                                label: "Embed Lyrics"
+                                label: "Get Lyrics"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.getLyrics
+                                    onClicked: _manager.settings.getLyrics = checked
+                                }
                             }
 
                             SettingsItem {
                                 label: "Artist Separator"
 
-                                CustomTextField {}
+                                CustomTextField {
+                                    text: _manager.settings.artistsSeperator
+                                    onTextEdited: function() { _manager.settings.artistsSeperator = text }
+                                }
                             }
 
                             SettingsItem {
@@ -206,6 +229,9 @@ RowLayout {
                                 IntTextField {
                                     min: 0
                                     max: 128
+
+                                    text: _manager.settings.downloadThreads
+                                    onTextEdited: function() { _manager.settings.downloadThreads = text }
                                 }
                             }
 

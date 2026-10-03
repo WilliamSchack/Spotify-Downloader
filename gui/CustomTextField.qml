@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
+// TODO: Visibly disable when enabled is false
+
 TextField {
     id: root
     implicitHeight: parent.height

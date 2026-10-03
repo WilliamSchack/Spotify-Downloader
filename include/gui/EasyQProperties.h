@@ -33,6 +33,22 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
+#include <iostream>
+
+// Converts std::string to QString
+#define STRING_QPROPERTY(qmlName, functionName, variable) \
+    Q_PROPERTY(QString qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
+    Q_SIGNALS: \
+        void functionName##Changed(); \
+    public: \
+        QString Get##functionName() const { return QString::fromStdString(variable); } \
+        void Set##functionName(QString value) { \
+            std::string castedValue = value.toStdString(); \
+            if (variable == castedValue) return; \
+            variable = castedValue; \
+            emit functionName##Changed(); \
+        }
+
 // Makes an int property
 // Could use Q_ENUM but I would need to change every enum file and pollute the c++ only code with qt
 #define ENUM_QPROPERTY(enumType, enumStrings, qmlName, functionName, variable) \
