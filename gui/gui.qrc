@@ -7,5 +7,9 @@
         <file>Track.qml</file>
         <file>CustomButton.qml</file>
         <file>AddTracksPopup.qml</file>
+        <file>CustomSwitch.qml</file>
+        <file>SingleCharTextField.qml</file>
+        <file>NumberTextField.qml</file>
+        <file>CustomComboBox.qml</file>
     </qresource>
 </RCC>
