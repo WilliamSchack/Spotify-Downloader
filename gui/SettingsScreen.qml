@@ -28,245 +28,267 @@ RowLayout {
             GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
         }
         
-        Column {
+        // This item is just for the margin
+        Item {
             anchors.fill: parent
             anchors.margins: 20
-            spacing: 20
 
-            SettingsMajorSection {
-                label: "Output"
+            // Using Flickable for mouse drag
+            Flickable {
+                id: settingsFlickable
+                anchors.fill: parent
+                clip: true
 
-                SettingsSubSection {
-                    label: "Audio"
+                contentWidth: width
+                contentHeight: settingsColumn.height
 
-                    SettingsItem {
-                        label: "Codec"
+                property bool scrollBarActive: contentHeight > height
 
-                        CustomComboBox {
-                            model: ["MP3", "M4A", "WAV"/*, ...*/]
-                        }
-                    }
-
-                    SettingsItem {
-                        label: "Normalise Volume"
-
-                        CustomSwitch {}
-
-                        DoubleTextField {
-                            min: -50.0
-                            max: 50.0
-                            decimals: 1
-                            rightText: "dB"
-                            hasRightLabel: true
-                        }
-                    }
-
-                    SettingsItem {
-                        label: "Audio Bitrate"
-
-                        CustomComboBox {
-                            width: 150
-
-                            model: ["Best Quality", "Manual"/*, ...*/]
-                        }
-
-                        IntTextField {
-                            min: 0
-                            max: 128 // Should change based on codec and premium status (Same as v1)
-                            rightText: "kb/s"
-                            hasRightLabel: true
-                        }
-                    }
+                ScrollBar.vertical: ScrollBar {
+                    policy: settingsFlickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                 }
 
-                SettingsSubSection {
-                    label: "Metadata"
+                Column {
+                    id: settingsColumn
+                    width: parent.width - (settingsFlickable.scrollBarActive ? 20 : 0)
+                    spacing: 20
 
-                    SettingsItem {
-                        label: "Embed Lyrics"
+                    SettingsMajorSection {
+                        label: "Output"
 
-                        CustomSwitch {}
-                    }
+                        SettingsSubSection {
+                            label: "Audio"
 
-                    SettingsItem {
-                        label: "Artist Separator"
+                            SettingsItem {
+                                label: "Codec"
 
-                        CustomTextField {}
-                    }
+                                CustomComboBox {
+                                    model: ["MP3", "M4A", "WAV"/*, ...*/]
+                                }
+                            }
 
-                    SettingsItem {
-                        label: "Track Number"
+                            SettingsItem {
+                                label: "Normalise Volume"
 
-                        CustomComboBox {
-                            model: ["Playlist", "Album"/*, ...*/]
+                                CustomSwitch {}
+
+                                DoubleTextField {
+                                    min: -50.0
+                                    max: 50.0
+                                    decimals: 1
+                                    rightText: "dB"
+                                    hasRightLabel: true
+                                }
+                            }
+
+                            SettingsItem {
+                                label: "Audio Bitrate"
+
+                                CustomComboBox {
+                                    width: 150
+
+                                    model: ["Best Quality", "Manual"/*, ...*/]
+                                }
+
+                                IntTextField {
+                                    min: 0
+                                    max: 128 // Should change based on codec and premium status (Same as v1)
+                                    rightText: "kb/s"
+                                    hasRightLabel: true
+                                }
+                            }
+                        }
+
+                        SettingsSubSection {
+                            label: "Metadata"
+
+                            SettingsItem {
+                                label: "Embed Lyrics"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "Artist Separator"
+
+                                CustomTextField {}
+                            }
+
+                            SettingsItem {
+                                label: "Track Number"
+
+                                CustomComboBox {
+                                    model: ["Playlist", "Album"/*, ...*/]
+                                }
+                            }
+                        }
+
+                        SettingsSubSection {
+                            label: "File Management"
+
+                            SettingsItem {
+                                label: "Overwrite"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "File Name"
+
+                                SingleCharTextField {}
+                                SingleCharTextField {}
+                                CustomTextField {}
+                            }
+
+                            SettingsItem {
+                                label: "Sub Folders"
+
+                                SingleCharTextField {}
+                                SingleCharTextField {}
+                                CustomTextField {}
+                            }
+                        }
+
+                        SettingsSubSection {
+                            label: "Lyrics File"
+
+                            SettingsItem {
+                                label: "Auto Create On Download"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "LRC File Name"
+
+                                SingleCharTextField {}
+                                SingleCharTextField {}
+                                CustomTextField {}
+                            }
+                        }
+
+                        SettingsSubSection {
+                            label: "Playlist File"
+
+                            SettingsItem {
+                                label: "Auto Create On Download"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "Playlist File Type"
+
+                                CustomComboBox {
+                                    model: ["M3U", "XSPF"/*, ...*/]
+                                }
+                            }
+
+                            SettingsItem {
+                                label: "Playlist File Name"
+
+                                SingleCharTextField {}
+                                SingleCharTextField {}
+                                CustomTextField {}
+                            }
                         }
                     }
-                }
 
-                SettingsSubSection {
-                    label: "File Management"
+                    SettingsMajorSection {
+                        label: "Downloading"
 
-                    SettingsItem {
-                        label: "Overwrite"
+                        SettingsSubSection {
+                            label: "General"
 
-                        CustomSwitch {}
-                    }
+                            SettingsItem {
+                                label: "Max Simultaneous Downloads"
 
-                    SettingsItem {
-                        label: "File Name"
+                                IntTextField {
+                                    min: 0
+                                    max: 128
+                                }
+                            }
 
-                        SingleCharTextField {}
-                        SingleCharTextField {}
-                        CustomTextField {}
-                    }
+                            SettingsItem {
+                                label: "Download Speed Limit"
 
-                    SettingsItem {
-                        label: "Sub Folders"
+                                DoubleTextField {
+                                    min: 0.0
+                                    max: 999999999.9
+                                    rightText: "MB/s"
+                                    hasRightLabel: true
+                                }
+                            }
 
-                        SingleCharTextField {}
-                        SingleCharTextField {}
-                        CustomTextField {}
-                    }
-                }
+                            SettingsItem {
+                                label: "Download Timeout"
 
-                SettingsSubSection {
-                    label: "Lyrics File"
-
-                    SettingsItem {
-                        label: "Auto Create On Download"
-
-                        CustomSwitch {}
-                    }
-
-                    SettingsItem {
-                        label: "LRC File Name"
-
-                        SingleCharTextField {}
-                        SingleCharTextField {}
-                        CustomTextField {}
-                    }
-                }
-
-                SettingsSubSection {
-                    label: "Playlist File"
-
-                    SettingsItem {
-                        label: "Auto Create On Download"
-
-                        CustomSwitch {}
-                    }
-
-                    SettingsItem {
-                        label: "Playlist File Type"
-
-                        CustomComboBox {
-                            model: ["M3U", "XSPF"/*, ...*/]
+                                IntTextField {
+                                    min: 5000
+                                    max: 999999999
+                                    rightText: "ms"
+                                    hasRightLabel: true
+                                }
+                            }
                         }
                     }
 
-                    SettingsItem {
-                        label: "Playlist File Name"
+                    SettingsMajorSection {
+                        label: "Platforms"
 
-                        SingleCharTextField {}
-                        SingleCharTextField {}
-                        CustomTextField {}
-                    }
-                }
-            }
+                        SettingsSubSection {
+                            label: "YouTube"
 
-            SettingsMajorSection {
-                label: "Downloading"
+                            SettingsItem {
+                                label: "Cookies"
 
-                SettingsSubSection {
-                    label: "General"
+                                // TODO: Figure out this input
+                                // Probably will have a file location rather than the upload like v1
+                            }
 
-                    SettingsItem {
-                        label: "Max Simultaneous Downloads"
+                            SettingsItem {
+                                label: "PO Token"
 
-                        IntTextField {
-                            min: 0
-                            max: 128
+                                CustomTextField {}
+                                // TODO: Add clear, paste, extra buttons like v1
+                            }
                         }
                     }
 
-                    SettingsItem {
-                        label: "Download Speed Limit"
+                    SettingsMajorSection {
+                        label: "Interface"
 
-                        DoubleTextField {
-                            min: 0.0
-                            max: 999999999.9
-                            rightText: "MB/s"
-                            hasRightLabel: true
+                        SettingsSubSection {
+                            label: "General"
+
+                            SettingsItem {
+                                label: "Show Status Notifications"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "Auto Open Download Folder"
+
+                                CustomSwitch {}
+                            }
                         }
-                    }
 
-                    SettingsItem {
-                        label: "Download Timeout"
+                        SettingsSubSection {
+                            label: "Updates"
 
-                        IntTextField {
-                            min: 5000
-                            max: 999999999
-                            rightText: "ms"
-                            hasRightLabel: true
+                            SettingsItem {
+                                label: "Check For Updates"
+
+                                CustomSwitch {}
+                            }
+
+                            SettingsItem {
+                                label: "Check For Notices"
+
+                                CustomSwitch {}
+                            }
                         }
-                    }
-                }
-            }
-
-            SettingsMajorSection {
-                label: "Platforms"
-
-                SettingsSubSection {
-                    label: "YouTube"
-
-                    SettingsItem {
-                        label: "Cookies"
-
-                        // TODO: Figure out this input
-                        // Probably will have a file location rather than the upload like v1
-                    }
-
-                    SettingsItem {
-                        label: "PO Token"
-
-                        CustomTextField {}
-                        // TODO: Add clear, paste, extra buttons like v1
-                    }
-                }
-            }
-
-            SettingsMajorSection {
-                label: "Interface"
-
-                SettingsSubSection {
-                    label: "General"
-
-                    SettingsItem {
-                        label: "Show Status Notifications"
-
-                        CustomSwitch {}
-                    }
-
-                    SettingsItem {
-                        label: "Auto Open Download Folder"
-
-                        CustomSwitch {}
-                    }
-                }
-
-                SettingsSubSection {
-                    label: "Updates"
-
-                    SettingsItem {
-                        label: "Check For Updates"
-
-                        CustomSwitch {}
-                    }
-
-                    SettingsItem {
-                        label: "Check For Notices"
-
-                        CustomSwitch {}
                     }
                 }
             }
