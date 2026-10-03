@@ -11,6 +11,9 @@ class SettingsScreenGUI : public QObject
     Q_OBJECT
     ENUM_QPROPERTY(EExtension, EEXTENSION_NAMES, codec, Codec, Config::CODEC_EXTENSION)
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::OVERWRITE)
+
+    public:
+        explicit SettingsScreenGUI(QObject* parent = 0);
 };
 
 #endif
