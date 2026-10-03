@@ -8,22 +8,22 @@
 #include <QStringList>
 
 class EasyQProperties {
-    template<typename T>
-    static QStringList GetEnumOptions()
-    {
-        QMetaEnum metaEnum = QMetaEnum::fromType<T>();
-        QStringList options;
+    public:
+        // Function is really just a convert vector to stringlist but whatever
+        static QStringList GetEnumStrings(std::vector<std::string> enumStrings)
+        {
+            QStringList options;
+            for (const std::string& enumName : enumStrings)
+                options.append(QString::fromStdString(enumName));
 
-        for (int i = 0; i < metaEnum.keyCount(); i++)
-            options.append(QString::fromLatin1(metaEnum.key(i)));
-
-        return options;
-    }
+            return options;
+        }
 };
 
+// Needs to use Q_SIGNALS, signals: does not work for some reason
 #define SIMPLE_QPROPERTY(type, qmlName, functionName, variable) \
     Q_PROPERTY(type qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
-    signals: \
+    Q_SIGNALS: \
         void functionName##Changed(); \
     public: \
         type Get##functionName() const { return variable; } \
@@ -33,10 +33,20 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
-#define ENUM_QPROPERTY(type, qmlName, functionName, variable) \
-    Q_ENUM(type) \
-    SIMPLE_QPROPERTY(type, qmlName, functionName, variable) \
+// Makes an int property
+// Could use Q_ENUM but I would need to change every enum file and pollute the c++ only code with qt
+#define ENUM_QPROPERTY(enumType, enumStrings, qmlName, functionName, variable) \
+    Q_PROPERTY(int qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
+    Q_SIGNALS: \
+        void functionName##Changed(); \
     public: \
-        Q_INVOKABLE QStringList Get##functionName##Options() const { return EasyQProperties::GetEnumOptions<type>(); }
+        int Get##functionName() const { return static_cast<int>(variable); } \
+        void Set##functionName(int value) { \
+            enumType castedValue = static_cast<enumType>(value); \
+            if (variable == castedValue) return; \
+            variable = castedValue; \
+            emit functionName##Changed(); \
+        } \
+        Q_INVOKABLE QStringList Get##functionName##Options() const { return EasyQProperties::GetEnumStrings(enumStrings); }
 
 #endif
