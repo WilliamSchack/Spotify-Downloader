@@ -52,7 +52,7 @@ RowLayout {
 
                         CustomSwitch {}
 
-                        NumberTextField {
+                        DoubleTextField {
                             min: -50.0
                             max: 50.0
                             decimals: 1
@@ -70,10 +70,9 @@ RowLayout {
                             model: ["Best Quality", "Manual"/*, ...*/]
                         }
 
-                        NumberTextField {
-                            min: 0.0
-                            max: 128.0 // Should change based on codec and premium status (Same as v1)
-                            decimals: 0
+                        IntTextField {
+                            min: 0
+                            max: 128 // Should change based on codec and premium status (Same as v1)
                             rightText: "kb/s"
                             hasRightLabel: true
                         }
@@ -92,23 +91,7 @@ RowLayout {
                     SettingsItem {
                         label: "Artist Separator"
 
-                        TextField {
-                            height: parent.height
-                            width: 300
-
-                            topPadding: 0
-                            bottomPadding: 0
-                            leftPadding: 8
-                            rightPadding: 8
-
-                            font.pixelSize: 14
-                            color: "black"
-
-                            background: Rectangle {
-                                width: parent.width
-                                radius: 3
-                            }
-                        }
+                        CustomTextField {}
                     }
                 }
             }

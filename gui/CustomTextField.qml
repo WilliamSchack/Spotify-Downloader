@@ -3,14 +3,6 @@ import QtQuick.Controls
 
 TextField {
     id: root
-
-    property alias min: validatorId.bottom
-    property alias max: validatorId.top
-    property alias decimals: validatorId.decimals
-
-    property bool hasRightLabel: false
-    property alias rightText: rightLabel.text
-
     implicitHeight: parent.height
     implicitWidth: 300
 
@@ -22,13 +14,8 @@ TextField {
     font.pixelSize: 14
     color: "black"
 
-    validator: DoubleValidator {
-        id: validatorId
-        bottom: -50.0
-        top: 50.0
-        decimals: 1
-        notation: DoubleValidator.StandardNotation
-    }
+    property bool hasRightLabel: false
+    property alias rightText: rightLabel.text
 
     background: Rectangle {
         width: root.width

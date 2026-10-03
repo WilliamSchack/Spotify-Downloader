@@ -9,10 +9,12 @@
         <file>AddTracksPopup.qml</file>
         <file>CustomSwitch.qml</file>
         <file>SingleCharTextField.qml</file>
-        <file>NumberTextField.qml</file>
         <file>CustomComboBox.qml</file>
         <file>SettingsItem.qml</file>
         <file>SettingsMajorSection.qml</file>
         <file>SettingsSubSection.qml</file>
+        <file>CustomTextField.qml</file>
+        <file>IntTextField.qml</file>
+        <file>DoubleTextField.qml</file>
     </qresource>
 </RCC>
