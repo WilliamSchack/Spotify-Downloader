@@ -12,9 +12,9 @@
         <file>CustomComboBox.qml</file>
         <file>SettingsItem.qml</file>
         <file>SettingsMajorSection.qml</file>
-        <file>SettingsSubSection.qml</file>
         <file>CustomTextField.qml</file>
         <file>IntTextField.qml</file>
         <file>DoubleTextField.qml</file>
+        <file>SettingsMinorSection.qml</file>
     </qresource>
 </RCC>

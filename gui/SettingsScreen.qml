@@ -56,7 +56,7 @@ RowLayout {
                     SettingsMajorSection {
                         label: "Output"
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "Audio"
 
                             SettingsItem {
@@ -99,7 +99,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "Metadata"
 
                             SettingsItem {
@@ -123,7 +123,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "File Management"
 
                             SettingsItem {
@@ -149,7 +149,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "Lyrics File"
 
                             SettingsItem {
@@ -167,7 +167,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "Playlist File"
 
                             SettingsItem {
@@ -197,7 +197,7 @@ RowLayout {
                     SettingsMajorSection {
                         label: "Downloading"
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "General"
 
                             SettingsItem {
@@ -236,7 +236,7 @@ RowLayout {
                     SettingsMajorSection {
                         label: "Platforms"
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "YouTube"
 
                             SettingsItem {
@@ -258,7 +258,7 @@ RowLayout {
                     SettingsMajorSection {
                         label: "Interface"
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "General"
 
                             SettingsItem {
@@ -274,7 +274,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsSubSection {
+                        SettingsMinorSection {
                             label: "Updates"
 
                             SettingsItem {
