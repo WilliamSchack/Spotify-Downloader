@@ -24,7 +24,7 @@ RowLayout {
             property real indicatorAnimationTime: 200
 
             property SettingsSidebarLink activeLink: null
-            property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading]
+            property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading, sidebarGroupPlatforms, sidebarGroupInterface]
             property int activeGroupIndex: 0
 
             function setActiveLink(link, group) {
@@ -42,10 +42,10 @@ RowLayout {
 
                 var movingDown = newGroupIndex > activeGroupIndex
                 var oldTrack = groups[activeGroupIndex].track
-                var newTrack = group.track
+                var newTrack = groups[newGroupIndex].track
 
                 oldTrack.indicator.y = movingDown ? oldTrack.height : -oldTrack.indicator.height
-                newTrack.indicator.y = movingDown ? -newTrack.indicator.height : newTrack.height
+                newTrack.snapToY(movingDown ? -newTrack.indicator.height : newTrack.height)
 
                 activeGroupIndex = newGroupIndex
 
@@ -118,6 +118,39 @@ RowLayout {
                         SettingsSidebarLink {
                             label: "General"
                             target: sectionDownloadingGeneral
+                        }
+                    }
+
+                    SettingsSidebarGroup {
+                        id: sidebarGroupPlatforms
+                        label: "Platforms"
+                        animationTime: sidebarRoot.indicatorAnimationTime
+                        flickable: settingsFlickableRight
+                        activeLink: sidebarRoot.activeLink
+                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+
+                        SettingsSidebarLink {
+                            label: "YouTube"
+                            target: sectionYouTube
+                        }
+                    }
+
+                    SettingsSidebarGroup {
+                        id: sidebarGroupInterface
+                        label: "Interface"
+                        animationTime: sidebarRoot.indicatorAnimationTime
+                        flickable: settingsFlickableRight
+                        activeLink: sidebarRoot.activeLink
+                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+
+                        SettingsSidebarLink {
+                            label: "General"
+                            target: sectionInterfaceGeneral
+                        }
+
+                        SettingsSidebarLink {
+                            label: "Updates"
+                            target: sectionUpdates
                         }
                     }
                 }
@@ -387,7 +420,7 @@ RowLayout {
                         label: "Platforms"
 
                         SettingsMinorSection {
-                            id: sectionLYouTube
+                            id: sectionYouTube
                             label: "YouTube"
 
                             SettingsItem {

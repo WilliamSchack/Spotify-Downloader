@@ -9,6 +9,13 @@ Rectangle {
 
     property alias indicator: indicatorId
     property real animationDuration: 200
+    property bool animateIndicator: true
+
+    function snapToY(y) {
+        animateIndicator = false
+        indicatorId.y = y
+        animateIndicator = true
+    }
 
     Rectangle {
         id: indicatorId
@@ -19,6 +26,7 @@ Rectangle {
         y: -height
 
         Behavior on y {
+            enabled: root.animateIndicator
             NumberAnimation {
                 duration: root.animationDuration
                 easing.type: Easing.OutCubic
