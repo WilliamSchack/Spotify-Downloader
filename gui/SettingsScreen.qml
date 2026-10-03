@@ -214,7 +214,7 @@ RowLayout {
                                 CustomComboBox {
                                     model: _manager.settings.GetCodecOptions()
                                     currentIndex: _manager.settings.codec
-                                    onActivated: function(index) { _manager.settings.codec = index }
+                                    onActivated: (index) => { _manager.settings.codec = index }
                                 }
                             }
 
@@ -235,7 +235,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.normaliseDb
-                                    onTextEdited: function() { _manager.settings.normaliseDb = parseFloat(text) }
+                                    onTextEdited: _manager.settings.normaliseDb = parseFloat(text)
                                 }
                             }
 
@@ -248,7 +248,7 @@ RowLayout {
                                     model: ["Best Quality", "Manual"]
 
                                     currentIndex: _manager.settings.manualBitrate ? 1 : 0
-                                    onActivated: function(index) { _manager.settings.manualBitrate = index == 1 }
+                                    onActivated: (index) => { _manager.settings.manualBitrate = index == 1 }
                                 }
 
                                 IntTextField {
@@ -260,7 +260,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.bitrate
-                                    onTextEdited: function(index) { _manager.settings.bitrate = parseInt(text) }
+                                    onTextEdited: (index) => { _manager.settings.bitrate = parseInt(text) }
                                 }
                             }
                         }
@@ -283,7 +283,7 @@ RowLayout {
 
                                 CustomTextField {
                                     text: _manager.settings.artistsSeperator
-                                    onTextEdited: function() { _manager.settings.artistsSeperator = text }
+                                    onTextEdited: _manager.settings.artistsSeperator = text
                                 }
                             }
 
@@ -388,7 +388,7 @@ RowLayout {
                                     max: 128
 
                                     text: _manager.settings.downloadThreads
-                                    onTextEdited: function() { _manager.settings.downloadThreads = text }
+                                    onTextEdited: _manager.settings.downloadThreads = text
                                 }
                             }
 

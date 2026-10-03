@@ -46,7 +46,6 @@ Column {
     Component.onCompleted: {
         for (let i = 0; i < links.children.length; i++) {
             let link = links.children[i]
-            //link.track = trackId
             link.flickable = Qt.binding(() => root.flickable)
             link.activeLink = Qt.binding(() => root.activeLink)
             link.activated.connect((link) => root.activated(link, root))

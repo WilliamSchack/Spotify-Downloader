@@ -5,7 +5,6 @@ Item {
 
     required property Item target
     property Flickable flickable: null
-    //property Item track: null
     property Item activeLink: null
     property alias label: mainText.text
     property bool activeByDefault: false
@@ -37,9 +36,4 @@ Item {
             root.flickable.contentY = Math.min(Math.max(0, targetY), maxScroll)
         }
     }
-
-    //Component.onCompleted: {
-    //    if (activeByDefault && activeLink == null)
-    //        root.activated(root)
-    //}
 }
