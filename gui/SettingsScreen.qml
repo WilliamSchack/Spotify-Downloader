@@ -93,6 +93,181 @@ RowLayout {
 
                         CustomTextField {}
                     }
+
+                    SettingsItem {
+                        label: "Track Number"
+
+                        CustomComboBox {
+                            model: ["Playlist", "Album"/*, ...*/]
+                        }
+                    }
+                }
+
+                SettingsSubSection {
+                    label: "File Management"
+
+                    SettingsItem {
+                        label: "Overwrite"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "File Name"
+
+                        SingleCharTextField {}
+                        SingleCharTextField {}
+                        CustomTextField {}
+                    }
+
+                    SettingsItem {
+                        label: "Sub Folders"
+
+                        SingleCharTextField {}
+                        SingleCharTextField {}
+                        CustomTextField {}
+                    }
+                }
+
+                SettingsSubSection {
+                    label: "Lyrics File"
+
+                    SettingsItem {
+                        label: "Auto Create On Download"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "LRC File Name"
+
+                        SingleCharTextField {}
+                        SingleCharTextField {}
+                        CustomTextField {}
+                    }
+                }
+
+                SettingsSubSection {
+                    label: "Playlist File"
+
+                    SettingsItem {
+                        label: "Auto Create On Download"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "Playlist File Type"
+
+                        CustomComboBox {
+                            model: ["M3U", "XSPF"/*, ...*/]
+                        }
+                    }
+
+                    SettingsItem {
+                        label: "Playlist File Name"
+
+                        SingleCharTextField {}
+                        SingleCharTextField {}
+                        CustomTextField {}
+                    }
+                }
+            }
+
+            SettingsMajorSection {
+                label: "Downloading"
+
+                SettingsSubSection {
+                    label: "General"
+
+                    SettingsItem {
+                        label: "Max Simultaneous Downloads"
+
+                        IntTextField {
+                            min: 0
+                            max: 128
+                        }
+                    }
+
+                    SettingsItem {
+                        label: "Download Speed Limit"
+
+                        DoubleTextField {
+                            min: 0.0
+                            max: 999999999.9
+                            rightText: "MB/s"
+                            hasRightLabel: true
+                        }
+                    }
+
+                    SettingsItem {
+                        label: "Download Timeout"
+
+                        IntTextField {
+                            min: 5000
+                            max: 999999999
+                            rightText: "ms"
+                            hasRightLabel: true
+                        }
+                    }
+                }
+            }
+
+            SettingsMajorSection {
+                label: "Platforms"
+
+                SettingsSubSection {
+                    label: "YouTube"
+
+                    SettingsItem {
+                        label: "Cookies"
+
+                        // TODO: Figure out this input
+                        // Probably will have a file location rather than the upload like v1
+                    }
+
+                    SettingsItem {
+                        label: "PO Token"
+
+                        CustomTextField {}
+                        // TODO: Add clear, paste, extra buttons like v1
+                    }
+                }
+            }
+
+            SettingsMajorSection {
+                label: "Interface"
+
+                SettingsSubSection {
+                    label: "General"
+
+                    SettingsItem {
+                        label: "Show Status Notifications"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "Auto Open Download Folder"
+
+                        CustomSwitch {}
+                    }
+                }
+
+                SettingsSubSection {
+                    label: "Updates"
+
+                    SettingsItem {
+                        label: "Check For Updates"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "Check For Notices"
+
+                        CustomSwitch {}
+                    }
                 }
             }
         }
