@@ -43,8 +43,6 @@ RowLayout {
                         label: "Codec"
 
                         CustomComboBox {
-                            Layout.fillHeight: true
-
                             model: ["MP3", "M4A", "WAV"/*, ...*/]
                         }
                     }
@@ -52,13 +50,9 @@ RowLayout {
                     SettingsItem {
                         label: "Normalise Volume"
 
-                        CustomSwitch {
-                            width: 100
-                        }
+                        CustomSwitch {}
 
                         NumberTextField {
-                            Layout.fillHeight: true
-                            
                             min: -50.0
                             max: 50.0
                             decimals: 1
@@ -71,20 +65,49 @@ RowLayout {
                         label: "Audio Bitrate"
 
                         CustomComboBox {
-                            Layout.fillHeight: true
-                            Layout.preferredWidth: 150
+                            width: 150
 
                             model: ["Best Quality", "Manual"/*, ...*/]
                         }
 
                         NumberTextField {
-                            Layout.fillHeight: true
-                            
-                            min: 0
-                            max: 128 // Should change based on codec and premium status (Same as v1)
+                            min: 0.0
+                            max: 128.0 // Should change based on codec and premium status (Same as v1)
                             decimals: 0
                             rightText: "kb/s"
                             hasRightLabel: true
+                        }
+                    }
+                }
+
+                SettingsSubSection {
+                    label: "Metadata"
+
+                    SettingsItem {
+                        label: "Embed Lyrics"
+
+                        CustomSwitch {}
+                    }
+
+                    SettingsItem {
+                        label: "Artist Separator"
+
+                        TextField {
+                            height: parent.height
+                            width: 300
+
+                            topPadding: 0
+                            bottomPadding: 0
+                            leftPadding: 8
+                            rightPadding: 8
+
+                            font.pixelSize: 14
+                            color: "black"
+
+                            background: Rectangle {
+                                width: parent.width
+                                radius: 3
+                            }
                         }
                     }
                 }

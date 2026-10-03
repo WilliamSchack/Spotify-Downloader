@@ -21,9 +21,10 @@ RowLayout {
     // Filler
     Rectangle { Layout.fillWidth: true }
 
-    RowLayout {
+    Row {
         id: inputs
         Layout.alignment: Qt.AlignVCenter
+        Layout.fillHeight: true
         spacing: 10
     }
 }
