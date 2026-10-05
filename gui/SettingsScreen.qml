@@ -3,7 +3,10 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 RowLayout {
+    id: root
     spacing: 10
+
+    property real scrollAnimationTime: 200
 
     // Left Area
     Rectangle {
@@ -21,15 +24,41 @@ RowLayout {
             anchors.fill: parent
             anchors.margins: 20
 
-            property real indicatorAnimationTime: 200
+            property bool trackScrolling: true
 
             property SettingsSidebarLink activeLink: null
             property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading, sidebarGroupPlatforms, sidebarGroupInterface]
             property int activeGroupIndex: 0
 
-            function setActiveLink(link, group) {
+            function updateLinkFromScroll() {
+                var scrollY = settingsFlickableRight.contentY
+                var bestMatch = { group: groups[0], link: groups[0].linkItems[0] }
+
+                for (var i = 0; i < groups.length; i++) {
+                    var group = groups[i]
+                    for (var j = 0; j < group.linkItems.length; j++) {
+                        var linkItem = group.linkItems[j]
+                        var sectionY = linkItem.target.mapToItem(settingsColumnRight, 0, 0).y
+                        if (sectionY <= scrollY) {
+                            bestMatch.group = group
+                            bestMatch.link = linkItem
+                        }
+                    }
+                }
+
+                if (bestMatch.link !== activeLink)
+                    setActiveLink(bestMatch.link, bestMatch.group, false)
+            }
+
+            function setActiveLink(link, group, preventScrollTracking) {
                 activeLink = link
                 var targetY = link.mapToItem(group.track, 0, 0).y
+
+                // Prevent scrolling changing the active link while this one is animating
+                if (preventScrollTracking) {
+                    sidebarRoot.trackScrolling = false
+                    scrollTrackResetTimer.restart()
+                }
 
                 var newGroupIndex = groups.indexOf(group)
                 if (newGroupIndex === activeGroupIndex) {
@@ -57,10 +86,24 @@ RowLayout {
 
             Timer {
                 id: relayTimer
-                interval: sidebarRoot.indicatorAnimationTime / 4
+                interval: root.scrollAnimationTime / 4
                 property real targetY: 0
                 property SettingsSidebarTrack targetTrack: null
                 onTriggered: targetTrack.indicator.y = targetY
+            }
+
+            Timer {
+                id: scrollTrackResetTimer
+                interval: root.scrollAnimationTime
+                onTriggered: sidebarRoot.trackScrolling = true
+            }
+
+            Connections {
+                target: settingsFlickableRight
+                function onContentYChanged() {
+                    if (sidebarRoot.trackScrolling)
+                        sidebarRoot.updateLinkFromScroll()
+                }
             }
 
             Flickable {
@@ -85,10 +128,10 @@ RowLayout {
                     SettingsSidebarGroup {
                         id: sidebarGroupOutput
                         label: "Output"
-                        animationTime: sidebarRoot.indicatorAnimationTime
+                        animationTime: root.scrollAnimationTime
                         flickable: settingsFlickableRight
                         activeLink: sidebarRoot.activeLink
-                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+                        onActivated: (link, group, clicked) => { sidebarRoot.setActiveLink(link, group, clicked) }
 
                         SettingsSidebarLink {
                             label: "Audio"
@@ -105,15 +148,25 @@ RowLayout {
                             label: "File Management"
                             target: sectionFileManagement
                         }
+
+                        SettingsSidebarLink {
+                            label: "Lyrics File"
+                            target: sectionLyricsFile
+                        }
+
+                        SettingsSidebarLink {
+                            label: "Playlist File"
+                            target: sectionPlaylistFile
+                        }
                     }
 
                     SettingsSidebarGroup {
                         id: sidebarGroupDownloading
                         label: "Downloading"
-                        animationTime: sidebarRoot.indicatorAnimationTime
+                        animationTime: root.scrollAnimationTime
                         flickable: settingsFlickableRight
                         activeLink: sidebarRoot.activeLink
-                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+                        onActivated: (link, group, clicked) => { sidebarRoot.setActiveLink(link, group, clicked) }
 
                         SettingsSidebarLink {
                             label: "General"
@@ -124,10 +177,10 @@ RowLayout {
                     SettingsSidebarGroup {
                         id: sidebarGroupPlatforms
                         label: "Platforms"
-                        animationTime: sidebarRoot.indicatorAnimationTime
+                        animationTime: root.scrollAnimationTime
                         flickable: settingsFlickableRight
                         activeLink: sidebarRoot.activeLink
-                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+                        onActivated: (link, group, clicked) => { sidebarRoot.setActiveLink(link, group, clicked) }
 
                         SettingsSidebarLink {
                             label: "YouTube"
@@ -138,10 +191,10 @@ RowLayout {
                     SettingsSidebarGroup {
                         id: sidebarGroupInterface
                         label: "Interface"
-                        animationTime: sidebarRoot.indicatorAnimationTime
+                        animationTime: root.scrollAnimationTime
                         flickable: settingsFlickableRight
                         activeLink: sidebarRoot.activeLink
-                        onActivated: (link, group) => { sidebarRoot.setActiveLink(link, group) }
+                        onActivated: (link, group, clicked) => { sidebarRoot.setActiveLink(link, group, clicked) }
 
                         SettingsSidebarLink {
                             label: "General"
@@ -187,7 +240,7 @@ RowLayout {
 
                 Behavior on contentY {
                     NumberAnimation {
-                        duration: 200
+                        duration: root.scrollAnimationTime
                         easing.type: Easing.OutCubic
                     }
                 }
@@ -199,7 +252,7 @@ RowLayout {
                 Column {
                     id: settingsColumnRight
                     width: parent.width - (settingsFlickableRight.scrollBarActive ? 20 : 0)
-                    spacing: 20
+                    spacing: 30
 
                     SettingsMajorSection {
                         label: "Output"

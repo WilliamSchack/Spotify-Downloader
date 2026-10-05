@@ -10,9 +10,9 @@ Column {
     property Item activeLink: null
     property alias track: trackId
 
-    signal activated(Item link, Item group)
+    signal activated(Item link, Item group, bool clicked)
 
-    default property alias content: links.children
+    default property alias linkItems: links.children
 
     width: parent.width
     spacing: 10
@@ -48,7 +48,7 @@ Column {
             let link = links.children[i]
             link.flickable = Qt.binding(() => root.flickable)
             link.activeLink = Qt.binding(() => root.activeLink)
-            link.activated.connect((link) => root.activated(link, root))
+            link.activated.connect((link) => root.activated(link, root, true))
         }
         
         // Activate default here so they are setup first
@@ -57,7 +57,7 @@ Column {
             if (!links.children[i].activeByDefault)
                 continue
             
-            root.activated(links.children[i], root)
+            root.activated(links.children[i], root, false)
             break;
         }
     }
