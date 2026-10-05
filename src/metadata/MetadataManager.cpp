@@ -260,7 +260,7 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
         connected += artists[i].Name;
 
         if (i < artistsSize - 1)
-            connected += Config::ARTISTS_SEPERATOR;
+            connected += Config::ArtistSeperator;
     }
 
     return connected;
@@ -268,7 +268,7 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
 
 std::vector<std::string> MetadataManager::SplitArtistNames(const std::string& artists)
 {
-    return StringUtils::Split(artists, Config::ARTISTS_SEPERATOR);
+    return StringUtils::Split(artists, Config::ArtistSeperator);
 }
 
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const

@@ -9,15 +9,15 @@
 class SettingsScreenGUI : public QObject
 {
     Q_OBJECT
-    ENUM_QPROPERTY(EExtension, EEXTENSION_NAMES, codec, Codec, Config::CODEC_EXTENSION)
-    SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::OVERWRITE)
-    SIMPLE_QPROPERTY(bool, normalise, Normalise, Config::NORMALISE)
-    SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GET_LYRICS)
-    SIMPLE_QPROPERTY(float, normaliseDb, NormaliseDb, Config::NORMALISE_DB)
-    SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::MANUAL_BITRATE)
-    SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BITRATE)
-    STRING_QPROPERTY(artistsSeperator, ArtistsSeperator, Config::ARTISTS_SEPERATOR)
-    SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PER_DOWNLOAD_THREADS)
+    ENUM_QPROPERTY(EExtension, EEXTENSION_NAMES, codec, Codec, Config::CodecExtension)
+    SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
+    SIMPLE_QPROPERTY(bool, normalise, Normalise, Config::Normalise)
+    SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
+    SIMPLE_QPROPERTY(float, normaliseDb, NormaliseDb, Config::NormaliseDb)
+    SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
+    SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps)
+    STRING_QPROPERTY(artistsSeperator, ArtistsSeperator, Config::ArtistSeperator)
+    SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
 
     public:
         explicit SettingsScreenGUI(QObject* parent = 0);

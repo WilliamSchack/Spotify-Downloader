@@ -18,9 +18,9 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     //       Just getting it working at the moment
 
     // == Get paths
-    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CODEC_EXTENSION);
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
     if (targetCodec == nullptr) {
-        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CODEC_EXTENSION) + "), please inform me of this error";
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
         return result;
     }
 
@@ -37,7 +37,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     result.FilePath = targetDownloadPath;
 
-    if (!Config::OVERWRITE && std::filesystem::exists(targetDownloadPath)) {
+    if (!Config::Overwrite && std::filesystem::exists(targetDownloadPath)) {
         std::cout << "Not downloading as it already exists: " << track.Name << std::endl;
 
         // Showing as a success since its already downloaded
@@ -125,7 +125,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
     if (downloadedCodec == nullptr) {
-        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CODEC_EXTENSION) + "), please inform me of this error";
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
         return result;
     }
 
@@ -134,30 +134,30 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // == Normalise
     float progressStartPercentage = 0.7;
-    float progressEndPercentage = Config::GET_LYRICS ? 0.9 : 1.0;
+    float progressEndPercentage = Config::GetLyrics ? 0.9 : 1.0;
 
-    if (Config::NORMALISE) {
+    if (Config::Normalise) {
         std::cout << "Normalising..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Normalising Audio..."));
 
-        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NORMALISE_DB, [&](float progress) {
+        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NormaliseDb, [&](float progress) {
             SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Normalising Audio..."));
         });
     }
     
     // == Set bitrate
-    else if (Config::MANUAL_BITRATE) {
+    else if (Config::ManualBitrate) {
         std::cout << "Setting bitrate..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Setting Bitrate..."));
 
-        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BITRATE, [&](float progress) {
+        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps, [&](float progress) {
             SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate..."));
         });
     }
 
     // == Get lyrics
     Lyrics lyrics;
-    if (Config::GET_LYRICS) {
+    if (Config::GetLyrics) {
         std::cout << "Getting Lyrics..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
 
@@ -201,7 +201,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     metadata.Close();
 
     // == Move to target path
-    if (Config::OVERWRITE && std::filesystem::exists(targetDownloadPath))
+    if (Config::Overwrite && std::filesystem::exists(targetDownloadPath))
         std::filesystem::remove(targetDownloadPath);
     
     if (!std::filesystem::is_directory(targetFolder))

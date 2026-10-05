@@ -113,7 +113,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 
     // Get track distribution
     int songCount = tracks.size();
-    int threadCount = std::min<int>(songCount, Config::PER_DOWNLOAD_THREADS);
+    int threadCount = std::min<int>(songCount, Config::PerDownloadThreads);
 
     int baseSongCount = songCount / threadCount;
     int songsRemainder = songCount % threadCount;
