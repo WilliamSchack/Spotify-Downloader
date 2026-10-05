@@ -33,8 +33,6 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
-#include <iostream>
-
 // Converts std::string to QString
 #define STRING_QPROPERTY(qmlName, functionName, variable) \
     Q_PROPERTY(QString qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \

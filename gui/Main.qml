@@ -24,8 +24,6 @@ Window
     function switchScreen(screen: int) {
         switch (screen) {
             case Main.EScreen.Main:
-                console.log("Switching to music screen")
-
                 screenLoader.source = "MusicScreen.qml"
                 // Should replace this and below with a new button group class
                 headerButtonMusic.color = selectedButtonColour
@@ -33,16 +31,12 @@ Window
                 headerButtonSettings.color = unselectedButtonColour
                 break;
             case Main.EScreen.Info:
-                console.log("Switching to info screen")
-
                 screenLoader.source = "InfoScreen.qml"
                 headerButtonMusic.color = unselectedButtonColour
                 headerButtonInfo.color = selectedButtonColour
                 headerButtonSettings.color = unselectedButtonColour
                 break;
             case Main.EScreen.Settings:
-                console.log("Switching to settings screen")
-
                 screenLoader.source = "SettingsScreen.qml"
                 headerButtonMusic.color = unselectedButtonColour
                 headerButtonInfo.color = unselectedButtonColour
