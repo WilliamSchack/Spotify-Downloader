@@ -3,6 +3,7 @@
 
 #include "EExtension.h"
 #include "ELyricsSource.h"
+#include "ETrackNumberType.h"
 
 #include <string>
 
@@ -18,6 +19,7 @@ class Config
         static inline bool ManualBitrate = false;
         static inline int BitrateKbps = 128;
         static inline std::string ArtistSeperator = "; ";
+        static inline ETrackNumberType TrackNumberType = ETrackNumberType::Playlist;
         static inline int PerDownloadThreads = 6;
 
         // Has the requested lyrics sources with 0 as the highest priority

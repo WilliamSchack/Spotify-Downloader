@@ -343,8 +343,13 @@ RowLayout {
                             SettingsItem {
                                 label: "Track Number"
 
+                                // TODO: Add notice/warning when using playlist track number
+                                //       that it will use the album number when not downloading a playlist
+
                                 CustomComboBox {
-                                    model: ["Playlist", "Album"/*, ...*/]
+                                    model: _manager.settings.GetTrackNumberTypeOptions()
+                                    currentIndex: _manager.settings.trackNumberType
+                                    onActivated: (index) => { _manager.settings.trackNumberType = index }
                                 }
                             }
                         }

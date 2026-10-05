@@ -17,6 +17,7 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
     SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps)
     STRING_QPROPERTY(artistsSeperator, ArtistsSeperator, Config::ArtistSeperator)
+    ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
 
     public:

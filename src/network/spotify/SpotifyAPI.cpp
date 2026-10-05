@@ -321,6 +321,10 @@ PlaylistTracks SpotifyAPI::ParsePlaylist(const nlohmann::json& json)
     // Tracks
     std::vector<TrackData> tracks = ParseTracks(playlistJson["content"]["items"]);
 
+    for (int i = 1; i < tracks.size() + 1; i++) {
+        tracks[i].PlaylistTrackNumber = i;
+    }
+
     playlistTracks.Data = playlist;
     playlistTracks.Tracks = tracks;
 

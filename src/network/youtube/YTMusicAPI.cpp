@@ -212,8 +212,12 @@ PlaylistTracks YTMusicAPI::ParsePlaylistJson(const nlohmann::json& json)
 	// Tracks
 	if (json.contains("tracks")) {
 		std::vector<TrackData> tracks;
-		for (const nlohmann::json& trackJson : json["tracks"]) {
+		for (int i = 0; i < tracks.size(); i++) {
+            const nlohmann::json& trackJson = json["tracks"][i];
 			TrackData track = ParseTrackJson(trackJson);
+            // TODO: Check if this playlist track number is correct
+            track.PlaylistTrackNumber = i;
+
 			tracks.push_back(track);
 		}
 
