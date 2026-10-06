@@ -7,6 +7,7 @@
 #include <variant>
 #include <vector>
 
+
 struct TrackProgressEvent
 {
     std::string TrackUniqueId;
@@ -41,7 +42,12 @@ struct DownloadFailedToStartEvent
     std::string Reason;
 };
 
-struct DownloadsFinishedEvent {};
+struct DownloadsFinishedEvent
+{
+    int FailedDownloads;
+    int SuccessfulDownloads;
+    std::string OutputFolder;
+};
 
 using DownloadEvent = std::variant<
     TrackProgressEvent,

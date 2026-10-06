@@ -34,6 +34,7 @@ class DownloadManager
         std::atomic<bool> _downloading = false;
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
+        std::atomic<int> _successfulDownloads = 0;
 
         DownloadEventsQueue _events;
         std::vector<std::thread> _threads;

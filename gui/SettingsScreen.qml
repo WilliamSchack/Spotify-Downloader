@@ -516,7 +516,10 @@ RowLayout {
                             SettingsItem {
                                 label: "Auto Open Download Folder"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.autoOpenDownloadFolder
+                                    onClicked: _manager.settings.autoOpenDownloadFolder = checked
+                                }
                             }
                         }
 

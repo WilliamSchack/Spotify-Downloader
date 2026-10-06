@@ -22,6 +22,7 @@ class Config
         static inline ETrackNumberType TrackNumberType = ETrackNumberType::Playlist;
         static inline int PerDownloadThreads = 6;
         static inline double DownloadSpeedLimit = 0.0;
+        static inline bool AutoOpenDownloadFolder = true;
 
         // Has the requested lyrics sources with 0 as the highest priority
         static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {

@@ -121,6 +121,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     // Setup
     _tracksRemaining = songCount;
     _failedDownloads = 0;
+    _successfulDownloads = 0;
 
     DownloadStartedEvent startedEvent;
     startedEvent.Tracks = tracks;
@@ -164,6 +165,8 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
             TrackSucceededEvent event;
             event.TrackUniqueId = track.GetUniqueId();
             _events.Send(event);
+
+            _successfulDownloads++;
         } else {
             TrackFailedEvent event;
             event.TrackUniqueId = track.GetUniqueId();
@@ -176,6 +179,9 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
         if (--_tracksRemaining == 0) {
             // Download is finished
             DownloadsFinishedEvent event;
+            event.FailedDownloads = _failedDownloads;
+            event.SuccessfulDownloads = _successfulDownloads;
+            event.OutputFolder = directory;
             _events.Send(event);
             _downloading = false;
         }
