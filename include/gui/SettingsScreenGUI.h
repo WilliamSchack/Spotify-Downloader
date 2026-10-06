@@ -13,12 +13,13 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
     SIMPLE_QPROPERTY(bool, normalise, Normalise, Config::Normalise)
     SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
-    SIMPLE_QPROPERTY(float, normaliseDb, NormaliseDb, Config::NormaliseDb)
+    SIMPLE_QPROPERTY(double, normaliseDb, NormaliseDb, Config::NormaliseDb)
     SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
     SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps)
     STRING_QPROPERTY(artistsSeperator, ArtistsSeperator, Config::ArtistSeperator)
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
+    SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
 
     public:
         explicit SettingsScreenGUI(QObject* parent = 0);

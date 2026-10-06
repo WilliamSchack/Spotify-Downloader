@@ -3,7 +3,9 @@
 
 #include "ExternalProcess.h"
 #include "FileUtils.h"
+#include "MathUtils.h"
 #include "YtdlpResult.h"
+#include "Config.h"
 
 #include <iostream>
 #include <string>

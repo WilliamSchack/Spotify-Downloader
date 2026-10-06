@@ -99,6 +99,10 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     process.AddArgument("--no-simulate");
     process.AddArgument("-f", "ba");
     process.AddArgument("--audio-quality", "0");
+
+    if (!MathUtils::DoublesEqual(0, Config::DownloadSpeedLimit))
+        process.AddArgument("--limit-rate", std::to_string(Config::DownloadSpeedLimit) + "M");
+
     process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 
@@ -118,7 +122,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         error.Error = EYtdlpError::Unknown;
 
         result.Error = error;
-        return result;;
+        return result;
     }
 
     result.Path = downloadedPath;

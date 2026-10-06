@@ -458,6 +458,9 @@ RowLayout {
                                     max: 999999999.9
                                     rightText: "MB/s"
                                     hasRightLabel: true
+
+                                    text: _manager.settings.downloadSpeedLimit
+                                    onTextEdited: _manager.settings.downloadSpeedLimit = parseFloat(text)
                                 }
                             }
 
