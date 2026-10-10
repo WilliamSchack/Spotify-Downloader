@@ -30,8 +30,8 @@ std::filesystem::path FilePathReserver::FindAvailableTrackPath(const TrackData& 
         sameTrack = existingMetadata.GetTitle() == track.Name &&
             existingMetadata.GetAlbumName() == track.Album.Name &&
             existingMetadata.GetTrackNumber() == track.TrackNumber &&
-            (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists)) &&
-            (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists));
+            (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists, Config::ArtistSeperator)) &&
+            (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists, Config::ArtistSeperator));
 
         existingMetadata.Close();
     }

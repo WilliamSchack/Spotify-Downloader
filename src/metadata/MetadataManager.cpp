@@ -33,7 +33,7 @@ void MetadataManager::SetArtist(const std::string& value)
 
 void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
 {
-    SetArtist(CombineArtistNames(artists));
+    SetArtist(CombineArtistNames(artists, Config::ArtistSeperator));
 };
 
 void MetadataManager::SetAlbumName(const std::string& value)
@@ -48,7 +48,7 @@ void MetadataManager::SetAlbumArtist(const std::string& value)
 
 void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
 {
-    SetAlbumArtist(CombineArtistNames(artists));
+    SetAlbumArtist(CombineArtistNames(artists, Config::ArtistSeperator));
 };
 
 void MetadataManager::SetPublisher(const std::string& value)
@@ -224,7 +224,7 @@ TrackData MetadataManager::GetAll() const
     TrackData data(EPlatform::Unknown);
     
     std::vector<ArtistData> artists;
-    std::vector<std::string> artistNames = SplitArtistNames(GetArtist());
+    std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeperator);
     for (std::string artistName : artistNames) {
         ArtistData artistData(EPlatform::Unknown);
         artistData.Name = artistName;
@@ -251,7 +251,7 @@ TrackData MetadataManager::GetAll() const
     return data;
 }
 
-std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists)
+std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& artists, const std::string& separator)
 {
     std::string connected = "";
 
@@ -260,15 +260,15 @@ std::string MetadataManager::CombineArtistNames(const std::vector<ArtistData>& a
         connected += artists[i].Name;
 
         if (i < artistsSize - 1)
-            connected += Config::ArtistSeperator;
+            connected += separator;
     }
 
     return connected;
 }
 
-std::vector<std::string> MetadataManager::SplitArtistNames(const std::string& artists)
+std::vector<std::string> MetadataManager::SplitArtistNames(const std::string& artists, const std::string& separator)
 {
-    return StringUtils::Split(artists, Config::ArtistSeperator);
+    return StringUtils::Split(artists, separator);
 }
 
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const

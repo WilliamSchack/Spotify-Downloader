@@ -71,8 +71,8 @@ class MetadataManager
 
         TrackData GetAll() const;
 
-        static std::string CombineArtistNames(const std::vector<ArtistData>& artists);
-        static std::vector<std::string> SplitArtistNames(const std::string& artists);
+        static std::string CombineArtistNames(const std::vector<ArtistData>& artists, const std::string& separator);
+        static std::vector<std::string> SplitArtistNames(const std::string& artists, const std::string& separator);
 
         // Saves and frees up the file for other apps to use
         void Close();

@@ -31,7 +31,7 @@ QString TrackUI::GetName() const
 
 QString TrackUI::GetArtistNames() const
 {
-    return QString::fromStdString(MetadataManager::CombineArtistNames(_data.Artists));
+    return QString::fromStdString(MetadataManager::CombineArtistNames(_data.Artists, Config::ArtistSeperator));
 }
 
 QString TrackUI::GetAlbumName() const
