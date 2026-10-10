@@ -392,6 +392,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Sub Folders"
+                                valid: _manager.settings.subFoldersValid
 
                                 SingleCharTextField {
                                     text: _manager.settings.subFoldersTagsOpening
@@ -406,6 +407,8 @@ RowLayout {
                                 CustomTextField {
                                     text: _manager.settings.subFolders
                                     onTextEdited: _manager.settings.subFolders = text
+
+                                    valid: _manager.settings.subFoldersValid
                                 }
                             }
                         }

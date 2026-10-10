@@ -9,13 +9,6 @@ Switch {
 
     property bool initialized: false
 
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onPressed: (mouse) => { mouse.accepted = false }
-    }
-
     contentItem: Item {}
 
     indicator: Rectangle {
@@ -48,6 +41,13 @@ Switch {
                 easing.type: Easing.OutCubic
             }
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onPressed: (mouse) => { mouse.accepted = false }
     }
 
     Component.onCompleted: {

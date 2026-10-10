@@ -19,13 +19,14 @@ class SettingsScreenGUI : public QObject
     STRING_QPROPERTY(artistsSeparator, ArtistsSeparator, Config::ArtistSeperator)
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
-    CHAR_QPROPERTY(fileNameTagsOpening, FileNameTagsOpening, Config::FileNameTagsOpeningChar)
-    CHAR_QPROPERTY(fileNameTagsClosing, FileNameTagsClosing, Config::FileNameTagsClosingChar)
+    CHAR_QPROPERTY(fileNameTagsOpening, FileNameTagsOpening, _fileNameOpeningChar)
+    CHAR_QPROPERTY(fileNameTagsClosing, FileNameTagsClosing, _fileNameClosingChar)
     STRING_QPROPERTY(fileName, FileName, _fileName)
     Q_PROPERTY(bool fileNameValid READ GetFileNameValid NOTIFY FileNameValidChanged)
-    CHAR_QPROPERTY(subFoldersTagsOpening, SubFoldersTagsOpening, Config::SubFoldersTagsOpeningChar)
-    CHAR_QPROPERTY(subFoldersTagsClosing, SubFoldersTagsClosing, Config::SubFoldersTagsClosingChar)
-    STRING_QPROPERTY(subFolders, SubFolders, Config::SubFolders)
+    CHAR_QPROPERTY(subFoldersTagsOpening, SubFoldersTagsOpening, _subFoldersOpeningChar)
+    CHAR_QPROPERTY(subFoldersTagsClosing, SubFoldersTagsClosing, _subFoldersClosingChar)
+    STRING_QPROPERTY(subFolders, SubFolders, _subFolders)
+    Q_PROPERTY(bool subFoldersValid READ GetSubFoldersValid NOTIFY SubFoldersValidChanged)
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
     SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
     ENUM_QPROPERTY(EIPVersion, EIPVERSION_NAMES, ipVersion, IPVersion, Config::IPVersion)
@@ -37,14 +38,23 @@ class SettingsScreenGUI : public QObject
         explicit SettingsScreenGUI(QObject* parent = 0);
 
         bool GetFileNameValid();
+        bool GetSubFoldersValid();
         bool GetAllSettingsValid() const;
 
         Q_INVOKABLE void LeavingScreen();
     private:
+        char _fileNameOpeningChar;
+        char _fileNameClosingChar;
         std::string _fileName;
         bool _fileNameValid;
+
+        char _subFoldersOpeningChar;
+        char _subFoldersClosingChar;
+        std::string _subFolders;
+        bool _subFoldersValid;
     signals:
         void FileNameValidChanged();
+        void SubFoldersValidChanged();
 };
 
 #endif
