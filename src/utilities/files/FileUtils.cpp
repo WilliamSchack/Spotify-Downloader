@@ -79,6 +79,7 @@ std::filesystem::path FileUtils::GetExecutablePath()
 #endif
 }
 
+// TODO: Might be a good idea to cache this, just check it with many files in the target directory
 std::filesystem::path FileUtils::FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName)
 {
     if (!std::filesystem::exists(directory))

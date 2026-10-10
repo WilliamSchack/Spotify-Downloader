@@ -5,9 +5,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/ArrayUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/JsonUtils.h
-	${CMAKE_CURRENT_SOURCE_DIR}/FileUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/MathUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/VariantUtils.h
-	${CMAKE_CURRENT_SOURCE_DIR}/FilePathReserver.h
-	${CMAKE_CURRENT_SOURCE_DIR}/TemporaryPaths.h
 )
+
+add_subdirectory(files)
+add_subdirectory(tags)

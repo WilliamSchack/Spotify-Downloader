@@ -335,8 +335,8 @@ RowLayout {
                                 label: "Artist Separator"
 
                                 CustomTextField {
-                                    text: _manager.settings.artistsSeperator
-                                    onTextEdited: _manager.settings.artistsSeperator = text
+                                    text: _manager.settings.artistsSeparator
+                                    onTextEdited: _manager.settings.artistsSepanrator = text
                                 }
                             }
 
