@@ -174,3 +174,14 @@ unsigned int StringUtils::TimeToMilliseconds(const std::string& string)
 
     return milliseconds;
 };
+
+std::string StringUtils::PadInteger(const int& value, const int& digits)
+{
+    std::string string = std::to_string(value);
+    int digitsRequired = digits - string.length();
+    if (digits <= 0)
+        return string;
+
+    string.insert(0, digitsRequired, '0');
+    return string;
+}

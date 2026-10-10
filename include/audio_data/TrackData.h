@@ -1,6 +1,7 @@
 #ifndef TRACKDATA_H
 #define TRACKDATA_H
 
+#include "StringUtils.h"
 #include "EPlatform.h"
 #include "ArtistData.h"
 #include "AlbumData.h"
@@ -34,16 +35,31 @@ struct TrackData
     TrackData(EPlatform platform) : Platform(platform), Album(platform) {}
     void Print() const;
 
+    std::string GetUniqueId() const
+    {
+        // Id could be the same across platforms
+        return std::to_string((int)Platform) + Id;
+    }
+
     void SetDuration(unsigned int ms)
     {
         DurationMilliseconds = ms;
         DurationSeconds = ms / 1000;
     }
 
-    std::string GetUniqueId() const
+    std::string GetDurationMinutes()
     {
-        // Id could be the same across platforms
-        return std::to_string((int)Platform) + Id;
+        int minutes = DurationSeconds / 60;
+        int seconds = DurationSeconds % 60;
+        return StringUtils::PadInteger(minutes, 2) + ":" + StringUtils::PadInteger(seconds, 2);
+    }
+
+    std::string GetDurationHours()
+    {
+        int hours = DurationSeconds / 3600;
+        int minutes = (DurationSeconds % 3600) / 60;
+        int seconds = DurationSeconds % 60;
+        return StringUtils::PadInteger(hours, 2) + ":" + StringUtils::PadInteger(minutes, 2) + ":" + StringUtils::PadInteger(seconds, 2);;
     }
 };
 

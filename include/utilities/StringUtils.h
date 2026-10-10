@@ -26,6 +26,7 @@ class StringUtils
         static double LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2);
         static unsigned int TimeToSeconds(const std::string& string);
         static unsigned int TimeToMilliseconds(const std::string& string);
+        static std::string PadInteger(const int& value, const int& digits);
 };
 
 #endif
