@@ -390,9 +390,20 @@ RowLayout {
                             SettingsItem {
                                 label: "Sub Folders"
 
-                                SingleCharTextField {}
-                                SingleCharTextField {}
-                                CustomTextField {}
+                                SingleCharTextField {
+                                    text: _manager.settings.subFoldersTagsOpening
+                                    onTextEdited: _manager.settings.subFoldersTagsOpening = text
+                                }
+
+                                SingleCharTextField {
+                                    text: _manager.settings.subFoldersTagsClosing
+                                    onTextEdited: _manager.settings.subFoldersTagsClosing = text
+                                }
+
+                                CustomTextField {
+                                    text: _manager.settings.subFolders
+                                    onTextEdited: _manager.settings.subFolders = text
+                                }
                             }
                         }
 
@@ -488,7 +499,7 @@ RowLayout {
                             }
 
                             SettingsItem {
-                                label: "Force IP Version"
+                                label: "IP Version"
 
                                 CustomComboBox {
                                     model: _manager.settings.GetIPVersionOptions()

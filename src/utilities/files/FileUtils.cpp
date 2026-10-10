@@ -12,7 +12,12 @@ std::string FileUtils::ValidateFileName(const std::string& fileName)
 
 std::string FileUtils::ValidateDirectoryName(const std::string& directoryName)
 {
-    return ValidateFileName(directoryName);
+    std::string copiedString = directoryName;
+    for (const char c : INVALID_DIR_CHARS) {
+        StringUtils::RemoveChar(copiedString, c);
+    }
+
+    return copiedString;
 };
 
 std::string FileUtils::PathToUtf8(const std::filesystem::path& path)

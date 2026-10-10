@@ -27,14 +27,21 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     TrackTagHandler tagHandler(track, targetCodec.get());
     TagHandlerResult fileNameTagResult = tagHandler.FormatString(Config::FileName, Config::FileNameTagsOpeningChar, Config::FileNameTagsClosingChar);
     if (fileNameTagResult.Error != ETagError::None) {
-        std::cout << "Could not set the track file name with the error: " + fileNameTagResult.ErrorString << std::endl;
+        std::cout << "Could not get the track file name with the error: " + fileNameTagResult.ErrorString << std::endl;
+        return result;
+    }
+
+    TagHandlerResult subFolderTagResult = tagHandler.FormatString(Config::SubFolders, Config::SubFoldersTagsOpeningChar, Config::SubFoldersTagsClosingChar);
+    if (fileNameTagResult.Error != ETagError::None) {
+        std::cout << "Could not get the sub folders path with the error: " + fileNameTagResult.ErrorString << std::endl;
         return result;
     }
 
     std::string fileName = fileNameTagResult.FormattedString + "." + targetCodec->GetString();
     fileName = FileUtils::ValidateFileName(fileName);
     
-    std::filesystem::path targetFolder = directory;
+    std::string subFolders = FileUtils::ValidateDirectoryName(subFolderTagResult.FormattedString);
+    std::filesystem::path targetFolder = directory / FileUtils::PathFromUtf8(subFolders);
     std::filesystem::path targetDownloadPath = targetFolder / FileUtils::PathFromUtf8(fileName);
     
     FilePathReserver pathReserver;
@@ -214,7 +221,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::filesystem::remove(targetDownloadPath);
     
     if (!std::filesystem::is_directory(targetFolder))
-        std::filesystem::create_directory(targetFolder);
+        std::filesystem::create_directories(targetFolder);
 
     try {
         std::filesystem::rename(tempDownloadPath, targetDownloadPath);

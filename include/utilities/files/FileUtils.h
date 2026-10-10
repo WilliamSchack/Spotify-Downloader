@@ -32,6 +32,7 @@ class FileUtils
         static std::filesystem::path FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName);
     private:
         inline static const std::string INVALID_FILE_CHARS = R"(<>:"/\|?*)";
+        inline static const std::string INVALID_DIR_CHARS  = R"(<>:"|?*)";
 };
 
 #endif

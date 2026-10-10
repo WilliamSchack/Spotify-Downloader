@@ -21,9 +21,12 @@ class SettingsScreenGUI : public QObject
     CHAR_QPROPERTY(fileNameTagsOpening, FileNameTagsOpening, Config::FileNameTagsOpeningChar)
     CHAR_QPROPERTY(fileNameTagsClosing, FileNameTagsClosing, Config::FileNameTagsClosingChar)
     STRING_QPROPERTY(fileName, FileName, Config::FileName)
+    CHAR_QPROPERTY(subFoldersTagsOpening, SubFoldersTagsOpening, Config::SubFoldersTagsOpeningChar)
+    CHAR_QPROPERTY(subFoldersTagsClosing, SubFoldersTagsClosing, Config::SubFoldersTagsClosingChar)
+    STRING_QPROPERTY(subFolders, SubFolders, Config::SubFolders)
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
     SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
-    ENUM_QPROPERTY(EIPVersion, EIPVERSION_NAMES, ipVersion, IPVersion, Config::ForceIPVersion)
+    ENUM_QPROPERTY(EIPVersion, EIPVERSION_NAMES, ipVersion, IPVersion, Config::IPVersion)
     SIMPLE_QPROPERTY(bool, autoOpenDownloadFolder, AutoOpenDownloadFolder, Config::AutoOpenDownloadFolder)
 
     public:

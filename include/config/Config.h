@@ -28,6 +28,9 @@ class Config
         static inline char FileNameTagsOpeningChar = '<';
         static inline char FileNameTagsClosingChar = '>';
         static inline std::string FileName = "<Song Name> - <Song Artist>";
+        static inline char SubFoldersTagsOpeningChar = '<';
+        static inline char SubFoldersTagsClosingChar = '>';
+        static inline std::string SubFolders = "";
 
         // Lyrics File
 
@@ -36,7 +39,7 @@ class Config
         // Downloading
         static inline int PerDownloadThreads = 6;
         static inline double DownloadSpeedLimit = 0.0;
-        static inline EIPVersion ForceIPVersion = EIPVersion::Automatic;
+        static inline EIPVersion IPVersion = EIPVersion::Automatic;
 
         // YouTube
 
