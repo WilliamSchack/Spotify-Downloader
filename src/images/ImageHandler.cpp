@@ -12,8 +12,7 @@ std::string ImageHandler::GetImageFormatString(const EImageFormat& format)
 
 EImageFormat ImageHandler::GetImageFormat(const std::string& string)
 {
-    std::string format = string;
-    StringUtils::ToLower(format);
+    std::string format = StringUtils::ToLower(string);
 
     if (format == "png")                     return EImageFormat::PNG;
     if (format == "jpg" || format == "jpeg") return EImageFormat::JPG;

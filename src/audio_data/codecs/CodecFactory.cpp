@@ -20,8 +20,7 @@ std::unique_ptr<ICodec> CodecFactory::Create(const std::string& extension)
     if (extension.empty())
         return nullptr;
 
-    std::string extensionLower = extension;
-    StringUtils::ToLower(extensionLower);
+    std::string extensionLower = StringUtils::ToLower(extension);
 
     // Remove dot at the front if it has one
     if (StringUtils::StartsWith(extensionLower, "."))

@@ -272,7 +272,7 @@ std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, co
 
 			std::string resultTypes[] { "artist", "playlist", "song", "video", "station", "profile" };
 			std::string resultType = data["subtitle"]["runs"][0]["text"];
-			StringUtils::ToLower(resultType);
+			resultType = StringUtils::ToLower(resultType);
 
 			if (!ArrayUtils::Contains(resultTypes, resultType))
 				resultType = "album";
@@ -1070,7 +1070,7 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 		if (resultType == "") {
 			std::string resultTypes[] { "artist", "playlist", "song", "video", "station", "profile" };
 			std::string resultTypeLocal = GetItemText(data, 1);
-			StringUtils::ToLower(resultTypeLocal);
+			resultTypeLocal = StringUtils::ToLower(resultTypeLocal);
 
 			if (!ArrayUtils::Contains(resultTypes, resultTypeLocal)) {
 				resultType = "album";

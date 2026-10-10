@@ -137,8 +137,8 @@ YtdlpError Ytdlp::GetError(const std::string& errorString)
         return error;
 
     error.Parsed = errorString;
-    std::string errorLower = errorString;
-    StringUtils::ToLower(errorLower);
+    std::string errorLower = StringUtils::ToLower(errorString);
+    
 
     if (StringUtils::Contains(errorLower, "invalid po_token configuration")) {
         error.Details = "PO Token is invalid";

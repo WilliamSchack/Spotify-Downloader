@@ -16,7 +16,7 @@ class StringUtils
         static bool StartsWith(const std::string& string, const std::string& value);
         static bool Contains(const std::string& string, const std::string& value);
         static bool Contains(const std::wstring& string, const std::wstring& value);
-        static void ToLower(std::string& string);
+        static std::string ToLower(const std::string& string);
         static std::string ReplaceAll(std::string string, const std::string& from, const std::string& to);
         static void RemoveChar(std::string& string, const char& c);
         static void RemoveChar(std::wstring& string, const char& c);

@@ -94,10 +94,8 @@ float YoutubeSearcher::ScoreTrack(const TrackData& src, const TrackData& track)
     float totalScore = 0;
 
     // Check the similarities of the names
-    std::string nameLower = src.Name;
-    std::string secondNameLower = track.Name;
-    StringUtils::ToLower(nameLower);
-    StringUtils::ToLower(secondNameLower);
+    std::string nameLower = StringUtils::ToLower(src.Name);
+    std::string secondNameLower = StringUtils::ToLower(track.Name);
 
     float titleRegularScore = StringUtils::LevenshteinDistanceSimilarity(src.Name, track.Name);
     float titleLowerScore = StringUtils::LevenshteinDistanceSimilarity(nameLower, secondNameLower);

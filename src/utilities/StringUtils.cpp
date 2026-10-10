@@ -27,10 +27,13 @@ bool StringUtils::Contains(const std::wstring& string, const std::wstring& value
     return string.find(value) != std::string::npos;
 }
 
-void StringUtils::ToLower(std::string& string)
+std::string StringUtils::ToLower(const std::string& string)
 {
-    std::transform(string.begin(), string.end(), string.begin(),
+    std::string stringLower = string;
+    std::transform(stringLower.begin(), stringLower.end(), stringLower.begin(),
         [](unsigned char c){ return std::tolower(c); });
+
+    return stringLower;
 }
 
 std::string StringUtils::ReplaceAll(std::string string, const std::string& from, const std::string& to)

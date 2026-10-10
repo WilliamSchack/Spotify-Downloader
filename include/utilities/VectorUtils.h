@@ -2,6 +2,7 @@
 #define VECTORUTILS_H
 
 #include <vector>
+#include <algorithm>
 
 class VectorUtils
 {
