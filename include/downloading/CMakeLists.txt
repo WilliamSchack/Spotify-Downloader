@@ -7,4 +7,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadEventsQueue.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadProgress.h
 	${CMAKE_CURRENT_SOURCE_DIR}/DownloadResult.h
+	${CMAKE_CURRENT_SOURCE_DIR}/EIPVersion.h
 )

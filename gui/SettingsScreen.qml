@@ -486,6 +486,16 @@ RowLayout {
                                     hasRightLabel: true
                                 }
                             }
+
+                            SettingsItem {
+                                label: "Force IP Version"
+
+                                CustomComboBox {
+                                    model: _manager.settings.GetIPVersionOptions()
+                                    currentIndex: _manager.settings.ipVersion
+                                    onActivated: (index) => { _manager.settings.ipVersion = index }
+                                }
+                            }
                         }
                     }
 

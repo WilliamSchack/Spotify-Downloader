@@ -47,7 +47,7 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
-// Converts char to QString, storing as ' ' when empty. This also whitespaces invalid characters
+// Converts char to QString, storing as ' ' when empty. This also makes whitespaces invalid characters
 #define CHAR_QPROPERTY(qmlName, functionName, variable) \
     Q_PROPERTY(QString qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
     Q_SIGNALS: \

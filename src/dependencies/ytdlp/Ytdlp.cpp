@@ -103,6 +103,15 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     if (!MathUtils::DoublesEqual(0, Config::DownloadSpeedLimit))
         process.AddArgument("--limit-rate", std::to_string(Config::DownloadSpeedLimit) + "M");
 
+    switch (Config::ForceIPVersion) {
+        case EIPVersion::IPv4:
+            process.AddArgument("--force-ipv4");
+            break;
+        case EIPVersion::IPv6:
+            process.AddArgument("--force-ipv6");
+            break;
+    }
+
     process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 

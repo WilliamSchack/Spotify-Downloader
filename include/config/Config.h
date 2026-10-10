@@ -4,6 +4,7 @@
 #include "EExtension.h"
 #include "ELyricsSource.h"
 #include "ETrackNumberType.h"
+#include "EIPVersion.h"
 
 #include <string>
 
@@ -35,6 +36,7 @@ class Config
         // Downloading
         static inline int PerDownloadThreads = 6;
         static inline double DownloadSpeedLimit = 0.0;
+        static inline EIPVersion ForceIPVersion = EIPVersion::Automatic;
 
         // YouTube
 
