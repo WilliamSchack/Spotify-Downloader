@@ -7,6 +7,15 @@ Switch {
     implicitHeight: parent.height
     implicitWidth: 50
 
+    property bool initialized: false
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onPressed: (mouse) => { mouse.accepted = false }
+    }
+
     contentItem: Item {}
 
     indicator: Rectangle {
@@ -23,6 +32,25 @@ Switch {
             color: "white"
 
             x: root.checked ? parent.width - width - 2 : 2
+
+            Behavior on x {
+                enabled: root.initialized
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        initialized = true
     }
 }

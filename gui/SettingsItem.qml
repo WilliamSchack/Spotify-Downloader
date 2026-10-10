@@ -7,12 +7,15 @@ Item {
 
     property alias label: text.text
     property bool valid: true
+
     default property alias content: inputs.children
 
     width: parent.width
     height: 25
 
     HoverHandler {
+        id: hoverHandler
+
         onHoveredChanged: {
             if (hovered) {
                 fillShape.show()
@@ -39,6 +42,13 @@ Item {
             id: fillParent
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            onWidthChanged: {
+                if (hoverHandler.hovered) {
+                    fillShape.width = width
+                    fillShape.x = 0
+                }
+            }
 
             Shape {
                 id: fillShape
@@ -115,8 +125,16 @@ Item {
             Layout.preferredHeight: parent.height - 5
             Layout.preferredWidth: parent.height - 5
 
-            visible: !root.valid
+            visible: !root.valid || opacity > 0
+            opacity: root.valid ? 0 : 1
             color: "red"
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
 
         Row {

@@ -2,6 +2,8 @@
 
 SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 {
+    connect(this, &SettingsScreenGUI::FileNameTagsOpeningChanged, this, &SettingsScreenGUI::FileNameValidChanged);
+    connect(this, &SettingsScreenGUI::FileNameTagsClosingChanged, this, &SettingsScreenGUI::FileNameValidChanged);
     connect(this, &SettingsScreenGUI::FileNameChanged, this, &SettingsScreenGUI::FileNameValidChanged);
 
     _fileName = Config::FileName;

@@ -24,7 +24,14 @@ TextField {
         width: root.width
         radius: 3
 
-        color: root.valid ? "white" : '#f5bcb9'
+        color: root.valid ? "white" : '#ffdedd'
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+        }
     }
 
     Text {
