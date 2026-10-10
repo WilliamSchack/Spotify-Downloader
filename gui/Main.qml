@@ -10,9 +10,6 @@ Window
     title: qsTr("Minimal Qml")
     color: "#8f95d3"
 
-    readonly property string selectedButtonColour: "#A16583";
-    readonly property string unselectedButtonColour: Qt.alpha("#3A3A3A", 0.5);
-
     enum EScreen
     {
         Main,
@@ -20,8 +17,22 @@ Window
         Settings
     }
 
+    readonly property string selectedButtonColour: "#A16583";
+    readonly property string unselectedButtonColour: Qt.alpha("#3A3A3A", 0.5);
+
+    property int currentScreen: Main.EScreen.Main;
+
     // screen is type of EScreen
     function switchScreen(screen: int) {
+        if (currentScreen == Main.EScreen.Settings)  {
+            // Cannot leave if any settings are invalid
+            if (!_manager.settings.allSettingsValid)
+                return;
+            
+            if (screen != Main.EScreen.Settings)
+                _manager.settings.LeavingScreen()
+        }
+
         switch (screen) {
             case Main.EScreen.Main:
                 screenLoader.source = "MusicScreen.qml"
@@ -45,6 +56,8 @@ Window
             default:
                 return;
         }
+
+        currentScreen = screen
     }
 
     // Outer Margin

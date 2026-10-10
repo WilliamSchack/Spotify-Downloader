@@ -17,11 +17,14 @@ TextField {
     color: enabled ? "black" : "grey"
 
     property bool hasRightLabel: false
+    property bool valid: true
     property alias rightText: rightLabel.text
 
     background: Rectangle {
         width: root.width
         radius: 3
+
+        color: root.valid ? "white" : '#f5bcb9'
     }
 
     Text {

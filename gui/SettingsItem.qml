@@ -6,6 +6,7 @@ Item {
     id: root
 
     property alias label: text.text
+    property bool valid: true
     default property alias content: inputs.children
 
     width: parent.width
@@ -107,6 +108,15 @@ Item {
                     }
                 }
             }
+        }
+
+        // TODO: Change to warning/error icon
+        Rectangle {
+            Layout.preferredHeight: parent.height - 5
+            Layout.preferredWidth: parent.height - 5
+
+            visible: !root.valid
+            color: "red"
         }
 
         Row {

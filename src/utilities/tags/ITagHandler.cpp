@@ -3,6 +3,7 @@
 TagHandlerResult ITagHandler::FormatString(const std::string& string, const char& openingChar, const char& closingChar)
 {
     TagHandlerResult result;
+    result.Error = ETagError::None;
 
     if (std::isblank(openingChar) || std::isblank(closingChar)) {
         result.Error = ETagError::InvalidEnclosingChars;
@@ -16,11 +17,21 @@ TagHandlerResult ITagHandler::FormatString(const std::string& string, const char
         int nextOpeningIndex = string.find(openingChar, currentCharIndex);
         int nextClosingIndex = string.find(closingChar, currentCharIndex);
 
-        if (nextOpeningIndex == -1 || nextClosingIndex == -1) {
-            std::string afterTagString = string.substr(currentCharIndex, string.length() - currentCharIndex);
-            formattedString.append(afterTagString);
-
+        if (nextOpeningIndex == -1 && nextClosingIndex == -1) {
+            formattedString.append(string.substr(currentCharIndex));
             break;
+        }
+
+        if (nextOpeningIndex == -1 || nextClosingIndex == -1) {
+            result.Error = ETagError::InvalidEnclosingChars;
+            result.ErrorString = "Unmatched opening/closing character";
+            return result;
+        }
+
+        if (nextClosingIndex < nextOpeningIndex) {
+            result.Error = ETagError::InvalidEnclosingChars;
+            result.ErrorString = "Closing character is before the opening character";
+            return result;
         }
 
         std::string beforeTagString = string.substr(currentCharIndex, nextOpeningIndex - currentCharIndex);

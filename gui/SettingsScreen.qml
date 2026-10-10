@@ -370,7 +370,8 @@ RowLayout {
                             // TODO: Add validation
                             SettingsItem {
                                 label: "File Name"
-
+                                valid: _manager.settings.fileNameValid
+                                
                                 SingleCharTextField {
                                     text: _manager.settings.fileNameTagsOpening
                                     onTextEdited: _manager.settings.fileNameTagsOpening = text
@@ -384,6 +385,8 @@ RowLayout {
                                 CustomTextField {
                                     text: _manager.settings.fileName
                                     onTextEdited: _manager.settings.fileName = text
+
+                                    valid: _manager.settings.fileNameValid
                                 }
                             }
 
