@@ -1,8 +1,8 @@
 #include "MusicScreenGUI.h"
 
-MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
+MusicScreenGUI::MusicScreenGUI(QWindow* mainWindow, QObject* parent) : QObject(parent)
 {
-    _addTracksPopup = new AddTracksPopup(this);
+    _addTracksPopup = new AddTracksPopup(mainWindow, this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
 
     // Frequently check download events

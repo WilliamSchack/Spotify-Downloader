@@ -4,4 +4,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsScreenGUI.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/TrackUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/FileDialogUtils.cpp
 )

@@ -14,11 +14,12 @@ class GUIManager : public QObject
     Q_PROPERTY(QObject* settings READ GetSettingsManager CONSTANT)
 
     public:
-        explicit GUIManager(QObject* parent = 0);
+        explicit GUIManager(QWindow* mainWindow, QObject* parent = 0);
     
         MusicScreenGUI* GetMusicManager() const;
         SettingsScreenGUI* GetSettingsManager() const;
     private:
+        QWindow* _mainWindow;
         MusicScreenGUI* _musicManager;
         SettingsScreenGUI* _settingsManager;
 };

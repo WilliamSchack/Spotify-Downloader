@@ -20,7 +20,7 @@ class MusicScreenGUI : public QObject
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
 
     public:
-        explicit MusicScreenGUI(QObject* parent = 0);
+        explicit MusicScreenGUI(QWindow* mainWindow, QObject* parent = 0);
 
         AddTracksPopup* GetAddTracksPopup() const;
         QList<QObject*> GetTracks() const;

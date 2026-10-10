@@ -1,8 +1,8 @@
 #ifndef SETTINGSSCREENGUI_H
 #define SETTINGSSCREENGUI_H
 
-#include "Config.h"
 #include "EasyQProperties.h"
+#include "Config.h"
 #include "TrackTagHandler.h"
 
 #include <QObject>

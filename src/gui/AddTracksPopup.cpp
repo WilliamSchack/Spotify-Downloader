@@ -1,6 +1,6 @@
 #include "AddTracksPopup.h"
 
-AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent) {}
+AddTracksPopup::AddTracksPopup(QWindow* mainWindow, QObject* parent) : _mainWindow(mainWindow), QObject(parent) {}
 
 bool AddTracksPopup::GetVisible() const
 {
@@ -55,9 +55,16 @@ void AddTracksPopup::PasteButtonClicked()
 
 void AddTracksPopup::FolderButtonClicked()
 {
-    QString folder = QFileDialog::getExistingDirectory(nullptr, "Choose output directory", "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (!folder.isEmpty())
-        SetFolderInputText(folder);
+    QFileDialog dialog(nullptr, "Choose output directory", "");
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog);
+    FileDialogUtils::SetParent(dialog, _mainWindow);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        QString folder = dialog.selectedFiles().first();
+        if (!folder.isEmpty())
+            SetFolderInputText(folder);
+    }
 }
 
 void AddTracksPopup::DownloadButtonClicked()

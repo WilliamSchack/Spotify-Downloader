@@ -1,11 +1,12 @@
 #ifndef ADDTRACKSPOPUP_H
 #define ADDTRACKSPOPUP_H
 
+#include "FileDialogUtils.h"
+
 #include <functional>
 #include <string>
 
 #include <QApplication>
-#include <QFileDialog>
 #include <QClipboard>
 
 class AddTracksPopup : public QObject
@@ -16,7 +17,7 @@ class AddTracksPopup : public QObject
     Q_PROPERTY(QString linkInputText READ GetLinkInputText WRITE SetLinkInputText NOTIFY LinkInputTextChanged)
 
     public:
-        explicit AddTracksPopup(QObject* parent = 0);
+        explicit AddTracksPopup(QWindow* mainWindow, QObject* parent = 0);
 
         bool GetVisible() const;
         void SetVisible(const bool& visible);
@@ -31,6 +32,8 @@ class AddTracksPopup : public QObject
         void FolderButtonClicked();
         void DownloadButtonClicked();
     private:
+        QWindow* _mainWindow;
+
         bool _visible = true;
 
         QString _linkInputText = "";

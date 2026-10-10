@@ -7,4 +7,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsScreenGUI.h
 	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.h
 	${CMAKE_CURRENT_SOURCE_DIR}/TrackUI.h
+	${CMAKE_CURRENT_SOURCE_DIR}/FileDialogUtils.h
 )

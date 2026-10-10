@@ -4,7 +4,6 @@
 // These just make it easy to repeat properties without manually defining each function
 // Mainly created to avoid rewriting each config property
 
-#include <QMetaEnum>
 #include <QStringList>
 
 class EasyQProperties {
