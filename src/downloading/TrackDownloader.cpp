@@ -178,18 +178,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // == Assign metadata
     SetProgress(progressCallback, DownloadProgress(1.0, "Assigning Metadata..."));
 
-    int trackNumber = 1;
-    switch (Config::TrackNumberType) {
-        case ETrackNumberType::Playlist:
-            trackNumber = track.PlaylistTrackNumber == 0 ? track.TrackNumber : track.PlaylistTrackNumber;
-            break;
-        case ETrackNumberType::Album:
-            trackNumber = track.TrackNumber;
-            break;
-        case ETrackNumberType::Disc:
-            trackNumber = track.DiscNumber;
-            break;
-    }
+    int trackNumber = MetadataManager::GetTrackNumber(track);
 
     std::string publisherText = "Downloaded through " + std::string(APP_NAME) + " by William Schack";
     std::string copyrightText = "";

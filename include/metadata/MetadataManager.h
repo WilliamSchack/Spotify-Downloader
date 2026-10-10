@@ -71,11 +71,14 @@ class MetadataManager
 
         TrackData GetAll() const;
 
+        // Saves and frees up the file for other apps to use
+        void Close();
+
+        // TODO: Split the following functions into another file
         static std::string CombineArtistNames(const std::vector<ArtistData>& artists, const std::string& separator);
         static std::vector<std::string> SplitArtistNames(const std::string& artists, const std::string& separator);
 
-        // Saves and frees up the file for other apps to use
-        void Close();
+        static int GetTrackNumber(const TrackData& track);
     private:
         const char* GetTagId(const EMetadataTag& tag) const;
 

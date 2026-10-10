@@ -271,6 +271,24 @@ std::vector<std::string> MetadataManager::SplitArtistNames(const std::string& ar
     return StringUtils::Split(artists, separator);
 }
 
+int MetadataManager::GetTrackNumber(const TrackData& track)
+{
+    int trackNumber = 1;
+    switch (Config::TrackNumberType) {
+        case ETrackNumberType::Playlist:
+            trackNumber = track.PlaylistTrackNumber == 0 ? track.TrackNumber : track.PlaylistTrackNumber;
+            break;
+        case ETrackNumberType::Album:
+            trackNumber = track.TrackNumber;
+            break;
+        case ETrackNumberType::Disc:
+            trackNumber = track.DiscNumber;
+            break;
+    }
+
+    return trackNumber;
+}
+
 const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
 {
     // Tags that are handled through taglib functions or are not supported are not listed here

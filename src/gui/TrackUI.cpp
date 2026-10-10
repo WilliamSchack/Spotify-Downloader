@@ -7,21 +7,7 @@ TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _dat
 
 int TrackUI::GetTrackNumber() const
 {
-    // TODO: Replace with function for TrackDownloader to use aswell
-    int trackNumber = 1;
-    switch (Config::TrackNumberType) {
-        case ETrackNumberType::Playlist:
-            trackNumber = _data.PlaylistTrackNumber == 0 ? _data.TrackNumber : _data.PlaylistTrackNumber;
-            break;
-        case ETrackNumberType::Album:
-            trackNumber = _data.TrackNumber;
-            break;
-        case ETrackNumberType::Disc:
-            trackNumber = _data.DiscNumber;
-            break;
-    }
-
-    return trackNumber;
+    return MetadataManager::GetTrackNumber(_data);
 }
 
 QString TrackUI::GetName() const
