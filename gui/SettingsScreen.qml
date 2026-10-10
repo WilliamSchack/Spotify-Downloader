@@ -367,12 +367,24 @@ RowLayout {
                                 }
                             }
 
+                            // TODO: Add validation
                             SettingsItem {
                                 label: "File Name"
 
-                                SingleCharTextField {}
-                                SingleCharTextField {}
-                                CustomTextField {}
+                                SingleCharTextField {
+                                    text: _manager.settings.fileNameTagsOpening
+                                    onTextEdited: _manager.settings.fileNameTagsOpening = text
+                                }
+
+                                SingleCharTextField {
+                                    text: _manager.settings.fileNameTagsClosing
+                                    onTextEdited: _manager.settings.fileNameTagsClosing = text
+                                }
+
+                                CustomTextField {
+                                    text: _manager.settings.fileName
+                                    onTextEdited: _manager.settings.fileName = text
+                                }
                             }
 
                             SettingsItem {

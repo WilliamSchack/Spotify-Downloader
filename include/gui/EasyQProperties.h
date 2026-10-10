@@ -47,6 +47,22 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
+// Converts char to QString, storing as ' ' when empty. This also whitespaces invalid characters
+#define CHAR_QPROPERTY(qmlName, functionName, variable) \
+    Q_PROPERTY(QString qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
+    Q_SIGNALS: \
+        void functionName##Changed(); \
+    public: \
+        QString Get##functionName() const { return std::isblank(variable) ? "" : QString(QChar(variable)); } \
+        void Set##functionName(QString value) { \
+            char castedValue = value.isEmpty() ? ' ' : value.at(0).toLatin1(); \
+            bool isBlank = std::isblank(castedValue); \
+            if (isBlank) castedValue = ' '; \
+            if (variable == castedValue && !isBlank) return; \
+            variable = castedValue; \
+            emit functionName##Changed(); \
+        }
+
 // Makes an int property
 // Could use Q_ENUM but I would need to change every enum file and pollute the c++ only code with qt
 #define ENUM_QPROPERTY(enumType, enumStrings, qmlName, functionName, variable) \
