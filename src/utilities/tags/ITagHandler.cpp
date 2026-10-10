@@ -6,6 +6,7 @@ TagHandlerResult ITagHandler::FormatString(const std::string& string, const char
 
     if (std::isblank(openingChar) || std::isblank(closingChar)) {
         result.Error = ETagError::InvalidEnclosingChars;
+        result.ErrorString = "One or both of the enclosing chars are blank";
         return result;
     }
 
@@ -31,6 +32,7 @@ TagHandlerResult ITagHandler::FormatString(const std::string& string, const char
         TagReplacerResult tagReplacerResult = TagReplacer(tag);
         if (!tagReplacerResult.TagReplaced) {
             result.Error = ETagError::InvalidTag;
+            result.ErrorString = tag + " is an invalid tag";
             result.InvalidTag = tag;
             return result;
         }

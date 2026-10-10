@@ -24,7 +24,14 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
     }
 
-    std::string fileName = track.Name + " - " + track.Artists[0].Name + "." + targetCodec->GetString();
+    TrackTagHandler tagHandler(track, targetCodec.get());
+    TagHandlerResult fileNameTagResult = tagHandler.FormatString(Config::FileName, Config::FileNameTagsOpeningChar, Config::FileNameTagsClosingChar);
+    if (fileNameTagResult.Error != ETagError::None) {
+        std::cout << "Could not set the track file name with the error: " + fileNameTagResult.ErrorString << std::endl;
+        return result;
+    }
+
+    std::string fileName = fileNameTagResult.FormattedString + "." + targetCodec->GetString();
     fileName = FileUtils::ValidateFileName(fileName);
     
     std::filesystem::path targetFolder = directory;

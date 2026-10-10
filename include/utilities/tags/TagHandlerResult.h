@@ -15,6 +15,7 @@ struct TagHandlerResult
     std::string FormattedString;
 
     ETagError Error;
+    std::string ErrorString;
     std::string InvalidTag;
 };
 

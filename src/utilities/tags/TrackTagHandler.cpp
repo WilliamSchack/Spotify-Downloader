@@ -1,6 +1,6 @@
 #include "TrackTagHandler.h"
 
-TrackTagHandler::TrackTagHandler(const TrackData& track) : _track(track) {}
+TrackTagHandler::TrackTagHandler(const TrackData& track, const ICodec* codec) : _track(track), _codec(codec) {}
 
 TagReplacerResult TrackTagHandler::TagReplacer(const std::string& tag)
 {
@@ -39,7 +39,8 @@ TagReplacerResult TrackTagHandler::TagReplacer(const std::string& tag)
 			tagReplacement = MetadataManager::CombineArtistNames(_track.Album.Artists, ", ");
 			break;
 		case 6: // Codec
-			
+            if (_codec != nullptr)
+                tagReplacement = _codec->GetString();
 			break;
 		case 7: // Track Number
 			tagReplacement = std::to_string(MetadataManager::GetTrackNumber(_track));
@@ -57,10 +58,10 @@ TagReplacerResult TrackTagHandler::TagReplacer(const std::string& tag)
             tagReplacement = std::to_string(_track.DurationSeconds);
 			break;
 		case 12: // Song Time Minutes
-            tagReplacement = _track.GetDurationMinutes();
+            tagReplacement = StringUtils::ReplaceAll(_track.GetDurationMinutes(), ":", ".");
 			break;
 		case 13: // Song Time Hours
-			tagReplacement = _track.GetDurationHours();
+			tagReplacement = StringUtils::ReplaceAll(_track.GetDurationHours(), ":", ".");
 			break;
 		case 14: // Year
             tagReplacement = _track.ReleaseYear;

@@ -1,11 +1,12 @@
 #ifndef TRACKTAGHANDLER_H
 #define TRACKTAGHANDLER_H
 
+#include "ITagHandler.h"
 #include "VectorUtils.h"
 #include "StringUtils.h"
 #include "MetadataManager.h"
-#include "ITagHandler.h"
 #include "TrackData.h"
+#include "ICodec.h"
 
 #include <vector>
 
@@ -33,11 +34,12 @@ class TrackTagHandler : public ITagHandler
             "day"
         };
     public:
-        TrackTagHandler(const TrackData& track);
+        TrackTagHandler(const TrackData& track, const ICodec* codec = nullptr);
     private:
         TagReplacerResult TagReplacer(const std::string& tag);
     private:
         TrackData _track;
+        const ICodec* _codec = nullptr;
 };
 
 #endif
