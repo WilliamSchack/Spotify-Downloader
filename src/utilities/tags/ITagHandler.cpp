@@ -25,7 +25,7 @@ TagHandlerResult ITagHandler::FormatString(const std::string& string, const char
         std::string beforeTagString = string.substr(currentCharIndex, nextOpeningIndex - currentCharIndex);
         formattedString.append(beforeTagString);
 
-        int tagLength = nextClosingIndex - nextOpeningIndex;
+        int tagLength = nextClosingIndex - nextOpeningIndex - 1;
         std::string tag = string.substr(nextOpeningIndex + 1, tagLength);
 
         TagReplacerResult tagReplacerResult = TagReplacer(tag);

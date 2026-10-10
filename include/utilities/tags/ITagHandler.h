@@ -10,7 +10,8 @@ class ITagHandler
         virtual ~ITagHandler() = default;
 
         TagHandlerResult FormatString(const std::string& string, const char& openingChar, const char& closingChar);
-        virtual TagReplacerResult TagReplacer(std::string tag);
+    private:
+        virtual TagReplacerResult TagReplacer(const std::string& tag) = 0;
 };
 
 #endif
