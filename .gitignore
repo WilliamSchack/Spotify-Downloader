@@ -19,7 +19,7 @@
 *.*#
 core
 !core/
-tags
+/tags
 .DS_Store
 .directory
 *.debug
