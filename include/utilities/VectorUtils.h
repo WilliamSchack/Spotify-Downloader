@@ -30,6 +30,12 @@ class VectorUtils
             if (!Contains(vector, value)) return;
             vector.erase(std::find(vector.begin(), vector.end(), value));
         }
+
+        template<typename T>
+        static void AddRange(std::vector<T>& a, const std::vector<T>& b)
+        {
+            a.insert(a.end(), b.begin(), b.end());
+        }
 };
 
 #endif

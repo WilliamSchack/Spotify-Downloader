@@ -1,13 +1,22 @@
 #include "TrackTagHandler.h"
 
-TrackTagHandler::TrackTagHandler(const TrackData& track, const ICodec* codec) : _track(track), _codec(codec) {}
+TrackTagHandler::TrackTagHandler(const TrackData& track) : _track(track) {}
+
+void TrackTagHandler::SetCodec(const ICodec* codec)
+{
+    _codec = codec;
+}
+
+std::vector<std::string> TrackTagHandler::GetValidTags() const
+{
+    return VALID_TAGS;
+}
 
 TagReplacerResult TrackTagHandler::TagReplacer(const std::string& tag)
 {
     TagReplacerResult result;
     
     std::string tagLower = StringUtils::ToLower(tag);
-
     int indexOfTag = VectorUtils::IndexOf(VALID_TAGS, tagLower);
     if (indexOfTag < 0) {
         result.TagReplaced = false;

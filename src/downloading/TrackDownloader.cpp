@@ -24,7 +24,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
     }
 
-    TrackTagHandler tagHandler(track, targetCodec.get());
+    TrackTagHandler tagHandler(track);
+    tagHandler.SetCodec(targetCodec.get());
     TagHandlerResult fileNameTagResult = tagHandler.FormatString(Config::FileName, Config::FileNameTagsOpeningChar, Config::FileNameTagsClosingChar);
     if (fileNameTagResult.Error != ETagError::None) {
         std::cout << "Could not get the track file name with the error: " + fileNameTagResult.ErrorString << std::endl;

@@ -13,6 +13,16 @@
 class TrackTagHandler : public ITagHandler
 {
     public:
+        TrackTagHandler(const TrackData& track);
+
+        std::vector<std::string> GetValidTags() const;
+        void SetCodec(const ICodec* codec = nullptr);
+    protected:
+        TagReplacerResult TagReplacer(const std::string& tag);
+    protected:
+        TrackData _track;
+        const ICodec* _codec = nullptr;
+    private:
         // TODO: add platform related tags
         static inline const std::vector<std::string> VALID_TAGS {
             "song name",
@@ -33,13 +43,6 @@ class TrackTagHandler : public ITagHandler
             "month",
             "day"
         };
-    public:
-        TrackTagHandler(const TrackData& track, const ICodec* codec = nullptr);
-    private:
-        TagReplacerResult TagReplacer(const std::string& tag);
-    private:
-        TrackData _track;
-        const ICodec* _codec = nullptr;
 };
 
 #endif
