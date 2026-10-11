@@ -9,6 +9,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+// temp
+#include "LyricsFile.h"
+
 // TODO: IMPLEMENT THIS:
 //
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
@@ -47,11 +50,18 @@ int main(int argc, char** argv)
     if (argsUsed) return 0;
 
     QQmlApplicationEngine engine;
+    QQuickStyle::setStyle("Basic");
     engine.load(QUrl("qrc:/gui/Main.qml"));
     
     QWindow* window = QGuiApplication::allWindows().first();
     GUIManager manager(window);
     engine.rootContext()->setContextProperty("_manager", &manager);
+
+    //std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(EPlatform::Spotify);
+    //TrackData track = platform->GetTrack("https://open.spotify.com/track/1RKUoGiLEbcXN4GY4spQDx?si=7972b777acb546f3");
+    //
+    //Lyrics lyrics = LyricsFinder::GetLyrics(track, EPlatform::YouTube);
+    //LyricsFile::Create("/home/william/mnt/main/Music/LyricsTemp", track, lyrics);
 
     //DownloadManager::Download("https://music.youtube.com/watch?v=kky1L2jzc8c", "/home/william/mnt/main/Music/Test");
 

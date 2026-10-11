@@ -2,8 +2,6 @@
 
 GUIManager::GUIManager(QWindow* mainWindow, QObject* parent) : _mainWindow(mainWindow), QObject(parent)
 {
-    QQuickStyle::setStyle("Basic");
-
     _musicManager = new MusicScreenGUI(mainWindow, this);
     _settingsManager = new SettingsScreenGUI(this);
 }
