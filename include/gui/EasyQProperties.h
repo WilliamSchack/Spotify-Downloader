@@ -4,6 +4,8 @@
 // These just make it easy to repeat properties without manually defining each function
 // Mainly created to avoid rewriting each config property
 
+#include "Config.h"
+
 #include <QStringList>
 
 class EasyQProperties {
@@ -77,5 +79,53 @@ class EasyQProperties {
             emit functionName##Changed(); \
         } \
         Q_INVOKABLE QStringList Get##functionName##Options() const { return EasyQProperties::GetEnumStrings(enumStrings); }
+
+// Used to easily create the tag entries since there is a fair bit to do for them
+// This is really only for the SettingsScreenGUI but its cleaner to keep it here
+// Creates private variables:
+// char _{qmlName}TagsOpeningChar
+// char _{qmlName}TagsOpeningChar
+// std::string _{qmlName}
+// bool _{qmlName}Valid
+// Creates private functions to setup the variables, and save them to the config
+// Setup{functionName}
+// Save{functionName}
+// Uses the following config vars:
+// char {configName}TagsOpeningChar
+// char {configName}TagsClosingChar
+// std::string {configName}
+#define TAG_QPROPERTY(qmlName, configName, functionName, tagHandlerType, className) \
+    CHAR_QPROPERTY(qmlName##TagsOpeningChar, functionName##TagsOpeningChar, _##qmlName##TagsOpeningChar) \
+    CHAR_QPROPERTY(qmlName##TagsClosingChar, functionName##TagsClosingChar, _##qmlName##TagsClosingChar) \
+    STRING_QPROPERTY(qmlName, functionName, _##qmlName) \
+    Q_PROPERTY(bool qmlName##Valid READ Get##functionName##Valid NOTIFY functionName##ValidChanged) \
+    Q_SIGNALS: \
+        void functionName##ValidChanged(); \
+    public: \
+        bool Get##functionName##Valid() { \
+            tagHandlerType tagHandler(TrackData(EPlatform::Unknown)); \
+            TagHandlerResult result = tagHandler.FormatString(_##qmlName, _##qmlName##TagsOpeningChar, _##qmlName##TagsClosingChar); \
+            _##qmlName##Valid = result.Error == ETagError::None; \
+            return _##qmlName##Valid; \
+        }; \
+    private: \
+        void Setup##functionName() { \
+            connect(this, &className::functionName##TagsOpeningCharChanged, this, &className::functionName##ValidChanged); \
+            connect(this, &className::functionName##TagsClosingCharChanged, this, &className::functionName##ValidChanged); \
+            connect(this, &className::functionName##Changed, this, &className::functionName##ValidChanged); \
+            _##qmlName##TagsOpeningChar = Config::configName##TagsOpeningChar; \
+            _##qmlName##TagsClosingChar = Config::configName##TagsClosingChar; \
+            _##qmlName = Config::configName; \
+        }; \
+        void Save##functionName() { \
+            Config::configName##TagsOpeningChar = _##qmlName##TagsOpeningChar; \
+            Config::configName##TagsClosingChar = _##qmlName##TagsClosingChar; \
+            Config::configName = _##qmlName; \
+        }; \
+    private: \
+        char _##qmlName##TagsOpeningChar; \
+        char _##qmlName##TagsClosingChar; \
+        std::string _##qmlName; \
+        bool _##qmlName##Valid;
 
 #endif

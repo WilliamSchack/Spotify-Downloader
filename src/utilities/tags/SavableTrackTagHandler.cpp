@@ -1,6 +1,6 @@
 #include "SavableTrackTagHandler.h"
 
-SavableTrackTagHandler::SavableTrackTagHandler(const TrackData& track, const std::filesystem::path& saveLocation) : TrackTagHandler(track), _saveLocation(saveLocation) {}
+SavableTrackTagHandler::SavableTrackTagHandler(const TrackData& track) : TrackTagHandler(track) {}
 
 std::vector<std::string> SavableTrackTagHandler::GetValidTags() const
 {
@@ -8,6 +8,11 @@ std::vector<std::string> SavableTrackTagHandler::GetValidTags() const
     VectorUtils::AddRange(validTags, VALID_TAGS_ABSOLUTE);
 
     return validTags;
+}
+
+void SavableTrackTagHandler::SetSaveLocation(const std::filesystem::path& saveLocation)
+{
+    _saveLocation = saveLocation;
 }
 
 TagReplacerResult SavableTrackTagHandler::TagReplacer(const std::string& tag)

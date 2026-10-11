@@ -10,8 +10,10 @@
 class SavableTrackTagHandler : public TrackTagHandler
 {
     public:
-        SavableTrackTagHandler(const TrackData& track, const std::filesystem::path& saveLocation);
+        SavableTrackTagHandler(const TrackData& track);
+
         std::vector<std::string> GetValidTags() const override;
+        void SetSaveLocation(const std::filesystem::path& saveLocation);
     private:
         TagReplacerResult TagReplacer(const std::string& tag) override;
     private:

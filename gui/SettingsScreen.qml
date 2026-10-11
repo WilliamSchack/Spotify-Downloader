@@ -373,13 +373,13 @@ RowLayout {
                                 valid: _manager.settings.fileNameValid
                                 
                                 SingleCharTextField {
-                                    text: _manager.settings.fileNameTagsOpening
-                                    onTextEdited: _manager.settings.fileNameTagsOpening = text
+                                    text: _manager.settings.fileNameTagsOpeningChar
+                                    onTextEdited: _manager.settings.fileNameTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
-                                    text: _manager.settings.fileNameTagsClosing
-                                    onTextEdited: _manager.settings.fileNameTagsClosing = text
+                                    text: _manager.settings.fileNameTagsClosingChar
+                                    onTextEdited: _manager.settings.fileNameTagsClosingChar = text
                                 }
 
                                 CustomTextField {
@@ -395,13 +395,13 @@ RowLayout {
                                 valid: _manager.settings.subFoldersValid
 
                                 SingleCharTextField {
-                                    text: _manager.settings.subFoldersTagsOpening
-                                    onTextEdited: _manager.settings.subFoldersTagsOpening = text
+                                    text: _manager.settings.subFoldersTagsOpeningChar
+                                    onTextEdited: _manager.settings.subFoldersTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
-                                    text: _manager.settings.subFoldersTagsClosing
-                                    onTextEdited: _manager.settings.subFoldersTagsClosing = text
+                                    text: _manager.settings.subFoldersTagsClosingChar
+                                    onTextEdited: _manager.settings.subFoldersTagsClosingChar = text
                                 }
 
                                 CustomTextField {
@@ -431,13 +431,13 @@ RowLayout {
                                 valid: _manager.settings.lyricsFileNameValid
 
                                 SingleCharTextField {
-                                    text: _manager.settings.lyricsFileNameTagsOpening
-                                    onTextEdited: _manager.settings.lyricsFileNameTagsOpening = text
+                                    text: _manager.settings.lyricsFileNameTagsOpeningChar
+                                    onTextEdited: _manager.settings.lyricsFileNameTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
-                                    text: _manager.settings.lyricsFileNameTagsClosing
-                                    onTextEdited: _manager.settings.lyricsFileNameTagsClosing = text
+                                    text: _manager.settings.lyricsFileNameTagsClosingChar
+                                    onTextEdited: _manager.settings.lyricsFileNameTagsClosingChar = text
                                 }
 
                                 CustomTextField {

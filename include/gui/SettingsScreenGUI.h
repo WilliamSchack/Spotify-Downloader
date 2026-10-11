@@ -21,20 +21,11 @@ class SettingsScreenGUI : public QObject
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
-    CHAR_QPROPERTY(fileNameTagsOpening, FileNameTagsOpening, _fileNameOpeningChar)
-    CHAR_QPROPERTY(fileNameTagsClosing, FileNameTagsClosing, _fileNameClosingChar)
-    STRING_QPROPERTY(fileName, FileName, _fileName)
-    Q_PROPERTY(bool fileNameValid READ GetFileNameValid NOTIFY FileNameValidChanged)
-    CHAR_QPROPERTY(subFoldersTagsOpening, SubFoldersTagsOpening, _subFoldersOpeningChar)
-    CHAR_QPROPERTY(subFoldersTagsClosing, SubFoldersTagsClosing, _subFoldersClosingChar)
-    STRING_QPROPERTY(subFolders, SubFolders, _subFolders)
-    Q_PROPERTY(bool subFoldersValid READ GetSubFoldersValid NOTIFY SubFoldersValidChanged)
+    TAG_QPROPERTY(fileName, FileName, FileName, TrackTagHandler, SettingsScreenGUI)
+    TAG_QPROPERTY(subFolders, SubFolders, SubFolders, TrackTagHandler, SettingsScreenGUI)
 
     SIMPLE_QPROPERTY(bool, createLyricsFile, CreateLyricsFile, Config::CreateLyricsFile)
-    CHAR_QPROPERTY(lyricsFileNameTagsOpening, LyricsFileNameTagsOpening, _lyricsFileNameOpeningChar)
-    CHAR_QPROPERTY(lyricsFileNameTagsClosing, LyricsFileNameTagsClosing, _lyricsFileNameClosingChar)
-    STRING_QPROPERTY(lyricsFileName, LyricsFileName, _lyricsFileName)
-    Q_PROPERTY(bool lyricsFileNameValid READ GetLyricsFileNameValid NOTIFY LyricsFileNameValidChanged)
+    TAG_QPROPERTY(lyricsFileName, LyricsFileName, LyricsFileName, SavableTrackTagHandler, SettingsScreenGUI)
 
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
     SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
@@ -47,31 +38,9 @@ class SettingsScreenGUI : public QObject
     public:
         explicit SettingsScreenGUI(QObject* parent = 0);
 
-        bool GetFileNameValid();
-        bool GetSubFoldersValid();
-        bool GetLyricsFileNameValid();
         bool GetAllSettingsValid() const;
 
         Q_INVOKABLE void LeavingScreen();
-    private:
-        char _fileNameOpeningChar;
-        char _fileNameClosingChar;
-        std::string _fileName;
-        bool _fileNameValid;
-
-        char _subFoldersOpeningChar;
-        char _subFoldersClosingChar;
-        std::string _subFolders;
-        bool _subFoldersValid;
-
-        char _lyricsFileNameOpeningChar;
-        char _lyricsFileNameClosingChar;
-        std::string _lyricsFileName;
-        bool _lyricsFileNameValid;
-    signals:
-        void FileNameValidChanged();
-        void SubFoldersValidChanged();
-        void LyricsFileNameValidChanged();
 };
 
 #endif
