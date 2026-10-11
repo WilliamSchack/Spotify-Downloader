@@ -6,9 +6,9 @@
 
 struct DownloadResult
 {
-    bool Success;
-    std::string FailReason;
-    std::filesystem::path FilePath;
+    bool Success = false;
+    std::string FailReason = "";
+    std::filesystem::path FilePath = "";
 };
 
 #endif

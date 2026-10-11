@@ -5,10 +5,10 @@
 
 struct SynchronisedLyric
 {
-    int StartMs;
-    int EndMs;
+    int StartMs = 0;
+    int EndMs = 0;
 
-    std::string Lyric;
+    std::string Lyric = "";
 
     SynchronisedLyric(const int& startMs, const int& endMs, const std::string& lyric)
         : StartMs(startMs), EndMs(endMs), Lyric(lyric) {}

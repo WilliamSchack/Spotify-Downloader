@@ -12,11 +12,11 @@ enum class ETagError
 
 struct TagHandlerResult
 {
-    std::string FormattedString;
+    std::string FormattedString = "";
 
-    ETagError Error;
-    std::string ErrorString;
-    std::string InvalidTag;
+    ETagError Error = ETagError::None;
+    std::string ErrorString = "";
+    std::string InvalidTag = "";
 };
 
 #endif

@@ -10,26 +10,26 @@
 
 struct TrackProgressEvent
 {
-    std::string TrackUniqueId;
-    float Progress;
-    std::string Message;
+    std::string TrackUniqueId = "";
+    float Progress = 0.0f;
+    std::string Message = "";
 };
 
 struct TrackCoverArtDownloadedEvent
 {
-    std::string TrackUniqueId;
-    std::filesystem::path FilePath;
+    std::string TrackUniqueId = "";
+    std::filesystem::path FilePath = "";
 };
 
 struct TrackSucceededEvent
 {
-    std::string TrackUniqueId;
+    std::string TrackUniqueId = "";
 };
 
 struct TrackFailedEvent
 {
-    std::string TrackUniqueId;
-    std::string Reason;
+    std::string TrackUniqueId = "";
+    std::string Reason = "";
 };
 
 struct DownloadStartedEvent
@@ -39,14 +39,14 @@ struct DownloadStartedEvent
 
 struct DownloadFailedToStartEvent
 {
-    std::string Reason;
+    std::string Reason = "";
 };
 
 struct DownloadsFinishedEvent
 {
-    int FailedDownloads;
-    int SuccessfulDownloads;
-    std::string OutputFolder;
+    int FailedDownloads = 0;
+    int SuccessfulDownloads = 0;
+    std::string OutputFolder = 0;
 };
 
 using DownloadEvent = std::variant<

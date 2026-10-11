@@ -3,8 +3,8 @@
 
 struct DownloadProgress
 {
-    float Progress;
-    std::string Message;
+    float Progress = 0.0f;
+    std::string Message = "";
 
     DownloadProgress(float progress, std::string message) : Progress(progress), Message(message) {}
 };

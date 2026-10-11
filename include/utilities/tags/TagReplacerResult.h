@@ -5,8 +5,8 @@
 
 struct TagReplacerResult
 {
-    std::string Output;
-    bool TagReplaced;
+    std::string Output = "";
+    bool TagReplaced = "";
 };
 
 #endif

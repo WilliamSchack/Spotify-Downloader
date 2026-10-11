@@ -12,9 +12,10 @@
 #include "Ytdlp.h"
 #include "Ffmpeg.h"
 #include "LyricsFinder.h"
+#include "LyricsFile.h"
 #include "FilePathReserver.h"
 #include "TemporaryPaths.h"
-#include "TrackTagHandler.h"
+#include "SavableTrackTagHandler.h"
 #include "DownloadProgress.h"
 #include "DownloadResult.h"
 
