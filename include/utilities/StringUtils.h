@@ -2,11 +2,13 @@
 #define STRINGUTILS_H
 
 #include <string>
+#include <sstream>
 #include <cctype>
 #include <vector>
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <iomanip>
 
 class StringUtils
 {

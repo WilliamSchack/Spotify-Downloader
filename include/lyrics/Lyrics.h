@@ -4,6 +4,7 @@
 #include "ELyricsSource.h"
 #include "ELyricsType.h"
 #include "SynchronisedLyric.h"
+#include "StringUtils.h"
 
 #include <iomanip>
 #include <string>

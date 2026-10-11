@@ -177,11 +177,7 @@ unsigned int StringUtils::TimeToMilliseconds(const std::string& string)
 
 std::string StringUtils::PadInteger(const int& value, const int& digits)
 {
-    std::string string = std::to_string(value);
-    int digitsRequired = digits - string.length();
-    if (digits <= 0)
-        return string;
-
-    string.insert(0, digitsRequired, '0');
-    return string;
+    std::ostringstream ss;
+    ss << std::setw(digits) << std::setfill('0') << value;
+    return ss.str();
 }

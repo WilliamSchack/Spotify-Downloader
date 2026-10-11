@@ -16,18 +16,14 @@ std::string Lyrics::GetString() const
         int seconds = (lyric.StartMs % 60000) / 1000;
         int hundredths = (lyric.StartMs % 1000) / 10;
 
-        std::ostringstream paddedMinutesStream;
-        std::ostringstream paddedSecondsStream;
-        std::ostringstream paddedHundredthsStream;
-        
-        paddedMinutesStream << std::setw(2) << std::setfill('0') << minutes;
-        paddedSecondsStream << std::setw(2) << std::setfill('0') << seconds;
-        paddedHundredthsStream << std::setw(2) << std::setfill('0') << hundredths;
+        std::string minutesString = StringUtils::PadInteger(minutes, 2);
+        std::string secondsString = StringUtils::PadInteger(seconds, 2);
+        std::string hundredthsString = StringUtils::PadInteger(hundredths, 2);
 
         std::string lyricTimestamped = "[";
-        lyricTimestamped += paddedMinutesStream.str() + ":";
-        lyricTimestamped += paddedSecondsStream.str() + ".";
-        lyricTimestamped += paddedHundredthsStream.str() + "]";
+        lyricTimestamped += minutesString + ":";
+        lyricTimestamped += secondsString + ".";
+        lyricTimestamped += hundredthsString + "]";
         lyricTimestamped += lyric.Lyric + "\n";
 
         lyricsString += lyricTimestamped;
