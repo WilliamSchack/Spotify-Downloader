@@ -171,14 +171,14 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // == Get lyrics
-    Lyrics lyrics;
+    Lyrics lyrics(ELyricsSource::Unknown);
     if (Config::GetLyrics) {
         std::cout << "Getting Lyrics..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
 
         // Try source platform
         lyrics = LyricsFinder::GetSourceLyrics(track);
-        
+
         // Try searched platform
         if (lyrics.Type == ELyricsType::None)
             lyrics = LyricsFinder::GetSourceLyrics(searchResult.Data);
@@ -187,7 +187,15 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         if (lyrics.Type == ELyricsType::None)
             lyrics = LyricsFinder::GetBestLyrics(track);
 
-        // TODO: Create LRC File
+        // Create lyrics file
+        if (lyrics.Type != ELyricsType::None && Config::CreateLyricsFile) {
+            SavableTrackTagHandler lyricsFileTagHandler(track);
+            lyricsFileTagHandler.SetCodec(targetCodec.get());
+            lyricsFileTagHandler.SetSaveLocation(directory);
+            TagHandlerResult lyricsFileTagResult = lyricsFileTagHandler.FormatString(Config::LyricsFileName, Config::LyricsFileNameTagsOpeningChar, Config::LyricsFileNameTagsClosingChar);
+            if (lyricsFileTagResult.Error == ETagError::None)
+                LyricsFile::Create(lyricsFileTagResult.FormattedString, track, lyrics);
+        }
     }
 
     // == Assign metadata

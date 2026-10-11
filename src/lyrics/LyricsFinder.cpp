@@ -3,7 +3,7 @@
 Lyrics LyricsFinder::GetLyrics(const TrackData& track, const EPlatform& platform)
 {
     std::unique_ptr<ILyricsPlatform> lyricsPlatform = LyricsPlatformFactory::Create(platform);
-    if (lyricsPlatform == nullptr) return Lyrics();
+    if (lyricsPlatform == nullptr) return Lyrics(ELyricsSource::Unknown);
     
     return lyricsPlatform->GetLyrics(track);
 }
