@@ -47,19 +47,19 @@ struct TrackData
         DurationSeconds = ms / 1000;
     }
 
-    std::string GetDurationMinutes()
+    std::string GetDurationMinutes(const std::string& separator = ":") const
     {
         int minutes = DurationSeconds / 60;
         int seconds = DurationSeconds % 60;
-        return StringUtils::PadInteger(minutes, 2) + ":" + StringUtils::PadInteger(seconds, 2);
+        return StringUtils::PadInteger(minutes, 2) + separator + StringUtils::PadInteger(seconds, 2);
     }
 
-    std::string GetDurationHours()
+    std::string GetDurationHours(const std::string& separator = ":") const
     {
         int hours = DurationSeconds / 3600;
         int minutes = (DurationSeconds % 3600) / 60;
         int seconds = DurationSeconds % 60;
-        return StringUtils::PadInteger(hours, 2) + ":" + StringUtils::PadInteger(minutes, 2) + ":" + StringUtils::PadInteger(seconds, 2);;
+        return StringUtils::PadInteger(hours, 2) + separator + StringUtils::PadInteger(minutes, 2) + separator + StringUtils::PadInteger(seconds, 2);;
     }
 };
 

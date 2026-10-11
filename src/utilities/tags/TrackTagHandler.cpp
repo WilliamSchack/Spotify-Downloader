@@ -58,10 +58,10 @@ TagReplacerResult TrackTagHandler::TagReplacer(const std::string& tag)
             tagReplacement = std::to_string(_track.DurationSeconds);
 			break;
 		case 12: // Song Time Minutes
-            tagReplacement = StringUtils::ReplaceAll(_track.GetDurationMinutes(), ":", ".");
+            tagReplacement = _track.GetDurationMinutes(".");
 			break;
 		case 13: // Song Time Hours
-			tagReplacement = StringUtils::ReplaceAll(_track.GetDurationHours(), ":", ".");
+			tagReplacement = _track.GetDurationHours(".");
 			break;
 		case 14: // Year
             tagReplacement = _track.ReleaseYear;
