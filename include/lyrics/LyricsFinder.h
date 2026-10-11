@@ -9,6 +9,8 @@
 class LyricsFinder
 {
     public:
+        static Lyrics GetLyrics(const TrackData& track, const EPlatform& platform);
+
         // Gets the lyrics from the source platform if it exists
         static Lyrics GetSourceLyrics(const TrackData& source);
 

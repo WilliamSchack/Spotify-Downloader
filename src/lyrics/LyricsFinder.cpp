@@ -1,11 +1,16 @@
 #include "LyricsFinder.h"
 
-Lyrics LyricsFinder::GetSourceLyrics(const TrackData& track)
+Lyrics LyricsFinder::GetLyrics(const TrackData& track, const EPlatform& platform)
 {
-    std::unique_ptr<ILyricsPlatform> lyricsPlatform = LyricsPlatformFactory::Create(track.Platform);
+    std::unique_ptr<ILyricsPlatform> lyricsPlatform = LyricsPlatformFactory::Create(platform);
     if (lyricsPlatform == nullptr) return Lyrics();
     
     return lyricsPlatform->GetLyrics(track);
+}
+
+Lyrics LyricsFinder::GetSourceLyrics(const TrackData& track)
+{
+    return GetLyrics(track, track.Platform);
 }
 
 Lyrics LyricsFinder::GetBestLyrics(const TrackData& track)
