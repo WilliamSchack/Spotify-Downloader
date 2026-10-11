@@ -1,8 +1,10 @@
 #include "Lyrics.h"
 
+Lyrics::Lyrics(const ELyricsSource& source) : Source(source) {}
+
 std::string Lyrics::GetString() const
 {
-    if (Source == ELyricsSource::None)
+    if (Source == ELyricsSource::Unknown)
         return "";
 
     if (Type == ELyricsType::Unsynced)

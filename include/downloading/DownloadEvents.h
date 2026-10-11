@@ -46,7 +46,7 @@ struct DownloadsFinishedEvent
 {
     int FailedDownloads = 0;
     int SuccessfulDownloads = 0;
-    std::string OutputFolder = 0;
+    std::string OutputFolder = "";
 };
 
 using DownloadEvent = std::variant<

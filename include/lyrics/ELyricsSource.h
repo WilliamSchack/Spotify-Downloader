@@ -3,7 +3,7 @@
 
 enum class ELyricsSource
 {
-    None,
+    Unknown,
     YouTube,
     Musixmatch
 };

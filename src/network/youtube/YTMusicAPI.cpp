@@ -1169,10 +1169,12 @@ nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std
 
 Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 {
+    Lyrics lyrics(ELyricsSource::YouTube);
+
 	std::string lyricsBrowseId = GetLyricsBrowseId(videoId);
 
 	if (lyricsBrowseId.empty())
-		return Lyrics();
+		return lyrics;
 
 	nlohmann::json context = GetContext();
 
@@ -1193,16 +1195,15 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 	nlohmann::json json = nlohmann::json::parse(response.Body);
 
 	if (!StringUtils::Contains(response.Body, "contents"))
-		return Lyrics();
+		return lyrics;
 
 	// Look for synced lyrics
 	nlohmann::json data = json["contents"]["elementRenderer"]["newElement"]["type"]["componentType"]["model"]["timedLyricsModel"]["lyricsData"];
 	if (timestamps && !data.empty()) {
 		if (!data.contains("timedLyricsData"))
-			return Lyrics();
+			return lyrics;
 
 		// Setup lyrics source message
-		Lyrics lyrics;
 		lyrics.SourceMessage = "Youtube: " + StringUtils::Split(data["sourceMessage"], "Source: ")[1];
 
 		// Get lyrics
@@ -1253,9 +1254,8 @@ Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
 	// If no synced lyrics found, look for regular lyrics
 	std::string lyricsString = JsonUtils::SafelyNavigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0 }).value("text", "");
 	if (lyricsString.empty())
-		return Lyrics();
+		return lyrics;
 
-	Lyrics lyrics;
 	lyrics.Type = ELyricsType::Unsynced;
 	lyrics.SourceMessage = "YouTube";
 	lyrics.UnsyncedLyrics = lyricsString;

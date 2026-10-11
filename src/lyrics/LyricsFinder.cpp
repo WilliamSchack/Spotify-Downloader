@@ -26,5 +26,5 @@ Lyrics LyricsFinder::GetBestLyrics(const TrackData& track)
         return lyrics;
     }
 
-    return Lyrics();
+    return Lyrics(ELyricsSource::Unknown);
 }

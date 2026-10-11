@@ -15,11 +15,13 @@ struct Lyrics
 {
     ELyricsType Type = ELyricsType::None;
 
-    ELyricsSource Source = ELyricsSource::None;
+    ELyricsSource Source = ELyricsSource::Unknown;
     std::string SourceMessage = "";
 
     std::string UnsyncedLyrics = "";
     std::vector<SynchronisedLyric> SyncedLyrics;
+
+    Lyrics(const ELyricsSource& source);
 
     std::string GetString() const;
 };

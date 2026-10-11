@@ -6,7 +6,7 @@
 struct TagReplacerResult
 {
     std::string Output = "";
-    bool TagReplaced = "";
+    bool TagReplaced = false;
 };
 
 #endif
