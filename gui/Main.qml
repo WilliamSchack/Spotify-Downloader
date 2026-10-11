@@ -24,13 +24,12 @@ Window
 
     // screen is type of EScreen
     function switchScreen(screen: int) {
-        if (currentScreen == Main.EScreen.Settings)  {
+        if (currentScreen == Main.EScreen.Settings && screen != Main.EScreen.Settings)  {
             // Cannot leave if any settings are invalid
             if (!_manager.settings.allSettingsValid)
                 return;
             
-            if (screen != Main.EScreen.Settings)
-                _manager.settings.LeavingScreen()
+            _manager.settings.LeavingScreen()
         }
 
         switch (screen) {

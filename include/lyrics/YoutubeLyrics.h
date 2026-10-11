@@ -3,6 +3,7 @@
 
 #include "ILyricsPlatform.h"
 #include "YTMusicAPI.h"
+#include "PlatformFactory.h"
 
 class YoutubeLyrics : public ILyricsPlatform
 {

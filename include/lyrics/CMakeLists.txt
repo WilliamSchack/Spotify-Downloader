@@ -9,4 +9,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/LyricsPlatformFactory.h
 	${CMAKE_CURRENT_SOURCE_DIR}/SynchronisedLyric.h
 	${CMAKE_CURRENT_SOURCE_DIR}/YoutubeLyrics.h
+	${CMAKE_CURRENT_SOURCE_DIR}/LyricsFile.h
 )
