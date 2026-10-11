@@ -9,6 +9,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+// TODO: IMPLEMENT THIS:
+//
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
 // Get its album details and cache all the songs in it.
 // That way we get all the details for each song (+ disc number which we dont get from the track itself, - release date, we will use the album release date)
@@ -45,11 +47,11 @@ int main(int argc, char** argv)
     if (argsUsed) return 0;
 
     QQmlApplicationEngine engine;
-    
-    GUIManager manager;
-    engine.rootContext()->setContextProperty("_manager", &manager);
-
     engine.load(QUrl("qrc:/gui/Main.qml"));
+    
+    QWindow* window = QGuiApplication::allWindows().first();
+    GUIManager manager(window);
+    engine.rootContext()->setContextProperty("_manager", &manager);
 
     //DownloadManager::Download("https://music.youtube.com/watch?v=kky1L2jzc8c", "/home/william/mnt/main/Music/Test");
 

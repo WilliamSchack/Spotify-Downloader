@@ -112,17 +112,40 @@ Window
                 // Space
                 Rectangle { Layout.fillWidth: true }
 
-                // Buttons (testing)
-                Repeater {
-                    model: 3
-                    CustomButton {
-                        radius: 20
-                        color: "#434343"
-                        hasIcon: false
+                // Minimise
+                CustomButton {
+                    Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
 
-                        Layout.preferredWidth: parent.height
-                        Layout.fillHeight: true
-                    }
+                    radius: 20
+                    color: "#434343"
+                    hasIcon: false
+
+                    onClicked: root.showMinimized()
+                }
+
+                // Maximise
+                CustomButton {
+                    Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
+
+                    radius: 20
+                    color: "#434343"
+                    hasIcon: false
+
+                    onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
+                }
+
+                // Quit
+                CustomButton {
+                    Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
+
+                    radius: 20
+                    color: "#434343"
+                    hasIcon: false
+
+                    onClicked: root.close()
                 }
             }
 
