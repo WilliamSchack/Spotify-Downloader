@@ -33,6 +33,10 @@ class Config
         static inline std::string SubFolders = "";
 
         // Lyrics File
+        static inline bool CreateLyricsFile = false;
+        static inline char LyricsFileNameTagsOpeningChar = '<';
+        static inline char LyricsFileNameTagsClosingChar = '>';
+        static inline std::string LyricsFileName = "<Save Location>/<Song Name> - <Song Artist>";
 
         // Playlist File
 

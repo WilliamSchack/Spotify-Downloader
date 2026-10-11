@@ -420,15 +420,32 @@ RowLayout {
                             SettingsItem {
                                 label: "Auto Create On Download"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.createLyricsFile
+                                    onClicked: _manager.settings.createLyricsFile = checked
+                                }
                             }
 
                             SettingsItem {
                                 label: "LRC File Name"
+                                valid: _manager.settings.lyricsFileNameValid
 
-                                SingleCharTextField {}
-                                SingleCharTextField {}
-                                CustomTextField {}
+                                SingleCharTextField {
+                                    text: _manager.settings.lyricsFileNameTagsOpening
+                                    onTextEdited: _manager.settings.lyricsFileNameTagsOpening = text
+                                }
+
+                                SingleCharTextField {
+                                    text: _manager.settings.lyricsFileNameTagsClosing
+                                    onTextEdited: _manager.settings.lyricsFileNameTagsClosing = text
+                                }
+
+                                CustomTextField {
+                                    text: _manager.settings.lyricsFileName
+                                    onTextEdited: _manager.settings.lyricsFileName = text
+
+                                    valid: _manager.settings.lyricsFileNameValid
+                                }
                             }
                         }
 
