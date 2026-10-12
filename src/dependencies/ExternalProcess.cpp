@@ -49,8 +49,13 @@ void ExternalProcess::AddArgument(const std::string& arg, const std::string& val
     AddArgument(arg + " " + value);
 }
 
-std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvailableCallback)
+ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::function<void(std::string)> lineAvailableCallback)
 {
+    ExternalProcessResult result;
+
+    std::chrono::milliseconds timeoutMsChrono(timeoutMs);
+    bool usingTimeout = timeoutMsChrono.count() > 0;
+
 #ifdef WIN32
     SECURITY_ATTRIBUTES securityAttributes; 
     securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -61,7 +66,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     HANDLE hWritePipe;
     if (!CreatePipe(&hReadPipe, &hWritePipe, &securityAttributes, 0)) {
         std::cout << "Failed to create process pipe" << std::endl;
-        return "";
+        return result;
     }
 
     SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
@@ -96,7 +101,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
         CloseHandle(hReadPipe);
 
         std::cout << "Process not started" << std::endl;
-        return "";
+        return result;
     }
 
     std::string output = "";
@@ -139,14 +144,15 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     CloseHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread);
 
-    return output;
+    result.Output = output;
+    return result;
 #else
     std::string command = GetCommand();
 
     int pipeFd[2];
     if (pipe(pipeFd) != 0) {
         perror("Failed to open process");
-        return "";
+        return result;
     }
 
     pid_t pid = fork();
@@ -154,7 +160,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
         perror("Fork failed");
         close(pipeFd[0]);
         close(pipeFd[1]);
-        return "";
+        return result;
     }
 
     if (pid == 0) {
@@ -169,11 +175,41 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     }
     close(pipeFd[1]);
 
+    std::chrono::time_point timeoutDeadline = std::chrono::steady_clock::now() + timeoutMsChrono;
+    bool killed = false;
+
     std::string output = "";
     std::string lineBuffer = "";
     char buffer[256];
 
     while (true) {
+        // Kill if over deadline or process doesnt return anything in time
+        int waitMs = -1;
+        if (usingTimeout) {
+            long timeRemaining = std::chrono::duration_cast<std::chrono::milliseconds>(timeoutDeadline - std::chrono::steady_clock::now()).count();
+            if (timeRemaining <= 0) {
+                killed = true;
+                break;
+            }
+
+            waitMs = (int)timeRemaining;
+        }
+
+        pollfd pollFd{ pipeFd[0], POLLIN, 0 };
+        int ready = poll(&pollFd, 1, waitMs);
+        if (ready < 0) {
+            if (errno == EINTR)
+                continue;
+            
+            perror("Poll");
+            break;
+        }
+        if (ready == 0) {
+            killed = true;
+            break;
+        }
+
+        // Read the process
         ssize_t n = read(pipeFd[0], buffer, sizeof(buffer));
         if (n < 0) {
             if (errno == EINTR)
@@ -201,6 +237,11 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
         }
     }
 
+    if (killed) {
+        std::cout << "Process timed out" << std::endl;
+        kill(-pid, SIGKILL);
+    }
+
     if (!lineBuffer.empty()) {
         output += lineBuffer;
         if (lineAvailableCallback != nullptr)
@@ -209,6 +250,9 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
 
     close(pipeFd[0]);
     waitpid(pid, nullptr, 0);
-    return output;
+
+    result.TimedOut = killed;
+    result.Output = output;
+    return result;
 #endif
 }

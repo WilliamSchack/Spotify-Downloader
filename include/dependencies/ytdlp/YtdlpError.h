@@ -14,7 +14,8 @@ enum class EYtdlpError
     Forbidden,
     IpFlagged,
     InvalidPoToken,
-    CookiesExpired
+    CookiesExpired,
+    TimedOut
 };
 
 struct YtdlpError

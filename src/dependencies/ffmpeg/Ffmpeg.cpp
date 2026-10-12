@@ -10,7 +10,7 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
     process.AddArgument("-"); // No output
-    std::string output = process.Execute();
+    std::string output = process.Execute().Output;
 
     // Parse details
     FfmpegAudioDetails details;
@@ -200,5 +200,5 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
         process.AddArgument(arg);
 
     // Execute command
-    return process.Execute(newLineCallback);
+    return process.Execute(0, newLineCallback).Output;
 }

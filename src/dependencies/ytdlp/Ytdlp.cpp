@@ -5,7 +5,7 @@ std::string Ytdlp::GetVersion()
     ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
     process.AddArgument("--version");
 
-    std::string output = process.Execute();
+    std::string output = process.Execute().Output;
     return output;
 }
 
@@ -115,7 +115,16 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 
-    std::string output = process.Execute(newLineCallback);
+    ExternalProcessResult outputResult = process.Execute(0, newLineCallback);
+    if (outputResult.TimedOut) {
+        YtdlpError error;
+        error.Details = "Download timed out";
+        error.Error = EYtdlpError::TimedOut;
+        result.Error = error;
+        return result;
+    }
+
+    std::string output = outputResult.Output;
 
     YtdlpError error = GetError(errorString);
     if (error.Error != EYtdlpError::None && error.Error != EYtdlpError::LowQuality) {
