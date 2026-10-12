@@ -5,6 +5,7 @@
 // Mainly created to avoid rewriting each config property
 
 #include "Config.h"
+#include "TrackData.h"
 
 #include <QStringList>
 
@@ -103,7 +104,7 @@ class EasyQProperties {
         void functionName##ValidChanged(); \
     public: \
         bool Get##functionName##Valid() { \
-            tagHandlerType tagHandler(TrackData(EPlatform::Unknown)); \
+            tagHandlerType tagHandler{TrackData(EPlatform::Unknown)}; \
             TagHandlerResult result = tagHandler.FormatString(_##qmlName, _##qmlName##TagsOpeningChar, _##qmlName##TagsClosingChar); \
             _##qmlName##Valid = result.Error == ETagError::None; \
             return _##qmlName##Valid; \
