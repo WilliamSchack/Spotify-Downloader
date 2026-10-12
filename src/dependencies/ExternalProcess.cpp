@@ -35,9 +35,6 @@ std::string ExternalProcess::GetCommand()
         command += arg;
     }
 
-    // Dont relay outputs to stdout
-    command += " 2>&1";
-
     return command;
 }
 #endif
@@ -103,10 +100,9 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
     }
 
     std::string output = "";
+    std::string lineBuffer = "";
     char buffer[256];
     DWORD dwBytesRead;
-
-    std::string lineBuffer = "";
 
     while (ReadFile(hReadPipe, buffer, sizeof(buffer) - 1, &dwBytesRead, NULL) && dwBytesRead > 0) {
         buffer[dwBytesRead] = '\0';
@@ -116,7 +112,7 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
         size_t newLinePos;
         while ((newLinePos = lineBuffer.find_first_of("\r\n")) != std::string::npos) {
             std::string line = lineBuffer.substr(0, newLinePos);
-            lineBuffer = lineBuffer.substr(newLinePos + 1);
+            lineBuffer.erase(0, newLinePos + 1);
 
             if (!line.empty() && lineBuffer[0] == '\n')
                 lineBuffer = lineBuffer.substr(1);
@@ -145,34 +141,74 @@ std::string ExternalProcess::Execute(std::function<void(std::string)> lineAvaila
 
     return output;
 #else
-    FILE* pipe = popen(GetCommand().c_str(), "r");
-    if (pipe == NULL) {
+    std::string command = GetCommand();
+
+    int pipeFd[2];
+    if (pipe(pipeFd) != 0) {
         perror("Failed to open process");
         return "";
     }
 
-    std::string output = "";
-    char buffer[256];
-    
-    while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
-        std::string line = buffer;
-
-        // Remove ending new line
-        if (!line.empty() && line.back() == '\n')
-            line = StringUtils::RemoveLast(line);
-
-        output += line;
-
-        if (lineAvailableCallback != nullptr)
-            lineAvailableCallback(line);
-    }
-    
-    int exitStatus = pclose(pipe);
-    if (exitStatus == -1) {
-        perror("Failed to close process");
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("Fork failed");
+        close(pipeFd[0]);
+        close(pipeFd[1]);
         return "";
     }
 
+    if (pid == 0) {
+        setpgid(0, 0);
+        dup2(pipeFd[1], STDOUT_FILENO);
+        dup2(pipeFd[1], STDERR_FILENO);
+        close(pipeFd[0]);
+        close(pipeFd[1]);
+
+        execl("/bin/sh", "sh", "-c", command.c_str(), (char*)nullptr);
+        _exit(127);
+    }
+    close(pipeFd[1]);
+
+    std::string output = "";
+    std::string lineBuffer = "";
+    char buffer[256];
+
+    while (true) {
+        ssize_t n = read(pipeFd[0], buffer, sizeof(buffer));
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            
+            perror("Failed to read process");
+            break;
+        }
+        if (n == 0)
+            break;
+
+        lineBuffer.append(buffer, n);
+
+        size_t newLinePos;
+        while ((newLinePos = lineBuffer.find('\n')) != std::string::npos) {
+            std::string line = lineBuffer.substr(0, newLinePos);
+            lineBuffer.erase(0, newLinePos + 1);
+
+            if (line.empty())
+                continue;
+
+            output += line;
+            if (lineAvailableCallback != nullptr)
+                lineAvailableCallback(line);
+        }
+    }
+
+    if (!lineBuffer.empty()) {
+        output += lineBuffer;
+        if (lineAvailableCallback != nullptr)
+            lineAvailableCallback(lineBuffer);
+    }
+
+    close(pipeFd[0]);
+    waitpid(pid, nullptr, 0);
     return output;
 #endif
 }
