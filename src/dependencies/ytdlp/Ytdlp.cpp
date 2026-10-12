@@ -115,7 +115,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
     process.AddArgument("\"" + url + "\"");
 
-    ExternalProcessResult outputResult = process.Execute(0, newLineCallback);
+    ExternalProcessResult outputResult = process.Execute(Config::DownloadTimeoutMs, newLineCallback);
     if (outputResult.TimedOut) {
         YtdlpError error;
         error.Details = "Download timed out";

@@ -518,6 +518,9 @@ RowLayout {
                                     max: 999999999
                                     rightText: "ms"
                                     hasRightLabel: true
+
+                                    text: _manager.settings.downloadTimeoutMs
+                                    onTextEdited: _manager.settings.downloadTimeoutMs = text
                                 }
                             }
 

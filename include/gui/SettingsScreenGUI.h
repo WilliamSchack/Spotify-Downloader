@@ -29,6 +29,7 @@ class SettingsScreenGUI : public QObject
 
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
     SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
+    SIMPLE_QPROPERTY(int, downloadTimeoutMs, DownloadTimeoutMs, Config::DownloadTimeoutMs)
     ENUM_QPROPERTY(EIPVersion, EIPVERSION_NAMES, ipVersion, IPVersion, Config::IPVersion)
     
     SIMPLE_QPROPERTY(bool, autoOpenDownloadFolder, AutoOpenDownloadFolder, Config::AutoOpenDownloadFolder)

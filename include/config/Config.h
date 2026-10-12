@@ -43,6 +43,7 @@ class Config
         // Downloading
         static inline int PerDownloadThreads = 6;
         static inline double DownloadSpeedLimit = 0.0;
+        static inline int DownloadTimeoutMs = 30000;
         static inline EIPVersion IPVersion = EIPVersion::Automatic;
 
         // YouTube
