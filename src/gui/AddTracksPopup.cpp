@@ -55,6 +55,8 @@ void AddTracksPopup::PasteButtonClicked()
 
 void AddTracksPopup::FolderButtonClicked()
 {
+    // TODO: Test this on different operating systems, dialog looks shit on windows
+
     QFileDialog dialog(nullptr, "Choose output directory", "");
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog);

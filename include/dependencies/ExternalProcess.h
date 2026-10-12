@@ -11,6 +11,8 @@
 
 #ifdef WIN32
 #include <windows.h>
+#include <atomic>
+#include <thread>
 #else
 #include <sys/wait.h>
 #include <cerrno>

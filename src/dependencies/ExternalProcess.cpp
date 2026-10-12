@@ -53,8 +53,8 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
 {
     ExternalProcessResult result;
 
-    std::chrono::milliseconds timeoutMsChrono(timeoutMs);
-    bool usingTimeout = timeoutMsChrono.count() > 0;
+    std::chrono::milliseconds timeout(timeoutMs);
+    bool usingTimeout = timeout.count() > 0;
 
 #ifdef WIN32
     SECURITY_ATTRIBUTES securityAttributes; 
@@ -104,6 +104,17 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
         return result;
     }
 
+    std::atomic<bool> killed{false};
+    std::thread timeoutWatchdog;
+    if (usingTimeout) {
+        timeoutWatchdog = std::thread([&]() {
+            if (WaitForSingleObject(processInfo.hProcess, (DWORD)timeout.count()) == WAIT_TIMEOUT) {
+                killed = true;
+                TerminateProcess(processInfo.hProcess, 1);
+            }
+        });
+    }
+
     std::string output = "";
     std::string lineBuffer = "";
     char buffer[256];
@@ -140,10 +151,14 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
 
     WaitForSingleObject(processInfo.hProcess, INFINITE);
 
+    if (timeoutWatchdog.joinable())
+        timeoutWatchdog.join();
+
     CloseHandle(hReadPipe);
     CloseHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread);
 
+    result.TimedOut = killed;
     result.Output = output;
     return result;
 #else
@@ -175,7 +190,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     }
     close(pipeFd[1]);
 
-    std::chrono::time_point timeoutDeadline = std::chrono::steady_clock::now() + timeoutMsChrono;
+    std::chrono::time_point timeoutDeadline = std::chrono::steady_clock::now() + timeout;
     bool killed = false;
 
     std::string output = "";
