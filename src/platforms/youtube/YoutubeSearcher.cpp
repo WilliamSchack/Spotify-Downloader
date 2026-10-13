@@ -7,7 +7,7 @@ YoutubeSearcher::YoutubeSearcher() : _yt() {}
 PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::function<void(float)> progressCallback)
 {
     std::string titleSearchTerm  = track.Name;
-    std::string artistSearchTerm = track.GetMainArtist.Name;
+    std::string artistSearchTerm = track.GetMainArtist().Name;
     std::string albumSearchTerm  = track.Album.Name;
 
     // Remove symbols from query, can return random results otherwise
