@@ -456,23 +456,42 @@ RowLayout {
                             SettingsItem {
                                 label: "Auto Create On Download"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.createPlaylistFile
+                                    onClicked: _manager.settings.createPlaylistFile = checked
+                                }
                             }
 
                             SettingsItem {
                                 label: "Playlist File Type"
 
                                 CustomComboBox {
-                                    model: ["M3U", "XSPF"/*, ...*/]
+                                    model: _manager.settings.GetPlaylistFileTypeOptions()
+                                    currentIndex: _manager.settings.playlistFileType
+                                    onActivated: (index) => { _manager.settings.playlistFileType = index }
                                 }
                             }
 
                             SettingsItem {
                                 label: "Playlist File Name"
+                                valid: _manager.settings.playlistFileNameValid
 
-                                SingleCharTextField {}
-                                SingleCharTextField {}
-                                CustomTextField {}
+                                SingleCharTextField {
+                                    text: _manager.settings.playlistFileNameTagsOpeningChar
+                                    onTextEdited: _manager.settings.playlistFileNameTagsOpeningChar = text
+                                }
+
+                                SingleCharTextField {
+                                    text: _manager.settings.playlistFileNameTagsClosingChar
+                                    onTextEdited: _manager.settings.playlistFileNameTagsClosingChar = text
+                                }
+
+                                CustomTextField {
+                                    text: _manager.settings.playlistFileName
+                                    onTextEdited: _manager.settings.playlistFileName = text
+
+                                    valid: _manager.settings.playlistFileNameValid
+                                }
                             }
                         }
                     }

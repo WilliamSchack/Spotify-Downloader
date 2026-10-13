@@ -83,6 +83,7 @@ class EasyQProperties {
 
 // Used to easily create the tag entries since there is a fair bit to do for them
 // This is really only for the SettingsScreenGUI but its cleaner to keep it here
+// Extra args after tagHandlerType are used in the constructor as tagHandlerType(a, b, c, ...)
 // Creates private variables:
 // char _{qmlName}TagsOpeningChar
 // char _{qmlName}TagsOpeningChar
@@ -95,7 +96,7 @@ class EasyQProperties {
 // char {configName}TagsOpeningChar
 // char {configName}TagsClosingChar
 // std::string {configName}
-#define TAG_QPROPERTY(qmlName, configName, functionName, tagHandlerType, className) \
+#define TAG_QPROPERTY(qmlName, configName, functionName, className, tagHandlerType, ...) \
     CHAR_QPROPERTY(qmlName##TagsOpeningChar, functionName##TagsOpeningChar, _##qmlName##TagsOpeningChar) \
     CHAR_QPROPERTY(qmlName##TagsClosingChar, functionName##TagsClosingChar, _##qmlName##TagsClosingChar) \
     STRING_QPROPERTY(qmlName, functionName, _##qmlName) \
@@ -104,7 +105,7 @@ class EasyQProperties {
         void functionName##ValidChanged(); \
     public: \
         bool Get##functionName##Valid() { \
-            tagHandlerType tagHandler{TrackData(EPlatform::Unknown)}; \
+            tagHandlerType tagHandler{__VA_ARGS__}; \
             TagHandlerResult result = tagHandler.FormatString(_##qmlName, _##qmlName##TagsOpeningChar, _##qmlName##TagsClosingChar); \
             _##qmlName##Valid = result.Error == ETagError::None; \
             return _##qmlName##Valid; \

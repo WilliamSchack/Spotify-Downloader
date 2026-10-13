@@ -4,6 +4,7 @@
 #include "EasyQProperties.h"
 #include "Config.h"
 #include "SavableTrackTagHandler.h"
+#include "SavablePlaylistTagHandler.h"
 
 #include <QObject>
 
@@ -21,11 +22,15 @@ class SettingsScreenGUI : public QObject
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
-    TAG_QPROPERTY(fileName, FileName, FileName, TrackTagHandler, SettingsScreenGUI)
-    TAG_QPROPERTY(subFolders, SubFolders, SubFolders, TrackTagHandler, SettingsScreenGUI)
+    TAG_QPROPERTY(fileName, FileName, FileName, SettingsScreenGUI, TrackTagHandler, TrackData(EPlatform::Unknown))
+    TAG_QPROPERTY(subFolders, SubFolders, SubFolders, SettingsScreenGUI, TrackTagHandler, TrackData(EPlatform::Unknown))
 
     SIMPLE_QPROPERTY(bool, createLyricsFile, CreateLyricsFile, Config::CreateLyricsFile)
-    TAG_QPROPERTY(lyricsFileName, LyricsFileName, LyricsFileName, SavableTrackTagHandler, SettingsScreenGUI)
+    TAG_QPROPERTY(lyricsFileName, LyricsFileName, LyricsFileName, SettingsScreenGUI, SavableTrackTagHandler, TrackData(EPlatform::Unknown))
+
+    SIMPLE_QPROPERTY(bool, createPlaylistFile, CreatePlaylistFile, Config::CreatePlaylistFile)
+    ENUM_QPROPERTY(EPlaylistFileType, EPLAYLISTFILETYPE_NAMES, playlistFileType, PlaylistFileType, Config::PlaylistFileType)
+    TAG_QPROPERTY(playlistFileName, PlaylistFileName, PlaylistFileName, SettingsScreenGUI, SavablePlaylistTagHandler, PlaylistData(EPlatform::Unknown))
 
     SIMPLE_QPROPERTY(int, downloadThreads, DownloadThreads, Config::PerDownloadThreads)
     SIMPLE_QPROPERTY(double, downloadSpeedLimit, DownloadSpeedLimit, Config::DownloadSpeedLimit)
