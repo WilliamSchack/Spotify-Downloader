@@ -59,7 +59,7 @@ void StringUtils::RemoveChar(std::wstring& string, const char& c)
 
 std::string StringUtils::RemoveFirst(const std::string& string, const int& charAmount)
 {
-    return string.substr(charAmount, string.size() - charAmount - 1);
+    return string.substr(charAmount, string.size() - charAmount);
 }
 
 std::string StringUtils::RemoveLast(const std::string& string, const int& charAmount)
