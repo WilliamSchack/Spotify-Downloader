@@ -14,7 +14,7 @@ std::string M3UFile::WriteFile(const PlaylistFileTrack& track)
 {
     // Details
     std::string output = "#EXTINF:";
-    output += track.Data.DurationSeconds + ",";
+    output += std::to_string(track.Data.DurationSeconds) + ",";
     output += track.Data.GetMainArtist().Name + " - ";
     output += track.Data.Name + "\n";
 

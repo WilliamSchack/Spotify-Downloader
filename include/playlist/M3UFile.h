@@ -7,9 +7,9 @@ class M3UFile : public IPlaylistFile
 {
     public:
         std::string GetExtension();
-		std::string WriteHeader();
-		std::string WriteFile(const PlaylistFileTrack& track);
-		std::string WriteFooter();
+        std::string WriteHeader();
+        std::string WriteFile(const PlaylistFileTrack& track);
+        std::string WriteFooter();
 };
 
 #endif
