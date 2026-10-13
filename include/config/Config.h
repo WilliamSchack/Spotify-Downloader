@@ -3,6 +3,7 @@
 
 #include "EExtension.h"
 #include "ELyricsSource.h"
+#include "EPlaylistFileType.h"
 #include "ETrackNumberType.h"
 #include "EIPVersion.h"
 
@@ -39,6 +40,11 @@ class Config
         static inline std::string LyricsFileName = "<Save Location>/<Song Name> - <Song Artist>";
 
         // Playlist File
+        static inline bool CreatePlaylistFile = false;
+        static inline EPlaylistFileType PlaylistFileType = EPlaylistFileType::None;
+        static inline char PlaylistFileNameTagsOpeningChar = '<';
+        static inline char PlaylistFileNameTagsClosingChar = '>';
+        static inline std::string PlaylistFileName = "<Save Location>/<Playlist Name> - <Playlist Owner>";
 
         // Downloading
         static inline int PerDownloadThreads = 6;

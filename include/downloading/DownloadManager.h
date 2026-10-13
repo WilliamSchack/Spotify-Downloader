@@ -7,6 +7,9 @@
 #include "DownloadProgress.h"
 #include "DownloadResult.h"
 #include "DownloadEventsQueue.h"
+#include "PlaylistData.h"
+#include "PlaylistFileFactory.h"
+#include "SavablePlaylistTagHandler.h"
 
 #include <iostream>
 #include <string>
@@ -19,6 +22,7 @@
 class DownloadManager
 {
     public:
+        DownloadManager();
         ~DownloadManager();
 
         // Returns if the download was dispatched
@@ -29,12 +33,16 @@ class DownloadManager
     private:
         void StartDownload(const std::string& url, const std::string& directory);
         void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
+        void CreatePlaylistFile();
         void CleanupThreads();
     private:
         std::atomic<bool> _downloading = false;
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
         std::atomic<int> _successfulDownloads = 0;
+
+        std::filesystem::path _downloadingDir;
+        PlaylistData _downloadingPlaylist;
 
         DownloadEventsQueue _events;
         std::vector<std::thread> _threads;

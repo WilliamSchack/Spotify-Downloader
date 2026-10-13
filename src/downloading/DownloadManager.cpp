@@ -3,6 +3,8 @@
 // debugging
 #include <iostream>
 
+DownloadManager::DownloadManager() : _downloadingPlaylist(EPlatform::Unknown) {}
+
 DownloadManager::~DownloadManager()
 {
     CleanupThreads();
@@ -47,8 +49,8 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         return;
     }
 
-    EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
-    if (platformType == EPlatform::Unknown) {
+    EPlatform platform = PlatformDetector::GetPlatformFromUrl(url);
+    if (platform == EPlatform::Unknown) {
         DownloadFailedToStartEvent event;
         event.Reason = "This platform is unknown, please enter an implemented platform";
         _events.Send(event);
@@ -56,8 +58,8 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         return;
     }
 
-    std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(platformType);
-    if (platform == nullptr) {
+    std::unique_ptr<IPlatformDownloader> platformDownloader = PlatformFactory::CreateDownloader(platform);
+    if (platformDownloader == nullptr) {
         DownloadFailedToStartEvent event;
         event.Reason = "I forgot to implement this platform... please inform me of this, thanks :)";
         _events.Send(event);
@@ -65,7 +67,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         return;
     }
 
-    EPlatform searchPlatform = platform->GetSearchPlatform();
+    EPlatform searchPlatform = platformDownloader->GetSearchPlatform();
     if (searchPlatform == EPlatform::Unknown) {
         DownloadFailedToStartEvent event;
         event.Reason = "I forgot to add a search platform to this platform... please inform me of this, thanks :)";
@@ -75,7 +77,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     }
 
     // Get the tracks
-    ELinkType linkType = platform->GetLinkType(url);
+    ELinkType linkType = platformDownloader->GetLinkType(url);
     if (linkType == ELinkType::Unknown) {
         DownloadFailedToStartEvent event;
         event.Reason = "Could not get the link type, please send this link to me so I can add it";
@@ -86,16 +88,34 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 
     std::vector<TrackData> tracks;
     switch (linkType) {
-        case ELinkType::Track:
-            tracks.push_back(platform->GetTrack(url));
+        case ELinkType::Track: {
+            TrackData track = platformDownloader->GetTrack(url);
+            tracks.push_back(track);
+
+            PlaylistData playlistData(platform);
+            playlistData.Name = track.Name;
+            playlistData.Owner = track.GetMainArtist();
+            playlistData.TotalTracks = 1;
+            _downloadingPlaylist = playlistData;
+
             break;
-        case ELinkType::Playlist:
-            tracks = platform->GetPlaylist(url).Tracks;
+        } case ELinkType::Playlist: {
+            PlaylistTracks playlist = platformDownloader->GetPlaylist(url);
+            _downloadingPlaylist = playlist.Data;
+            tracks = playlist.Tracks;
             break;
-        case ELinkType::Album:
-            tracks = platform->GetAlbum(url).Tracks;
+        } case ELinkType::Album: {
+            AlbumTracks album = platformDownloader->GetAlbum(url);
+            tracks = album.Tracks;
+
+            PlaylistData playlistData(platform);
+            playlistData.Name = album.Data.Name;
+            playlistData.Owner = album.Data.GetMainArtist();
+            playlistData.TotalTracks = album.Tracks.size();
+            _downloadingPlaylist = playlistData;
+
             break;
-        default:
+        } default:
             DownloadFailedToStartEvent event;
             event.Reason = "I forgot to implement this link type... please inform me of this, thanks :)";
             _events.Send(event);
@@ -122,6 +142,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     _tracksRemaining = songCount;
     _failedDownloads = 0;
     _successfulDownloads = 0;
+    _downloadingDir = directory;
 
     DownloadStartedEvent startedEvent;
     startedEvent.Tracks = tracks;
@@ -178,6 +199,12 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 
         if (--_tracksRemaining == 0) {
             // Download is finished
+
+            // Create playlist file if required
+            if (Config::PlaylistFileType != EPlaylistFileType::None)
+                CreatePlaylistFile();
+
+            // Send event
             DownloadsFinishedEvent event;
             event.FailedDownloads = _failedDownloads;
             event.SuccessfulDownloads = _successfulDownloads;
@@ -190,6 +217,32 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 
     // Figure out thread redistribution
+}
+
+void DownloadManager::CreatePlaylistFile()
+{
+    // Get file path
+    SavablePlaylistTagHandler tagHandler(_downloadingPlaylist);
+    tagHandler.SetSaveLocation(_downloadingDir);
+    TagHandlerResult tagResult = tagHandler.FormatString(Config::PlaylistFileName, Config::PlaylistFileNameTagsOpeningChar, Config::PlaylistFileNameTagsClosingChar);
+    if (tagResult.Error != ETagError::None) {
+        // TODO: Add event for failed playlist file (if needed)
+        std::cout << "Could not get the playlist file name with the error: " + tagResult.ErrorString << std::endl;
+        return;
+    }
+
+    // Create playlist file
+    std::string filePathString = FileUtils::ValidateFileName(tagResult.FormattedString);
+    std::string filePath = FileUtils::PathFromUtf8(filePathString);
+
+    std::unique_ptr<IPlaylistFile> playlistFile = PlaylistFileFactory::Create(Config::PlaylistFileType);
+    if (playlistFile == nullptr) {
+        // TODO: Add event for failed playlist file (if needed)
+        std::cout << "I forgot to implement the playlist file type (" << (int)Config::PlaylistFileType << ")... please inform me of this, thanks :)";
+        return;
+    }
+
+    playlistFile->CreatePlaylistFileFromDirectory(_downloadingDir, filePath);
 }
 
 void DownloadManager::CleanupThreads()
