@@ -24,8 +24,6 @@ QList<QObject*> MusicScreenGUI::GetTracks() const
 
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
-    std::cout << link << " || " << destinationFolder << std::endl;
-
     bool downloadDispatched = _downloader.RequestDownload(link, destinationFolder);
     if (!downloadDispatched)
         return;
