@@ -143,6 +143,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     _failedDownloads = 0;
     _successfulDownloads = 0;
     _downloadingDir = directory;
+    _downloadedFilePaths.clear();
 
     DownloadStartedEvent startedEvent;
     startedEvent.Tracks = tracks;
@@ -183,6 +184,9 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
         });
 
         if (result.Success) {
+            std::lock_guard<std::mutex> lock(_downloadedFilePathsMutex);
+            _downloadedFilePaths.push_back(result.FilePath);
+
             TrackSucceededEvent event;
             event.TrackUniqueId = track.GetUniqueId();
             _events.Send(event);
@@ -232,17 +236,15 @@ void DownloadManager::CreatePlaylistFile()
     }
 
     // Create playlist file
-    std::string filePathString = FileUtils::ValidateFileName(tagResult.FormattedString);
-    std::string filePath = FileUtils::PathFromUtf8(filePathString);
-
     std::unique_ptr<IPlaylistFile> playlistFile = PlaylistFileFactory::Create(Config::PlaylistFileType);
     if (playlistFile == nullptr) {
         // TODO: Add event for failed playlist file (if needed)
         std::cout << "I forgot to implement the playlist file type (" << (int)Config::PlaylistFileType << ")... please inform me of this, thanks :)";
         return;
     }
-
-    playlistFile->CreatePlaylistFileFromDirectory(_downloadingDir, filePath);
+    
+    std::string filePathString = FileUtils::ValidateDirectoryName(tagResult.FormattedString);
+    playlistFile->CreatePlaylistFileFromTracks(_downloadedFilePaths, filePathString);
 }
 
 void DownloadManager::CleanupThreads()

@@ -42,6 +42,8 @@ QString TrackUI::GetStatus() const
 
 void TrackUI::SetCoverArtUrl(const std::filesystem::path& path)
 {
+    // TODO: fix cover art with the same cover art, test downloading with an album
+
     QString pathString = QString::fromStdString(FileUtils::PathToUtf8(path));
     _coverArtUrl = QUrl::fromLocalFile(pathString).toString();
 

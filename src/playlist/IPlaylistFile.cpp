@@ -1,9 +1,9 @@
 #include "IPlaylistFile.h"
 
-void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesystem::path>& trackFilePaths, const std::filesystem::path& outputPathWithoutExtension)
+void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesystem::path>& trackFilePaths, const std::string& outputPathWithoutExtension)
 {
     // Setup the path
-    std::string outputPathString = FileUtils::PathToUtf8(outputPathWithoutExtension) + "." + GetExtension();
+    std::string outputPathString = FileUtils::ValidateDirectoryName(outputPathWithoutExtension) + "." + GetExtension();
     std::filesystem::path outputPath = FileUtils::PathFromUtf8(outputPathString);
     
     std::filesystem::path outputPathDir = outputPath.parent_path();
@@ -48,7 +48,7 @@ void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesyst
     file.close();
 }
 
-void IPlaylistFile::CreatePlaylistFileFromDirectory(const std::filesystem::path& tracksFolder, const std::filesystem::path& outputPathWithoutExtension)
+void IPlaylistFile::CreatePlaylistFileFromDirectory(const std::filesystem::path& tracksFolder, const std::string& outputPathWithoutExtension)
 {
     std::vector<std::filesystem::path> filePaths;
 

@@ -5,7 +5,7 @@ bool LyricsFile::Create(const std::string& outputPathNoExtension, const TrackDat
     if (lyrics.Type == ELyricsType::None)
         return false;
 
-    std::string outputPathString = outputPathNoExtension + ".lrc";
+    std::string outputPathString = FileUtils::ValidateDirectoryName(outputPathNoExtension) + ".lrc";
     std::filesystem::path outputPath = FileUtils::PathFromUtf8(outputPathString);
 
     // Create the folder if it doesnt exist

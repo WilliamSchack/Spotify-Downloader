@@ -22,7 +22,7 @@ TagReplacerResult SavablePlaylistTagHandler::TagReplacer(const std::string& tag)
     std::string tagLower = StringUtils::ToLower(tag);
     int indexOfTag = VectorUtils::IndexOf(VALID_TAGS_SAVABLE, tagLower);
     if (indexOfTag < 0)
-        return SavablePlaylistTagHandler::TagReplacer(tag);
+        return PlaylistTagHandler::TagReplacer(tag);
 
     std::string tagReplacement = "";
     switch (indexOfTag) {

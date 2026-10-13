@@ -71,7 +71,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         // In the case that multiple threads try to download the same cover art at the same time, the image will corrupt
         // This prevents that
         // TODO: Cleanup these mutexes as they are only deleted when the app closes
-        std::lock_guard<std::mutex> getCoverArtLock(GetCoverArtMutex(track.Album.GetUniqueId()));
+        std::lock_guard<std::mutex> lock(GetCoverArtMutex(track.Album.GetUniqueId()));
         
         std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
 

@@ -15,8 +15,8 @@
 class IPlaylistFile {
 	public:
 		// Creates a playlist file using all the valid songs within the parent folder
-		void CreatePlaylistFileFromTracks(const std::vector<std::filesystem::path>& trackFilePaths, const std::filesystem::path& outputPathWithoutExtension);
-		void CreatePlaylistFileFromDirectory(const std::filesystem::path& tracksFolder, const std::filesystem::path& outputPathWithoutExtension);
+		void CreatePlaylistFileFromTracks(const std::vector<std::filesystem::path>& trackFilePaths, const std::string& outputPathWithoutExtension);
+		void CreatePlaylistFileFromDirectory(const std::filesystem::path& tracksFolder, const std::string& outputPathWithoutExtension);
 	protected:
 		virtual std::string GetExtension() = 0;
 		virtual std::string WriteHeader() = 0;

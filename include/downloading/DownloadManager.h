@@ -16,6 +16,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 // Object must be alive for the duration of the download otherwise the thread that created it will be blocked until the download finishes
 // Events must also be watched for download progress and to check if it started or failed
@@ -43,6 +44,9 @@ class DownloadManager
 
         std::filesystem::path _downloadingDir;
         PlaylistData _downloadingPlaylist;
+
+        std::vector<std::filesystem::path> _downloadedFilePaths;
+        std::mutex _downloadedFilePathsMutex;
 
         DownloadEventsQueue _events;
         std::vector<std::thread> _threads;
