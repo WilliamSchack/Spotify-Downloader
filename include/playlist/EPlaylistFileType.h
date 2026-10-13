@@ -6,12 +6,14 @@
 
 enum class EPlaylistFileType
 {
+    None,
     M3U,
     XSPF,
     PLS
 };
 
 static inline const std::vector<std::string> EPLAYLISTFILETYPE_NAMES = {
+    "None",
     "M3U",
     "XSPF",
     "PLS"

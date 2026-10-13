@@ -2,7 +2,6 @@
 #define ABSOLUTETRACKTAGHANDLER_H
 
 #include "TrackTagHandler.h"
-#include "VectorUtils.h"
 #include "FileUtils.h"
 
 #include <filesystem>
@@ -17,7 +16,7 @@ class SavableTrackTagHandler : public TrackTagHandler
     private:
         TagReplacerResult TagReplacer(const std::string& tag) override;
     private:
-        static inline const std::vector<std::string> VALID_TAGS_ABSOLUTE {
+        static inline const std::vector<std::string> VALID_TAGS_SAVABLE {
             "save location"
         };
 

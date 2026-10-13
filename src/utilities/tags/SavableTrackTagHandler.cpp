@@ -5,7 +5,7 @@ SavableTrackTagHandler::SavableTrackTagHandler(const TrackData& track) : TrackTa
 std::vector<std::string> SavableTrackTagHandler::GetValidTags() const
 {
     std::vector<std::string> validTags = TrackTagHandler::GetValidTags();
-    VectorUtils::AddRange(validTags, VALID_TAGS_ABSOLUTE);
+    VectorUtils::AddRange(validTags, VALID_TAGS_SAVABLE);
 
     return validTags;
 }
@@ -20,7 +20,7 @@ TagReplacerResult SavableTrackTagHandler::TagReplacer(const std::string& tag)
     TagReplacerResult result;
 
     std::string tagLower = StringUtils::ToLower(tag);
-    int indexOfTag = VectorUtils::IndexOf(VALID_TAGS_ABSOLUTE, tagLower);
+    int indexOfTag = VectorUtils::IndexOf(VALID_TAGS_SAVABLE, tagLower);
     if (indexOfTag < 0)
         return TrackTagHandler::TagReplacer(tag);
 

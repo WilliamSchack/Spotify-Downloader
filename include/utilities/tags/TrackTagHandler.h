@@ -2,10 +2,10 @@
 #define TRACKTAGHANDLER_H
 
 #include "ITagHandler.h"
+#include "TrackData.h"
 #include "VectorUtils.h"
 #include "StringUtils.h"
 #include "MetadataManager.h"
-#include "TrackData.h"
 #include "ICodec.h"
 
 #include <vector>
