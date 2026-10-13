@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <regex>
 
 #ifdef WIN32
     #include <windows.h>

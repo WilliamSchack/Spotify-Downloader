@@ -9,7 +9,7 @@ void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesyst
     std::filesystem::path outputPathDir = outputPath.parent_path();
     if (!std::filesystem::is_directory(outputPathDir))
         std::filesystem::create_directories(outputPathDir);
-    
+
     // Get & setup tracks
     std::vector<PlaylistFileTrack> tracks;
     for (std::filesystem::path path : trackFilePaths) {
@@ -19,9 +19,11 @@ void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesyst
         PlaylistFileTrack track;
         track.Path = path;
         track.EncodedPath = FileUtils::EncodePath(path);
-        
+
         MetadataManager metadata(path);
         track.Data = metadata.GetAll();
+
+        tracks.push_back(track);
     }
 
     if (tracks.size() == 0)
@@ -58,7 +60,7 @@ void IPlaylistFile::CreatePlaylistFileFromDirectory(const std::filesystem::path&
         
         std::filesystem::path path = dirEntry.path();
         if (!path.has_extension())
-        continue;
+            continue;
         
         std::string extensionLower = StringUtils::ToLower(FileUtils::PathToUtf8(path.extension()));
         extensionLower = StringUtils::RemoveFirst(extensionLower); // remove .

@@ -41,7 +41,11 @@ std::filesystem::path FileUtils::PathFromUtf8(const std::string& path)
 std::string FileUtils::EncodePath(const std::filesystem::path& path)
 {
     std::string pathString = PathToUtf8(path);
-    return StringUtils::ReplaceAll(pathString, " ", "%20");
+
+    std::regex whitespaceRegex(R"([\s]+)");
+    pathString = std::regex_replace(pathString, whitespaceRegex, "%20");
+    
+    return pathString;
 }
 
 FILE* FileUtils::OpenFile(const std::filesystem::path& path, const std::string& mode)
