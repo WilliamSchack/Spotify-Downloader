@@ -25,6 +25,8 @@ class FileUtils
         static std::string PathToUtf8(const std::filesystem::path& path);
         static std::filesystem::path PathFromUtf8(const std::string& path);
 
+        static std::string EncodePath(const std::filesystem::path& path);
+
         static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
 
         static std::filesystem::path GetExecutablePath();

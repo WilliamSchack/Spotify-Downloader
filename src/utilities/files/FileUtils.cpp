@@ -38,6 +38,12 @@ std::filesystem::path FileUtils::PathFromUtf8(const std::string& path)
 #endif
 }
 
+std::string FileUtils::EncodePath(const std::filesystem::path& path)
+{
+    std::string pathString = PathToUtf8(path);
+    return StringUtils::ReplaceAll(pathString, " ", "%20");
+}
+
 FILE* FileUtils::OpenFile(const std::filesystem::path& path, const std::string& mode)
 {
 #ifdef WIN32
@@ -90,12 +96,12 @@ std::filesystem::path FileUtils::FindPathWithAnyExtension(const std::filesystem:
     if (!std::filesystem::exists(directory))
         return {};
 
-    for (const std::filesystem::directory_entry& file : std::filesystem::directory_iterator(directory)) {
-        if (!file.is_regular_file())
+    for (const std::filesystem::directory_entry& dirEntry : std::filesystem::directory_iterator(directory)) {
+        if (!dirEntry.is_regular_file())
             continue;
 
-        if (file.path().stem() == fileName)
-            return file.path();
+        if (dirEntry.path().stem() == fileName)
+            return dirEntry.path();
     }
 
     return {};
