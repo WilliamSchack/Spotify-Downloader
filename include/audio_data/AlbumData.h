@@ -35,6 +35,14 @@ struct AlbumData
         Artists.push_back(artist);
     }
 
+    ArtistData GetMainArtist() const
+    {
+        if (Artists.size() > 0)
+            return Artists[0];
+
+        return ArtistData(EPlatform::Unknown);
+    }
+
     std::string GetUniqueId() const
     {
         // Id could be the same across platforms

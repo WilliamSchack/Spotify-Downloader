@@ -170,7 +170,7 @@ TrackData SpotifyAPI::ParseTrack(nlohmann::json json)
         track.Album = ParseAlbum(albumJson).Data;
         
         if (track.Album.Artists.empty() && !track.Artists.empty()) {
-            ArtistData firstTrackArtist = track.Artists[0];
+            ArtistData firstTrackArtist = track.GetMainArtist();
             track.Album.Artists.push_back(firstTrackArtist);
         }
         

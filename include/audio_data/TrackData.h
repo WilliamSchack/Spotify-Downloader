@@ -41,6 +41,14 @@ struct TrackData
         return std::to_string((int)Platform) + Id;
     }
 
+    ArtistData GetMainArtist() const
+    {
+        if (Artists.size() > 0)
+            return Artists[0];
+
+        return ArtistData(EPlatform::Unknown);
+    }
+
     void SetDuration(unsigned int ms)
     {
         DurationMilliseconds = ms;

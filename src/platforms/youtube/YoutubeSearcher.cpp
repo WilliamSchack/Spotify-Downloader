@@ -7,7 +7,7 @@ YoutubeSearcher::YoutubeSearcher() : _yt() {}
 PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::function<void(float)> progressCallback)
 {
     std::string titleSearchTerm  = track.Name;
-    std::string artistSearchTerm = track.Artists[0].Name;
+    std::string artistSearchTerm = track.GetMainArtist.Name;
     std::string albumSearchTerm  = track.Album.Name;
 
     // Remove symbols from query, can return random results otherwise
@@ -18,9 +18,9 @@ PlatformSearcherResult YoutubeSearcher::FindTrack(const TrackData& track, std::f
     albumSearchTerm  = std::regex_replace(albumSearchTerm, symbolsRegex, "");
 
     // If removing the symbols removes the string, set it back to the symbols
-    if (titleSearchTerm.empty())  titleSearchTerm = track.Name;
-    if (artistSearchTerm.empty()) artistSearchTerm = track.Artists[0].Name;
-    if (albumSearchTerm.empty())  albumSearchTerm = track.Album.Name;
+    if (titleSearchTerm.empty())  titleSearchTerm  = track.Name;
+    if (artistSearchTerm.empty()) artistSearchTerm = track.GetMainArtist().Name;
+    if (albumSearchTerm.empty())  albumSearchTerm  = track.Album.Name;
 
     // Multiple queries as song songs only match with quotes, etc.
     std::vector<std::string> searchQueries {
