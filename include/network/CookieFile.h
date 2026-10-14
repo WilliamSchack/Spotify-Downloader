@@ -9,7 +9,7 @@
 class CookieFile
 {
     public:
-        CookieFile(const std::string& fileNameNoExtension);
+        CookieFile(const std::string& fileName);
 
         std::string Read();
         void Overwrite(const std::string& contents);

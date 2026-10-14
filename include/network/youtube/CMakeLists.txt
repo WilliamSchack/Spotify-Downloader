@@ -4,4 +4,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/YTMusicAPI.h
 	${CMAKE_CURRENT_SOURCE_DIR}/YoutubeSearchResult.h
 	${CMAKE_CURRENT_SOURCE_DIR}/EYoutubeCategory.h
+	${CMAKE_CURRENT_SOURCE_DIR}/YouTubeCookieFile.h
 )
