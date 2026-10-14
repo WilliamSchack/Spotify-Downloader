@@ -44,7 +44,7 @@ Rectangle {
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
-                    color: "#A16583"
+                    backgroundColour: "#A16583"
                     
                     Layout.fillHeight: true
                 }
@@ -54,7 +54,7 @@ Rectangle {
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
-                    color: "#A16583"
+                    backgroundColour: "#A16583"
                     
                     Layout.fillHeight: true
                 }
@@ -67,7 +67,7 @@ Rectangle {
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
-                    color: Qt.alpha("#707070", 0.4)
+                    backgroundColour: Qt.alpha("#707070", 0.4)
                     
                     Layout.preferredWidth: 150
                     Layout.fillHeight: true
@@ -78,8 +78,7 @@ Rectangle {
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
-                    iconRight: true
-                    color: Qt.alpha("#707070", 0.4)
+                    backgroundColour: Qt.alpha("#707070", 0.4)
                     
                     Layout.fillHeight: true
                 }
@@ -89,8 +88,7 @@ Rectangle {
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
-                    iconRight: true
-                    color: Qt.alpha("#707070", 0.4)
+                    backgroundColour: Qt.alpha("#707070", 0.4)
                     
                     Layout.fillHeight: true
                 }

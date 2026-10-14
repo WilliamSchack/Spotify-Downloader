@@ -1,25 +1,36 @@
 import QtQuick
-import QtQuick.Layouts
+import QtQuick.Controls
 import QtQuick.Effects
 
-Rectangle {
+Button {
     id: root
 
-    radius: 10
-    color: "green"
+    property color textColour: "white"
+    property color backgroundColour: "white"
+    property color hoveredColour: Qt.darker(backgroundColour, 1.2)
+    property color pressedColour: Qt.darker(backgroundColour, 1.5)
+    property real radius: 3
 
-    property alias text: label.text
-    property alias font: label.font
-    property alias hasIcon: icon.visible
-    property alias spacing: layout.columnSpacing
-    property real padding: 10
-    property real iconPadding: 4
-    property bool iconRight: false
+    implicitHeight: parent.height
 
-    signal clicked()
+    font.family: "Roboto"
+    font.pixelSize: 14
 
-    implicitWidth: layout.implicitWidth + 2 * padding
-    implicitHeight: layout.implicitHeight + 2 * padding
+    // Text
+    contentItem: Text {
+        text: root.text
+        font: root.font
+        opacity: enabled ? 1.0 : 0.3
+        color: root.textColour
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+    }
+
+    // Background
+    background: Rectangle {
+        color: root.down ? root.pressedColour : (root.hovered ? root.hoveredColour : root.backgroundColour)
+        radius: root.radius
+    }
 
     // Outer Shadow
     layer.enabled: true
@@ -30,48 +41,5 @@ Rectangle {
         shadowBlur: 0.4
         shadowHorizontalOffset: 2
         shadowVerticalOffset: 2
-    }
-
-    // Mouse area
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-
-        onClicked: root.clicked()
-    }
-
-    // Contents
-    GridLayout {
-        id: layout
-        anchors.fill: parent
-        anchors.leftMargin: root.padding;
-        anchors.rightMargin: root.padding;
-        columnSpacing: 10
-        rows: 1
-
-        // Icon
-        Rectangle {
-            id: icon
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.topMargin: root.iconPadding
-            Layout.bottomMargin: root.iconPadding
-            Layout.fillHeight: true
-            Layout.preferredWidth: height
-            Layout.column: root.iconRight ? 1 : 0
-
-            color: "white"
-        }
-
-        // Text
-        Text {
-            id: label
-            font.family: "Roboto"
-            font.pixelSize: 20
-            color: "white"
-            text: ""
-
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            Layout.column: root.iconRight ? 0 : 1
-        }
     }
 }

@@ -220,7 +220,7 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 
-    // Figure out thread redistribution
+    // TODO: Figure out thread redistribution
 }
 
 void DownloadManager::CreatePlaylistFile()

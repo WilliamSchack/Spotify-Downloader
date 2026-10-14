@@ -74,9 +74,7 @@ Rectangle {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
 
-                        radius: 3
-                        hasIcon: false
-                        color: "white"
+                        display: AbstractButton.IconOnly
                         //icon.source: "qrc:/icons/Icons/Clipboard_Icon_B.png"
                         onClicked: _manager.music.addTracksPopup.PasteButtonClicked()
                     }
@@ -109,11 +107,8 @@ Rectangle {
                     CustomButton {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
-                        width: height
 
-                        radius: 3
-                        hasIcon: false
-                        color: "white"
+                        display: AbstractButton.IconOnly
                         //icon.source: "qrc:/icons/Icons/Folder_Icon_B.png"
                         onClicked: _manager.music.addTracksPopup.FolderButtonClicked()
                     }
@@ -123,11 +118,10 @@ Rectangle {
             CustomButton {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                hasIcon: false
                 text: "Add Track(s) & Start Download"
                 font.bold: true
                 font.pixelSize: 16
-                color: "#9A607D"
+                backgroundColour: "#9A607D"
 
                 onClicked: _manager.music.addTracksPopup.DownloadButtonClicked()
             }

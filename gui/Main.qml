@@ -36,21 +36,21 @@ Window
             case Main.EScreen.Main:
                 screenLoader.source = "MusicScreen.qml"
                 // Should replace this and below with a new button group class
-                headerButtonMusic.color = selectedButtonColour
-                headerButtonInfo.color = unselectedButtonColour
-                headerButtonSettings.color = unselectedButtonColour
+                headerButtonMusic.backgroundColour = selectedButtonColour
+                headerButtonInfo.backgroundColour = unselectedButtonColour
+                headerButtonSettings.backgroundColour = unselectedButtonColour
                 break;
             case Main.EScreen.Info:
                 screenLoader.source = "InfoScreen.qml"
-                headerButtonMusic.color = unselectedButtonColour
-                headerButtonInfo.color = selectedButtonColour
-                headerButtonSettings.color = unselectedButtonColour
+                headerButtonMusic.backgroundColour = unselectedButtonColour
+                headerButtonInfo.backgroundColour = selectedButtonColour
+                headerButtonSettings.backgroundColour = unselectedButtonColour
                 break;
             case Main.EScreen.Settings:
                 screenLoader.source = "SettingsScreen.qml"
-                headerButtonMusic.color = unselectedButtonColour
-                headerButtonInfo.color = unselectedButtonColour
-                headerButtonSettings.color = selectedButtonColour
+                headerButtonMusic.backgroundColour = unselectedButtonColour
+                headerButtonInfo.backgroundColour = unselectedButtonColour
+                headerButtonSettings.backgroundColour = selectedButtonColour
                 break;
             default:
                 return;
@@ -80,30 +80,33 @@ Window
                 // Buttons (testing)
                 CustomButton {
                     id: headerButtonMusic
-                    text: "Music"
-                    color: "#A16583"
 
-                    Layout.fillHeight: true
+                    backgroundColour: "#A16583"
+                    text: "Music"
+                    font.pixelSize: 20
+                    radius: 10
 
                     onClicked: root.switchScreen(Main.EScreen.Main)
                 }
 
                 CustomButton {
                     id: headerButtonInfo
-                    text: "Info"
-                    color: Qt.alpha("#3A3A3A", 0.5)
 
-                    Layout.fillHeight: true
+                    backgroundColour: Qt.alpha("#3A3A3A", 0.5)
+                    text: "Info"
+                    font.pixelSize: 20
+                    radius: 10
 
                     onClicked: root.switchScreen(Main.EScreen.Info)
                 }
 
                 CustomButton {
                     id: headerButtonSettings
-                    text: "Settings"
-                    color: Qt.alpha("#3A3A3A", 0.5)
 
-                    Layout.fillHeight: true
+                    backgroundColour: Qt.alpha("#3A3A3A", 0.5)
+                    text: "Settings"
+                    font.pixelSize: 20
+                    radius: 10
 
                     onClicked: root.switchScreen(Main.EScreen.Settings)
                 }
@@ -114,11 +117,9 @@ Window
                 // Minimise
                 CustomButton {
                     Layout.preferredWidth: parent.height
-                    Layout.fillHeight: true
 
                     radius: 20
-                    color: "#434343"
-                    hasIcon: false
+                    backgroundColour: "#434343"
 
                     onClicked: root.showMinimized()
                 }
@@ -126,11 +127,9 @@ Window
                 // Maximise
                 CustomButton {
                     Layout.preferredWidth: parent.height
-                    Layout.fillHeight: true
 
                     radius: 20
-                    color: "#434343"
-                    hasIcon: false
+                    backgroundColour: "#434343"
 
                     onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
                 }
@@ -138,11 +137,9 @@ Window
                 // Quit
                 CustomButton {
                     Layout.preferredWidth: parent.height
-                    Layout.fillHeight: true
 
                     radius: 20
-                    color: "#434343"
-                    hasIcon: false
+                    backgroundColour: "#434343"
 
                     onClicked: root.close()
                 }
