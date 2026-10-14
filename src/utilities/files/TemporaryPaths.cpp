@@ -6,7 +6,6 @@ std::filesystem::path TemporaryPaths::GetTempDir()
     if (!std::filesystem::exists(tempFolder))
         std::filesystem::create_directory(tempFolder);
 
-    return tempFolder;
 }
 
 std::filesystem::path TemporaryPaths::GetDownloadsDir()

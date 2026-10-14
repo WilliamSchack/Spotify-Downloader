@@ -3,7 +3,7 @@
 CookieFile::CookieFile(const std::string& fileName)
 {
     std::string fileNameValid = FileUtils::ValidateFileName(fileName);
-    if (StringUtils::EndsWith(fileNameValid, ".txt"))
+    if (!StringUtils::EndsWith(fileNameValid, ".txt"))
         fileNameValid += ".txt";
 
     _path = TemporaryPaths::GetTempDir() / fileNameValid;
@@ -30,11 +30,22 @@ std::string CookieFile::Read()
 
 void CookieFile::Overwrite(const std::string& contents)
 {
-    // should validate cookies
+    if (!CookiesValid(contents))
+        return;
 
     std::ofstream file(_path);
     file << contents;
     file.close();
+}
+
+bool CookieFile::CookiesValid(const std::string& cookies)
+{
+    // Must be netscape cookies
+    std::string firstLine = StringUtils::Split(cookies, "\n")[0];
+    if (firstLine != "# HTTP Cookie File" && firstLine != "# Netscape HTTP Cookie File")
+        return false;
+
+    return true;
 }
 
 bool CookieFile::Exists()

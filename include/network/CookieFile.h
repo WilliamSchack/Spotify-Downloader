@@ -14,6 +14,7 @@ class CookieFile
         std::string Read();
         void Overwrite(const std::string& contents);
     private:
+        bool CookiesValid(const std::string& cookies);
         bool Exists();
     private:
         std::filesystem::path _path;

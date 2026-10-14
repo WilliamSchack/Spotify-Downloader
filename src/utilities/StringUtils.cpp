@@ -14,13 +14,16 @@ std::string StringUtils::FromWString(const std::wstring& string)
 
 bool StringUtils::StartsWith(const std::string& string, const std::string& value)
 {
+    if (string.length() < value.length())
+        return false;
+
     return string.rfind(value, 0) == 0;
 }
 
 bool StringUtils::EndsWith(const std::string& string, const std::string& value)
 {
     if (string.length() < value.length())
-        return;
+        return false;
 
     return string.compare(string.length() - value.length(), value.length(), value) == 0;
 }
