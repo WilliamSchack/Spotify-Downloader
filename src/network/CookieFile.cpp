@@ -14,6 +14,9 @@ std::string CookieFile::Read()
     if (!Exists())
         return "";
 
+    if (!_contentsCache.empty())
+        return _contentsCache;
+
     std::ifstream file(_path);
 
     if (!file.is_open()) {
@@ -22,20 +25,22 @@ std::string CookieFile::Read()
     }
 
     // Read the file
-    std::string content((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+    _contentsCache = std::string((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
     file.close();
-    return content;
+    return _contentsCache;
 }
 
 void CookieFile::Overwrite(const std::string& contents)
 {
     if (!CookiesValid(contents))
         return;
-
+    
     std::ofstream file(_path);
     file << contents;
     file.close();
+
+    _contentsCache = contents;
 }
 
 bool CookieFile::CookiesValid(const std::string& cookies)
@@ -46,6 +51,11 @@ bool CookieFile::CookiesValid(const std::string& cookies)
         return false;
 
     return true;
+}
+
+bool CookiesValid()
+{
+
 }
 
 bool CookieFile::Exists()

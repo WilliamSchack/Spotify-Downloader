@@ -53,6 +53,7 @@ class Config
         static inline EIPVersion IPVersion = EIPVersion::Automatic;
 
         // YouTube
+        
 
         // Interface
         static inline bool AutoOpenDownloadFolder = true;

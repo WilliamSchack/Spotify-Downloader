@@ -1,6 +1,6 @@
 #include "YouTubeCookieFile.h"
 
-std::string YouTubeCookieFile::GetCookieString()
+CookieFile& YouTubeCookieFile::GetCookieFile()
 {
-    return _cookieFile.Read();
+    return _cookieFile;
 }
