@@ -562,18 +562,64 @@ RowLayout {
                             id: sectionYouTube
                             label: "YouTube"
 
+                            // TODO: Make this look good
+                            SettingsItem {
+                                label: "Status"
+
+                                Text {
+                                    // Fill to next settings: input + 2 buttons + 2 spaces
+                                    width: 300 + 2 * height + 10 * 2
+
+                                    text: "Invalid: No Cookies, No PO Token"
+                                    color: "#ff6464"
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
                             SettingsItem {
                                 label: "Cookies"
 
                                 // TODO: Figure out this input
                                 // Probably will have a file location rather than the upload like v1
+
+                                CustomButton {
+                                    width: 300
+
+                                    text: "Open File"
+                                    textColour: "black"
+                                    font.bold: true
+                                }
+
+                                // Clear
+                                CustomButton {
+                                    width: parent.height
+                                }
+
+                                // Paste
+                                CustomButton {
+                                    width: parent.height
+                                }
                             }
 
                             SettingsItem {
                                 label: "PO Token"
 
-                                CustomTextField {}
-                                // TODO: Add clear, paste, extra buttons like v1
+                                CustomTextField {
+
+                                }
+
+                                // Clear
+                                CustomButton {
+                                    width: parent.height
+                                }
+
+                                // Paste
+                                CustomButton {
+                                    width: parent.height
+                                }
                             }
                         }
                     }
