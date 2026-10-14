@@ -16,6 +16,7 @@ class StringUtils
         static std::wstring ToWString(const std::string& string);
         static std::string FromWString(const std::wstring& string);
         static bool StartsWith(const std::string& string, const std::string& value);
+        static bool EndsWith(const std::string& string, const std::string& value);
         static bool Contains(const std::string& string, const std::string& value);
         static bool Contains(const std::wstring& string, const std::wstring& value);
         static std::string ToLower(const std::string& string);

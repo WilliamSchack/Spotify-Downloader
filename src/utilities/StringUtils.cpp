@@ -17,6 +17,14 @@ bool StringUtils::StartsWith(const std::string& string, const std::string& value
     return string.rfind(value, 0) == 0;
 }
 
+bool StringUtils::EndsWith(const std::string& string, const std::string& value)
+{
+    if (string.length() < value.length())
+        return;
+
+    return string.compare(string.length() - value.length(), value.length(), value) == 0;
+}
+
 bool StringUtils::Contains(const std::string& string, const std::string& value)
 {
     return string.find(value) != std::string::npos;
