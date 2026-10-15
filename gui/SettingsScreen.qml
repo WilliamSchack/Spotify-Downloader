@@ -267,7 +267,10 @@ RowLayout {
                                 CustomComboBox {
                                     model: _manager.settings.GetCodecOptions()
                                     currentIndex: _manager.settings.codec
-                                    onActivated: (index) => { _manager.settings.codec = index }
+                                    onActivated: (index) => {
+                                        _manager.settings.codec = index
+                                        bitrateInput.validateText()
+                                    }
                                 }
                             }
 
@@ -305,15 +308,31 @@ RowLayout {
                                 }
 
                                 IntTextField {
+                                    id: bitrateInput
+
                                     // Should change based on codec, premium status, and auto update when manualBitrate (Same as v1)
                                     enabled: _manager.settings.manualBitrate
-                                    min: 0
-                                    max: 128
+                                    min: 33
+                                    max: _manager.settings.bitrateMax
                                     rightText: "kb/s"
                                     hasRightLabel: true
 
+                                    extraValidation: (value) => {
+                                        // Snap to multiple of 32
+                                        if (value % 32 == 0)
+                                            return value
+
+                                        var remainder = value % 32
+                                        if (remainder < 16)
+                                            value -= remainder
+                                        else
+                                            value += 32 - remainder
+
+                                        return value
+                                    }
+
                                     text: _manager.settings.bitrate
-                                    onTextEdited: (index) => { _manager.settings.bitrate = parseInt(text) }
+                                    onValueChanged: (value) => { _manager.settings.bitrate = value }
                                 }
                             }
                         }
@@ -511,7 +530,7 @@ RowLayout {
                                     max: 128
 
                                     text: _manager.settings.downloadThreads
-                                    onTextEdited: _manager.settings.downloadThreads = parseInt(text)
+                                    onValueChanged: (value) => { _manager.settings.downloadThreads = value }
                                 }
                             }
 
@@ -539,7 +558,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.downloadTimeoutMs
-                                    onTextEdited: _manager.settings.downloadTimeoutMs = parseInt(text)
+                                    onValueChanged: (value) => { _manager.settings.downloadTimeoutMs = value }
                                 }
                             }
 

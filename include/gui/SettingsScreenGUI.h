@@ -22,7 +22,8 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(double, normaliseDb, NormaliseDb, Config::NormaliseDb)
     SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
     SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps)
-    
+    Q_PROPERTY(int bitrateMax READ GetBitrateMax NOTIFY BitrateMaxChanged)
+
     SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
     STRING_QPROPERTY(artistsSeparator, ArtistsSeparator, Config::ArtistSeperator)
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
@@ -57,6 +58,7 @@ class SettingsScreenGUI : public QObject
 
         bool GetAllSettingsValid() const;
 
+        int GetBitrateMax() const;
         QString GetYouTubeCookiesStatus() const;
     public slots:
         void YouTubeCookiesOpenButtonClicked();
@@ -76,6 +78,7 @@ class SettingsScreenGUI : public QObject
         QFileSystemWatcher _youtubeCookiesWatcher;
         QString _youtubeCookiesStatus = "";
     signals:
+        void BitrateMaxChanged();
         void YouTubeCookiesStatusChanged();
 };
 

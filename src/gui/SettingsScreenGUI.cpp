@@ -3,6 +3,7 @@
 SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 {
     connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxChanged);
 
     SetupFileName();
     SetupSubFolders();
@@ -26,6 +27,18 @@ void SettingsScreenGUI::LeavingScreen()
 bool SettingsScreenGUI::GetAllSettingsValid() const
 {
     return _fileNameValid && _subFoldersValid && _lyricsFileNameValid && _playlistFileNameValid;
+}
+
+int SettingsScreenGUI::GetBitrateMax() const
+{
+    // TODO: Update tooltip with low, good, high quality bitrate settings
+
+    std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
+    const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();
+
+    bool youtubeCookiesValid = true;//Config::YouTubeCookiesValid();
+    
+    return youtubeCookiesValid ? codecBitrateDetails.MaxBitratePremium : codecBitrateDetails.MaxBitrate;
 }
 
 QString SettingsScreenGUI::GetYouTubeCookiesStatus() const
@@ -82,8 +95,6 @@ void SettingsScreenGUI::UpdateYouTubeCookiesStatus()
     CookieFile& cookieFile = YouTubeCookieFile::Get();
     std::string cookieString = cookieFile.Read();
     bool cookieValid = cookieFile.CookiesValid();
-
-    std::cout << "Cookies: " << cookieString << std::endl;
 
     QString cookieStatus = "";
     if (cookieString.empty())
