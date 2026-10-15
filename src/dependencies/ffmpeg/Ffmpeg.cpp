@@ -115,8 +115,6 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath); 
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
-    std::cout << audioDetails.Bitrate << std::endl;;
-
     std::filesystem::path tempPath = filePath;
     tempPath.replace_filename(FileUtils::PathToUtf8(filePath.stem()) + "_ffmpeg" + FileUtils::PathToUtf8(filePath.extension()));
 

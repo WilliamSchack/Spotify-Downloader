@@ -131,6 +131,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     YtdlpError error = GetError(errorString);
     if (error.Error != EYtdlpError::None && error.Error != EYtdlpError::LowQuality) {
+        std::cout << "yt-dlp Error Output: " << output << std::endl;
         result.Error = error;
         return result;
     }
