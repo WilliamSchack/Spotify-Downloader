@@ -593,12 +593,12 @@ RowLayout {
                                     font.bold: true
                                 }
 
-                                // Clear
+                                // Paste
                                 CustomButton {
                                     width: parent.height
                                 }
 
-                                // Paste
+                                // Clear
                                 CustomButton {
                                     width: parent.height
                                 }
@@ -611,12 +611,12 @@ RowLayout {
 
                                 }
 
-                                // Clear
+                                // Paste
                                 CustomButton {
                                     width: parent.height
                                 }
 
-                                // Paste
+                                // Clear
                                 CustomButton {
                                     width: parent.height
                                 }

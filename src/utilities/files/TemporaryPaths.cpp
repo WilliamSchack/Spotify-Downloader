@@ -4,8 +4,9 @@ std::filesystem::path TemporaryPaths::GetTempDir()
 {
     std::filesystem::path tempFolder = std::filesystem::temp_directory_path() / APP_NAME;
     if (!std::filesystem::exists(tempFolder))
-        std::filesystem::create_directory(tempFolder);
+        std::filesystem::create_directories(tempFolder);
 
+    return tempFolder;
 }
 
 std::filesystem::path TemporaryPaths::GetDownloadsDir()

@@ -53,9 +53,9 @@ bool CookieFile::CookiesValid(const std::string& cookies)
     return true;
 }
 
-bool CookiesValid()
+bool CookieFile::CookiesValid()
 {
-
+    return CookiesValid(Read());
 }
 
 bool CookieFile::Exists()
