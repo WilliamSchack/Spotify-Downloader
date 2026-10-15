@@ -12,6 +12,7 @@
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QFileSystemWatcher>
 
 class SettingsScreenGUI : public QObject
 {
@@ -65,7 +66,14 @@ class SettingsScreenGUI : public QObject
         void YouTubePOTokenClearButtonClicked();
     private:
         void UpdateYouTubeCookiesStatus();
+
+        void SetupYouTubeCookiesWatcher();
+        void AddYouTubeCookiesWatcherPath();
+        void CleaupYouTubeCookiesWatcher();
+    private slots:
+        void YouTubeCookiesWatcherFileChanged(const QString& path);
     private:
+        QFileSystemWatcher _youtubeCookiesWatcher;
         QString _youtubeCookiesStatus = "";
     signals:
         void YouTubeCookiesStatusChanged();

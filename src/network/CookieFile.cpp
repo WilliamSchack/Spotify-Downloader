@@ -7,6 +7,8 @@ CookieFile::CookieFile(const std::string& fileName)
         fileNameValid += ".txt";
 
     _path = TemporaryPaths::GetTempDir() / fileNameValid;
+
+    CreateIfEmpty();
 }
 
 std::string CookieFile::Read()
@@ -46,8 +48,18 @@ void CookieFile::Overwrite(const std::string& contents)
 void CookieFile::Clear()
 {
     std::ofstream file(_path);
+    if (!file.is_open()) {
+        std::cout << "Could not open cookie file at " << _path << std::endl;
+        return;
+    }
+
     file.close();
 
+    _contentsCache = "";
+}
+
+void CookieFile::ClearCache()
+{
     _contentsCache = "";
 }
 

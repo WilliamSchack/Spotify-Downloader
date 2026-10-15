@@ -14,11 +14,12 @@ class CookieFile
         std::string Read();
         void Overwrite(const std::string& contents);
         void Clear();
+        void ClearCache();
         void CreateIfEmpty();
 
         bool CookiesValid(const std::string& cookies);
         bool CookiesValid();
-        
+
         std::filesystem::path GetPath();
     private:
         bool Exists();
