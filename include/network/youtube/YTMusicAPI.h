@@ -7,6 +7,7 @@
 
 #include "EYoutubeCategory.h"
 #include "YoutubeSearchResult.h"
+#include "YouTubeCookieFile.h"
 #include "NetworkRequest.h"
 #include "PlaylistTracks.h"
 #include "AlbumTracks.h"
@@ -14,6 +15,7 @@
 #include "StringUtils.h"
 #include "ArrayUtils.h"
 #include "JsonUtils.h"
+#include "VectorUtils.h"
 
 #include <chrono>
 #include <regex>
@@ -40,7 +42,7 @@ class YTMusicAPI {
 
 		Lyrics GetLyrics(const std::string& videoId, const bool& timestamps = true);
 
-		//bool HasPremium(QString cookies);
+        bool HasPremium();
 
 		//bool IsAgeRestricted(QString videoId);
 	private:
@@ -92,7 +94,7 @@ class YTMusicAPI {
 		static inline const std::string BROWSE_BASE_URL = YOUTUBE_URL + "/browse/";
 		static inline const std::string PLAYLIST_BASE_URL = YOUTUBE_URL + "/playlist?list=";
 
-		static inline const std::string VALID_PREMIUM_IMAGE_ALT_TEXT[] {
+		static inline const std::vector<std::string> VALID_PREMIUM_IMAGE_ALT_TEXT {
 			"YouTube Premium",
 			"YouTube Music Premium"
 		};

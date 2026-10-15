@@ -16,9 +16,8 @@ NetworkRequest YTMusicAPI::GetRequestURL(const std::string& url)
 	request.Url = url;
 	request.SetHeader("User-Agent", "Mozilla/5.0 (Linux x86_64; rv:149.0) Firefox/149.0");
 	request.SetHeader("Accept", "*/*");
-	request.SetHeader("Accept-encoding", "gzip, deflate");
-	request.SetHeader("Content-Type", "application/json");
-	request.SetHeader("Content-Encoding", "gzip");
+	request.SetHeader("Accept-Encoding", "gzip, deflate");
+	request.SetHeader("Accept-Language", "en-US,en;q=0.5");
 
 	return request;
 }
@@ -27,6 +26,8 @@ NetworkRequest YTMusicAPI::GetRequestAPI(const std::string& endpoint)
 {
     NetworkRequest request = GetRequestURL(API_BASE_URL + "/" + endpoint + "/?alt=json");
 	request.SetHeader("Origin", API_BASE_URL + "/");
+    request.SetHeader("Content-Type", "application/json");
+	request.SetHeader("Content-Encoding", "gzip");
 
 	return request;
 }
@@ -1334,71 +1335,71 @@ long YTMusicAPI::GetSignatureTimestamp()
 	return secondsSinceEpoch - 1;
 }
 
-/*
-bool YTMusicAPI::HasPremium(QString cookies)
+bool YTMusicAPI::HasPremium()
 {
-	if (cookies.isEmpty())
-		return false;
+    CookieFile& cookieFile = YouTubeCookieFile::Get();
 
-	QUrl url = QUrl("https://www.youtube.com/paid_memberships");
-	QNetworkRequest request = QNetworkRequest(url);
-	request.setRawHeader("user-agent", "Mozilla/5.0");
-	request.setRawHeader("accept-language", "en-US,en;q=0.5");
-	request.setRawHeader("origin", "https://www.youtube.com");
+    if (cookieFile.Read().empty())
+        return false;
 
-	QNetworkCookieJar* cookieJar = Network::FromNetscapeCookies(cookies);
-	QByteArray response = Network::Get(request, cookieJar);
-	QString responseString = QString(response);
+    NetworkRequest request = GetRequestURL("https://www.youtube.com/paid_memberships");
+    request.SetHeader("Origin", "https://www.youtube.com");
+    request.SetCookiePath(FileUtils::PathToUtf8(cookieFile.GetPath()));
+	NetworkResponse response = request.Get();
 
-	if (responseString.isEmpty())
-		return false;
+    if (response.Body.empty())
+        return false;
 
-	// Returns a mix of html, js, json. Get the json that has the page layout
-	QString jsonLine = responseString.split("\n")[21];
-	QRegularExpression regex(R"(ytInitialData\s=\s(.*}}}}}}});)");
-	QStringList matches = regex.match(jsonLine).capturedTexts();
+    std::vector<std::string> responseLines = StringUtils::Split(response.Body, "\n");
 
-	if (matches.count() < 2)
-		return false;
+    // Used to be at line 21, now its at 20 most of the time? But it also is later sometimes?
+    // I dunno just check from 20-22 it will be found
+    std::smatch matches;
+    bool matchesFound = false;
+    for (int i = 20; i <= 22; i++) {
+        std::string jsonLine = responseLines[i];
+        std::regex_search(jsonLine, matches, std::regex(R"(ytInitialData\s=\s(.*}}}}}}});)"));
 
-	QString jsonString = matches[1];
-	QJsonObject json = QJsonDocument::fromJson(jsonString.toUtf8()).object();
+        if (matches.size() < 2)
+            continue;
+        
+        matchesFound = true;
+        break;
+    }
 
-	QJsonArray pageSections = JSONUtils::Navigate(json, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents" }).toArray();
+    if (!matchesFound)
+        return false;
 
-	// Look for the memberships section
-	QJsonArray membershipsContents = QJsonArray();
-	for (QJsonValue sectionValue : pageSections) {
-		QJsonObject section = sectionValue.toObject();
+    std::string jsonString = matches[1];
+    nlohmann::json json = nlohmann::json::parse(jsonString);
+    nlohmann::json pageSections = json["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
 
-		// Check the section text
-		QJsonArray contents = JSONUtils::Navigate(section, { "itemSectionRenderer", "contents" }).toArray();
-		QString sectionText = JSONUtils::Navigate(contents, { 0, "cardItemRenderer", "headingRenderer", "cardItemTextCollectionRenderer", "textRenderers", 0, "cardItemTextRenderer", "text", "runs", 0, "text"}).toString();
+    nlohmann::json membershipContents = nlohmann::json::array();
+    for (nlohmann::json sectionJson : pageSections) {
+        nlohmann::json contents = sectionJson["itemSectionRenderer"]["contents"];
+        std::string sectionText = JsonUtils::SafelyNavigate<std::string>(contents, { 0, "cardItemRenderer", "headingRenderer", "cardItemTextCollectionRenderer", "textRenderers", 0, "cardItemTextRenderer", "text", "runs", 0, "text"});
 
-		if (sectionText == "Memberships") {
-			membershipsContents = contents;
-			break;
-		}
-	}
+        if (sectionText == "Memberships") {
+            membershipContents = contents;
+            break;
+        }
+    }
 
-	// No memberships found
-	if (membershipsContents.isEmpty())
-		return false;
+    if (membershipContents.empty())
+        return false;
 
-	// Check each section and look for either a valid premium image alt text
-	for (QJsonValue membershipValue : membershipsContents) {
-		QJsonObject membership = membershipValue.toObject();
+    // Look for any memberships in VALID_PREMIUM_IMAGE_ALT_TEXT
+    for (nlohmann::json membership : membershipContents) {
+        std::string imageAltText = JsonUtils::SafelyNavigate<std::string>(membership, { "cardItemContainerRenderer", "baseRenderer", "cardItemRenderer", "headingRenderer", "cardItemTextWithImageRenderer", "imageRenderer", "themedImageRenderer", "imageLight", "accessibility", "accessibilityData", "label" });
 
-		QString imageAltText = JSONUtils::Navigate(membership, { "cardItemContainerRenderer", "baseRenderer", "cardItemRenderer", "headingRenderer", "cardItemTextWithImageRenderer", "imageRenderer", "themedImageRenderer", "imageLight", "accessibility", "accessibilityData", "label" }).toString();
+        if (VectorUtils::Contains(VALID_PREMIUM_IMAGE_ALT_TEXT, imageAltText))
+            return true;
+    }
 
-		// If any valid premium alt text found, return true
-		if (VALID_PREMIUM_IMAGE_ALT_TEXT.contains(imageAltText))
-			return true;
-	}
-
-	return false;
+    return false;
 }
 
+/*
 // If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
 bool YTMusicAPI::IsAgeRestricted(QString videoId)
 {
