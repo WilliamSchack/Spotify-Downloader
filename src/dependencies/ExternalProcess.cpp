@@ -19,23 +19,24 @@ std::wstring ExternalProcess::GetCommand()
     int argsSize = _args.size();
     for (const std::string& arg : _args) {
         command += L" ";
-        command += StringUtils::ToWString(arg);
+        command += StringUtils::ToWString(QuoteArg(arg));
     }
 
     return command;
 }
-#else
-std::string ExternalProcess::GetCommand()
-{
-    std::string command = "\"" + _path.string() + "\"";
 
-    int argsSize = _args.size();
-    for (const std::string& arg : _args) {
-        command += " ";
-        command += arg;
+std::string ExternalProcess::QuoteArg(std::string arg)
+{
+    // Properly escape quotes
+    arg = StringUtils::ReplaceAll(arg, "\"", "\\\"");
+
+    // Remove ending back slashes
+    int argSize = arg.size();
+    for (int i = argSize; i > 0 && arg[i - 1] == '\\'; i--) {
+        arg += '\\';
     }
 
-    return command;
+    return "\"" + arg + "\"";
 }
 #endif
 
@@ -46,7 +47,8 @@ void ExternalProcess::AddArgument(const std::string& arg)
 
 void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
 {
-    AddArgument(arg + " " + value);
+    AddArgument(arg);
+    AddArgument(value);
 }
 
 ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::function<void(std::string)> lineAvailableCallback)
@@ -162,7 +164,15 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     result.Output = output;
     return result;
 #else
-    std::string command = GetCommand();
+    // Get command
+    std::string pathStr = _path.string();
+    std::vector<char*> argv;
+    argv.push_back(const_cast<char*>(pathStr.c_str()));
+    for (const std::string& arg : _args) {
+        argv.push_back(const_cast<char*>(arg.c_str()));
+    }
+
+    argv.push_back(nullptr);
 
     int pipeFd[2];
     if (pipe(pipeFd) != 0) {
@@ -185,7 +195,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
         close(pipeFd[0]);
         close(pipeFd[1]);
 
-        execl("/bin/sh", "sh", "-c", command.c_str(), (char*)nullptr);
+        execv(pathStr.c_str(), argv.data());
         _exit(127);
     }
     close(pipeFd[1]);

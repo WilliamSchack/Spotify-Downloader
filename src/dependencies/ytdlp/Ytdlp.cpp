@@ -10,7 +10,7 @@ std::string Ytdlp::GetVersion()
 }
 
 // Assumes the path has no extension
-YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension, std::function<void(float)> progressCallback)
+YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs, std::function<void(float)> progressCallback)
 {
     YtdlpResult result;
 
@@ -89,10 +89,9 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     // Download
     ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
-    process.AddArgument("--ffmpeg-location", "\"" + ffmpegPath.string() + "\"");
-    process.AddArgument("--js-runtimes", "quickjs:\"" + quickJsPath.string() + "\"");
-    process.AddArgument("--print", "\"DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s\"");
-    process.AddArgument("--extractor-args", "\"youtube:player_client=default\"");
+    process.AddArgument("--ffmpeg-location", ffmpegPath.string());
+    process.AddArgument("--js-runtimes", "quickjs:" + quickJsPath.string());
+    process.AddArgument("--print", "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s");
     process.AddArgument("-v");
     process.AddArgument("--no-part");
     process.AddArgument("--progress");
@@ -112,8 +111,12 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
             break;
     }
 
-    process.AddArgument("-o", "\"" + FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s\"");
-    process.AddArgument("\"" + url + "\"");
+    for (std::string arg : extraArgs) {
+        process.AddArgument(arg);
+    }
+
+    process.AddArgument("-o", FileUtils::PathToUtf8(pathNoExtension) + ".%(ext)s");
+    process.AddArgument(url);
 
     ExternalProcessResult outputResult = process.Execute(Config::DownloadTimeoutMs, newLineCallback);
     if (outputResult.TimedOut) {

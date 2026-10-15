@@ -5,7 +5,7 @@
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
-    process.AddArgument("-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"");
+    process.AddArgument("-i", FileUtils::PathToUtf8(filePath));
 
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
     process.AddArgument("-f", "null"); // No format
@@ -81,7 +81,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
     // Convert
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     std::vector<std::string> args {
-        "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-i", FileUtils::PathToUtf8(filePath),
         "-y",
         "-progress", "-",
         "-nostats",
@@ -93,7 +93,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
         args.push_back(std::to_string(audioDetails.Bitrate) + "k");
     }
 
-    args.push_back("\"" + FileUtils::PathToUtf8(newPath) + "\"");
+    args.push_back(FileUtils::PathToUtf8(newPath));
 
     Execute(audioDetails, args, progressCallback);
 
@@ -112,6 +112,8 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath); 
     std::unique_ptr<ICodec> codec = CodecFactory::Create(filePath.extension().string());
 
+    std::cout << audioDetails.Bitrate << std::endl;;
+
     std::filesystem::path tempPath = filePath;
     tempPath.replace_filename(FileUtils::PathToUtf8(filePath.stem()) + "_ffmpeg" + FileUtils::PathToUtf8(filePath.extension()));
 
@@ -119,7 +121,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
 
     // Normalise
     std::vector<std::string> args {
-        "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-i", FileUtils::PathToUtf8(filePath),
         "-y",
         "-progress", "-",
         "-nostats",
@@ -131,7 +133,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
         args.push_back(std::to_string(audioDetails.Bitrate) + "k");
     }
 
-    args.push_back("\"" + FileUtils::PathToUtf8(tempPath.string()) + "\"");
+    args.push_back(FileUtils::PathToUtf8(tempPath.string()));
 
     Execute(audioDetails, args, progressCallback);
 
@@ -157,12 +159,12 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
     // Set bitrate
     FfmpegAudioDetails audioDetails = GetAudioDetails(filePath, false);
     Execute(audioDetails, {
-        "-i", "\"" + FileUtils::PathToUtf8(filePath) + "\"",
+        "-i", FileUtils::PathToUtf8(filePath),
         "-y",
         "-progress", "-",
         "-nostats",
         "-b:a", std::to_string(bitrate) + "k",
-        "\"" + FileUtils::PathToUtf8(tempPath) + "\""
+        FileUtils::PathToUtf8(tempPath)
     }, progressCallback);
 
     // Rename back to original

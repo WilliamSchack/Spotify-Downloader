@@ -32,8 +32,7 @@ class ExternalProcess
     private:
 #ifdef WIN32
         std::wstring GetCommand();
-#else
-        std::string GetCommand();
+        std::string QuoteArg(std::string arg);
 #endif
     private:
         std::filesystem::path _path;
