@@ -98,7 +98,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
 
     args.push_back(FileUtils::PathToUtf8(newPath));
 
-    std::cout << Execute(audioDetails, args, progressCallback) << std::endl;
+    Execute(audioDetails, args, progressCallback);
 
     if (deleteOriginal)
         std::filesystem::remove(filePath);
