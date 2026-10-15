@@ -6,10 +6,10 @@
 class M3UFile : public IPlaylistFile
 {
     public:
-        std::string GetExtension();
-        std::string WriteHeader();
-        std::string WriteFile(const PlaylistFileTrack& track);
-        std::string WriteFooter();
+        std::string GetExtension() override;
+        std::string WriteHeader() override;
+        std::string WriteFile(const PlaylistFileTrack& track) override;
+        std::string WriteFooter() override;
 };
 
 #endif

@@ -18,3 +18,12 @@ std::unique_ptr<IPlatformSearcher> PlatformFactory::CreateSearcher(const EPlatfo
 
     return nullptr;
 }
+
+std::unique_ptr<IPlatformData> PlatformFactory::CreateData(const EPlatform& platform)
+{
+    switch (platform) {
+        case EPlatform::YouTube: return std::make_unique<YoutubeData>();
+    }
+
+    return nullptr;
+}
