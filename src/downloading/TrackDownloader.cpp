@@ -118,11 +118,26 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // TODO: Check for youtube flagging your ip
 
-    // == Download 
+    // == Download
+    
+    // Get extra download data
+    std::vector<std::string> extraDownloadArgs;
+    std::unique_ptr<IPlatformData> platformData = PlatformFactory::CreateData(searchPlatform);
+    if (platformData != nullptr) {
+        std::string downloadError = platformData->GetTrackDownloadError(searchResult.Data);
+        if (!downloadError.empty()) {
+            result.FailReason = downloadError;
+            return result;
+        }
+
+        extraDownloadArgs = platformData->GetExtraDownloadArgs(searchResult.Data);
+    }
+
+    // Download
     std::cout << "Downloading..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.3, "Downloading Track..."));
 
-    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, [&](float progress) {
+    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, extraDownloadArgs, [&](float progress) {
         SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track..."));
     });
 
