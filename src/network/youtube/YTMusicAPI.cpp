@@ -1399,44 +1399,40 @@ bool YTMusicAPI::HasPremium()
     return false;
 }
 
-/*
-// If video is taken down or doesnt exist it will show a "This video isn't available anymore screen"
-bool YTMusicAPI::IsAgeRestricted(QString videoId)
+bool YTMusicAPI::IsAgeRestricted(const std::string& videoId)
 {
-	// Get the song details
-	QJsonObject body{
-		{"playbackContext", QJsonObject{
-			{"contentPlaybackContext", QJsonObject{
-				{"signatureTimestamp", QDateTime::currentSecsSinceEpoch() / 86400 - 1}
-			}}	
-		}},
-		{"video_id", videoId},
+    nlohmann::json postData {
+		{"playbackContext", {
+            {"contentPlaybackContext", {
+                {"signatureTimestamp", GetSignatureTimestamp()}
+            }}
+        }},
+        {"video_id", videoId},
 		{"context", GetContext()}
 	};
 
-	QByteArray postData = QJsonDocument(body).toJson();
-	QByteArray response = Network::Post(GetRequestAPI("player"), postData);
-	QJsonObject json = QJsonDocument::fromJson(response).object();
+	NetworkRequest request = GetRequestAPI("player");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
 
-	// Get the playability status, if not returned cannot check
-	if (!json.contains("playabilityStatus"))
-		return false;
+    // Get the playability status, if not returned cannot check
+    if (!json.contains("playabilityStatus"))
+        return false;
 
-	QJsonObject playabiityStatus = json["playabilityStatus"].toObject();
-	QString status = playabiityStatus["status"].toString();
+    nlohmann::json playabilityStatus = json["playabilityStatus"];
+    
+    std::string status = playabilityStatus["status"].get<std::string>();
+    if (status == "OK")
+    return false;
+    
+    std::string reason = playabilityStatus["reason"].get<std::string>();
 
-	// No error
-	if (status == "OK")
-		return false;
-
-	QString reason = playabiityStatus["reason"].toString();
-
-	// Age restricted
+    // Age restricted
 	if (status == "LOGIN_REQUIRED" && reason == "Sign in to confirm your age")
 		return true;
+    
+    if (status == "UNPLAYABLE" && reason == "Video unavailable")
+        return true;
 
-	// Other error
-	return false;
+    return false;
 }
-
-*/

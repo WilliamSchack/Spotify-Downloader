@@ -44,7 +44,7 @@ class YTMusicAPI {
 
         bool HasPremium();
 
-		//bool IsAgeRestricted(QString videoId);
+        bool IsAgeRestricted(const std::string& videoId);
 	private:
 		NetworkRequest GetRequestURL(const std::string& url);
 		NetworkRequest GetRequestAPI(const std::string& endpoint);
