@@ -7,10 +7,12 @@ CustomTextField {
     property real max: 50.0
     property int decimals: 1
 
+    // Use this to bind a value rather than to text, that will unbind when validating
+    property var boundValue: undefined
+
     // function(real), must return real. It is assumed this is set correctly
     property var extraValidation: null
 
-    // Use this instead of onTextEdited since that doesnt validate properly with IntValidator
     signal valueChanged(int value)
 
     validator: DoubleValidator {
@@ -34,6 +36,14 @@ CustomTextField {
 
         text = value
         valueChanged(value)
+    }
+
+    Binding {
+        target: root
+        property: "text"
+        value: root.boundValue
+        when: root.boundValue !== undefined && !root.activeFocus
+        restoreMode: Binding.RestoreNone
     }
 
     onActiveFocusChanged: {
