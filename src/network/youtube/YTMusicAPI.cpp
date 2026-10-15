@@ -1423,8 +1423,11 @@ bool YTMusicAPI::IsAgeRestricted(const std::string& videoId)
     
     std::string status = playabilityStatus["status"].get<std::string>();
     if (status == "OK")
-    return false;
+        return false;
     
+    if (!playabilityStatus.contains("reason"))
+        return false;
+
     std::string reason = playabilityStatus["reason"].get<std::string>();
 
     // Age restricted

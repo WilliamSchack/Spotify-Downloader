@@ -42,7 +42,9 @@ QString TrackUI::GetStatus() const
 
 void TrackUI::SetCoverArtUrl(const std::filesystem::path& path)
 {
-    // TODO: fix cover art with the same cover art, test downloading with an album (https://open.spotify.com/album/5l4pp1ptAaRFESQfrVMPdu?si=421e3706ef2e477f)
+    // TODO:
+    // Fix cover art with the same cover art, test downloading with an album (https://open.spotify.com/album/5l4pp1ptAaRFESQfrVMPdu?si=421e3706ef2e477f)
+    // Sometimes it just doesnt work when multiple tracks use the same cover art, i have no clue
 
     QString pathString = QString::fromStdString(FileUtils::PathToUtf8(path));
     _coverArtUrl = QUrl::fromLocalFile(pathString).toString();

@@ -14,6 +14,8 @@ class YoutubeData : public IPlatformData
         std::string GetTrackDownloadError(const TrackData& track) override;
 
         std::vector<std::string> GetExtraDownloadArgs(const TrackData& track) override;
+
+        std::string UpdateUrl(const TrackData& track) override;
     private:
         std::filesystem::path GetCookiePath();
         bool AgeRestricted(const std::string& trackId);

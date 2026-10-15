@@ -14,6 +14,8 @@ class IPlatformData
         virtual std::string GetTrackDownloadError(const TrackData& track) = 0;
 
         virtual std::vector<std::string> GetExtraDownloadArgs(const TrackData& track) = 0;
+
+        virtual std::string UpdateUrl(const TrackData& track) = 0;
 };
 
 #endif

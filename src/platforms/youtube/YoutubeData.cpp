@@ -36,6 +36,20 @@ std::vector<std::string> YoutubeData::GetExtraDownloadArgs(const TrackData& trac
     return args;
 }
 
+std::string YoutubeData::UpdateUrl(const TrackData& track)
+{
+    std::string url = "";
+    bool usingCookies = GetCookiePath().empty() && !Config::YouTubePOToken.empty();
+    if (usingCookies) {
+        url = "https://music.youtube.com/watch?v=";
+    } else {
+        url = "https://www.youtube.com/watch?v=";
+    }
+
+    url += track.Id;
+    return url;
+}
+
 std::filesystem::path YoutubeData::GetCookiePath()
 {
     if (!Config::YouTubeCookiesValid())

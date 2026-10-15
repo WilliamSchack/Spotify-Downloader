@@ -203,6 +203,7 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
 
         if (--_tracksRemaining == 0) {
             // Download is finished
+            std::cout << "Finished all the downloads" << std::endl;
 
             // Create playlist file if required
             if (Config::PlaylistFileType != EPlaylistFileType::None)

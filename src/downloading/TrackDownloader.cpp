@@ -121,6 +121,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // == Download
     
     // Get extra download data
+    std::string downloadUrl = searchResult.Data.Url;
     std::vector<std::string> extraDownloadArgs;
     std::unique_ptr<IPlatformData> platformData = PlatformFactory::CreateData(searchPlatform);
     if (platformData != nullptr) {
@@ -131,6 +132,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         }
 
         extraDownloadArgs = platformData->GetExtraDownloadArgs(searchResult.Data);
+        downloadUrl = platformData->UpdateUrl(searchResult.Data);
     }
 
     // Download
