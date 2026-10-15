@@ -1,4 +1,5 @@
 target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/YoutubeDownloader.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/YoutubeSearcher.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/YoutubeData.cpp
 )

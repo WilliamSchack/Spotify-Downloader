@@ -4,15 +4,26 @@
 #include "IPlatformData.h"
 #include "YouTubeCookieFile.h"
 #include "YTMusicAPI.h"
+#include "Config.h"
 
 class YoutubeData : public IPlatformData
 {
     public:
         YoutubeData();
 
-        std::filesystem::path GetCookiePath() const override;
+        std::string GetTrackDownloadError(const TrackData& track) override;
+
+        std::vector<std::string> GetExtraDownloadArgs(const TrackData& track) override;
+    private:
+        std::filesystem::path GetCookiePath();
+        bool AgeRestricted(const std::string& trackId);
+
+        bool HasPremium();
     private:
         YTMusicAPI _youtube;
+
+        bool _premiumCacheSet;
+        bool _premiumCache;
 };
 
 #endif
