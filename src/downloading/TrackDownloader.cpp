@@ -165,7 +165,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::cout << "Setting bitrate..." << std::endl;
         SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Setting Bitrate..."));
 
-        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps, [&](float progress) {
+        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps[targetCodec->GetExtension()], [&](float progress) {
             SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate..."));
         });
     }

@@ -2,8 +2,9 @@
 
 SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 {
-    connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxChanged);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateChanged);
+    connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
 
     SetupFileName();
     SetupSubFolders();

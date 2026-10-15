@@ -9,6 +9,7 @@
 #include "YouTubeCookieFile.h"
 
 #include <string>
+#include <map>
 
 class Config
 {
@@ -20,7 +21,15 @@ class Config
         static inline bool Normalise = true;
         static inline double NormaliseDb = -14.0;
         static inline bool ManualBitrate = false;
-        static inline int BitrateKbps = 128;
+        static inline std::map<EExtension, int> BitrateKbps = {
+            {EExtension::M4A, 128},
+            {EExtension::AAC, 128},
+            {EExtension::MP3, 192},
+            {EExtension::OGG, 128},
+            {EExtension::WAV, 0},  // TODO: Add sample rate settings
+            {EExtension::FLAC, 0}, // TODO: Add sample rate settings
+            {EExtension::WEBM, 0}  // TODO: IMPLEMENT WEBM
+        };
 
         // Metadata
         static inline bool GetLyrics = true;

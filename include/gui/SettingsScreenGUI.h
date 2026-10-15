@@ -21,7 +21,7 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(bool, normalise, Normalise, Config::Normalise)
     SIMPLE_QPROPERTY(double, normaliseDb, NormaliseDb, Config::NormaliseDb)
     SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
-    SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps)
+    SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps[Config::CodecExtension])
     Q_PROPERTY(int bitrateMax READ GetBitrateMax NOTIFY BitrateMaxChanged)
 
     SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
@@ -75,9 +75,12 @@ class SettingsScreenGUI : public QObject
     private slots:
         void YouTubeCookiesWatcherFileChanged(const QString& path);
     private:
+        int _bitrate = 0;
+
         QFileSystemWatcher _youtubeCookiesWatcher;
         QString _youtubeCookiesStatus = "";
     signals:
+        //void BitrateChanged();
         void BitrateMaxChanged();
         void YouTubeCookiesStatusChanged();
 };
