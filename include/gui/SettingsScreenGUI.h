@@ -5,8 +5,13 @@
 #include "Config.h"
 #include "SavableTrackTagHandler.h"
 #include "SavablePlaylistTagHandler.h"
+#include "YouTubeCookieFile.h"
 
 #include <QObject>
+#include <QGuiApplication>
+#include <QClipboard>
+#include <QDesktopServices>
+#include <QUrl>
 
 class SettingsScreenGUI : public QObject
 {
@@ -37,6 +42,9 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(int, downloadTimeoutMs, DownloadTimeoutMs, Config::DownloadTimeoutMs)
     ENUM_QPROPERTY(EIPVersion, EIPVERSION_NAMES, ipVersion, IPVersion, Config::IPVersion)
     
+    Q_PROPERTY(QString youtubeCookiesStatus READ GetYouTubeCookiesStatus NOTIFY YouTubeCookiesStatusChanged)
+    STRING_QPROPERTY(youtubePOToken, YoutubePOToken, Config::YouTubePOToken)
+
     SIMPLE_QPROPERTY(bool, autoOpenDownloadFolder, AutoOpenDownloadFolder, Config::AutoOpenDownloadFolder)
 
     Q_PROPERTY(bool allSettingsValid READ GetAllSettingsValid)
@@ -44,9 +52,23 @@ class SettingsScreenGUI : public QObject
     public:
         explicit SettingsScreenGUI(QObject* parent = 0);
 
+        Q_INVOKABLE void LeavingScreen();
+
         bool GetAllSettingsValid() const;
 
-        Q_INVOKABLE void LeavingScreen();
+        QString GetYouTubeCookiesStatus() const;
+    public slots:
+        void YouTubeCookiesOpenButtonClicked();
+        void YouTubeCookiesPasteButtonClicked();
+        void YouTubeCookiesClearButtonClicked();
+        void YouTubePOTokenPasteButtonClicked();
+        void YouTubePOTokenClearButtonClicked();
+    private:
+        void UpdateYouTubeCookiesStatus();
+    private:
+        QString _youtubeCookiesStatus = "";
+    signals:
+        void YouTubeCookiesStatusChanged();
 };
 
 #endif

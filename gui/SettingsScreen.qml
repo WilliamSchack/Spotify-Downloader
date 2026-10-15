@@ -511,7 +511,7 @@ RowLayout {
                                     max: 128
 
                                     text: _manager.settings.downloadThreads
-                                    onTextEdited: _manager.settings.downloadThreads = text
+                                    onTextEdited: _manager.settings.downloadThreads = parseInt(text)
                                 }
                             }
 
@@ -539,7 +539,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.downloadTimeoutMs
-                                    onTextEdited: _manager.settings.downloadTimeoutMs = text
+                                    onTextEdited: _manager.settings.downloadTimeoutMs = parseInt(text)
                                 }
                             }
 
@@ -570,8 +570,8 @@ RowLayout {
                                     // Fill to next settings: input + 2 buttons + 2 spaces
                                     width: 300 + 2 * height + 10 * 2
 
-                                    text: "Invalid: No Cookies, No PO Token"
-                                    color: "#ff6464"
+                                    text: _manager.settings.youtubeCookiesStatus
+                                    textFormat: Text.RichText
                                     font.pixelSize: 16
                                     font.bold: true
                                     horizontalAlignment: Text.AlignHCenter
@@ -591,16 +591,20 @@ RowLayout {
                                     text: "Open File"
                                     textColour: "black"
                                     font.bold: true
+
+                                    onClicked: _manager.settings.YouTubeCookiesOpenButtonClicked();
                                 }
 
                                 // Paste
                                 CustomButton {
                                     width: parent.height
+                                    onClicked: _manager.settings.YouTubeCookiesPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
                                     width: parent.height
+                                    onClicked: _manager.settings.YouTubeCookiesClearButtonClicked()
                                 }
                             }
 
@@ -608,17 +612,20 @@ RowLayout {
                                 label: "PO Token"
 
                                 CustomTextField {
-
+                                    text: _manager.settings.youtubePOToken
+                                    onTextEdited: _manager.settings.youtubePOToken = text
                                 }
 
                                 // Paste
                                 CustomButton {
                                     width: parent.height
+                                    onClicked: _manager.settings.YouTubePOTokenPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
                                     width: parent.height
+                                    onClicked: _manager.settings.YouTubePOTokenClearButtonClicked()
                                 }
                             }
                         }

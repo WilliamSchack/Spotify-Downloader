@@ -61,6 +61,9 @@ void CookieFile::CreateIfEmpty()
 
 bool CookieFile::CookiesValid(const std::string& cookies)
 {
+    if (cookies.empty())
+        return false;
+
     // Must be netscape cookies
     std::string firstLine = StringUtils::Split(cookies, "\n")[0];
     if (firstLine != "# HTTP Cookie File" && firstLine != "# Netscape HTTP Cookie File")

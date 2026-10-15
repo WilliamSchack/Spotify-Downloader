@@ -53,7 +53,8 @@ class Config
         static inline EIPVersion IPVersion = EIPVersion::Automatic;
 
         // YouTube
-        
+        // YouTubeCookies = YouTubeCookieFile.Get()
+        static inline std::string YouTubePOToken = "";
 
         // Interface
         static inline bool AutoOpenDownloadFolder = true;
