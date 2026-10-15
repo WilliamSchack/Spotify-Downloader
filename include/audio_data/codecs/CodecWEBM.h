@@ -7,10 +7,10 @@
 class CodecWEBM : public ICodec
 {
     public:
-        EExtension     GetExtension()              const override { return EExtension::WEBM; };
-        EMetadataType  GetMetadataType()           const override { return EMetadataType::None; };
-        std::string    GetString()                 const override { return "webm"; };
-        std::string    GetFfmpegConversionParams() const override { return ""; };
+        EExtension               GetExtension()              const override { return EExtension::WEBM; };
+        EMetadataType            GetMetadataType()           const override { return EMetadataType::None; };
+        std::string              GetString()                 const override { return "webm"; };
+        std::vector<std::string> GetFfmpegConversionParams() const override { return {}; };
         
         BitrateDetails GetBitrateDetails()         const override { 
             return BitrateDetails {

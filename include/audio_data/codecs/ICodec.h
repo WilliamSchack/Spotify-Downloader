@@ -8,6 +8,7 @@
 #include <taglib/fileref.h>
 
 #include <string>
+#include <vector>
 
 class ICodec
 {
@@ -17,7 +18,7 @@ class ICodec
         virtual EExtension GetExtension() const = 0;
         virtual EMetadataType GetMetadataType() const = 0;
         virtual std::string GetString() const = 0;
-        virtual std::string GetFfmpegConversionParams() const = 0;
+        virtual std::vector<std::string> GetFfmpegConversionParams() const = 0;
         virtual BitrateDetails GetBitrateDetails() const = 0;
         virtual bool SetCoverArt(const TagLib::FileRef& fileRef, const TagLib::ByteVector& imageBytes) const = 0;
         virtual TagLib::Tag* GetFileTag(const TagLib::FileRef& fileRef) const = 0;

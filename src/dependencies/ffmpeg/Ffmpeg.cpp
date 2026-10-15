@@ -84,9 +84,12 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
         "-i", FileUtils::PathToUtf8(filePath),
         "-y",
         "-progress", "-",
-        "-nostats",
-        targetCodec->GetFfmpegConversionParams()
+        "-nostats"
     };
+
+    for (const std::string& param : targetCodec->GetFfmpegConversionParams()) {
+        args.push_back(param);
+    }
 
     if (!targetCodec->GetBitrateDetails().LockedBirtate && audioDetails.Bitrate > 0) {
         args.push_back("-b:a");
@@ -95,7 +98,7 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
 
     args.push_back(FileUtils::PathToUtf8(newPath));
 
-    Execute(audioDetails, args, progressCallback);
+    std::cout << Execute(audioDetails, args, progressCallback) << std::endl;
 
     if (deleteOriginal)
         std::filesystem::remove(filePath);

@@ -38,9 +38,6 @@ std::vector<std::string> YoutubeData::GetExtraDownloadArgs(const TrackData& trac
 
 std::filesystem::path YoutubeData::GetCookiePath()
 {
-    std::cout << Config::YouTubeCookiesValid() << std::endl;
-    std::cout << HasPremium() << std::endl;
-
     if (!Config::YouTubeCookiesValid())
         return "";
 
