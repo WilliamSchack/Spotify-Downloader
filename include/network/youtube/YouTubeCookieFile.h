@@ -6,7 +6,7 @@
 class YouTubeCookieFile
 {
     public:
-        static CookieFile& GetCookieFile();
+        static CookieFile& Get();
     private:
         static inline const std::string FILE_NAME = "YouTubeCookies.txt";
         static inline CookieFile _cookieFile{FILE_NAME};

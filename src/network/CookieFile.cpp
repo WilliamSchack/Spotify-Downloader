@@ -43,6 +43,22 @@ void CookieFile::Overwrite(const std::string& contents)
     _contentsCache = contents;
 }
 
+void CookieFile::Clear()
+{
+    std::ofstream file(_path);
+    file.close();
+
+    _contentsCache = "";
+}
+
+void CookieFile::CreateIfEmpty()
+{
+    if (!Read().empty())
+        return;
+
+    Clear();
+}
+
 bool CookieFile::CookiesValid(const std::string& cookies)
 {
     // Must be netscape cookies
@@ -56,6 +72,11 @@ bool CookieFile::CookiesValid(const std::string& cookies)
 bool CookieFile::CookiesValid()
 {
     return CookiesValid(Read());
+}
+
+std::filesystem::path CookieFile::GetPath()
+{
+    return _path;
 }
 
 bool CookieFile::Exists()

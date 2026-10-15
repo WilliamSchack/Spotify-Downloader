@@ -1,6 +1,6 @@
 #include "YouTubeCookieFile.h"
 
-CookieFile& YouTubeCookieFile::GetCookieFile()
+CookieFile& YouTubeCookieFile::Get()
 {
     return _cookieFile;
 }
