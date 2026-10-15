@@ -21,7 +21,7 @@ CustomTextField {
     function validateText() {
         var value = parseInt(text)
         if (isNaN(value))
-            value = 0 < min ? min : 0
+            value = Math.max(min, Math.min(max, 0))
 
         if (extraValidation != null)
             value = extraValidation(value)

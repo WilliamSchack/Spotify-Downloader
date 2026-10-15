@@ -291,7 +291,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.normaliseDb
-                                    onTextEdited: _manager.settings.normaliseDb = parseFloat(text)
+                                    onValueChanged: (value) => { _manager.settings.normaliseDb = value }
                                 }
                             }
 
@@ -544,7 +544,7 @@ RowLayout {
                                     hasRightLabel: true
 
                                     text: _manager.settings.downloadSpeedLimit
-                                    onTextEdited: _manager.settings.downloadSpeedLimit = parseFloat(text)
+                                    onValueChanged: (value) => { _manager.settings.downloadSpeedLimit = value }
                                 }
                             }
 
