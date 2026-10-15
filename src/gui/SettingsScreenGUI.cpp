@@ -4,7 +4,9 @@ SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 {
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateChanged);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
     connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
+    connect(this, &SettingsScreenGUI::YouTubeCookiesStatusChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
 
     SetupFileName();
     SetupSubFolders();
@@ -37,7 +39,7 @@ int SettingsScreenGUI::GetBitrateMax() const
     std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
     const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();
 
-    bool youtubeCookiesValid = true;//Config::YouTubeCookiesValid();
+    bool youtubeCookiesValid = Config::YouTubeCookiesValid();
     
     return youtubeCookiesValid ? codecBitrateDetails.MaxBitratePremium : codecBitrateDetails.MaxBitrate;
 }
@@ -109,7 +111,9 @@ void SettingsScreenGUI::UpdateYouTubeCookiesStatus()
     
     if (!cookieStatus.isEmpty() || !poTokenStatus.isEmpty()) {
         _youtubeCookiesStatus = "<font color=\"#ff6464\">Invalid: ";
-        _youtubeCookiesStatus += cookieStatus + (poTokenStatus.isEmpty() ? "" : ", ");
+        _youtubeCookiesStatus += cookieStatus;
+        if (!cookieStatus.isEmpty() && !poTokenStatus.isEmpty())
+            _youtubeCookiesStatus += ", ";
         _youtubeCookiesStatus += poTokenStatus;
         _youtubeCookiesStatus += "</font>";
     } else {
@@ -117,6 +121,26 @@ void SettingsScreenGUI::UpdateYouTubeCookiesStatus()
     }
 
     emit YouTubeCookiesStatusChanged();
+}
+
+void SettingsScreenGUI::UpdateBitrateFromCookieStatus()
+{
+    bool cookiesValid = Config::YouTubeCookiesValid();
+    std::cout << "COOKIES VALID: " << cookiesValid << std::endl;
+
+    std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
+    const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();
+    int& bitrate = Config::BitrateKbps[Config::CodecExtension];
+
+    if (cookiesValid && bitrate == codecBitrateDetails.MaxBitrate) {
+        bitrate = codecBitrateDetails.MaxBitratePremium;
+        emit BitrateChanged();
+    } else if (!cookiesValid && bitrate > codecBitrateDetails.MaxBitrate) {
+        bitrate = codecBitrateDetails.MaxBitrate;
+        emit BitrateChanged();
+    }
+
+    emit BitrateMaxChanged();
 }
 
 void SettingsScreenGUI::SetupYouTubeCookiesWatcher()

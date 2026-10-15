@@ -68,6 +68,7 @@ class SettingsScreenGUI : public QObject
         void YouTubePOTokenClearButtonClicked();
     private:
         void UpdateYouTubeCookiesStatus();
+        void UpdateBitrateFromCookieStatus();
 
         void SetupYouTubeCookiesWatcher();
         void AddYouTubeCookiesWatcherPath();
