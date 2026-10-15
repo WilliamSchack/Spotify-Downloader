@@ -126,7 +126,6 @@ void SettingsScreenGUI::UpdateYouTubeCookiesStatus()
 void SettingsScreenGUI::UpdateBitrateFromCookieStatus()
 {
     bool cookiesValid = Config::YouTubeCookiesValid();
-    std::cout << "COOKIES VALID: " << cookiesValid << std::endl;
 
     std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
     const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();

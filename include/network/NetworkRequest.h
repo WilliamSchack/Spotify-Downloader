@@ -17,7 +17,7 @@ class NetworkRequest
         
         void SetHeader(const std::string& header);
         void SetHeader(const std::string& header, const std::string& value);
-        void AddCookie(const std::string& cookie, const std::string& value);
+        void SetCookiePath(const std::string& path);
         
         NetworkResponse Get();
         NetworkResponse Post(const std::string& postData);
@@ -36,13 +36,12 @@ class NetworkRequest
         NetworkResponse SendRequest(CURL* curl);
         void CleanupCurl(CURL* curl);
 
-        std::string GetCookieString();
         static size_t CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp);
     private:
         static inline const CurlGlobalHandler _globalHandler;
         
         struct curl_slist* _headers = NULL;
-        std::vector<std::string> _cookies;
+        std::string _cookiePath;
 };
 
 #endif

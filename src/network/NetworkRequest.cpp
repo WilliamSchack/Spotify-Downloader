@@ -14,25 +14,9 @@ void NetworkRequest::SetHeader(const std::string& header, const std::string& val
     SetHeader(headerString);
 }
 
-void NetworkRequest::AddCookie(const std::string& cookie, const std::string& value)
+void NetworkRequest::SetCookiePath(const std::string& path)
 {
-    std::string cookieString = cookie + "=" + value + ";";
-    _cookies.push_back(cookieString);
-}
-
-std::string NetworkRequest::GetCookieString()
-{
-    std::string cookieString = "";
-
-    unsigned int cookiesSize = _cookies.size();
-    for (unsigned i = 0; i < cookiesSize; i++) {
-        cookieString += _cookies[i];
-
-        if (i < cookiesSize - 1)
-            cookieString += " ";
-    }
-
-    return cookieString;
+    _cookiePath = path;
 }
 
 NetworkResponse NetworkRequest::Get()
@@ -79,6 +63,11 @@ CURL* NetworkRequest::InitCurl()
 
     curl_easy_setopt(curl, CURLOPT_URL, Url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 10L);
+
+    if (!_cookiePath.empty())
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, _cookiePath.c_str());
 
     return curl;
 }
