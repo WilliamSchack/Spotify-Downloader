@@ -42,4 +42,11 @@ Button {
         shadowHorizontalOffset: 2
         shadowVerticalOffset: 2
     }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onPressed: (mouse) => { mouse.accepted = false }
+    }
 }

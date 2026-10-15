@@ -2,6 +2,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
@@ -208,6 +209,12 @@ Rectangle {
                     spacing: 0
 
                     model: _manager.music.tracks
+
+                    property bool scrollBarActive: contentHeight > height
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: trackList.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                    }
 
                     delegate: Track {
                         required property QtObject modelData
