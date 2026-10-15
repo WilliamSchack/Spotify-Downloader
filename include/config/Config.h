@@ -6,11 +6,14 @@
 #include "EPlaylistFileType.h"
 #include "ETrackNumberType.h"
 #include "EIPVersion.h"
+#include "YouTubeCookieFile.h"
 
 #include <string>
 
 class Config
 {
+    public:
+        static bool YouTubeCookiesValid();
     public:
         // Audio
         static inline EExtension CodecExtension = EExtension::MP3;
