@@ -1,6 +1,7 @@
 #ifndef PATHS_H
 #define PATHS_H
 
+#include "EnvironmentUtils.h"
 #include "FileUtils.h"
 #include "TrackData.h"
 #include "ICodec.h"
@@ -8,6 +9,7 @@
 class Paths
 {
     public:
+        static std::filesystem::path GetConfigDir();
         static std::filesystem::path GetTempDir();
         static std::filesystem::path GetDownloadsDir();
         static std::filesystem::path GetImagesDir();
