@@ -7,6 +7,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/JsonUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/MathUtils.h
 	${CMAKE_CURRENT_SOURCE_DIR}/VariantUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentUtils.h
 )
 
 add_subdirectory(files)
