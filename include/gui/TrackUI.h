@@ -4,7 +4,7 @@
 #include "TrackData.h"
 #include "MetadataManager.h"
 #include "MathUtils.h"
-#include "TemporaryPaths.h"
+#include "Paths.h"
 
 #include <filesystem>
 

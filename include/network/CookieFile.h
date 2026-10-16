@@ -1,7 +1,7 @@
 #ifndef COOKIEFILE_H
 #define COOKIEFILE_H
 
-#include "TemporaryPaths.h"
+#include "Paths.h"
 
 #include <fstream>
 #include <iostream>

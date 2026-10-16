@@ -14,7 +14,7 @@
 #include "LyricsFinder.h"
 #include "LyricsFile.h"
 #include "FilePathReserver.h"
-#include "TemporaryPaths.h"
+#include "Paths.h"
 #include "SavableTrackTagHandler.h"
 #include "DownloadProgress.h"
 #include "DownloadResult.h"
