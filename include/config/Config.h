@@ -17,8 +17,12 @@
 class Config
 {
     public:
+        static nlohmann::ordered_json ToJson();
+        static void FromJson(const nlohmann::json& json);
+
         static void Load();
         static void Save();
+
         static bool YouTubeCookiesValid();
     public:
         // Audio
@@ -91,8 +95,5 @@ class Config
 
         static inline std::filesystem::path _filePathCache = "";
 };
-
-void to_json(nlohmann::json& json, const Config& data);
-void from_json(const nlohmann::json& json, Config& data);
 
 #endif
