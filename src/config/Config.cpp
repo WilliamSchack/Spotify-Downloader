@@ -1,17 +1,17 @@
 #include "Config.h"
 
-nlohmann::json Config::ToJson()
+nlohmann::ordered_json Config::ToJson()
 {
     // Store enums as strings incase the order changes later
 
-    nlohmann::json json = {
+    nlohmann::ordered_json json = {
         { "output", {
             { "audio", {
                 { "codecExtension", EEXTENSION_NAMES[(int)CodecExtension] },
                 { "normalise", Normalise },
                 { "normaliseDb", NormaliseDb },
                 { "manualBitrate", ManualBitrate },
-                { "bitrate", nlohmann::json::object() } // Filled later
+                { "bitrate", nlohmann::ordered_json::object() } // Filled later
             }},
             { "metadata", {
                 { "getLyrics", GetLyrics },
@@ -66,7 +66,7 @@ nlohmann::json Config::ToJson()
             { "general", {
                 { "autoOpenDownloadFolder", AutoOpenDownloadFolder }
             }},
-            { "updates", nlohmann::json::object() } // Will be filled when settings are implemented
+            { "updates", nlohmann::ordered_json::object() } // Will be filled when settings are implemented
         }}
     };
 
