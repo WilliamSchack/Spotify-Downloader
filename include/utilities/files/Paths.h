@@ -1,11 +1,11 @@
-#ifndef TEMPORARYPATHS_H
-#define TEMPORARYPATHS_H
+#ifndef PATHS_H
+#define PATHS_H
 
 #include "FileUtils.h"
 #include "TrackData.h"
 #include "ICodec.h"
 
-class TemporaryPaths
+class Paths
 {
     public:
         static std::filesystem::path GetTempDir();

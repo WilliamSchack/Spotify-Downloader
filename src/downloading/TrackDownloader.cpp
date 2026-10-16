@@ -48,7 +48,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     FilePathReserver pathReserver;
     targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
 
-    std::filesystem::path tempDownloadPath = TemporaryPaths::GetTrackDownloadPathNoExtension(track);
+    std::filesystem::path tempDownloadPath = Paths::GetTrackDownloadPathNoExtension(track);
 
     result.FilePath = targetDownloadPath;
 
@@ -64,7 +64,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::cout << "Getting Cover Art..." << std::endl;
     SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
 
-    std::filesystem::path imageFilePath = TemporaryPaths::GetTrackImagePathNoExtension(track);
+    std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(track);
     Image image;
 
     {

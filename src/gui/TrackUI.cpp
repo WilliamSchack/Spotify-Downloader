@@ -54,7 +54,7 @@ void TrackUI::SetCoverArtUrl(const std::filesystem::path& path)
 
 void TrackUI::FindCoverArtUrl()
 {
-    std::filesystem::path path = TemporaryPaths::FindExistingTrackImagePath(_data);
+    std::filesystem::path path = Paths::FindExistingTrackImagePath(_data);
     if (path.empty())
         return;
 

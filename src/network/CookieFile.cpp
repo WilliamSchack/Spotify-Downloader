@@ -6,7 +6,7 @@ CookieFile::CookieFile(const std::string& fileName)
     if (!StringUtils::EndsWith(fileNameValid, ".txt"))
         fileNameValid += ".txt";
 
-    _path = TemporaryPaths::GetTempDir() / fileNameValid;
+    _path = Paths::GetTempDir() / fileNameValid;
 
     CreateIfEmpty();
 }
