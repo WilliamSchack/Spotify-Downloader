@@ -33,7 +33,7 @@ void MetadataManager::SetArtist(const std::string& value)
 
 void MetadataManager::SetArtists(const std::vector<ArtistData>& artists)
 {
-    SetArtist(CombineArtistNames(artists, Config::ArtistSeperator));
+    SetArtist(CombineArtistNames(artists, Config::ArtistSeparator));
 };
 
 void MetadataManager::SetAlbumName(const std::string& value)
@@ -48,7 +48,7 @@ void MetadataManager::SetAlbumArtist(const std::string& value)
 
 void MetadataManager::SetAlbumArtists(const std::vector<ArtistData>& artists)
 {
-    SetAlbumArtist(CombineArtistNames(artists, Config::ArtistSeperator));
+    SetAlbumArtist(CombineArtistNames(artists, Config::ArtistSeparator));
 };
 
 void MetadataManager::SetPublisher(const std::string& value)
@@ -224,7 +224,7 @@ TrackData MetadataManager::GetAll() const
     TrackData data(EPlatform::Unknown);
     
     std::vector<ArtistData> artists;
-    std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeperator);
+    std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeparator);
     for (std::string artistName : artistNames) {
         ArtistData artistData(EPlatform::Unknown);
         artistData.Name = artistName;

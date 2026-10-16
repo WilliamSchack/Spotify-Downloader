@@ -7,6 +7,9 @@
 #include "ETrackNumberType.h"
 #include "EIPVersion.h"
 #include "YouTubeCookieFile.h"
+#include "Paths.h"
+#include "VectorUtils.h"
+#include "JsonUtils.h"
 
 #include <string>
 #include <map>
@@ -14,6 +17,8 @@
 class Config
 {
     public:
+        static void Load();
+        static void Save();
         static bool YouTubeCookiesValid();
     public:
         // Audio
@@ -33,7 +38,7 @@ class Config
 
         // Metadata
         static inline bool GetLyrics = true;
-        static inline std::string ArtistSeperator = "; ";
+        static inline std::string ArtistSeparator = "; ";
         static inline ETrackNumberType TrackNumberType = ETrackNumberType::Playlist;
 
         // File Management
@@ -79,6 +84,15 @@ class Config
         static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {
             ELyricsSource::Unknown
         };
+    private:
+        static std::filesystem::path GetFilePath();
+    private:
+        static inline const std::string FILE_NAME = "Config.json";
+
+        static inline std::filesystem::path _filePathCache = "";
 };
+
+void to_json(nlohmann::json& json, const Config& data);
+void from_json(const nlohmann::json& json, Config& data);
 
 #endif

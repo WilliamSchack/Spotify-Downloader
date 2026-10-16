@@ -25,7 +25,7 @@ class SettingsScreenGUI : public QObject
     Q_PROPERTY(int bitrateMax READ GetBitrateMax NOTIFY BitrateMaxChanged)
 
     SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
-    STRING_QPROPERTY(artistsSeparator, ArtistsSeparator, Config::ArtistSeperator)
+    STRING_QPROPERTY(artistsSeparator, ArtistsSeparator, Config::ArtistSeparator)
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)

@@ -71,7 +71,7 @@ AlbumTracks SpotifyAPI::GetAlbum(const std::string& id)
 PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
 {
     if (_spotifyAuth.Authorization.empty())
-    _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).Url);
+        _spotifyAuth = SpotifyAuthRetriever::GetAuth(GetRequest("playlist", id).Url);
     
     if (_spotifyAuth.Authorization.empty()) {
         // Could not get auth, return first 30 tracks
