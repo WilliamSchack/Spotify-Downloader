@@ -1,17 +1,30 @@
 #include "EnvironmentUtils.h"
 
 #ifdef WIN32
-std::string EnvironmentUtils::GetVariable(const std::string& key)
+EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string& key)
 {
-    return StringUtils::FromWString(GetVariableW(key));
+    EnvironmentVariable<std::string> output;
+
+    EnvironmentVariable<std::wstring> variable = GetVariableW(key);
+    if (!variable.Exists) {
+        output.Value = "";
+        output.Exists = false;
+        return output;
+    }
+
+    output.Value = StringUtils::FromWString(variable.Value);
+    output.Exists = true;
+    return output;
 }
 
-std::wstring EnvironmentUtils::GetVariableW(const std::string& key)
+EnvironmentVariable<std::wstring> EnvironmentUtils::GetVariableW(const std::string& key)
 #else
-std::string EnvironmentUtils::GetVariable(const std::string& key)
+EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string& key)
 #endif
 {
 #ifdef WIN32
+    EnvironmentVariable<std::wstring> output;
+
     DWORD bufferSize = 65535;
     std::wstring buffer;
     buffer.resize(bufferSize);
@@ -19,35 +32,60 @@ std::string EnvironmentUtils::GetVariable(const std::string& key)
     bufferSize = GetEnvironmentVariableW(StringUtils::ToWString(key).c_str(), &buffer[0], bufferSize);
     if (!bufferSize) {
         std::cout << "Could not retrieve environment variable: " << key << std::endl;
-        return L"";
+
+        output.Value = L"";
+        output.Exists = false;
+        return output;
     }
 
     buffer.resize(bufferSize);
-    return buffer;
+
+    output.Value = buffer;
+    output.Exists = true;
+    return output;
 #else
+    EnvironmentVariable<std::string> output;
+
     char* value = std::getenv(key.c_str());
     if (value == NULL) {
         std::cout << "Could not retrieve environment variable: " << key << std::endl;
-        return "";
+
+        output.Value = "";
+        output.Exists = false;
+        return output;
     }
 
-    return std::string(value);
+    output.value = std::string(value);
+    output.Exists = true;
+    return output;
 #endif
 }
 
-std::filesystem::path EnvironmentUtils::GetVariablePath(const std::string& key)
+EnvironmentVariable<std::filesystem::path> EnvironmentUtils::GetVariablePath(const std::string& key)
 {
+    EnvironmentVariable<std::filesystem::path> output;
+
 #if WIN32
-    std::wstring value = GetVariableW(key);
-    if (value.empty())
-        return "";
+    EnvironmentVariable<std::wstring> variable = GetVariableW(key);
+    if (!variable.Exists) {
+        output.Value = "";
+        output.Exists = false;
+        return output;
+    }
 
-    return std::filesystem::path(value);
+    output.Value = std::filesystem::path(variable.Value);
+    output.Exists = true;
+    return output;
 #else
-    std::string value = GetVariable(key);
-    if (value.empty())
-        return "";
+    EnvironmentVariable<std::string> variable = GetVariable(key);
+    if (!variable.Exists) {
+        output.Value = "";
+        output.Exists = false;
+        return output;
+    }
 
-    return std::filesystem::path(GetVariable(key));
+    output.Value = std::filesystem::path(variable.Value);
+    output.Exists = true;
+    return output;
 #endif
 }
