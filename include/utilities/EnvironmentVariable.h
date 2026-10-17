@@ -1,5 +1,5 @@
 #ifndef ENVIRONMENTVARIABLE_H
-#define ENVIRONMENTVARIABLE
+#define ENVIRONMENTVARIABLE_H
 
 template<typename T>
 struct EnvironmentVariable

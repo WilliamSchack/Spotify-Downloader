@@ -55,7 +55,7 @@ EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string
         return output;
     }
 
-    output.value = std::string(value);
+    output.Value = std::string(value);
     output.Exists = true;
     return output;
 #endif

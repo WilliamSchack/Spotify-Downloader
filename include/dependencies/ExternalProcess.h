@@ -17,6 +17,8 @@
 #include <sys/wait.h>
 #include <cerrno>
 #include <poll.h>
+#include <unistd.h>
+#include <signal.h>
 #endif
 
 class ExternalProcess

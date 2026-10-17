@@ -8,12 +8,10 @@ std::filesystem::path Paths::GetConfigDir()
     EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("APPDATA");
     path = appdataPath.Value / APP_NAME;
 #elif __APPLE__
-    // TODO: Test me
     EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
     std::filesystem::path configPath = homePath.Value / ".config";
     path = configPath / APP_NAME;
 #else
-    // TODO: Test me
     EnvironmentVariable<std::filesystem::path> xgdConfigPath = EnvironmentUtils::GetVariablePath("XDG_CONFIG_HOME");
     std::filesystem::path configPath = xgdConfigPath.Value;
     if (!xgdConfigPath.Exists) {
