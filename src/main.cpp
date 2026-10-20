@@ -1,16 +1,10 @@
 #include "ArgumentParser.h"
 #include "GUIManager.h"
-
-#include "DownloadManager.h"
-
-#include "Ytdlp.h"
+#include "Config.h"
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-
-// temp
-#include "LyricsFile.h"
 
 // TODO: IMPLEMENT THIS:
 //
@@ -48,6 +42,8 @@ int main(int argc, char** argv)
 
     bool argsUsed = ArgumentParser::Parse(argc, argv);
     if (argsUsed) return 0;
+
+    Config::Load();
 
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("Basic");

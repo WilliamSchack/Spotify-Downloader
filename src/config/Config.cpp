@@ -169,6 +169,22 @@ void Config::Load()
         std::cout << "Could not load config, the file path was not found" << std::endl;
         return;
     }
+
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cout << "Could not open config file at " << filePath << std::endl;
+
+        // TODO: Load old (v1) config if it exists
+        Save();
+
+        return;
+    }
+
+    std::string contents = std::string((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+    file.close();
+
+    nlohmann::json json = nlohmann::json::parse(contents);
+    FromJson(json);
 }
 
 void Config::Save()
@@ -178,6 +194,11 @@ void Config::Save()
         std::cout << "Could not save config, the file path was not found" << std::endl;
         return;
     }
+
+    std::ofstream file(filePath);
+    std::string contents = ToJson().dump(4);
+    file << contents;
+    file.close();
 }
 
 bool Config::YouTubeCookiesValid()

@@ -17,6 +17,12 @@ SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
     UpdateYouTubeCookiesStatus();
 }
 
+SettingsScreenGUI::~SettingsScreenGUI()
+{
+    // Save when closing the app
+    Config::Save();
+}
+
 void SettingsScreenGUI::LeavingScreen()
 {
     SaveFileName();
@@ -25,6 +31,8 @@ void SettingsScreenGUI::LeavingScreen()
     SavePlaylistFileName();
 
     CleaupYouTubeCookiesWatcher();
+
+    Config::Save();
 }
 
 bool SettingsScreenGUI::GetAllSettingsValid() const
@@ -144,6 +152,8 @@ void SettingsScreenGUI::UpdateBitrateFromCookieStatus()
 
 void SettingsScreenGUI::SetupYouTubeCookiesWatcher()
 {
+    // TODO: Do this every time the screen opens, doesnt work on sequential setting screen opens
+
     connect(&_youtubeCookiesWatcher, &QFileSystemWatcher::fileChanged, this, &SettingsScreenGUI::YouTubeCookiesWatcherFileChanged);
     AddYouTubeCookiesWatcherPath();
 }

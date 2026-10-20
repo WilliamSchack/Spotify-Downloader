@@ -53,6 +53,7 @@ class SettingsScreenGUI : public QObject
     
     public:
         explicit SettingsScreenGUI(QObject* parent = 0);
+        ~SettingsScreenGUI();
 
         Q_INVOKABLE void LeavingScreen();
 
