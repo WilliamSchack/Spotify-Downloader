@@ -76,7 +76,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             },
             [&](const DownloadsFinishedEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
-                    QDesktopServices::openUrl(QUrl(QString::fromStdString(e.OutputFolder)));
+                    QDesktopServices::openUrl(QUrl("file:///" + QString::fromStdString(e.OutputFolder)));
             }
         }, event.value());
     }

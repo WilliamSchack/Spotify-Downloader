@@ -50,6 +50,8 @@ Rectangle {
             
             RowLayout {
                 width: parent.width
+                height: parent.height
+
                 spacing: 10
 
                 // Cover Art
