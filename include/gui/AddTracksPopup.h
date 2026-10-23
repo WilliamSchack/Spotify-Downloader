@@ -1,6 +1,7 @@
 #ifndef ADDTRACKSPOPUP_H
 #define ADDTRACKSPOPUP_H
 
+#include "EasyQProperties.h"
 #include "FileDialogUtils.h"
 
 #include <functional>
@@ -12,21 +13,14 @@
 class AddTracksPopup : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool visible READ GetVisible WRITE SetVisible NOTIFY VisibleChanged)
-    Q_PROPERTY(QString folderInputText READ GetFolderInputText WRITE SetFolderInputText NOTIFY FolderInputTextChanged)
-    Q_PROPERTY(QString linkInputText READ GetLinkInputText WRITE SetLinkInputText NOTIFY LinkInputTextChanged)
+    SIMPLE_QPROPERTY(bool, visible, Visible, _visible)
+    SIMPLE_QPROPERTY(bool, checkingInputs, CheckingInputs, _checkingInputs)
+    SIMPLE_QPROPERTY(QString, linkInputText, LinkInputText, _linkInputText)
+    SIMPLE_QPROPERTY(QString, folderInputText, FolderInputText, _folderInputText)
+    SIMPLE_QPROPERTY(QString, errorMessage, ErrorMessage, _errorMessage)
 
     public:
         explicit AddTracksPopup(QWindow* mainWindow, QObject* parent = 0);
-
-        bool GetVisible() const;
-        void SetVisible(const bool& visible);
-
-        QString GetLinkInputText() const;
-        void SetLinkInputText(const QString& text);
-
-        QString GetFolderInputText() const;
-        void SetFolderInputText(const QString& text);
     public slots:
         void PasteButtonClicked();
         void FolderButtonClicked();
@@ -35,13 +29,12 @@ class AddTracksPopup : public QObject
         QWindow* _mainWindow;
 
         bool _visible = true;
+        bool _checkingInputs = false;
 
         QString _linkInputText = "";
         QString _folderInputText = "";
+        QString _errorMessage = "";
     signals:
-        void VisibleChanged();
-        void LinkInputTextChanged();
-        void FolderInputTextChanged();
         void DownloadRequested(const std::string& link, const std::string& destinationFolder);
 };
 

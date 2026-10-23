@@ -4,6 +4,9 @@ import QtQuick.Controls
 
 Rectangle {
     id: root
+
+    property real margins: 20
+
     anchors.fill: parent
     visible: _manager.music.addTracksPopup.visible
 
@@ -13,8 +16,8 @@ Rectangle {
     // Popup
     Rectangle {
         anchors.centerIn: parent
-        width: 600
-        height: 231
+        width: 560 + root.margins * 2
+        height: content.implicitHeight + root.margins * 2
 
         radius: 20
 
@@ -27,8 +30,10 @@ Rectangle {
         border.width: 1
 
         ColumnLayout {
+            id: content
+
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: root.margins
             spacing: 10
 
             Text {
@@ -115,10 +120,39 @@ Rectangle {
                 }
             }
 
+            // Error popup
+            Label {
+                Layout.fillWidth: true
+                
+                visible: _manager.music.addTracksPopup.errorMessage != ""
+
+                padding: 10
+
+                text: _manager.music.addTracksPopup.errorMessage
+                color: "white"
+                font.pixelSize: 16
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+
+                background: Rectangle {
+                    radius: 3
+
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.alpha('#9f5151', 0.8) }
+                        GradientStop { position: 1.0; color: Qt.alpha('#773131', 0.8) }
+                    }
+
+                    border.color: '#c56c6c'
+                    border.width: 3
+                }
+            }
+
             CustomButton {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 40
-                text: "Add Track(s) & Start Download"
+                enabled: !_manager.music.addTracksPopup.checkingInputs
+                text: _manager.music.addTracksPopup.checkingInputs ? "Getting Link Details..." : "Add Track(s) & Start Download"
                 font.bold: true
                 font.pixelSize: 16
                 backgroundColour: "#9A607D"

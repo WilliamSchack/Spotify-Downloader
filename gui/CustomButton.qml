@@ -9,6 +9,7 @@ Button {
     property color backgroundColour: "white"
     property color hoveredColour: Qt.darker(backgroundColour, 1.2)
     property color pressedColour: Qt.darker(backgroundColour, 1.5)
+    property color disabledColour: "#434343"
     property real radius: 3
 
     implicitHeight: parent.height
@@ -28,7 +29,7 @@ Button {
 
     // Background
     background: Rectangle {
-        color: root.down ? root.pressedColour : (root.hovered ? root.hoveredColour : root.backgroundColour)
+        color: root.enabled ? (root.down ? root.pressedColour : (root.hovered ? root.hoveredColour : root.backgroundColour)) : disabledColour
         radius: root.radius
     }
 

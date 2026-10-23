@@ -25,8 +25,14 @@ QList<QObject*> MusicScreenGUI::GetTracks() const
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
 {
     bool downloadDispatched = _downloader.RequestDownload(link, destinationFolder);
-    if (!downloadDispatched)
+    if (!downloadDispatched) {
+        _addTracksPopup->SetCheckingInputs(false);
+        _addTracksPopup->SetErrorMessage("Failed to dispatch download... (This should not happen)");
         return;
+    }
+
+    _addTracksPopup->SetCheckingInputs(true);
+    _addTracksPopup->SetErrorMessage("");
 }
 
 void MusicScreenGUI::CheckDownloadEvents()
@@ -69,10 +75,13 @@ void MusicScreenGUI::CheckDownloadEvents()
 
                 emit TracksChanged();
                 
+                _addTracksPopup->SetCheckingInputs(false);
+                _addTracksPopup->SetErrorMessage("");
                 _addTracksPopup->SetVisible(false);
             },
             [&](const DownloadFailedToStartEvent& e) {
-                // Show error popup
+                _addTracksPopup->SetCheckingInputs(false);
+                _addTracksPopup->SetErrorMessage("Error: " + QString::fromStdString(e.Reason));
             },
             [&](const DownloadsFinishedEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
