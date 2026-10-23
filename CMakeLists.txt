@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Setup project
-set(PROJECT_NAME UnnamedSongApp CACHE INTERNAL "")
-set(DISPLAY_NAME "Unnamed Song App" CACHE INTERNAL "")
+set(PROJECT_NAME Echolite CACHE INTERNAL "")
+set(DISPLAY_NAME "Echolite" CACHE INTERNAL "")
 set(APP_VERSION "2.0.0" CACHE INTERNAL "")
 set(APP_DESCRIPTION "Can download songs & lyrics, modify metadata, and probably other stuff im forgetting atm" CACHE INTERNAL "")
 set(ORGANISATION_NAME "WilliamSchack" CACHE INTERNAL "")
-set(APP_ID "com.williamschack.unnamedsongapp" CACHE INTERNAL "")
+set(APP_ID "com.williamschack.echolite" CACHE INTERNAL "")
 
 add_compile_definitions(${PROJECT_NAME} PRIVATE
 	APP_NAME="${PROJECT_NAME}"
@@ -82,6 +82,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	CURL::libcurl
 )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE QT_QML_DEBUG)
+
 # Enable debug logging on RELWITHDEBINFO configuration
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:RELWITHDEBINFO>:QT_MESSAGELOGCONTEXT>
@@ -117,13 +119,18 @@ if (WIN32)
 			--compiler-runtime
 			--qmldir "${CMAKE_SOURCE_DIR}/gui"
 	)
-elseif(APPLE)
+elseif (APPLE)
 	# Mac setup
+    set(APP_ICON_MACOS_NAME "Icon.icns")
+    set(APP_ICON_MACOS "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${APP_ICON_MACOS_NAME}")
+    set_source_files_properties(${APP_ICON_MACOS} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
 	set_target_properties(${PROJECT_NAME} PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
         MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_ID}
+        MACOSC_BUNDLE_ICON_FILE ${APP_ICON_MACOS_NAME}
     )
 
 	# Add qt libraries
@@ -134,3 +141,5 @@ elseif(APPLE)
 			-qmldir="${CMAKE_SOURCE_DIR}/gui"
 	)
 endif()
+
+# TODO: Setup linux app icon

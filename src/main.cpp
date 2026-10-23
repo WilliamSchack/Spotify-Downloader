@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 // TODO: IMPLEMENT THIS:
 //
@@ -39,6 +40,7 @@ int main(int argc, char** argv)
 {
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
+    app.setWindowIcon(QIcon("qrc:/icons/Icon.png"));
 
     bool argsUsed = ArgumentParser::Parse(argc, argv);
     if (argsUsed) return 0;
@@ -48,8 +50,8 @@ int main(int argc, char** argv)
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("Basic");
     engine.load(QUrl("qrc:/gui/Main.qml"));
-    
-    QWindow* window = QGuiApplication::allWindows().first();
+
+    QWindow* window = app.allWindows().first();
     GUIManager manager(window);
     engine.rootContext()->setContextProperty("_manager", &manager);
 

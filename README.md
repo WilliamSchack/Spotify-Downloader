@@ -1,6 +1,6 @@
 <img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
 
-# Spotify Downloader
+# Echolite
 [![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Downloads](https://img.shields.io/github/downloads/WilliamSchack/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Open Issues](https://img.shields.io/github/issues/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
@@ -40,11 +40,11 @@ make
 
 3 - **If on linux, make the output executable:**
 
-`chmod +x ./UnnamedSongApp`
+`chmod +x ./Echolite`
 
 4 - **Run the app:**
 
-`./UnnamedSongApp`
+`./Echolite`
 
 --
 
