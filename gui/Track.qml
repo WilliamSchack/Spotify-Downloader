@@ -52,6 +52,8 @@ Rectangle {
                 width: parent.width
                 height: parent.height
 
+                Layout.alignment: Qt.AlignHCenter
+
                 spacing: 10
 
                 // Cover Art

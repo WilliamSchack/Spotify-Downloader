@@ -138,7 +138,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
             if (line.empty())
                 continue;
 
-            output += line;
+            output += line + '\n';
             if (lineAvailableCallback != nullptr)
                 lineAvailableCallback(line);
         }
@@ -249,14 +249,17 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
         lineBuffer.append(buffer, n);
 
         size_t newLinePos;
-        while ((newLinePos = lineBuffer.find('\n')) != std::string::npos) {
+        while ((newLinePos = lineBuffer.find_first_of("\r\n")) != std::string::npos) {
             std::string line = lineBuffer.substr(0, newLinePos);
             lineBuffer.erase(0, newLinePos + 1);
+
+            if (!line.empty() && lineBuffer[0] == '\n')
+                lineBuffer = lineBuffer.substr(1);
 
             if (line.empty())
                 continue;
 
-            output += line;
+            output += line + '\n';
             if (lineAvailableCallback != nullptr)
                 lineAvailableCallback(line);
         }
