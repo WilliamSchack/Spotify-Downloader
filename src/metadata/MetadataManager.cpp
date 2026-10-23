@@ -310,7 +310,7 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
             case EMetadataTag::DiscNumber:  return "TPOS";
         };
 
-        return "";
+        return NULL;
     }
 
     if (metadataType == EMetadataType::MP4) {
@@ -329,7 +329,7 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
             case EMetadataTag::CoverImage:  return "covr";
         };
 
-        return "";
+        return NULL;
     }
 
     if (metadataType == EMetadataType::XIPH) {
@@ -347,7 +347,7 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
             case EMetadataTag::Lyrics:      return "LYRICS";
         };
 
-        return "";
+        return NULL;
     }
 
     if (metadataType == EMetadataType::RIFF) {
@@ -361,10 +361,10 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
             case EMetadataTag::TrackNumber: return "IPRT";
         };
 
-        return "";
+        return NULL;
     }
 
-    return "";
+    return NULL;
 }
 
 void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string& value) const
@@ -373,7 +373,7 @@ void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string&
 
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
     const char* tagId = GetTagId(tag);
-    if (tagId == "") return;
+    if (tagId == NULL) return;
 
     TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
 
@@ -401,7 +401,7 @@ std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
 {
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
     const char* tagId = GetTagId(tag);
-    if (tagId == "") return "";
+    if (tagId == NULL) return "";
 
     switch (_codec->GetMetadataType()) {
         case EMetadataType::ID3V2: {
