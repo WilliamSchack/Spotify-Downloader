@@ -242,6 +242,7 @@ elseif (UNIX AND INCLUDE_DEPS)
         message(WARNING "The wayland qt module was not found, wayland will not work.")
     endif()
 
+    # Create appimage
     if (CREATE_APPIMAGE)
         include(cmake/GetAppImageTool.cmake)
 

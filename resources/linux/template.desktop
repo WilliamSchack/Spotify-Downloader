@@ -5,4 +5,4 @@ Name=@DISPLAY_NAME@
 Comment=@APP_DESCRIPTION@
 Exec=@PROJECT_NAME@
 Icon=@APP_ID@
-Categories=AudioVideo;Audio;Music;Utility;Qt;
+Categories=AudioVideo;Audio;Music;Qt;

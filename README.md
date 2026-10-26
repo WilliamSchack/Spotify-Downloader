@@ -69,6 +69,8 @@ The app and its dependencies will be output to `./build/out/Release`
 	- macOS: [Evermeet](https://evermeet.cx/ffmpeg/)
 - [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) - [MIT](https://github.com/linuxdeploy/linuxdeploy/blob/master/LICENSE.txt)
 - [linuxdeploy-plugin-qt](https://github.com/linuxdeploy/linuxdeploy-plugin-qt) - [MIT](https://github.com/linuxdeploy/linuxdeploy-plugin-qt)
+- [appimagetool](https://github.com/AppImage/appimagetool) - [MIT](https://github.com/AppImage/appimagetool/blob/main/LICENSE)
+
 
 **Other**
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
