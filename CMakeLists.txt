@@ -54,8 +54,13 @@ find_package(Qt6 REQUIRED COMPONENTS
 # Add the executable
 add_executable(${PROJECT_NAME})
 
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/out/$<CONFIG>")
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/$<CONFIG>"
+    RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}"
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} PRE_LINK
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
 
 # Additional dependencies
@@ -151,6 +156,52 @@ elseif (APPLE)
                 -qmldir="${CMAKE_SOURCE_DIR}/gui"
         )
     endif()
-endif()
+elseif (UNIX AND INCLUDE_DEPS)
+    option(STRIP_QT "Strip Qt libraries when running linuxdeploy" OFF)
 
-# TODO: Setup linux app icon
+    include(cmake/GetLinuxDeploy.cmake)
+
+    # Outputs as AppDir directory
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/usr/bin"
+    )
+
+    # Get desktop file
+    set(DESKTOP_FILE "${CMAKE_BINARY_DIR}/${APP_ID}.desktop")
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/resources/linux/template.desktop"
+        "${DESKTOP_FILE}"
+        @ONLY
+    )
+
+    set(APP_ICON_LINUX "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/Icon.png")
+
+    find_program(QMAKE_EXECUTABLE NAMES qmake6 qmake
+            HINTS "${Qt6_DIR}/../../../bin" "${Qt6_DIR}/../../../../bin")
+
+    # Get qmake for linuxdeploy qt plugin
+    # Qt6_DIR is 
+    find_program(QMAKE_EXECUTABLE NAMES qmake6 qmake)
+
+    # Run linuxdeploy
+    set(LINUXDEPLOY_EXTRA_ENV "")
+    if (NOT STRIP_QT)
+        list(APPEND LINUXDEPLOY_EXTRA_ENV NO_STRIP=1)
+    endif()
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E env
+            APPIMAGE_EXTRACT_AND_RUN=1
+            ${LINUXDEPLOY_EXTRA_ENV}
+            QMAKE=${QMAKE_EXECUTABLE}
+            QML_SOURCES_PATHS=${CMAKE_SOURCE_DIR}/gui
+            ${LINUXDEPLOY_EXE}
+                --appdir "${OUTPUT_DIR}"
+                --executable "$<TARGET_FILE:${PROJECT_NAME}>"
+                --desktop-file "${DESKTOP_FILE}"
+                --icon-file "${APP_ICON_LINUX}"
+                --icon-filename "${APP_ID}"
+                --plugin qt
+        VERBATIM
+    )
+endif()
