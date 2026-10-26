@@ -26,25 +26,21 @@ Notes:
 - Curl
 - Qt6 (6.7+)
   - Qt Quick
-  - QtWebEngine (required by spotify to get >30 songs from a playlist)
+  - QtWebEngine
 
 1 - **Download/Clone this branch**
 
 2 - **In the root folder:**
 
 ```
-mkdir build && cd build
-cmake ..
-make
+mkdir build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
 ```
 
-3 - **If on linux, make the output executable:**
+3 - **Run the app:**
 
-`chmod +x ./Echolite`
-
-4 - **Run the app:**
-
-`./Echolite`
+The app and its dependencies will be output to `./build/out/Release`
 
 --
 

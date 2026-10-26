@@ -7,12 +7,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(ccpcodec)
 
-add_library(ccpcodec)
-
-target_include_directories(ccpcodec PUBLIC
-    ${ccpcodec_SOURCE_DIR}
-)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    ccpcodec
-)
+add_library(ccpcodec INTERFACE)
+target_include_directories(ccpcodec INTERFACE ${ccpcodec_SOURCE_DIR})
+target_link_libraries(${PROJECT_NAME} PRIVATE ccpcodec)

@@ -22,7 +22,6 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/$<CONFIG>")
 
 # Wont work for apple, but that isnt needed
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64|ARM|ARM64")
@@ -51,6 +50,10 @@ find_package(Qt6 REQUIRED COMPONENTS
 
 # Add the executable
 add_executable(${PROJECT_NAME})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/$<CONFIG>"
+)
 
 # Additional dependencies
 set(BINARIES_DIR_NAME "bin" CACHE INTERNAL "The name for the binaries directory")
