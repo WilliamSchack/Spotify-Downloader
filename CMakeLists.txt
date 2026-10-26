@@ -30,6 +30,9 @@ else()
 	set(IS_ARM_CPU FALSE)
 endif()
 
+# Options
+option(INCLUDE_DEPS "Copies dependencies to the build" OFF)
+
 # Setup Curl
 find_package(CURL REQUIRED)
 
@@ -115,14 +118,16 @@ if (WIN32)
     )
 
 	# Add qt libraries
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND  ${WINDEPLOYQT_EXECUTABLE}
-			"$<TARGET_FILE:${PROJECT_NAME}>"
-			--verbose 1
-			--no-translations
-			--compiler-runtime
-			--qmldir "${CMAKE_SOURCE_DIR}/gui"
-	)
+    if (INCLUDE_DEPS)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${WINDEPLOYQT_EXECUTABLE}
+                "$<TARGET_FILE:${PROJECT_NAME}>"
+                --verbose 1
+                --no-translations
+                --compiler-runtime
+                --qmldir "${CMAKE_SOURCE_DIR}/gui"
+        )
+    endif()
 elseif (APPLE)
 	# Mac setup
     set(APP_ICON_MACOS_NAME "Icon.icns")
@@ -138,12 +143,14 @@ elseif (APPLE)
     )
 
 	# Add qt libraries
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND  ${MACDEPLOYQT_EXECUTABLE}
-			"$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
-			-verbose=1
-			-qmldir="${CMAKE_SOURCE_DIR}/gui"
-	)
+    if (INCLUDE_DEPS)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND  ${MACDEPLOYQT_EXECUTABLE}
+                "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
+                -verbose=1
+                -qmldir="${CMAKE_SOURCE_DIR}/gui"
+        )
+    endif()
 endif()
 
 # TODO: Setup linux app icon
