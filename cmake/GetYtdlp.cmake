@@ -1,6 +1,7 @@
 # Assumed variables:
-# BINARIES_DIR_NAME     | Name for the directory of external binaries
-# BINARIES_DIR          | Directory to external binaries, assumes folder is created
+# IS_ARM_CPU         | If the cpu architecture is arm or not
+# BINARIES_DIR_NAME  | Name for the directory of external binaries
+# BINARIES_DIR       | Directory to external binaries, assumes folder is created
 
 # Setup paths
 set(YTDLP_URL "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp")

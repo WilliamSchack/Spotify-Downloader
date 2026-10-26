@@ -3,6 +3,7 @@
 # LINUXDEPLOY_EXE   | Path to linuxdeployqt
 # LINUXDEPLOYQT_EXE | Path to linuxdeploy qt plugin
 # Assumed variables:
+# IS_ARM_CPU       | If the cpu architecture is arm or not
 # BINARIES_DIR      | Directory to external binaries, assumes folder is created
 
 # Setup paths
@@ -17,7 +18,7 @@ else()
     set(LD_QT_URL "${LD_QT_URL}-x86_64.AppImage")
 endif()
 
-set(LD_DIR "${BINARIES_DIR}/linuxdeploy" )
+set(LD_DIR "${BINARIES_DIR}/linuxdeploy")
 set(LD_PATH "${LD_DIR}/linuxdeploy.AppImage")
 set(LD_QT_PATH "${LD_DIR}/linuxdeploy-plugin-qt.AppImage")
 

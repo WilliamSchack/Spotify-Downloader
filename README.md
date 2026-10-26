@@ -13,7 +13,7 @@
 > This readme is partially from the main branch before v2 so most of the details here will not apply<br />
 > For instructions on compiling the program, view below
 
-## Compiling
+## Building
 
 Notes:
 - I am mainly testing on arch linux, windows, and an an M1 mac less often (about every major change)
@@ -29,7 +29,9 @@ Notes:
 
 1 - **Download/Clone this branch**
 
-2 - **In the root folder:**
+2 - **Configure & Build the app:**
+
+Execute the following in the root folder:
 
 ```
 mkdir build
@@ -40,10 +42,11 @@ cmake --build build --config Release
 The following options can be added to the configure command using `-D{ARG}={VALUE}`<br />
 **Example:** `cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DINCLUDE_DEPS=ON`
 
-| Option       | Description                                                                                                                                                        | Valid Values |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| INCLUDE_DEPS | Includes the dependencies along side the build. Use if you want to run the app on another device that does not have the dependencies installed<br><br>Default: OFF | ON, OFF      |
-| STRIP_QT     | **Linux Only, Requires INCLUDE_DEPS=ON**<br>Strip Qt libraries when running linuxdeploy. Makes the build smaller but may fail on some distros<br><br>Default: OFF  | ON, OFF      |
+| Option           | Description                                                                                                                                                                                                     | Valid Values |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| INCLUDE_DEPS     | Includes the dependencies along side the build. Use if you want to run the app on another device that does not have the dependencies installed<br><br>**Default: OFF**                                          | ON, OFF      |
+| CREATE_APPIMAGE  | **Linux Only, Requires INCLUDE_DEPS=ON**<br>Creates an app image in build/out with the name Echolite-{aarch64\|x86_64}.AppImage<br><br>**Default: OFF**                                                         | ON, OFF      |
+| DISABLE_STRIP_QT | **Linux Only, Requires INCLUDE_DEPS=ON**<br>Disable Qt library stripping when running linuxdeploy. Enable this if you have errors related to stripping when using INCLUDE_DEPS on linux<br><br>**Default: OFF** | ON, OFF      |
 
 3 - **Run the app:**
 
@@ -51,18 +54,24 @@ The app and its dependencies will be output to `./build/out/Release`
 
 ## Credits
 
+**Dependencies**
 - [Qt](https://www.qt.io/) - [LGPL v3](https://doc.qt.io/qt-6/lgpl.html)
-- [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
 - [ffmpeg](https://ffmpeg.org/) - [License](https://ffmpeg.org/legal.html)
-	- Linux/Windows: [BtbN builds](https://github.com/BtbN/FFmpeg-Builds) - [MIT](https://github.com/BtbN/FFmpeg-Builds/blob/master/LICENSE)
-	- macOS: [Evermeet builds](https://evermeet.cx/ffmpeg/)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 	- [quickjs](https://bellard.org/quickjs/) - [MIT](https://github.com/bellard/quickjs/blob/master/LICENSE)
 - [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
 - [nlohmann json](https://github.com/nlohmann/json) - [MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT)
 - [lexbor](https://github.com/lexbor/lexbor) - [Apache 2.0](https://github.com/lexbor/lexbor/blob/master/LICENSE)
+
+**Building**
+- ffmpeg builds:
+	- Linux/Windows: [BtbN](https://github.com/BtbN/FFmpeg-Builds)
+	- macOS: [Evermeet](https://evermeet.cx/ffmpeg/)
 - [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) - [MIT](https://github.com/linuxdeploy/linuxdeploy/blob/master/LICENSE.txt)
 - [linuxdeploy-plugin-qt](https://github.com/linuxdeploy/linuxdeploy-plugin-qt) - [MIT](https://github.com/linuxdeploy/linuxdeploy-plugin-qt)
+
+**Other**
+- [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
 
 --
 

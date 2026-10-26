@@ -131,6 +131,7 @@ if (WIN32)
                 --no-translations
                 --compiler-runtime
                 --qmldir "${CMAKE_SOURCE_DIR}/gui"
+            VERBATIM
         )
     endif()
 elseif (APPLE)
@@ -154,10 +155,12 @@ elseif (APPLE)
                 "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
                 -verbose=1
                 -qmldir="${CMAKE_SOURCE_DIR}/gui"
+            VERBATIM
         )
     endif()
 elseif (UNIX AND INCLUDE_DEPS)
-    option(STRIP_QT "Strip Qt libraries when running linuxdeploy" OFF)
+    option(CREATE_APPIMAGE "Creates an appimage after building" OFF)
+    option(DISABLE_STRIP_QT "Disable Qt library stripping when running linuxdeploy" OFF)
 
     include(cmake/GetLinuxDeploy.cmake)
 
@@ -166,7 +169,7 @@ elseif (UNIX AND INCLUDE_DEPS)
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/usr/bin"
     )
 
-    # Get desktop file
+    # Get resources
     set(DESKTOP_FILE "${CMAKE_BINARY_DIR}/${APP_ID}.desktop")
     configure_file(
         "${CMAKE_SOURCE_DIR}/resources/linux/template.desktop"
@@ -176,16 +179,15 @@ elseif (UNIX AND INCLUDE_DEPS)
 
     set(APP_ICON_LINUX "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/Icon.png")
 
-    find_program(QMAKE_EXECUTABLE NAMES qmake6 qmake
-            HINTS "${Qt6_DIR}/../../../bin" "${Qt6_DIR}/../../../../bin")
-
-    # Get qmake for linuxdeploy qt plugin
-    # Qt6_DIR is 
-    find_program(QMAKE_EXECUTABLE NAMES qmake6 qmake)
-
     # Run linuxdeploy
-    set(LINUXDEPLOY_EXTRA_ENV "")
-    if (NOT STRIP_QT)
+    find_program(QMAKE_EXECUTABLE NAMES qmake6 REQUIRED)
+
+    set(LINUXDEPLOY_EXTRA_ENV
+        QMAKE=${QMAKE_EXECUTABLE}
+        QML_SOURCES_PATHS=${CMAKE_SOURCE_DIR}/gui
+    )
+
+    if (DISABLE_STRIP_QT)
         list(APPEND LINUXDEPLOY_EXTRA_ENV NO_STRIP=1)
     endif()
 
@@ -193,8 +195,6 @@ elseif (UNIX AND INCLUDE_DEPS)
         COMMAND ${CMAKE_COMMAND} -E env
             APPIMAGE_EXTRACT_AND_RUN=1
             ${LINUXDEPLOY_EXTRA_ENV}
-            QMAKE=${QMAKE_EXECUTABLE}
-            QML_SOURCES_PATHS=${CMAKE_SOURCE_DIR}/gui
             ${LINUXDEPLOY_EXE}
                 --appdir "${OUTPUT_DIR}"
                 --executable "$<TARGET_FILE:${PROJECT_NAME}>"
@@ -204,4 +204,18 @@ elseif (UNIX AND INCLUDE_DEPS)
                 --plugin qt
         VERBATIM
     )
+
+    if (CREATE_APPIMAGE)
+        include(cmake/GetAppImageTool.cmake)
+
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E env
+                APPIMAGE_EXTRACT_AND_RUN=1
+                ARCH=${APPIMAGE_ARCH}
+                ${APPIMAGETOOL_EXE}
+                    "${OUTPUT_DIR}"
+                    "${CMAKE_BINARY_DIR}/out/${PROJECT_NAME}-${APPIMAGE_ARCH}.AppImage"
+            VERBATIM
+        )
+    endif()
 endif()

@@ -48,7 +48,6 @@ int main(int argc, char** argv)
     Config::Load();
 
     QQmlApplicationEngine engine;
-    QQuickStyle::setStyle("Basic");
     engine.load(QUrl("qrc:/gui/Main.qml"));
 
     QWindow* window = app.allWindows().first();
