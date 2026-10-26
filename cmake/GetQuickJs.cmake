@@ -64,7 +64,7 @@ if(NOT EXISTS ${QUICKJS_PATH})
 	endif()
 
 	# Remove archive folders
-	message(STATUS "Removing ffmpeg archive...")
+	message(STATUS "Removing qjs archive...")
 	file(REMOVE_RECURSE "${QUICKJS_ARCHIVE_EXTRACTED_PATH}")
 	file(REMOVE "${QUICKJS_ARCHIVE_PATH}")
 endif()

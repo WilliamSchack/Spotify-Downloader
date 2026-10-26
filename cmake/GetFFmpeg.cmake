@@ -9,18 +9,13 @@ set(FFMPEG_ARCHIVE_PATH "${BINARIES_DIR}/ffmpeg_archive")
 set(FFMPEG_ARCHIVE_EXTRACTED_PATH "${BINARIES_DIR}/ffmpeg_archive_extracted")
 
 if(WIN32)
-	# Get the gyan.dev mirror from github as it downloads much quicker
-	# Release files have version numbers though, so get latest archive name from github first
-	# Get name rather than url for accessing the folder later
-	execute_process(
-		COMMAND curl -s https://api.github.com/repos/GyanD/codexffmpeg/releases/latest
-		OUTPUT_VARIABLE FFMPEG_GYANDEV_LATEST_RELEASE_JSON
-	)
-	
-	string(REGEX MATCH "\"name\": *\"(ffmpeg-[^\"]+-essentials_build)\\.zip\"" _match "${FFMPEG_GYANDEV_LATEST_RELEASE_JSON}")
-	set(FFMPEG_GYANDEV_LATEST_RELEASE_NAME ${CMAKE_MATCH_1})
-	
-	set(FFMPEG_URL "https://github.com/GyanD/codexffmpeg/releases/latest/download/${FFMPEG_GYANDEV_LATEST_RELEASE_NAME}.zip")
+    set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win")
+	if(IS_ARM_CPU)
+		set(FFMPEG_URL "${FFMPEG_URL}arm64-lgpl.zip")
+	else()
+		set(FFMPEG_URL "${FFMPEG_URL}64-lgpl.zip")
+	endif()
+
 	set(FFMPEG_FILE_NAME "${FFMPEG_FILE_NAME}.exe")
 elseif(APPLE)
 	set(FFMPEG_URL "https://evermeet.cx/ffmpeg/get/zip")
@@ -28,9 +23,9 @@ elseif(UNIX)
 	# Latest build with master has tag "latest"
 	set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux")
 	if(IS_ARM_CPU)
-		set(FFMPEG_URL "${FFMPEG_URL}arm64-gpl.tar.xz")
+		set(FFMPEG_URL "${FFMPEG_URL}arm64-lgpl.tar.xz")
 	else()
-		set(FFMPEG_URL "${FFMPEG_URL}64-gpl.tar.xz")
+		set(FFMPEG_URL "${FFMPEG_URL}64-lgpl.tar.xz")
 	endif()
 endif()
 
@@ -48,19 +43,23 @@ if(NOT EXISTS ${FFMPEG_PATH})
 		INPUT "${FFMPEG_ARCHIVE_PATH}"
 		DESTINATION "${FFMPEG_ARCHIVE_EXTRACTED_PATH}"
 	)
-	
+
 	# Copy from archive to binaries folder
 	message(STATUS "Copying ffmpeg to binaries...")
 	if(WIN32)
-		# Use release name from earlier to access top folder
-		file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/${FFMPEG_GYANDEV_LATEST_RELEASE_NAME}/bin/ffmpeg.exe" DESTINATION "${BINARIES_DIR}")
+        if (IS_ARM_CPU)
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-winarm64-lgpl/bin/ffmpeg.exe" DESTINATION "${BINARIES_DIR}")
+		else()
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-win64-lgpl/bin/ffmpeg.exe" DESTINATION "${BINARIES_DIR}")
+		endif()
+
 	elseif(APPLE)
 		file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg" DESTINATION "${BINARIES_DIR}")
 	elseif(UNIX)
 		if (IS_ARM_CPU)
-			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linuxarm64-gpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linuxarm64-lgpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
 		else()
-			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
+			file(COPY "${FFMPEG_ARCHIVE_EXTRACTED_PATH}/ffmpeg-master-latest-linux64-lgpl/bin/ffmpeg" DESTINATION "${BINARIES_DIR}")
 		endif()
 
 		# Give executable permissions
