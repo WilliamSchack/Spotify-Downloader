@@ -179,7 +179,17 @@ elseif (UNIX AND INCLUDE_DEPS)
 
     set(APP_ICON_LINUX "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/Icon.png")
 
-    # Run linuxdeploy
+    # Get wayland details
+    execute_process(
+        COMMAND ${QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS
+        OUTPUT_VARIABLE QT_PLUGINS_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    set(WAYLAND_CLIENT_DEPS_DIR "${QT_PLUGINS_DIR}/wayland-graphics-integration-client")
+    set(WAYLAND_CLIENT_DEPS_OUT_DIR "${OUTPUT_DIR}/usr/plugins/wayland-graphics-integration-client")
+
+    # Setup linuxdeploy
     find_program(QMAKE_EXECUTABLE NAMES qmake6 REQUIRED)
 
     set(LINUXDEPLOY_EXTRA_ENV
@@ -187,10 +197,20 @@ elseif (UNIX AND INCLUDE_DEPS)
         QML_SOURCES_PATHS=${CMAKE_SOURCE_DIR}/gui
     )
 
+    if (EXISTS "${WAYLAND_CLIENT_DEPS_DIR}")
+        # Wayland libraries were unified in 6.12.0
+        if (Qt6_VERSION VERSION_GREATER_EQUAL 6.12.0)
+            list(APPEND LINUXDEPLOY_EXTRA_ENV EXTRA_PLATFORM_PLUGINS=libqwayland.so)
+        else()
+            list(APPEND LINUXDEPLOY_EXTRA_ENV EXTRA_PLATFORM_PLUGINS=libqwayland-egl.so$<SEMICOLON>libqwayland-generic.so)
+        endif()
+    endif()
+
     if (DISABLE_STRIP_QT)
         list(APPEND LINUXDEPLOY_EXTRA_ENV NO_STRIP=1)
     endif()
 
+    # Run linuxdeploy
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E env
             APPIMAGE_EXTRACT_AND_RUN=1
@@ -204,6 +224,23 @@ elseif (UNIX AND INCLUDE_DEPS)
                 --plugin qt
         VERBATIM
     )
+
+    # Copy wayland-graphics-integration-client since linuxdeploy qt doesnt do that for some reason
+    if (EXISTS "${WAYLAND_CLIENT_DEPS_DIR}")
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${WAYLAND_CLIENT_DEPS_DIR}
+                ${WAYLAND_CLIENT_DEPS_OUT_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env
+                APPIMAGE_EXTRACT_AND_RUN=1
+                ${LINUXDEPLOY_EXE}
+                    --appdir "${OUTPUT_DIR}"
+                    --deploy-deps-only "${WAYLAND_CLIENT_DEPS_OUT_DIR}"
+            VERBATIM
+        )
+    else()
+        message(WARNING "The wayland qt module was not found, wayland will not work.")
+    endif()
 
     if (CREATE_APPIMAGE)
         include(cmake/GetAppImageTool.cmake)
