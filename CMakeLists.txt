@@ -127,10 +127,9 @@ if (WIN32)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND  ${WINDEPLOYQT_EXECUTABLE}
                 "$<TARGET_FILE:${PROJECT_NAME}>"
-                --verbose 1
                 --no-translations
                 --compiler-runtime
-                --qmldir "${CMAKE_SOURCE_DIR}/gui"
+                "--qmldir ${CMAKE_SOURCE_DIR}/gui"
             VERBATIM
         )
     endif()
@@ -145,7 +144,7 @@ elseif (APPLE)
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
         MACOSX_BUNDLE_GUI_IDENTIFIER ${APP_ID}
-        MACOSC_BUNDLE_ICON_FILE ${APP_ICON_MACOS_NAME}
+        MACOSX_BUNDLE_ICON_FILE ${APP_ICON_MACOS_NAME}
     )
 
 	# Add qt libraries
@@ -153,8 +152,8 @@ elseif (APPLE)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND  ${MACDEPLOYQT_EXECUTABLE}
                 "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
-                -verbose=1
-                -qmldir="${CMAKE_SOURCE_DIR}/gui"
+                "-qmldir=${CMAKE_SOURCE_DIR}/gui"
+                -dmg # Temp
             VERBATIM
         )
     endif()

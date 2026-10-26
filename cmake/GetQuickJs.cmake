@@ -13,7 +13,6 @@ if(NOT EXISTS ${QUICKJS_VERSION_JSON_PATH})
 	file(DOWNLOAD
 		"https://bellard.org/quickjs/binary_releases/LATEST.json"
 		"${QUICKJS_VERSION_JSON_PATH}"
-		STATUS latestJsonGetStatus
 	)
 endif()
 

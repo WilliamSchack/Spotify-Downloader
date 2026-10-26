@@ -19,7 +19,23 @@ if(WIN32)
 
 	set(FFMPEG_FILE_NAME "${FFMPEG_FILE_NAME}.exe")
 elseif(APPLE)
-	set(FFMPEG_URL "https://evermeet.cx/ffmpeg/get/zip")
+	# Get the latest release info which includes the download link
+	set(FFMPEG_DETAILS_JSON_PATH "${BINARIES_DIR}/ffmpegMacosDetails.json")
+	file(DOWNLOAD
+		"https://evermeet.cx/ffmpeg/info/ffmpeg/release"
+		"${FFMPEG_DETAILS_JSON_PATH}"
+	)
+
+	if (EXISTS ${FFMPEG_DETAILS_JSON_PATH})
+		file(READ "${FFMPEG_DETAILS_JSON_PATH}" FFMPEG_DETAILS_JSON)
+		string(REGEX MATCH "\"zip\":{.+url\":\"([^\"]+)\"," match "${FFMPEG_DETAILS_JSON}")
+		set(FFMPEG_URL ${CMAKE_MATCH_1})
+		
+		file(REMOVE ${FFMPEG_DETAILS_JSON_PATH})
+	else()
+		message(WARNING "Could not get ffmpeg")
+		return()
+	endif()
 elseif(UNIX)
 	# Latest build with master has tag "latest"
 	set(FFMPEG_URL "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux")
