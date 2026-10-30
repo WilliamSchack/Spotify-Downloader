@@ -20,14 +20,12 @@ class AddTracksPopup : public QObject
     SIMPLE_QPROPERTY(QString, errorMessage, ErrorMessage, _errorMessage)
 
     public:
-        explicit AddTracksPopup(QWindow* mainWindow, QObject* parent = 0);
+        explicit AddTracksPopup(QObject* parent = 0);
     public slots:
         void PasteButtonClicked();
         void FolderButtonClicked();
         void DownloadButtonClicked();
     private:
-        QWindow* _mainWindow;
-
         bool _visible = true;
         bool _checkingInputs = false;
 

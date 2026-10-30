@@ -1,9 +1,13 @@
 #include "GUIManager.h"
 
-GUIManager::GUIManager(QWindow* mainWindow, QObject* parent) : _mainWindow(mainWindow), QObject(parent)
+GUIManager::GUIManager(QObject* parent) : QObject(parent)
 {
-    _musicManager = new MusicScreenGUI(mainWindow, this);
+    _musicManager = new MusicScreenGUI(this);
     _settingsManager = new SettingsScreenGUI(this);
+
+    SetupTrayIcon();
+
+    connect(_musicManager, &MusicScreenGUI::RequestNotification, this, &GUIManager::SendNotification);
 }
 
 MusicScreenGUI* GUIManager::GetMusicManager() const
@@ -14,4 +18,22 @@ MusicScreenGUI* GUIManager::GetMusicManager() const
 SettingsScreenGUI* GUIManager::GetSettingsManager() const
 {
     return _settingsManager;
+}
+
+void GUIManager::SetupTrayIcon()
+{
+    QAction* quitAction = new QAction("Quit");
+    connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
+
+    QMenu* trayMenu = new QMenu();
+    trayMenu->addAction(quitAction);
+
+    _trayIcon.setIcon(QIcon(":/icons/Icon.png"));
+    _trayIcon.setContextMenu(trayMenu);
+    _trayIcon.show();
+}
+
+void GUIManager::SendNotification(const std::string& message)
+{
+    _trayIcon.showMessage("Echolite", QString::fromStdString(message), _trayIcon.icon(), NOTIFICATION_MS);
 }

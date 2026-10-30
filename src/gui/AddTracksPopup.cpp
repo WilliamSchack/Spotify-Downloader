@@ -1,6 +1,6 @@
 #include "AddTracksPopup.h"
 
-AddTracksPopup::AddTracksPopup(QWindow* mainWindow, QObject* parent) : _mainWindow(mainWindow), QObject(parent) {}
+AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent) {}
 
 void AddTracksPopup::PasteButtonClicked()
 {
@@ -18,7 +18,7 @@ void AddTracksPopup::FolderButtonClicked()
     QFileDialog dialog(nullptr, "Choose output directory", "");
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog);
-    FileDialogUtils::SetParent(dialog, _mainWindow);
+    FileDialogUtils::SetParent(dialog, QGuiApplication::focusWindow());
 
     if (dialog.exec() == QDialog::Accepted) {
         QString folder = dialog.selectedFiles().first();

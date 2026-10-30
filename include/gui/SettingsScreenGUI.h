@@ -82,7 +82,6 @@ class SettingsScreenGUI : public QObject
         QFileSystemWatcher _youtubeCookiesWatcher;
         QString _youtubeCookiesStatus = "";
     signals:
-        //void BitrateChanged();
         void BitrateMaxChanged();
         void YouTubeCookiesStatusChanged();
 };

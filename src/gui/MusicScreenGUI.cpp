@@ -1,8 +1,8 @@
 #include "MusicScreenGUI.h"
 
-MusicScreenGUI::MusicScreenGUI(QWindow* mainWindow, QObject* parent) : QObject(parent)
+MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
 {
-    _addTracksPopup = new AddTracksPopup(mainWindow, this);
+    _addTracksPopup = new AddTracksPopup(this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
 
     // Frequently check download events
@@ -78,6 +78,8 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _addTracksPopup->SetCheckingInputs(false);
                 _addTracksPopup->SetErrorMessage("");
                 _addTracksPopup->SetVisible(false);
+
+                emit RequestNotification("Starting the download!");
             },
             [&](const DownloadFailedToStartEvent& e) {
                 _addTracksPopup->SetCheckingInputs(false);
@@ -86,6 +88,14 @@ void MusicScreenGUI::CheckDownloadEvents()
             [&](const DownloadsFinishedEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
                     QDesktopServices::openUrl(QUrl("file:///" + QString::fromStdString(e.OutputFolder)));
+                
+                std::string notificationMessage = std::to_string(e.SuccessfulDownloads) + " Downloads complete ";
+                if (e.FailedDownloads > 0)
+                    notificationMessage += "with " + std::to_string(e.FailedDownloads) + " errors..."; 
+                else
+                    notificationMessage += "with no errors!";
+
+                emit RequestNotification(notificationMessage);
             }
         }, event.value());
     }

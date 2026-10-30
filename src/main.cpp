@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 {
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
-    app.setWindowIcon(QIcon("qrc:/icons/Icon.png"));
+    app.setWindowIcon(QIcon(":/icons/Icon.png"));
 
     bool argsUsed = ArgumentParser::Parse(argc, argv);
     if (argsUsed) return 0;
@@ -48,11 +48,9 @@ int main(int argc, char** argv)
     Config::Load();
 
     QQmlApplicationEngine engine;
-    engine.load(QUrl("qrc:/gui/Main.qml"));
-
-    QWindow* window = app.allWindows().first();
-    GUIManager manager(window);
+    GUIManager manager;
     engine.rootContext()->setContextProperty("_manager", &manager);
+    engine.load(QUrl("qrc:/gui/Main.qml"));
 
     //std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(EPlatform::Spotify);
     //TrackData track = platform->GetTrack("https://open.spotify.com/track/1RKUoGiLEbcXN4GY4spQDx?si=7972b777acb546f3");
