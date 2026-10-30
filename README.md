@@ -56,6 +56,7 @@ The app and its dependencies will be output to `./build/out/Release`
 
 **Dependencies**
 - [Qt](https://www.qt.io/) - [LGPL v3](https://doc.qt.io/qt-6/lgpl.html)
+- [curl](https://github.com/curl/curl) - [MIT](https://github.com/curl/curl/blob/master/COPYING)
 - [ffmpeg](https://ffmpeg.org/) - [License](https://ffmpeg.org/legal.html)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 	- [quickjs](https://bellard.org/quickjs/) - [MIT](https://github.com/bellard/quickjs/blob/master/LICENSE)

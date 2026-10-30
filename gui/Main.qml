@@ -10,6 +10,8 @@ Window
     title: qsTr("Minimal Qml")
     color: "#8f95d3"
 
+    flags: Qt.Window | Qt.FramelessWindowHint
+
     enum EScreen
     {
         Main,
@@ -111,8 +113,16 @@ Window
                     onClicked: root.switchScreen(Main.EScreen.Settings)
                 }
 
-                // Space
-                Rectangle { Layout.fillWidth: true }
+                // Space / Draggable Area
+                // TODO: Test this on other platforms
+                MouseArea {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    onPressed: root.startSystemMove() 
+                }
+
+                // TODO: Change min/max/close button icons
 
                 // Minimise
                 CustomButton {
@@ -120,6 +130,7 @@ Window
 
                     radius: 20
                     backgroundColour: "#434343"
+                    text: "-"
 
                     onClicked: root.showMinimized()
                 }
@@ -130,6 +141,7 @@ Window
 
                     radius: 20
                     backgroundColour: "#434343"
+                    text: "o"
 
                     onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
                 }
@@ -140,6 +152,7 @@ Window
 
                     radius: 20
                     backgroundColour: "#434343"
+                    text: "x"
 
                     onClicked: root.close()
                 }
