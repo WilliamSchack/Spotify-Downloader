@@ -78,6 +78,7 @@ class Config
         static inline std::string YouTubePOToken = "";
 
         // Interface
+        static inline bool ShowStatusNotifications = true;
         static inline bool AutoOpenDownloadFolder = true;
 
         // Updates

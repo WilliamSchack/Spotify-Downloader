@@ -35,5 +35,8 @@ void GUIManager::SetupTrayIcon()
 
 void GUIManager::SendNotification(const std::string& message)
 {
+    if (!Config::ShowStatusNotifications)
+        return;
+
     _trayIcon.showMessage("Echolite", QString::fromStdString(message), _trayIcon.icon(), NOTIFICATION_MS);
 }

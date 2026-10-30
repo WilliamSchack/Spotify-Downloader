@@ -47,6 +47,7 @@ class SettingsScreenGUI : public QObject
     Q_PROPERTY(QString youtubeCookiesStatus READ GetYouTubeCookiesStatus NOTIFY YouTubeCookiesStatusChanged)
     STRING_QPROPERTY(youtubePOToken, YoutubePOToken, Config::YouTubePOToken)
 
+    SIMPLE_QPROPERTY(bool, showStatusNotifications, ShowStatusNotifications, Config::ShowStatusNotifications)
     SIMPLE_QPROPERTY(bool, autoOpenDownloadFolder, AutoOpenDownloadFolder, Config::AutoOpenDownloadFolder)
 
     Q_PROPERTY(bool allSettingsValid READ GetAllSettingsValid)

@@ -655,7 +655,10 @@ RowLayout {
                             SettingsItem {
                                 label: "Show Status Notifications"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.showStatusNotifications
+                                    onClicked: _manager.settings.showStatusNotifications = checked
+                                }
                             }
 
                             SettingsItem {
