@@ -45,6 +45,20 @@ void DownloadManager::Resume()
     _queueCv.notify_all();
 }
 
+void DownloadManager::Cancel()
+{
+    if (!_downloading)
+        return;
+
+    {
+        std::lock_guard<std::mutex> lock(_trackQueueMutex);
+        _stopping = true;
+        _trackQueue.clear();
+    }
+
+    _queueCv.notify_all();
+}
+
 bool DownloadManager::IsDownloading()
 {
     return _downloading;
@@ -167,7 +181,6 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     }
 
     // Setup
-    _tracksRemaining = tracks.size();
     _failedDownloads = 0;
     _successfulDownloads = 0;
     _downloadingDir = directory;
@@ -180,6 +193,8 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 
     // Dispatch threads
     int threadCount = std::min<int>(tracks.size(), Config::PerDownloadThreads);
+    _threadsDownloading = threadCount;
+
     for (int i = 0; i < threadCount; i++) {
         _threads.emplace_back([this, searchPlatform, directory]() {
             ThreadDownload(searchPlatform, directory);
@@ -224,26 +239,12 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
 
             _failedDownloads++;
             
-            std::cout << "Track (" << event.TrackUniqueId << ") failed to download with the error: " << event.Reason;
-        }
-
-        if (--_tracksRemaining == 0) {
-            // Download is finished
-            std::cout << "Finished all the downloads" << std::endl;
-
-            // Create playlist file if required
-            if (Config::PlaylistFileType != EPlaylistFileType::None)
-                CreatePlaylistFile();
-
-            // Send event
-            DownloadsFinishedEvent event;
-            event.FailedDownloads = _failedDownloads;
-            event.SuccessfulDownloads = _successfulDownloads;
-            event.OutputFolder = directory;
-            _events.Send(event);
-            _downloading = false;
+            std::cout << "Track (" << event.TrackUniqueId << ") failed to download with the error: " << event.Reason << std::endl;
         }
     }
+
+    if (--_threadsDownloading == 0)
+        FinishDownload();
 
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 }
@@ -285,18 +286,49 @@ void DownloadManager::CreatePlaylistFile()
     playlistFile->CreatePlaylistFileFromTracks(_downloadedFilePaths, filePathString);
 }
 
-void DownloadManager::CleanupThreads()
+void DownloadManager::FinishDownload()
 {
-    {
-        std::lock_guard<std::mutex> lock(_trackQueueMutex);
-        _paused = false;
-        _stopping = false;
+    if (_stopping) {
+        std::cout << "Downloads cancelled" << std::endl;
+
+        DownloadCancelledEvent event;
+        event.FailedDownloads = _failedDownloads;
+        event.SuccessfulDownloads = _successfulDownloads;
+        event.OutputFolder = _downloadingDir;
+        _events.Send(event);
+
+        _downloading = false;
+        return;
     }
 
+    std::cout << "Finished all the downloads" << std::endl;
+
+    // Create playlist file if required
+    if (Config::PlaylistFileType != EPlaylistFileType::None)
+        CreatePlaylistFile();
+
+    // Send event
+    DownloadsFinishedEvent event;
+    event.FailedDownloads = _failedDownloads;
+    event.SuccessfulDownloads = _successfulDownloads;
+    event.OutputFolder = _downloadingDir;
+    _events.Send(event);
+
+    _downloading = false;
+}
+
+void DownloadManager::CleanupThreads()
+{
     for (std::thread& thread : _threads) {
         if (thread.joinable())
             thread.join();
     }
 
     _threads.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(_trackQueueMutex);
+        _paused = false;
+        _stopping = false;
+    }
 }

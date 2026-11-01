@@ -34,6 +34,7 @@ class DownloadManager
 
         void Pause();
         void Resume();
+        void Cancel();
 
         bool IsDownloading();
         bool IsPaused();
@@ -45,10 +46,11 @@ class DownloadManager
         std::optional<TrackData> GetNextTrack();
 
         void CreatePlaylistFile();
+        void FinishDownload();
         void CleanupThreads();
     private:
         std::atomic<bool> _downloading = false;
-        std::atomic<int> _tracksRemaining = 0;
+        std::atomic<int> _threadsDownloading = 0;
         std::atomic<int> _failedDownloads = 0;
         std::atomic<int> _successfulDownloads = 0;
 
