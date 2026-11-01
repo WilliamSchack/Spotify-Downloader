@@ -131,54 +131,41 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         return;
     }
 
-    // Get track distribution
-    int songCount = tracks.size();
-    int threadCount = std::min<int>(songCount, Config::PerDownloadThreads);
-
-    int baseSongCount = songCount / threadCount;
-    int songsRemainder = songCount % threadCount;
-
     // Setup
-    _tracksRemaining = songCount;
+    _tracksRemaining = tracks.size();
     _failedDownloads = 0;
     _successfulDownloads = 0;
     _downloadingDir = directory;
     _downloadedFilePaths.clear();
+    _trackQueue = std::deque<TrackData>(tracks.begin(), tracks.end());
 
     DownloadStartedEvent startedEvent;
     startedEvent.Tracks = tracks;
     _events.Send(startedEvent);
 
     // Dispatch threads
-    int currentStartIndex = 0;
+    int threadCount = std::min<int>(tracks.size(), Config::PerDownloadThreads);
     for (int i = 0; i < threadCount; i++) {
-        int currentSongCount = songsRemainder == 0 ? baseSongCount : baseSongCount + 1;
-        if (songsRemainder > 0) songsRemainder--;
-
-        std::vector<TrackData> threadTracks(tracks.begin() + currentStartIndex, tracks.begin() + currentStartIndex + currentSongCount);
-
-        _threads.emplace_back([this, threadTracks = std::move(threadTracks), searchPlatform, directory]() {
-            ThreadDownload(threadTracks, searchPlatform, directory);
+        _threads.emplace_back([this, searchPlatform, directory]() {
+            ThreadDownload(searchPlatform, directory);
         });
-
-        currentStartIndex += currentSongCount;
     }
 }
 
-void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory)
+void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std::string& directory)
 {
     std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
 
-    for (const TrackData& track : tracks) {
-        DownloadResult result = TrackDownloader::DownloadTrack(track, searchPlatform, directory, [&](DownloadProgress p) {
+    while (std::optional<TrackData> track = GetNextTrack()) {
+        DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadProgress p) {
             TrackProgressEvent event;
-            event.TrackUniqueId = track.GetUniqueId();
+            event.TrackUniqueId = track->GetUniqueId();
             event.Progress = p.Progress;
             event.Message = p.Message;
             _events.Send(event);
         }, [&](std::filesystem::path coverArtPath) {
             TrackCoverArtDownloadedEvent event;
-            event.TrackUniqueId = track.GetUniqueId();
+            event.TrackUniqueId = track->GetUniqueId();
             event.FilePath = coverArtPath;
             _events.Send(event);
         });
@@ -188,17 +175,19 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
             _downloadedFilePaths.push_back(result.FilePath);
 
             TrackSucceededEvent event;
-            event.TrackUniqueId = track.GetUniqueId();
+            event.TrackUniqueId = track->GetUniqueId();
             _events.Send(event);
 
             _successfulDownloads++;
         } else {
             TrackFailedEvent event;
-            event.TrackUniqueId = track.GetUniqueId();
+            event.TrackUniqueId = track->GetUniqueId();
             event.Reason = result.FailReason;
             _events.Send(event);
 
             _failedDownloads++;
+            
+            std::cout << "Track (" << event.TrackUniqueId << ") failed to download with the error: " << event.Reason;
         }
 
         if (--_tracksRemaining == 0) {
@@ -222,6 +211,17 @@ void DownloadManager::ThreadDownload(const std::vector<TrackData>& tracks, const
     std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
 
     // TODO: Figure out thread redistribution
+}
+
+std::optional<TrackData> DownloadManager::GetNextTrack()
+{
+    std::lock_guard<std::mutex> lock(_trackQueueMutex);
+    if (_trackQueue.empty())
+        return std::nullopt;
+
+    TrackData track = std::move(_trackQueue.front());
+    _trackQueue.pop_front();
+    return track;
 }
 
 void DownloadManager::CreatePlaylistFile()

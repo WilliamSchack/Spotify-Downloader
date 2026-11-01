@@ -14,6 +14,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <optional>
+#include <deque>
 #include <thread>
 #include <atomic>
 #include <mutex>
@@ -33,7 +35,9 @@ class DownloadManager
         DownloadEventsQueue& GetEvents();
     private:
         void StartDownload(const std::string& url, const std::string& directory);
-        void ThreadDownload(const std::vector<TrackData>& tracks, const EPlatform& platformType, const std::string& directory);
+        void ThreadDownload(const EPlatform& platformType, const std::string& directory);
+        std::optional<TrackData> GetNextTrack();
+
         void CreatePlaylistFile();
         void CleanupThreads();
     private:
@@ -44,6 +48,9 @@ class DownloadManager
 
         std::filesystem::path _downloadingDir;
         PlaylistData _downloadingPlaylist;
+
+        std::deque<TrackData> _trackQueue;
+        std::mutex _trackQueueMutex;
 
         std::vector<std::filesystem::path> _downloadedFilePaths;
         std::mutex _downloadedFilePathsMutex;

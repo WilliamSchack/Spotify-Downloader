@@ -5,8 +5,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     DownloadResult result;
     result.Success = false;
 
-    if (track.Platform == EPlatform::Unknown || track.Id.empty())
+    if (track.Platform == EPlatform::Unknown || track.Id.empty()) {
+        result.FailReason = "An invalid track was provided";
         return result;
+    }
 
     // Should be removed later
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
@@ -28,13 +30,13 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     tagHandler.SetCodec(targetCodec.get());
     TagHandlerResult fileNameTagResult = tagHandler.FormatString(Config::FileName, Config::FileNameTagsOpeningChar, Config::FileNameTagsClosingChar);
     if (fileNameTagResult.Error != ETagError::None) {
-        std::cout << "Could not get the track file name with the error: " + fileNameTagResult.ErrorString << std::endl;
+        result.FailReason = "Could not get the track file name with the error: " + fileNameTagResult.ErrorString;
         return result;
     }
 
     TagHandlerResult subFolderTagResult = tagHandler.FormatString(Config::SubFolders, Config::SubFoldersTagsOpeningChar, Config::SubFoldersTagsClosingChar);
-    if (fileNameTagResult.Error != ETagError::None) {
-        std::cout << "Could not get the sub folders path with the error: " + fileNameTagResult.ErrorString << std::endl;
+    if (subFolderTagResult.Error != ETagError::None) {
+        result.FailReason = "Could not get the sub folders path with the error: " + subFolderTagResult.ErrorString;
         return result;
     }
 
@@ -99,7 +101,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         std::cout << "Searching on different platform..." << std::endl;
 
         std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
-        if (searcher == nullptr) return result;
+        if (searcher == nullptr) {
+            result.FailReason = "Searcher not implemented for the platform: " + std::to_string((int)searchPlatform);
+            return result;
+        }
 
         searchResult = searcher->FindTrack(track, [&](float progress) {
             SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.1, 0.3, progress), "Searching..."));
