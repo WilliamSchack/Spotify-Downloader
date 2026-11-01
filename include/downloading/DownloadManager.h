@@ -68,6 +68,8 @@ class DownloadManager
         std::mutex _downloadedFilePathsMutex;
 
         DownloadEventsQueue _events;
+
+        std::thread _creatorThread;
         std::vector<std::thread> _threads;
 };
 

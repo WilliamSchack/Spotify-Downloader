@@ -80,7 +80,7 @@ bool DownloadManager::RequestDownload(const std::string& url, const std::string&
     _events.ClearAll();
     CleanupThreads();
 
-    _threads.emplace_back([this, url, directory]() {
+    _creatorThread = std::thread([this, url, directory]() {
         StartDownload(url, directory);
     });
 
@@ -319,6 +319,9 @@ void DownloadManager::FinishDownload()
 
 void DownloadManager::CleanupThreads()
 {
+    if (_creatorThread.joinable())
+        _creatorThread.join();
+
     for (std::thread& thread : _threads) {
         if (thread.joinable())
             thread.join();
