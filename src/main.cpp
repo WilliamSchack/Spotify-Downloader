@@ -47,8 +47,8 @@ int main(int argc, char** argv)
 
     Config::Load();
 
-    QQmlApplicationEngine engine;
     GUIManager manager;
+    QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_manager", &manager);
     engine.load(QUrl("qrc:/gui/Main.qml"));
 

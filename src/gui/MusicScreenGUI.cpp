@@ -108,6 +108,9 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit RequestNotification(notificationMessage);
+            },
+            [&](const DownloadsPausedEvent& e) {
+                
             }
         }, event.value());
     }

@@ -42,7 +42,7 @@ class DownloadManager
         DownloadEventsQueue& GetEvents();
     private:
         void StartDownload(const std::string& url, const std::string& directory);
-        void ThreadDownload(const EPlatform& platformType, const std::string& directory);
+        void ThreadDownload(const EPlatform& searchPlatform, const std::string& directory);
         std::optional<TrackData> GetNextTrack();
 
         void CreatePlaylistFile();
@@ -54,8 +54,9 @@ class DownloadManager
         std::atomic<int> _failedDownloads = 0;
         std::atomic<int> _successfulDownloads = 0;
 
-        std::atomic<bool> _paused = false;
-        std::atomic<bool> _stopping = false;
+        bool _paused = false;
+        bool _stopping = false;
+        int _unpausedThreads = 0;
         std::condition_variable _queueCv;
 
         std::filesystem::path _downloadingDir;

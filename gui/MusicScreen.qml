@@ -51,6 +51,16 @@ Rectangle {
                 }
 
                 CustomButton {
+                    text: "Pause"
+                    font.pixelSize: 14
+                    spacing: 5
+                    radius: 8
+                    backgroundColour: "#A16583"
+                    
+                    Layout.fillHeight: true
+                }
+
+                CustomButton {
                     text: "Export"
                     font.pixelSize: 14
                     spacing: 5

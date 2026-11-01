@@ -26,10 +26,15 @@ void DownloadManager::Pause()
 {
     if (!_downloading)
         return;
-    {
-        std::lock_guard<std::mutex> lock(_trackQueueMutex);
-        _paused = true;
-    }
+    
+    std::lock_guard<std::mutex> lock(_trackQueueMutex);
+    if (_paused)
+        return;
+
+    _paused = true;
+
+    if (_unpausedThreads == 0)
+        _events.Send(DownloadsPausedEvent());
 }
 
 void DownloadManager::Resume()
@@ -66,7 +71,7 @@ bool DownloadManager::IsDownloading()
 
 bool DownloadManager::IsPaused()
 {
-    return _paused;
+    return _downloading && _paused;
 }
 
 bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)
@@ -77,7 +82,6 @@ bool DownloadManager::RequestDownload(const std::string& url, const std::string&
     }
 
     _downloading = true;
-    _events.ClearAll();
     CleanupThreads();
 
     _creatorThread = std::thread([this, url, directory]() {
@@ -195,6 +199,11 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     int threadCount = std::min<int>(tracks.size(), Config::PerDownloadThreads);
     _threadsDownloading = threadCount;
 
+    {
+        std::lock_guard<std::mutex> lock(_trackQueueMutex);
+        _unpausedThreads = threadCount;
+    }
+
     for (int i = 0; i < threadCount; i++) {
         _threads.emplace_back([this, searchPlatform, directory]() {
             ThreadDownload(searchPlatform, directory);
@@ -252,10 +261,19 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
 std::optional<TrackData> DownloadManager::GetNextTrack()
 {
     std::unique_lock<std::mutex> lock(_trackQueueMutex);
-    _queueCv.wait(lock, [this] { return !_paused || _stopping; });
 
-    if (_stopping || _trackQueue.empty())
+    if (_paused && !_stopping) {
+        if (--_unpausedThreads == 0)
+            _events.Send(DownloadsPausedEvent());
+
+        _queueCv.wait(lock, [this] { return !_paused || _stopping; });
+        _unpausedThreads++;
+    }
+
+    if (_stopping || _trackQueue.empty()) {
+        _unpausedThreads--;
         return std::nullopt;
+    }
 
     TrackData track = std::move(_trackQueue.front());
     _trackQueue.pop_front();
@@ -326,8 +344,9 @@ void DownloadManager::CleanupThreads()
         if (thread.joinable())
             thread.join();
     }
-
     _threads.clear();
+
+    _events.ClearAll();
 
     {
         std::lock_guard<std::mutex> lock(_trackQueueMutex);

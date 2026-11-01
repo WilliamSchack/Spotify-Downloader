@@ -56,6 +56,8 @@ struct DownloadsCancelledEvent
     std::string OutputFolder = "";
 };
 
+struct DownloadsPausedEvent {};
+
 using DownloadEvent = std::variant<
     TrackProgressEvent,
     TrackCoverArtDownloadedEvent,
@@ -64,7 +66,8 @@ using DownloadEvent = std::variant<
     DownloadStartedEvent,
     DownloadFailedToStartEvent,
     DownloadsFinishedEvent,
-    DownloadsCancelledEvent
+    DownloadsCancelledEvent,
+    DownloadsPausedEvent
 >;
 
 #endif
