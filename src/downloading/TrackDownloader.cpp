@@ -285,27 +285,3 @@ std::mutex& TrackDownloader::GetCoverArtMutex(const std::string& albumUniqueId)
     std::lock_guard<std::mutex> lock(_coverArtMapMutex);
     return _coverArtMutexes[albumUniqueId];
 }
-
-int TrackDownloader::DownloadTracks(const std::vector<TrackData>& tracks, const EPlatform& searchPlatform, const std::string& directory, std::function<void(int, DownloadProgress)> progressCallback, std::function<void(int, std::filesystem::path)> coverArtDownloadedCallback, std::function<void(int, DownloadResult)> trackDownloadedCallback)
-{
-    int downloadErrors = 0;
-    for (int i = 0; i < tracks.size(); i++) {
-        const TrackData& track = tracks[i];
-
-        std::function<void(DownloadProgress)> progressCallbackIndividual = nullptr;
-        if (progressCallback != nullptr)
-            progressCallbackIndividual = [&](DownloadProgress p) { progressCallback(i, p); };
-
-        std::function<void(std::filesystem::path)> coverArtDownloadedCallbackIndividual = nullptr;
-        if (coverArtDownloadedCallback != nullptr)
-            coverArtDownloadedCallbackIndividual = [&](std::filesystem::path p) { coverArtDownloadedCallback(i, p); };
-
-        DownloadResult downloadResult = DownloadTrack(track, searchPlatform, directory, progressCallbackIndividual, coverArtDownloadedCallbackIndividual);
-        if (trackDownloadedCallback != nullptr)
-            trackDownloadedCallback(i, downloadResult);
-
-        if (!downloadResult.Success) downloadErrors++;
-    }
-
-    return downloadErrors;
-}
