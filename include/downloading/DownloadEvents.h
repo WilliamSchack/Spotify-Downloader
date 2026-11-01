@@ -49,7 +49,7 @@ struct DownloadsFinishedEvent
     std::string OutputFolder = "";
 };
 
-struct DownloadCancelledEvent
+struct DownloadsCancelledEvent
 {
     int FailedDownloads = 0;
     int SuccessfulDownloads = 0;
@@ -64,7 +64,7 @@ using DownloadEvent = std::variant<
     DownloadStartedEvent,
     DownloadFailedToStartEvent,
     DownloadsFinishedEvent,
-    DownloadCancelledEvent
+    DownloadsCancelledEvent
 >;
 
 #endif

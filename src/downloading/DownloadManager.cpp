@@ -291,7 +291,7 @@ void DownloadManager::FinishDownload()
     if (_stopping) {
         std::cout << "Downloads cancelled" << std::endl;
 
-        DownloadCancelledEvent event;
+        DownloadsCancelledEvent event;
         event.FailedDownloads = _failedDownloads;
         event.SuccessfulDownloads = _successfulDownloads;
         event.OutputFolder = _downloadingDir;

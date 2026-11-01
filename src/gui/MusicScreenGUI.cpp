@@ -96,6 +96,18 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit RequestNotification(notificationMessage);
+            },
+            [&](const DownloadsCancelledEvent& e) {
+                if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
+                    QDesktopServices::openUrl(QUrl("file:///" + QString::fromStdString(e.OutputFolder)));
+
+                std::string notificationMessage = "Download cancelled with " + std::to_string(e.SuccessfulDownloads) + " downloads complete ";
+                if (e.FailedDownloads > 0)
+                    notificationMessage += "with " + std::to_string(e.FailedDownloads) + " errors..."; 
+                else
+                    notificationMessage += "with no errors!";
+
+                emit RequestNotification(notificationMessage);
             }
         }, event.value());
     }
