@@ -19,11 +19,17 @@ class MusicScreenGUI : public QObject
     Q_PROPERTY(QObject* addTracksPopup READ GetAddTracksPopup CONSTANT)
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
 
+    Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
+
     public:
         explicit MusicScreenGUI(QObject* parent = 0);
 
         AddTracksPopup* GetAddTracksPopup() const;
         QList<QObject*> GetTracks() const;
+
+        QString GetPlayPauseButtonText() const;
+    public slots:
+        void PlayPauseButtonPressed();
     private:
         void OnDownloadRequested(const std::string& link, const std::string& destinationFolder);
         void CheckDownloadEvents();
@@ -38,6 +44,7 @@ class MusicScreenGUI : public QObject
         std::map<std::string, TrackUI*> _tracksFromId;
     signals:
         void TracksChanged();
+        void PlayPauseButtonTextChanged();
         void RequestNotification(const std::string& message);
 };
 

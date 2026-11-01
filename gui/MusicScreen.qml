@@ -51,13 +51,15 @@ Rectangle {
                 }
 
                 CustomButton {
-                    text: "Pause"
+                    text: _manager.music.playPauseButtonText;
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
                     backgroundColour: "#A16583"
                     
                     Layout.fillHeight: true
+
+                    onClicked: _manager.music.PlayPauseButtonPressed()
                 }
 
                 CustomButton {

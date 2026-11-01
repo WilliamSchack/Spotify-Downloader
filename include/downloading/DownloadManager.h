@@ -36,8 +36,9 @@ class DownloadManager
         void Resume();
         void Cancel();
 
-        bool IsDownloading();
-        bool IsPaused();
+        bool IsDownloading() const;
+        bool IsPausing() const;
+        bool IsPaused() const;
 
         DownloadEventsQueue& GetEvents();
     private:

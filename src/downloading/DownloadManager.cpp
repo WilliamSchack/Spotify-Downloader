@@ -64,14 +64,19 @@ void DownloadManager::Cancel()
     _queueCv.notify_all();
 }
 
-bool DownloadManager::IsDownloading()
+bool DownloadManager::IsDownloading() const
 {
     return _downloading;
 }
 
-bool DownloadManager::IsPaused()
+bool DownloadManager::IsPausing() const
 {
-    return _downloading && _paused;
+    return _downloading && _paused && _unpausedThreads != 0;
+}
+
+bool DownloadManager::IsPaused() const
+{
+    return _downloading && _paused && _unpausedThreads == 0;
 }
 
 bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)

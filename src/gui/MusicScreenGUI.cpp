@@ -35,6 +35,33 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
     _addTracksPopup->SetErrorMessage("");
 }
 
+void MusicScreenGUI::PlayPauseButtonPressed()
+{
+    if (!_downloader.IsDownloading())
+        return;
+
+    if (_downloader.IsPausing() || _downloader.IsPaused())
+        _downloader.Resume();
+    else
+        _downloader.Pause();
+
+    emit PlayPauseButtonTextChanged();
+}
+
+QString MusicScreenGUI::GetPlayPauseButtonText() const
+{
+    if (!_downloader.IsDownloading())
+        return "Pause";
+
+    if (_downloader.IsPaused())
+        return "Resume";
+    
+    if (_downloader.IsPausing())
+        return "Pausing...";
+
+    return "Pause";
+}
+
 void MusicScreenGUI::CheckDownloadEvents()
 {
     DownloadEventsQueue& downloadEvents = _downloader.GetEvents();
@@ -110,7 +137,7 @@ void MusicScreenGUI::CheckDownloadEvents()
                 emit RequestNotification(notificationMessage);
             },
             [&](const DownloadsPausedEvent& e) {
-                
+                emit PlayPauseButtonTextChanged();
             }
         }, event.value());
     }
