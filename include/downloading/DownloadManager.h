@@ -19,6 +19,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <condition_variable>
 
 // Object must be alive for the duration of the download otherwise the thread that created it will be blocked until the download finishes
 // Events must also be watched for download progress and to check if it started or failed
@@ -30,7 +31,12 @@ class DownloadManager
 
         // Returns if the download was dispatched
         bool RequestDownload(const std::string& url, const std::string& directory);
+
+        void Pause();
+        void Resume();
+
         bool IsDownloading();
+        bool IsPaused();
 
         DownloadEventsQueue& GetEvents();
     private:
@@ -45,6 +51,10 @@ class DownloadManager
         std::atomic<int> _tracksRemaining = 0;
         std::atomic<int> _failedDownloads = 0;
         std::atomic<int> _successfulDownloads = 0;
+
+        std::atomic<bool> _paused = false;
+        std::atomic<bool> _stopping = false;
+        std::condition_variable _queueCv;
 
         std::filesystem::path _downloadingDir;
         PlaylistData _downloadingPlaylist;
