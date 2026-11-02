@@ -27,7 +27,7 @@ class ExternalProcess
     public:
         ExternalProcess(const std::filesystem::path& path);
         static ExternalProcess GetRelativeProcess(const std::filesystem::path& relativePath);
-        static std::optional<std::filesystem::path> FindInstalledPath(const std::string& fileName);
+        static std::optional<std::filesystem::path> FindInstalledPath(const std::string& fileNameNoExtension);
 
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);

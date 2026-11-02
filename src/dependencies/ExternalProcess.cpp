@@ -30,7 +30,7 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
 #else
     EnvironmentVariable<std::string> path = EnvironmentUtils::GetVariable("PATH");
     if (path.Exists) {
-        std::vector<std::sstring> searchFolderStrings = StringUtils::Split(path.Value, ":");
+        std::vector<std::string> searchFolderStrings = StringUtils::Split(path.Value, ":");
         for (std::string searchFolderString : searchFolderStrings) {
             searchFolders.push_back(FileUtils::PathFromUtf8(searchFolderString));
         }
