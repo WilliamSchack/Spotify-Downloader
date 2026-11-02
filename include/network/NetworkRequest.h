@@ -2,10 +2,12 @@
 #define NETWORKREQUEST_H
 
 #include "NetworkResponse.h"
+#include "FileUtils.h"
 
 #include <string>
 #include <vector>
 #include <memory>
+#include <fstream>
 
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
@@ -22,6 +24,7 @@ class NetworkRequest
         NetworkResponse Get();
         NetworkResponse Post(const std::string& postData);
         NetworkResponse Post(nlohmann::json postData);
+        NetworkResponse DownloadToFile(const std::filesystem::path& filePath);
     public:
         std::string Url = "";
     private:
@@ -37,6 +40,7 @@ class NetworkRequest
         void CleanupCurl(CURL* curl);
 
         static size_t CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp);
+        static size_t CurlWriteFileFunction(void* data, size_t size, size_t nmemb, void* clientp);
     private:
         static inline const CurlGlobalHandler _globalHandler;
         

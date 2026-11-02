@@ -52,6 +52,38 @@ NetworkResponse NetworkRequest::Post(nlohmann::json postData)
     return Post(postData.dump());
 }
 
+NetworkResponse NetworkRequest::DownloadToFile(const std::filesystem::path& filePath)
+{
+    NetworkResponse response;
+
+    CURL* curl = InitCurl();
+    if (curl == nullptr)
+        return response;
+
+    std::ofstream file(filePath, std::ios::binary | std::ios::trunc);
+    if (!file.is_open()) {
+        CleanupCurl(curl);
+        return response;
+    }
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFileFunction);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+
+    response.CurlCode = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
+
+    file.close();
+    CleanupCurl(curl);
+
+    // Remove the file if it didnt finish
+    if (response.CurlCode != CURLE_OK)
+        std::filesystem::remove(filePath);
+
+    return response;
+}
+
 CURL* NetworkRequest::InitCurl()
 {
     if (_globalHandler.GlobalInit != CURLcode::CURLE_OK)
@@ -81,7 +113,6 @@ NetworkResponse NetworkRequest::SendRequest(CURL* curl)
     curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br, zstd");
 
     response.CurlCode = curl_easy_perform(curl);
-
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
 
     return response;
@@ -98,6 +129,14 @@ size_t NetworkRequest::CurlWriteFunction(void* data, size_t size, size_t nmemb, 
     std::string* stream = static_cast<std::string*>(clientp);
     stream->append(static_cast<char*>(data), totalSize);
     return totalSize;
+}
+
+size_t NetworkRequest::CurlWriteFileFunction(void* data, size_t size, size_t nmemb, void* clientp)
+{
+    size_t totalSize = size * nmemb;
+    std::ofstream* file = static_cast<std::ofstream*>(clientp);
+    file->write(static_cast<char*>(data), totalSize);
+    return file->good() ? totalSize : 0;
 }
 
 NetworkRequest::~NetworkRequest()
