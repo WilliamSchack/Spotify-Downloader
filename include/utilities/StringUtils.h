@@ -17,6 +17,7 @@ class StringUtils
         static std::string FromWString(const std::wstring& string);
         static bool StartsWith(const std::string& string, const std::string& value);
         static bool EndsWith(const std::string& string, const std::string& value);
+        static size_t GetLastIndexOfAny(const std::string& string, const std::vector<char>& chars);
         static bool Contains(const std::string& string, const std::string& value);
         static bool Contains(const std::wstring& string, const std::wstring& value);
         static std::string ToLower(const std::string& string);

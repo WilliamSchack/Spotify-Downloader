@@ -10,11 +10,41 @@ std::string FileUtils::ValidateFileName(const std::string& fileName)
     return copiedString;
 };
 
-std::string FileUtils::ValidateDirectoryName(const std::string& directoryName)
+std::string FileUtils::ValidateDirectory(const std::string& directoryName)
 {
     std::string copiedString = directoryName;
     for (const char c : INVALID_DIR_CHARS) {
         StringUtils::RemoveChar(copiedString, c);
+    }
+
+#ifndef WIN32
+    // Replace home dir
+    if (StringUtils::StartsWith(copiedString, "~")) {
+        // Replace first two chars with home path (~/)
+        EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
+        std::string homePathString = PathToUtf8(homePath.Value);
+        copiedString = homePathString + "/" + copiedString.substr(2, copiedString.length() - 2);
+    }
+#endif
+
+    // Insert backspaces
+    while (StringUtils::Contains(copiedString, "..")) {
+        int startIndex = copiedString.find_first_of("..");
+        int endIndex = startIndex + 2;
+
+        int previousSlashIndexFirst = StringUtils::GetLastIndexOfAny(copiedString.substr(0, startIndex), { '/', '\\' });
+        int previousSlashIndexSecond = StringUtils::GetLastIndexOfAny(copiedString.substr(0, previousSlashIndexFirst), { '/', '\\' });
+
+        // If either of the previous slashes are not found, remove this backspace
+        if (previousSlashIndexFirst == std::string::npos || previousSlashIndexSecond == std::string::npos) {
+            copiedString = copiedString.substr(endIndex, copiedString.length() - endIndex);
+            continue;
+        }
+
+        // Remove the previous folder and this backspace
+        std::string newCopiedString = copiedString.substr(0, previousSlashIndexSecond);
+        newCopiedString += copiedString.substr(endIndex, copiedString.length() - endIndex);
+        copiedString = newCopiedString;
     }
 
     return copiedString;

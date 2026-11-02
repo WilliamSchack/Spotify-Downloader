@@ -2,6 +2,7 @@
 #define FILEUTILS_H
 
 #include "StringUtils.h"
+#include "EnvironmentUtils.h"
 
 #include <iostream>
 #include <string>
@@ -21,7 +22,9 @@ class FileUtils
 {
     public:
         static std::string ValidateFileName(const std::string& fileName);
-        static std::string ValidateDirectoryName(const std::string& fileName);
+        static std::string ValidateDirectory(const std::string& fileName);
+
+        static int GetLastIndexOfDirectorySlash(const std::string& path);
 
         static std::string PathToUtf8(const std::filesystem::path& path);
         static std::filesystem::path PathFromUtf8(const std::string& path);

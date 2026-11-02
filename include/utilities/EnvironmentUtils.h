@@ -2,8 +2,10 @@
 #define ENVIRONMENTUTILS_H
 
 #include "EnvironmentVariable.h"
-#include "FileUtils.h"
 #include "StringUtils.h"
+
+#include <filesystem>
+#include <iostream>
 
 class EnvironmentUtils
 {

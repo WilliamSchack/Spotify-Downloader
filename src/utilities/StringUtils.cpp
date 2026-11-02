@@ -28,6 +28,22 @@ bool StringUtils::EndsWith(const std::string& string, const std::string& value)
     return string.compare(string.length() - value.length(), value.length(), value) == 0;
 }
 
+// Returns npos if none of the chars are found
+size_t StringUtils::GetLastIndexOfAny(const std::string& string, const std::vector<char>& chars)
+{
+    size_t index = std::string::npos;
+    for (char c : chars) {
+        int charIndex = string.find_last_of(c);
+        if (charIndex == std::string::npos)
+            continue;
+
+        if (index == std::string::npos || index < charIndex)
+            index = charIndex;
+    }
+
+    return index;
+}
+
 bool StringUtils::Contains(const std::string& string, const std::string& value)
 {
     return string.find(value) != std::string::npos;

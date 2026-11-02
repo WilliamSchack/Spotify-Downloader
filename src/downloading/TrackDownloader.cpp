@@ -10,6 +10,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
     }
 
+    std::string directoryValidated = FileUtils::ValidateDirectory(directory);
+    if (!std::filesystem::exists(directoryValidated)) {
+        result.FailReason = "Target directory does not exist";
+        return result;
+    }
+
     // Should be removed later
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
     track.Print();
@@ -19,7 +25,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
-    // == Get paths
+    // == Get paths    
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
     if (targetCodec == nullptr) {
         result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
@@ -43,8 +49,8 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::string fileName = fileNameTagResult.FormattedString + "." + targetCodec->GetString();
     fileName = FileUtils::ValidateFileName(fileName);
     
-    std::string subFolders = FileUtils::ValidateDirectoryName(subFolderTagResult.FormattedString);
-    std::filesystem::path targetFolder = directory / FileUtils::PathFromUtf8(subFolders);
+    std::string subFolders = FileUtils::ValidateDirectory(subFolderTagResult.FormattedString);
+    std::filesystem::path targetFolder = directoryValidated / FileUtils::PathFromUtf8(subFolders);
     std::filesystem::path targetDownloadPath = targetFolder / FileUtils::PathFromUtf8(fileName);
     
     FilePathReserver pathReserver;
@@ -213,7 +219,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         if (lyrics.Type != ELyricsType::None && Config::CreateLyricsFile) {
             SavableTrackTagHandler lyricsFileTagHandler(track);
             lyricsFileTagHandler.SetCodec(targetCodec.get());
-            lyricsFileTagHandler.SetSaveLocation(directory);
+            lyricsFileTagHandler.SetSaveLocation(directoryValidated);
             TagHandlerResult lyricsFileTagResult = lyricsFileTagHandler.FormatString(Config::LyricsFileName, Config::LyricsFileNameTagsOpeningChar, Config::LyricsFileNameTagsClosingChar);
             if (lyricsFileTagResult.Error == ETagError::None)
                 LyricsFile::Create(lyricsFileTagResult.FormattedString, track, lyrics);

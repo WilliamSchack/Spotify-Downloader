@@ -98,8 +98,8 @@ bool DownloadManager::RequestDownload(const std::string& url, const std::string&
 
 void DownloadManager::StartDownload(const std::string& url, const std::string& directory)
 {
-    bool directoryValid = std::filesystem::exists(directory);
-    if (!directoryValid) {
+    std::string directoryValidated = FileUtils::ValidateDirectory(directory);
+    if (!std::filesystem::exists(directoryValidated)) {
         DownloadFailedToStartEvent event;
         event.Reason = "The chosen directory is invalid";
         _events.Send(event);
@@ -192,7 +192,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     // Setup
     _failedDownloads = 0;
     _successfulDownloads = 0;
-    _downloadingDir = directory;
+    _downloadingDir = directoryValidated;
     _downloadedFilePaths.clear();
     _trackQueue = std::deque<TrackData>(tracks.begin(), tracks.end());
 
@@ -210,8 +210,8 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     }
 
     for (int i = 0; i < threadCount; i++) {
-        _threads.emplace_back([this, searchPlatform, directory]() {
-            ThreadDownload(searchPlatform, directory);
+        _threads.emplace_back([this, searchPlatform, directoryValidated]() {
+            ThreadDownload(searchPlatform, directoryValidated);
         });
     }
 }
@@ -305,7 +305,7 @@ void DownloadManager::CreatePlaylistFile()
         return;
     }
     
-    std::string filePathString = FileUtils::ValidateDirectoryName(tagResult.FormattedString);
+    std::string filePathString = FileUtils::ValidateDirectory(tagResult.FormattedString);
     playlistFile->CreatePlaylistFileFromTracks(_downloadedFilePaths, filePathString);
 }
 
