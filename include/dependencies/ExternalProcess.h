@@ -8,6 +8,7 @@
 #include <vector>
 #include <functional>
 #include <chrono>
+#include <optional>
 
 #ifdef WIN32
 #include <windows.h>
@@ -26,6 +27,7 @@ class ExternalProcess
     public:
         ExternalProcess(const std::filesystem::path& path);
         static ExternalProcess GetRelativeProcess(const std::filesystem::path& relativePath);
+        static std::optional<std::filesystem::path> FindInstalledPath(const std::string& fileName);
 
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);

@@ -11,6 +11,34 @@ ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path&
     return ExternalProcess(processPath);
 }
 
+std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileName)
+{
+#ifdef WIN32
+#else
+    std::vector<std::string> searchFolders;
+
+    EnvironmentVariable<std::filesystem::path> path = EnvironmentUtils::GetVariablePath("PATH");
+    if (path.Exists) {
+        searchFolders = StringUtils::Split(path.Value, ":");
+    } else {
+        // Backup folders
+        searchFolders = {
+            "/usr/bin",
+            "/usr/local/bin"
+        };
+    }
+
+    for (const std::string& searchFolderString : searchFolders) {
+        std::filesystem::path searchFolder = FileUtils::PathFromUtf8(searchFolderString);
+        std::filesystem::path potentialPath = searchFolder / fileName;
+        if (std::filesystem::exists(potentialPath))
+            return potentialPath;
+    }
+
+    return std::nullopt;
+#endif
+}
+
 #ifdef WIN32
 std::wstring ExternalProcess::GetCommand()
 {
