@@ -17,13 +17,18 @@ std::string FileUtils::ValidateDirectory(const std::string& directoryName)
         StringUtils::RemoveChar(copiedString, c);
     }
 
+    // Remove double seperators (//, \\)
+    copiedString = StringUtils::ReplaceAll(copiedString, "//", "/");
+    copiedString = StringUtils::ReplaceAll(copiedString, "\\\\", "\\");
+
 #ifndef WIN32
     // Replace home dir
     if (StringUtils::StartsWith(copiedString, "~")) {
-        // Replace first two chars with home path (~/)
         EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
-        std::string homePathString = PathToUtf8(homePath.Value);
-        copiedString = homePathString + "/" + copiedString.substr(2, copiedString.length() - 2);
+        if (homePath.Exists) {
+            std::string homePathString = PathToUtf8(homePath.Value);
+            copiedString = homePathString + "/" + copiedString.substr(2, copiedString.length() - 2);
+        }
     }
 #endif
 
