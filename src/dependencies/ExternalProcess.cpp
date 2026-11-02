@@ -45,8 +45,15 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
 
     for (const std::filesystem::path& searchFolder : searchFolders) {
         std::filesystem::path potentialPath = searchFolder / fileName;
-        if (std::filesystem::exists(potentialPath))
+        if (std::filesystem::exists(potentialPath) && std::filesystem::is_regular_file(potentialPath)) {
+#ifdef WIN32
+            // Assume an exe is executable
             return potentialPath;
+#else
+            if (access(potentialPath.c_str(), X_OK) == 0)
+                return potentialPath;
+#endif
+        }
     }
 
     return std::nullopt;
