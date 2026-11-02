@@ -110,6 +110,24 @@ std::vector<std::string> StringUtils::Split(const std::string& string, const std
     return tokens;
 }
 
+#ifdef WIN32
+std::vector<std::wstring> StringUtils::SplitW(const std::wstring& string, const std::wstring& delimiter)
+{
+    std::vector<std::wstring> tokens;
+    size_t start = 0;
+    size_t end = string.find(delimiter);
+    
+    while (end != std::wstring::npos) {
+        tokens.push_back(string.substr(start, end - start));
+        start = end + delimiter.size();
+        end = string.find(delimiter, start);
+    }
+    
+    tokens.push_back(string.substr(start));
+    return tokens;
+}
+#endif
+
 // Levenshtein Distance Algorithm From Geeks For Geeks
 // https://www.geeksforgeeks.org/introduction-to-levenshtein-distance/
 double StringUtils::LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2)

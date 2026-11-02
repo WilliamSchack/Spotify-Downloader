@@ -31,6 +31,10 @@ class StringUtils
         static unsigned int TimeToSeconds(const std::string& string);
         static unsigned int TimeToMilliseconds(const std::string& string);
         static std::string PadInteger(const int& value, const int& digits);
+
+#ifdef WIN32
+        static std::vector<std::wstring> SplitW(const std::wstring& string, const std::wstring& delimiter);
+#endif
 };
 
 #endif

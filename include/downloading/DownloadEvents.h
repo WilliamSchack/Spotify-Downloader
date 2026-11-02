@@ -7,7 +7,6 @@
 #include <variant>
 #include <vector>
 
-
 struct TrackProgressEvent
 {
     std::string TrackUniqueId = "";

@@ -7,7 +7,7 @@
 #include <QQmlContext>
 #include <QIcon>
 
-#include "FileUtils.h"
+#include "ExternalProcess.h"
 
 // TODO: IMPLEMENT THIS:
 //
@@ -40,6 +40,16 @@
 
 int main(int argc, char** argv)
 {
+    std::optional<std::filesystem::path> path = ExternalProcess::FindInstalledPath("ffmpeg");
+    std::cout << (path.has_value() ? "FOUND PATH" : "NO PATH") << std::endl;
+    if (path.has_value()) {
+        std::cout << *path << std::endl;
+
+        ExternalProcess process(*path);
+        process.AddArgument("--version");
+        std::cout << process.Execute().Output << std::endl;
+    }
+
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));

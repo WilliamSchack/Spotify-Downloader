@@ -4,7 +4,7 @@ SavablePlaylistTagHandler::SavablePlaylistTagHandler(const PlaylistData& playlis
 
 std::vector<std::string> SavablePlaylistTagHandler::GetValidTags() const
 {
-    std::vector<std::string> validTags = SavablePlaylistTagHandler::GetValidTags();
+    std::vector<std::string> validTags = PlaylistTagHandler::GetValidTags();
     VectorUtils::AddRange(validTags, VALID_TAGS_SAVABLE);
 
     return validTags;

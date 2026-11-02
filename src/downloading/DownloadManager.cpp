@@ -317,7 +317,7 @@ void DownloadManager::FinishDownload()
         DownloadsCancelledEvent event;
         event.FailedDownloads = _failedDownloads;
         event.SuccessfulDownloads = _successfulDownloads;
-        event.OutputFolder = _downloadingDir;
+        event.OutputFolder = FileUtils::PathToUtf8(_downloadingDir);
         _events.Send(event);
 
         _downloading = false;
@@ -334,7 +334,7 @@ void DownloadManager::FinishDownload()
     DownloadsFinishedEvent event;
     event.FailedDownloads = _failedDownloads;
     event.SuccessfulDownloads = _successfulDownloads;
-    event.OutputFolder = _downloadingDir;
+    event.OutputFolder = FileUtils::PathToUtf8(_downloadingDir);
     _events.Send(event);
 
     _downloading = false;

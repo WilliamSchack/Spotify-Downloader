@@ -7,6 +7,10 @@
 #include <filesystem>
 #include <iostream>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 class EnvironmentUtils
 {
     public:

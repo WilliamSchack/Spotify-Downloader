@@ -179,6 +179,7 @@ elseif (UNIX AND INCLUDE_DEPS)
     set(APP_ICON_LINUX "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/Icon.png")
 
     # Get wayland details
+    find_program(QMAKE_EXECUTABLE NAMES qmake6 REQUIRED)
     execute_process(
         COMMAND ${QMAKE_EXECUTABLE} -query QT_INSTALL_PLUGINS
         OUTPUT_VARIABLE QT_PLUGINS_DIR
@@ -189,8 +190,6 @@ elseif (UNIX AND INCLUDE_DEPS)
     set(WAYLAND_CLIENT_DEPS_OUT_DIR "${OUTPUT_DIR}/usr/plugins/wayland-graphics-integration-client")
 
     # Setup linuxdeploy
-    find_program(QMAKE_EXECUTABLE NAMES qmake6 REQUIRED)
-
     set(LINUXDEPLOY_EXTRA_ENV
         QMAKE=${QMAKE_EXECUTABLE}
         QML_SOURCES_PATHS=${CMAKE_SOURCE_DIR}/gui
