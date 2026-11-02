@@ -34,6 +34,7 @@ class FileUtils
         static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
 
         static std::filesystem::path GetExecutablePath();
+        static std::filesystem::path GetRelativePath(const std::filesystem::path& relativePath);
 
         static std::filesystem::path FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName);
     private:

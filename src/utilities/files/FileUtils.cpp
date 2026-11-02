@@ -129,6 +129,11 @@ std::filesystem::path FileUtils::GetExecutablePath()
 #endif
 }
 
+std::filesystem::path FileUtils::GetRelativePath(const std::filesystem::path& relativePath)
+{
+    return GetExecutablePath().parent_path() / relativePath;
+}
+
 // TODO: Might be a good idea to cache this, just check it with many files in the target directory
 std::filesystem::path FileUtils::FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName)
 {

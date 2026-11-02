@@ -5,10 +5,7 @@ ExternalProcess::ExternalProcess(const std::filesystem::path& path)
 
 ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path& relativePath)
 {
-    std::filesystem::path executablePath = FileUtils::GetExecutablePath();
-    std::filesystem::path processPath = executablePath.parent_path() / relativePath;
-
-    return ExternalProcess(processPath);
+    return ExternalProcess(FileUtils::GetRelativePath(relativePath));
 }
 
 std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileNameNoExtension)
