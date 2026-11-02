@@ -49,8 +49,9 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::string fileName = fileNameTagResult.FormattedString + "." + targetCodec->GetString();
     fileName = FileUtils::ValidateFileName(fileName);
     
-    std::string subFolders = FileUtils::ValidateDirectory(subFolderTagResult.FormattedString);
-    std::filesystem::path targetFolder = directoryValidated / FileUtils::PathFromUtf8(subFolders);
+    // Validate subfolders after combining so ../ can account for the target directory
+    std::string targetFolderString = FileUtils::ValidateDirectory(directoryValidated + "/" + subFolderTagResult.FormattedString);
+    std::filesystem::path targetFolder = FileUtils::PathFromUtf8(targetFolderString);
     std::filesystem::path targetDownloadPath = targetFolder / FileUtils::PathFromUtf8(fileName);
     
     FilePathReserver pathReserver;
