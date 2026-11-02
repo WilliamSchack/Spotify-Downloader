@@ -11,15 +11,29 @@ ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path&
     return ExternalProcess(processPath);
 }
 
-std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileName)
+std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileNameNoExtension)
 {
-#ifdef WIN32
-#else
-    std::vector<std::string> searchFolders;
+    std::vector<std::filesystem::path> searchFolders;
+    std::string fileName = fileNameNoExtension;
 
-    EnvironmentVariable<std::filesystem::path> path = EnvironmentUtils::GetVariablePath("PATH");
+#ifdef WIN32
+    fileName += ".exe";
+
+    EnvironmentVariable<std::wstring> path = EnvironmentUtils::GetVariableW("PATH");
+    if (!path.Exists)
+        return std::nullopt;
+
+    std::vector<std::wstring> searchFolderStrings = StringUtils::SplitW(path.Value, L";");
+    for (std::wstring searchFolderString : searchFolderStrings) {
+        searchFolders.push_back(std::filesystem::path(searchFolderString));
+    }
+#else
+    EnvironmentVariable<std::string> path = EnvironmentUtils::GetVariable("PATH");
     if (path.Exists) {
-        searchFolders = StringUtils::Split(path.Value, ":");
+        std::vector<std::sstring> searchFolderStrings = StringUtils::Split(path.Value, ":");
+        for (std::string searchFolderString : searchFolderStrings) {
+            searchFolders.push_back(FileUtils::PathFromUtf8(searchFolderString));
+        }
     } else {
         // Backup folders
         searchFolders = {
@@ -27,16 +41,15 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
             "/usr/local/bin"
         };
     }
+#endif
 
-    for (const std::string& searchFolderString : searchFolders) {
-        std::filesystem::path searchFolder = FileUtils::PathFromUtf8(searchFolderString);
+    for (const std::filesystem::path& searchFolder : searchFolders) {
         std::filesystem::path potentialPath = searchFolder / fileName;
         if (std::filesystem::exists(potentialPath))
             return potentialPath;
     }
 
     return std::nullopt;
-#endif
 }
 
 #ifdef WIN32
