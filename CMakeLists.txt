@@ -26,6 +26,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Wont work for apple, but that isnt needed
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64|ARM|ARM64")
 	set(IS_ARM_CPU TRUE)
+    
+    add_compile_definitions(${PROJECT_NAME} PRIVATE
+        IS_ARM_CPU
+    )
 else()
 	set(IS_ARM_CPU FALSE)
 endif()
@@ -76,6 +80,7 @@ include(cmake/GetJson.cmake)
 include(cmake/GetStb.cmake)
 include(cmake/GetCppcodec.cmake)
 include(cmake/GetLexbor.cmake)
+include(cmake/GetLibarchive.cmake)
 
 # Include files
 add_subdirectory(include)
