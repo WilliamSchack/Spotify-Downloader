@@ -4,14 +4,7 @@
 
 bool Ffmpeg::IsInstalled()
 {
-    // Check relative path
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
-        return true;
-    
-    // Check system
-    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("ffmpeg");
-    return installedPath.has_value();
+    return !GetPath().empty();
 }
 
 bool Ffmpeg::Download()
@@ -43,7 +36,7 @@ bool Ffmpeg::Download()
     NetworkRequest appleDetailsRequest;
 	request.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
     NetworkResponse appleDetailsResponse = request.Get();
-    
+
     nlohmann::json appleResponseJson = nlohmann::json::parse(response.Body);
     url = appleResponseJson["download"]["zip"]["url"];
     archiveName = "ffmpeg.zip"
@@ -85,9 +78,30 @@ std::string Ffmpeg::GetRelativePath()
 #endif
 }
 
+std::filesystem::path Ffmpeg::GetPath()
+{
+    // Check relative path
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(relativePath))
+        return relativePath;
+    
+    // Check system
+    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("ffmpeg");
+    if (installedPath.has_value())
+        return *installedPath;
+
+    return {};
+}
+
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
-    ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
+    FfmpegAudioDetails details;
+
+    std::filesystem::path ffmpegPath = GetPath();
+    if (ffmpegPath.empty())
+        return details;
+
+    ExternalProcess process(ffmpegPath);
     process.AddArgument("-i", FileUtils::PathToUtf8(filePath));
 
     if (getVolumeDetails) process.AddArgument("-af", "volumedetect,ebur128=peak=true:framelog=verbose");
@@ -95,9 +109,7 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     process.AddArgument("-"); // No output
     std::string output = process.Execute().Output;
 
-    // Parse details
-    FfmpegAudioDetails details;
-    
+    // Parse details    
     std::smatch matches;
 
     // Duration
