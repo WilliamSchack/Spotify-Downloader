@@ -3,16 +3,25 @@
 
 #include "FfmpegAudioDetails.h"
 #include "ExternalProcess.h"
+#include "NetworkRequest.h"
+#include "ArchiveHandler.h"
+#include "Paths.h"
 #include "CodecFactory.h"
 #include "StringUtils.h"
 
+#if __APPLE__
+#include <nlohmann/json.hpp>
+#endif
+
 #include <regex>
 #include <filesystem>
-#include <variant>
 
 class Ffmpeg
 {
     public:
+        static bool IsInstalled();
+        static bool Download();
+
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
         static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true, std::function<void(float)> progressCallback = nullptr);
@@ -23,6 +32,7 @@ class Ffmpeg
         static bool Normalise(const std::filesystem::path& filePath, const float& targetDb, std::function<void(float)> progressCallback = nullptr);
         static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate, std::function<void(float)> progressCallback = nullptr);
     private:
+        static std::string GetRelativePath();
         static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback = nullptr);
 };
 

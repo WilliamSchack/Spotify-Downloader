@@ -2,6 +2,89 @@
 
 #include <iostream>
 
+bool Ffmpeg::IsInstalled()
+{
+    // Check relative path
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(relativePath))
+        return true;
+    
+    // Check system
+    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("ffmpeg");
+    return installedPath.has_value();
+}
+
+bool Ffmpeg::Download()
+{
+    // If its downloaded already, dont downloading again
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(relativePath))
+        return false;
+
+    // Get the download details
+    std::string url = "";
+    std::string archiveName = "";
+    std::string pathInArchive = "";
+
+#ifdef WIN32
+    url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/";
+    archiveName = "ffmpeg-master-latest-win";
+    
+    #ifdef IS_ARM_CPU
+        archiveName += "arm64-lgpl";
+    #else
+        archiveName += "64-lgpl";
+    #endif
+
+    url += archiveName + ".zip";
+    pathInArchive = archiveName + "/bin/ffmpeg.exe";
+#elif __APPLE__
+    // Get download url from details json
+    NetworkRequest appleDetailsRequest;
+	request.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
+    NetworkResponse appleDetailsResponse = request.Get();
+    
+    nlohmann::json appleResponseJson = nlohmann::json::parse(response.Body);
+    url = appleResponseJson["download"]["zip"]["url"];
+    archiveName = "ffmpeg.zip"
+    pathInArchive = "ffmpeg";
+#else
+    url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/";
+    archiveName = "ffmpeg-master-latest-linux";
+
+    #ifdef IS_ARM_CPU
+        archiveName += "arm64-lgpl";
+    #else
+        archiveName += "64-lgpl";
+    #endif
+
+    url += archiveName + ".tar.xz";
+    pathInArchive = archiveName + "/bin/ffmpeg";
+#endif
+
+    // Download
+    std::filesystem::path archivePath = Paths::GetTempDir() / archiveName;
+
+    NetworkRequest request;
+    request.Url = url;
+    request.DownloadToFile(archivePath);
+
+    ArchiveHandler::ExtractFile(archivePath, pathInArchive, relativePath);
+
+    std::filesystem::remove(archivePath);
+
+    return true;
+}
+
+std::string Ffmpeg::GetRelativePath()
+{
+#if WIN32
+    return "ffmpeg.exe";
+#else
+    return "ffmpeg";
+#endif
+}
+
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
