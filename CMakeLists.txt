@@ -11,6 +11,7 @@ set(APP_ID "com.williamschack.echolite" CACHE INTERNAL "")
 add_compile_definitions(${PROJECT_NAME} PRIVATE
 	APP_NAME="${PROJECT_NAME}"
 	APP_DISPLAY_NAME="${DISPLAY_NAME}"
+    APP_VERSION="${APP_VERSION}"
 )
 
 project(

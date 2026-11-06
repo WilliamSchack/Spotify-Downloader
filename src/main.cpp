@@ -7,8 +7,6 @@
 #include <QQmlContext>
 #include <QIcon>
 
-#include "ExternalProcess.h"
-
 // TODO: IMPLEMENT THIS:
 //
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
@@ -40,6 +38,21 @@
 
 int main(int argc, char** argv)
 {
+    std::cout << "Running version " << APP_VERSION << " on ";
+#ifdef IS_ARM_CPU
+    std::cout << "ARM ";
+#else
+    std::cout << "x64 ";
+#endif
+
+#ifdef WIN32
+    std::cout << "Windows" << std::endl;
+#elif __APPLE__
+    std::cout << "Mac" << std::endl;
+#else
+    std::cout << "Linux" << std::endl;
+#endif
+
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
