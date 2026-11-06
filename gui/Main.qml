@@ -52,6 +52,8 @@ Window
 
             // Header
             RowLayout {
+                id: header
+
                 Layout.maximumHeight: 30
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignLeft
@@ -62,6 +64,8 @@ Window
                     spacing: 15
 
                     ToggleButton {
+                        implicitHeight: header.height
+
                         text: "Music"
                         font.pixelSize: 20
                         radius: 10
@@ -72,6 +76,8 @@ Window
                     }
 
                     ToggleButton {
+                        implicitHeight: header.height
+
                         text: "Info"
                         font.pixelSize: 20
                         radius: 10
@@ -80,6 +86,8 @@ Window
                     }
 
                     ToggleButton {
+                        implicitHeight: header.height
+
                         text: "Settings"
                         font.pixelSize: 20
                         radius: 10
@@ -102,6 +110,7 @@ Window
                 // Minimise
                 CustomButton {
                     Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
 
                     radius: 20
                     backgroundColour: "#434343"
@@ -113,6 +122,7 @@ Window
                 // Maximise
                 CustomButton {
                     Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
 
                     radius: 20
                     backgroundColour: "#434343"
@@ -124,6 +134,7 @@ Window
                 // Quit
                 CustomButton {
                     Layout.preferredWidth: parent.height
+                    Layout.fillHeight: true
 
                     radius: 20
                     backgroundColour: "#434343"

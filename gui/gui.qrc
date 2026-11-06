@@ -21,5 +21,11 @@
         <file>SettingsSidebarGroup.qml</file>
         <file>ToggleButtonGroup.qml</file>
         <file>ToggleButton.qml</file>
+        <file>InfoScreenSupportersRight.qml</file>
+        <file>InfoScreenSupportersLeft.qml</file>
+        <file>InfoScreenNoticesRight.qml</file>
+        <file>InfoScreenUpdatesRight.qml</file>
+        <file>InfoScreenNoticesLeft.qml</file>
+        <file>InfoScreenUpdatesLeft.qml</file>
     </qresource>
 </RCC>

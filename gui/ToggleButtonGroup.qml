@@ -12,7 +12,7 @@ Item
     default property alias content: layout.data
 
     implicitWidth: layout.implicitWidth
-    implicitHeight: parent.height
+    implicitHeight: layout.implicitHeight
 
     ButtonGroup {
         buttons: layout.children

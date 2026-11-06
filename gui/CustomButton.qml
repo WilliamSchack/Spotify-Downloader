@@ -12,13 +12,23 @@ Button {
     property color disabledColour: "#434343"
     property real radius: 3
 
-    implicitHeight: parent.height
+    property alias horizontalAlignment: label.horizontalAlignment
+    property alias verticalAlignment: label.verticalAlignment
+
+    leftPadding: 10
+    rightPadding: 10
+    topPadding: 0
+    bottomPadding: 0
+
+    implicitWidth: contentItem.implicitWidth + leftPadding + rightPadding
+    implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
 
     font.family: "Roboto"
     font.pixelSize: 14
 
     // Text
     contentItem: Text {
+        id: label
         text: root.text
         font: root.font
         opacity: enabled ? 1.0 : 0.3
