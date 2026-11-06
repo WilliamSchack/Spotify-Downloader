@@ -96,8 +96,14 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     std::filesystem::path ytdlpPath = GetPath();
     std::filesystem::path ffmpegPath = Ffmpeg::GetPath();
     std::filesystem::path quickJsPath = JsRuntime::GetPath();
-    if (ytdlpPath.empty() || ffmpegPath.empty() || quickJsPath.empty())
+    if (ytdlpPath.empty() || ffmpegPath.empty() || quickJsPath.empty()) {
+        std::cout << "yt-dlp and/or its dependencies are not installed: ";
+        std::cout << "yt-dlp (" << (ytdlpPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        std::cout << "ffmpeg (" << (ffmpegPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        std::cout << "quickjs (" << (quickJsPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+
         return result;
+    }
 
     if (url.empty()) {
         std::cout << "Cannot download, no url was passed" << std::endl;

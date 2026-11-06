@@ -98,8 +98,10 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
     FfmpegAudioDetails details;
 
     std::filesystem::path ffmpegPath = GetPath();
-    if (ffmpegPath.empty())
+    if (ffmpegPath.empty()) {
+        std::cout << "ffmpeg is not installed..." << std::endl;
         return details;
+    }
 
     ExternalProcess process(ffmpegPath);
     process.AddArgument("-i", FileUtils::PathToUtf8(filePath));
@@ -276,8 +278,10 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
 std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback)
 {
     std::filesystem::path ffmpegPath = GetPath();
-    if (ffmpegPath.empty())
+    if (ffmpegPath.empty()) {
+        std::cout << "ffmpeg is not installed..." << std::endl;
         return "";
+    }
 
     // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
