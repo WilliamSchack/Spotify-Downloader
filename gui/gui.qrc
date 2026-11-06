@@ -27,5 +27,6 @@
         <file>InfoScreenUpdatesRight.qml</file>
         <file>InfoScreenNoticesLeft.qml</file>
         <file>InfoScreenUpdatesLeft.qml</file>
+        <file>DependencySelectionButton.qml</file>
     </qresource>
 </RCC>

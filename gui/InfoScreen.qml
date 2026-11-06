@@ -103,7 +103,10 @@ RowLayout {
                     
                     currentIndex: root.currentInfoScreen
 
-                    InfoScreenUpdatesLeft {}
+                    InfoScreenUpdatesLeft {
+                        dependencyIndex: root.currentInfoScreenDataIndex
+                    }
+
                     InfoScreenNoticesLeft {}
                     InfoScreenSupportersLeft {}
                 }
@@ -131,7 +134,10 @@ RowLayout {
 
                 currentIndex: root.currentInfoScreen
 
-                InfoScreenUpdatesRight {}
+                InfoScreenUpdatesRight {
+                    dependencyIndex: root.currentInfoScreenDataIndex
+                }
+
                 InfoScreenNoticesRight {}
                 InfoScreenSupportersRight {}
             }

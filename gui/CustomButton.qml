@@ -15,6 +15,9 @@ Button {
     property alias horizontalAlignment: label.horizontalAlignment
     property alias verticalAlignment: label.verticalAlignment
 
+    default property alias content: contentParent.data
+    readonly property bool hasContent: contentParent.children.length > 0
+
     leftPadding: 10
     rightPadding: 10
     topPadding: 0
@@ -27,31 +30,49 @@ Button {
     font.pixelSize: 14
 
     // Text
-    contentItem: Text {
-        id: label
-        text: root.text
-        font: root.font
-        opacity: enabled ? 1.0 : 0.3
-        color: root.textColour
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+    contentItem: Item {
+        implicitWidth: root.hasContent ? contentParent.implicitWidth : label.implicitWidth
+        implicitHeight: root.hasContent ? contentParent.implicitHeight : label.implicitHeight
+
+        // Use text if no content
+        Text {
+            id: label
+            visible: !root.hasContent
+
+            anchors.fill: parent
+            text: root.text
+            font: root.font
+            opacity: enabled ? 1.0 : 0.3
+            color: root.textColour
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        // Use custom content if assigned
+        Item {
+            id: contentParent
+            visible: root.hasContent
+            
+            anchors.fill: parent
+            opacity: enabled ? 1.0 : 0.3
+        }
     }
 
     // Background
     background: Rectangle {
         color: root.enabled ? (root.down ? root.pressedColour : (root.hovered ? root.hoveredColour : root.backgroundColour)) : disabledColour
         radius: root.radius
-    }
 
-    // Outer Shadow
-    layer.enabled: true
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowColor: "black"
-        shadowOpacity: 0.25
-        shadowBlur: 0.4
-        shadowHorizontalOffset: 2
-        shadowVerticalOffset: 2
+        // Outer Shadow
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            shadowOpacity: 0.25
+            shadowBlur: 0.4
+            shadowHorizontalOffset: 2
+            shadowVerticalOffset: 2
+        }
     }
 
     MouseArea {

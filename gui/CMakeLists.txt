@@ -20,6 +20,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenNoticesRight.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenSupportersLeft.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenSupportersRight.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/DependencySelectionButton.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsItem.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsMajorSection.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsMinorSection.qml
