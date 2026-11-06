@@ -2,6 +2,7 @@
 #define GUIMANAGER_H
 
 #include "MusicScreenGUI.h"
+#include "InfoScreenGUI.h"
 #include "SettingsScreenGUI.h"
 
 #include <QObject>
@@ -13,12 +14,14 @@ class GUIManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QObject* music READ GetMusicManager CONSTANT)
+    Q_PROPERTY(QObject* info READ GetInfoManager CONSTANT)
     Q_PROPERTY(QObject* settings READ GetSettingsManager CONSTANT)
 
     public:
         explicit GUIManager(QObject* parent = 0);
     
         MusicScreenGUI* GetMusicManager() const;
+        InfoScreenGUI* GetInfoManager() const;
         SettingsScreenGUI* GetSettingsManager() const;
     private:
         void SetupTrayIcon();
@@ -27,6 +30,7 @@ class GUIManager : public QObject
         static inline constexpr int NOTIFICATION_MS = 5000;
 
         MusicScreenGUI* _musicManager;
+        InfoScreenGUI* _infoManager;
         SettingsScreenGUI* _settingsManager;
 
         QSystemTrayIcon _trayIcon;

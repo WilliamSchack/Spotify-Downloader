@@ -13,10 +13,8 @@ RowLayout {
     }
 
     property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
-    property int currentInfoScreenDataIndex: 0
 
     function switchInfoScreen(screen: int) {
-        currentInfoScreenDataIndex = 0;
         currentInfoScreen = screen;
     }
 
@@ -103,10 +101,7 @@ RowLayout {
                     
                     currentIndex: root.currentInfoScreen
 
-                    InfoScreenUpdatesLeft {
-                        dependencyIndex: root.currentInfoScreenDataIndex
-                    }
-
+                    InfoScreenUpdatesLeft {}
                     InfoScreenNoticesLeft {}
                     InfoScreenSupportersLeft {}
                 }
@@ -134,10 +129,7 @@ RowLayout {
 
                 currentIndex: root.currentInfoScreen
 
-                InfoScreenUpdatesRight {
-                    dependencyIndex: root.currentInfoScreenDataIndex
-                }
-
+                InfoScreenUpdatesRight {}
                 InfoScreenNoticesRight {}
                 InfoScreenSupportersRight {}
             }

@@ -5,8 +5,6 @@ Column
 {
     id: root
 
-    property int dependencyIndex: 0
-
     width: parent.width
 
     ToggleButtonGroup {
@@ -19,6 +17,8 @@ Column
             name: "Echolite"
             version: "v2.0.0"
             upToDate: true
+
+            checked: true
         }
 
         DependencySelectionButton {

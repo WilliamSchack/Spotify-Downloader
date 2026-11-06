@@ -601,6 +601,7 @@ RowLayout {
 
                                 CustomButton {
                                     width: 300
+                                    height: parent.height
 
                                     text: "Open File"
                                     textColour: "black"
@@ -612,12 +613,16 @@ RowLayout {
                                 // Paste
                                 CustomButton {
                                     width: parent.height
+                                    height: parent.height
+
                                     onClicked: _manager.settings.YouTubeCookiesPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
                                     width: parent.height
+                                    height: parent.height
+
                                     onClicked: _manager.settings.YouTubeCookiesClearButtonClicked()
                                 }
                             }
@@ -633,12 +638,16 @@ RowLayout {
                                 // Paste
                                 CustomButton {
                                     width: parent.height
+                                    height: parent.height
+
                                     onClicked: _manager.settings.YouTubePOTokenPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
                                     width: parent.height
+                                    height: parent.height
+
                                     onClicked: _manager.settings.YouTubePOTokenClearButtonClicked()
                                 }
                             }

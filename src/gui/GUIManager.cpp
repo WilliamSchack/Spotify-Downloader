@@ -3,6 +3,7 @@
 GUIManager::GUIManager(QObject* parent) : QObject(parent)
 {
     _musicManager = new MusicScreenGUI(this);
+    _infoManager = new InfoScreenGUI(this);
     _settingsManager = new SettingsScreenGUI(this);
 
     SetupTrayIcon();
@@ -13,6 +14,11 @@ GUIManager::GUIManager(QObject* parent) : QObject(parent)
 MusicScreenGUI* GUIManager::GetMusicManager() const
 {
     return _musicManager;
+}
+
+InfoScreenGUI* GUIManager::GetInfoManager() const
+{
+    return _infoManager;
 }
 
 SettingsScreenGUI* GUIManager::GetSettingsManager() const
