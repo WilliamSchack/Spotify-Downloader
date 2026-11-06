@@ -1,10 +1,13 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import Echolite.Info.Updates
 
 ColumnLayout
 {
     id: root
+
+    readonly property DependencyInfo selectedDependency: _manager.info.updates.selectedDependency
 
     width: parent.width
     height: parent.height
@@ -20,7 +23,7 @@ ColumnLayout
             Layout.preferredHeight: parent.height
             Layout.preferredWidth: parent.height
             
-            source: "qrc:/icons/Icon.svg"
+            source: root.selectedDependency.iconSource
             sourceSize.width: parent.height
             sourceSize.height: parent.height
         }
@@ -35,14 +38,14 @@ ColumnLayout
             spacing: 0
 
             Text {
-                text: "Echolite"
+                text: root.selectedDependency.name
                 color: "white"
                 font.pixelSize: 20
                 font.bold: true
             }
 
             Text {
-                text: "v2.0.0"
+                text: root.selectedDependency.version
                 color: "white"
                 font.pixelSize: 16
                 font.italic: true
@@ -59,7 +62,7 @@ ColumnLayout
                 CustomButton {
                     height: parent.height
 
-                    text: "Check for Update"
+                    text: "Check for Updates"
                     font.pixelSize: 16
                     radius: 8
 

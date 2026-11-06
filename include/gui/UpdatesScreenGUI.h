@@ -20,7 +20,7 @@ class UpdatesScreenGUI : public QObject
         Q_INVOKABLE DependencyInfo* GetDependency(const DependencyInfo::EDependency& dependency) const;
         Q_INVOKABLE DependencyInfo* GetSelectedDependency() const;
     private:
-        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, const QString& version);
+        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& version, const QString& iconSource);
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 

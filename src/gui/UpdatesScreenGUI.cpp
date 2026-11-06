@@ -31,6 +31,8 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         "v",
         ""
     );
+
+    SelectDependency(DependencyInfo::EDependency::Echolite);
 }
 
 void UpdatesScreenGUI::SelectDependency(const DependencyInfo::EDependency& dependency)
@@ -49,7 +51,7 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
     return GetDependency(_selectedDependencyType);
 }
 
-void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, const QString& version)
+void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& version, const QString& iconSource)
 {
     DependencyInfo* echoliteInfo = new DependencyInfo(this);
     echoliteInfo->SetType(type);
