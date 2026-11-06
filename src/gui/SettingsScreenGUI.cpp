@@ -19,8 +19,15 @@ SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 
 SettingsScreenGUI::~SettingsScreenGUI()
 {
+    CleaupYouTubeCookiesWatcher();
+
     // Save when closing the app
     Config::Save();
+}
+
+void SettingsScreenGUI::EnteringScreen()
+{
+    SetupYouTubeCookiesWatcher();
 }
 
 void SettingsScreenGUI::LeavingScreen()

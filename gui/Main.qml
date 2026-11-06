@@ -34,6 +34,9 @@ Window
             _manager.settings.LeavingScreen()
         }
 
+        if (currentScreen != Main.EScreen.Settings && screen == Main.EScreen.Settings)
+            _manager.settings.EnteringScreen()
+
         currentScreen = screen
     }
 

@@ -56,6 +56,7 @@ class SettingsScreenGUI : public QObject
         explicit SettingsScreenGUI(QObject* parent = 0);
         ~SettingsScreenGUI();
 
+        Q_INVOKABLE void EnteringScreen();
         Q_INVOKABLE void LeavingScreen();
 
         bool GetAllSettingsValid() const;
