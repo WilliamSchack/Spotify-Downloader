@@ -107,6 +107,12 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         std::cout << "yt-dlp (" << (ytdlpPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
         std::cout << "ffmpeg (" << (ffmpegPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
         std::cout << "quickjs (" << (quickJsPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        std::cout << std::endl;
+
+        YtdlpError error;
+        error.Details = "yt-dlp is not installed";
+        error.Error = EYtdlpError::NotInstalled;
+        result.Error = error;
 
         return result;
     }

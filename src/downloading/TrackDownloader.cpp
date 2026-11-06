@@ -25,7 +25,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
 
-    // == Get paths    
+    // == Get paths
     std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
     if (targetCodec == nullptr) {
         result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
