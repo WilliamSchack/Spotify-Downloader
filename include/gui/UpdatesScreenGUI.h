@@ -4,6 +4,13 @@
 #include "DependencyInfo.h"
 #include "EasyQProperties.h"
 
+#include "SelfUpdater.h"
+#include "Ffmpeg.h"
+#include "Ytdlp.h"
+#include "JsRuntime.h"
+
+#include <thread>
+
 #include <QObject>
 #include <QMap>
 #include <QDesktopServices>
@@ -13,6 +20,7 @@ class UpdatesScreenGUI : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(DependencyInfo* selectedDependency READ GetSelectedDependency NOTIFY SelectedDependencyChanged)
+    SIMPLE_QPROPERTY(QString, updateButtonText, UpdateButtonText, _updateButtonText)
     SIMPLE_QPROPERTY(bool, checkingForUpdates, CheckingForUpdates, _checkingForUpdates)
 
     public:
@@ -32,6 +40,7 @@ class UpdatesScreenGUI : public QObject
 
         QMap<DependencyInfo::EDependency, DependencyInfo*> _dependencies;
 
+        QString _updateButtonText = "Check for Updates";
         bool _checkingForUpdates = false;
     signals:
         void SelectedDependencyChanged();

@@ -24,6 +24,8 @@ class Ffmpeg
         static bool Download();
         static std::filesystem::path GetPath();
 
+        static bool UpdateAvailable();
+
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
         static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true, std::function<void(float)> progressCallback = nullptr);

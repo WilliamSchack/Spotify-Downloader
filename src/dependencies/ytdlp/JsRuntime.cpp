@@ -79,3 +79,8 @@ std::filesystem::path JsRuntime::GetPath()
 
     return {};
 }
+
+bool JsRuntime::UpdateAvailable()
+{
+    return true;
+}

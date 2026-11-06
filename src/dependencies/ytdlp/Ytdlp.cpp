@@ -81,6 +81,11 @@ std::filesystem::path Ytdlp::GetPath()
     return {};
 }
 
+bool Ytdlp::UpdateAvailable()
+{
+    return false;
+}
+
 std::string Ytdlp::GetVersion()
 {
     std::filesystem::path ytdlpPath = GetPath();

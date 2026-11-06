@@ -18,6 +18,8 @@ class JsRuntime
         static bool IsInstalledRelative();
         static bool Download();
         static std::filesystem::path GetPath();
+
+        static bool UpdateAvailable();
     private:
         static std::string GetRelativePath();
 };

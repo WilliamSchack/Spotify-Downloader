@@ -62,7 +62,7 @@ ColumnLayout
                 CustomButton {
                     height: parent.height
 
-                    text: "Check for Updates"
+                    text: _manager.info.updates.updateButtonText
                     font.pixelSize: 16
                     radius: 8
 

@@ -63,10 +63,33 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
 
 void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
 {
-    _checkingForUpdates = true;
-    emit CheckingForUpdatesChanged();
+    SetCheckingForUpdates(true);
+    SetUpdateButtonText("Checking for Updates...");
 
+    // Dont stall the gui thread
+    // TODO: Cleanup when changing between dependencies
+    DependencyInfo::EDependency type = _selectedDependencyType;
+    std::thread([this, type]() {
+        bool updateAvailable = false;
+        switch (_selectedDependencyType) {
+            case DependencyInfo::EDependency::Echolite: {
+                updateAvailable = SelfUpdater::UpdateAvailable();
+                break;
+            } case DependencyInfo::EDependency::Ffmpeg: {
+                updateAvailable = Ffmpeg::UpdateAvailable();
+                break;
+            } case DependencyInfo::EDependency::Ytdlp: {
+                updateAvailable = Ytdlp::UpdateAvailable();
+                break;
+            } case DependencyInfo::EDependency::Quickjs: {
+                updateAvailable = JsRuntime::UpdateAvailable();
+                break;
+            }
+        }
 
+        SetCheckingForUpdates(false);
+        SetUpdateButtonText(updateAvailable ? "Download Update" : "Check for Updates");
+    }).detach();
 }
 
 void UpdatesScreenGUI::SourceButtonClicked()

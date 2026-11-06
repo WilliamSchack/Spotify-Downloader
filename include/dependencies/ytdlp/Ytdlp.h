@@ -22,6 +22,8 @@ class Ytdlp
         static bool Download();
         static std::filesystem::path GetPath();
 
+        static bool UpdateAvailable();
+
         static std::string GetVersion();
 
         static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs = std::vector<std::string>(), std::function<void(float)> progressCallback = nullptr);

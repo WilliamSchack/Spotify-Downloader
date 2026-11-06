@@ -99,6 +99,11 @@ std::filesystem::path Ffmpeg::GetPath()
     return {};
 }
 
+bool Ffmpeg::UpdateAvailable()
+{
+    return false;
+}
+
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     FfmpegAudioDetails details;
