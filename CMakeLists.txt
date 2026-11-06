@@ -74,9 +74,6 @@ set(BINARIES_DIR "${CMAKE_BINARY_DIR}/${BINARIES_DIR_NAME}" CACHE INTERNAL "Dire
 file(MAKE_DIRECTORY ${BINARIES_DIR})
 
 include(cmake/GetTagLib.cmake)
-include(cmake/GetYtdlp.cmake)
-include(cmake/GetFFmpeg.cmake)
-include(cmake/GetQuickJs.cmake)
 include(cmake/GetJson.cmake)
 include(cmake/GetStb.cmake)
 include(cmake/GetCppcodec.cmake)
