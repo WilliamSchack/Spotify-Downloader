@@ -19,5 +19,7 @@
         <file>SettingsSidebarLink.qml</file>
         <file>SettingsSidebarTrack.qml</file>
         <file>SettingsSidebarGroup.qml</file>
+        <file>ToggleButtonGroup.qml</file>
+        <file>ToggleButton.qml</file>
     </qresource>
 </RCC>

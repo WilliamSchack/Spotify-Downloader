@@ -7,6 +7,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/Track.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomButton.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomSwitch.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/ToggleButton.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/ToggleButtonGroup.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SingleCharTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/IntTextField.qml

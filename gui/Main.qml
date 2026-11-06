@@ -37,22 +37,12 @@ Window
         switch (screen) {
             case Main.EScreen.Main:
                 screenLoader.source = "MusicScreen.qml"
-                // Should replace this and below with a new button group class
-                headerButtonMusic.backgroundColour = selectedButtonColour
-                headerButtonInfo.backgroundColour = unselectedButtonColour
-                headerButtonSettings.backgroundColour = unselectedButtonColour
                 break;
             case Main.EScreen.Info:
                 screenLoader.source = "InfoScreen.qml"
-                headerButtonMusic.backgroundColour = unselectedButtonColour
-                headerButtonInfo.backgroundColour = selectedButtonColour
-                headerButtonSettings.backgroundColour = unselectedButtonColour
                 break;
             case Main.EScreen.Settings:
                 screenLoader.source = "SettingsScreen.qml"
-                headerButtonMusic.backgroundColour = unselectedButtonColour
-                headerButtonInfo.backgroundColour = unselectedButtonColour
-                headerButtonSettings.backgroundColour = selectedButtonColour
                 break;
             default:
                 return;
@@ -79,38 +69,34 @@ Window
                 Layout.bottomMargin: 4
                 spacing: 15
 
-                // Buttons (testing)
-                CustomButton {
-                    id: headerButtonMusic
+                ToggleButtonGroup {
+                    spacing: 15
 
-                    backgroundColour: "#A16583"
-                    text: "Music"
-                    font.pixelSize: 20
-                    radius: 10
+                    ToggleButton {
+                        text: "Music"
+                        font.pixelSize: 20
+                        radius: 10
 
-                    onClicked: root.switchScreen(Main.EScreen.Main)
-                }
+                        checked: true
 
-                CustomButton {
-                    id: headerButtonInfo
+                        onClicked: root.switchScreen(Main.EScreen.Main)
+                    }
 
-                    backgroundColour: Qt.alpha("#3A3A3A", 0.5)
-                    text: "Info"
-                    font.pixelSize: 20
-                    radius: 10
+                    ToggleButton {
+                        text: "Info"
+                        font.pixelSize: 20
+                        radius: 10
 
-                    onClicked: root.switchScreen(Main.EScreen.Info)
-                }
+                        onClicked: root.switchScreen(Main.EScreen.Info)
+                    }
 
-                CustomButton {
-                    id: headerButtonSettings
+                    ToggleButton {
+                        text: "Settings"
+                        font.pixelSize: 20
+                        radius: 10
 
-                    backgroundColour: Qt.alpha("#3A3A3A", 0.5)
-                    text: "Settings"
-                    font.pixelSize: 20
-                    radius: 10
-
-                    onClicked: root.switchScreen(Main.EScreen.Settings)
+                        onClicked: root.switchScreen(Main.EScreen.Settings)
+                    }
                 }
 
                 // Space / Draggable Area

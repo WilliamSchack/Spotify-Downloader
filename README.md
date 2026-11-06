@@ -50,7 +50,7 @@ The following options can be added to the configure command using `-D{ARG}={VALU
 
 3 - **Download the dependencies:**
 
-This step is only required if you do not have ffmpeg, yt-dlp, and quickjs installed on your system. All of those are required, so if you are missing any, do this step
+This step is only required if you do not have ffmpeg, yt-dlp, and quickjs installed on your system. All of those are required so if you are missing any do this step
 
 Execute the following:
 
