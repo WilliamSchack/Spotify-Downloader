@@ -9,7 +9,7 @@ class InfoScreenGUI : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QObject* updates READ GetUpdatesManager CONSTANT)
-
+    
     public:
         explicit InfoScreenGUI(QObject* parent = 0);
 

@@ -8,7 +8,7 @@ set(APP_DESCRIPTION "Can download songs & lyrics, modify metadata, and probably 
 set(ORGANISATION_NAME "WilliamSchack" CACHE INTERNAL "")
 set(APP_ID "com.williamschack.echolite" CACHE INTERNAL "")
 
-add_compile_definitions(${PROJECT_NAME} PRIVATE
+add_compile_definitions(
 	APP_NAME="${PROJECT_NAME}"
 	APP_DISPLAY_NAME="${DISPLAY_NAME}"
     APP_VERSION="${APP_VERSION}"
@@ -28,9 +28,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64|ARM|ARM64")
 	set(IS_ARM_CPU TRUE)
     
-    add_compile_definitions(${PROJECT_NAME} PRIVATE
-        IS_ARM_CPU
-    )
+    add_compile_definitions(IS_ARM_CPU)
 else()
 	set(IS_ARM_CPU FALSE)
 endif()
