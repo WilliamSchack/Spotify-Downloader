@@ -1,5 +1,79 @@
 #include "Ytdlp.h"
 
+bool Ytdlp::IsInstalled()
+{
+    return !GetPath().empty();
+}
+
+bool Ytdlp::Download()
+{
+    // If its downloaded already, dont downloading again
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(relativePath))
+        return false;
+
+    // Get the download details
+    std::string url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
+
+#ifdef WIN32
+    #ifdef IS_ARM_CPU
+        url += "_arm64.exe";
+    #else
+        url += ".exe";
+    #endif
+#elif __APPLE__
+    url += "_macos";
+#else
+    #ifdef IS_ARM_CPU
+        url += "_aarch64_linux";
+    #else
+        url += "_linux";
+    #endif
+#endif
+
+    NetworkRequest request;
+    request.Url = url;
+    request.DownloadToFile(relativePath);
+
+    if (!std::filesystem::exists(relativePath))
+        return false;
+
+#ifndef WIN32
+    // Make it executable
+    std::filesystem::permissions(
+        relativePath,
+        std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec | std::filesystem::perms::others_exec,
+        std::filesystem::perm_options::add
+    );
+#endif
+    
+    return true;
+}
+
+std::string Ytdlp::GetRelativePath()
+{
+#if WIN32
+    return "yt-dlp.exe";
+#else
+    return "yt-dlp";
+#endif
+}
+
+std::filesystem::path Ytdlp::GetPath()
+{
+    // Check relative path
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(relativePath))
+        return relativePath;
+    
+    // Check system
+    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("yt-dlp");
+    if (installedPath.has_value())
+        return *installedPath;
+
+    return {};
+}
+
 std::string Ytdlp::GetVersion()
 {
     ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);

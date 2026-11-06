@@ -66,7 +66,7 @@ bool Ffmpeg::Download()
 
     std::filesystem::remove(archivePath);
 
-    return true;
+    return std::filesystem::exists(relativePath);
 }
 
 std::string Ffmpeg::GetRelativePath()

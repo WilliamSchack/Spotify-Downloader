@@ -2,6 +2,7 @@
 #define YTDLP_H
 
 #include "ExternalProcess.h"
+#include "NetworkRequest.h"
 #include "FileUtils.h"
 #include "MathUtils.h"
 #include "YtdlpResult.h"
@@ -14,10 +15,16 @@
 class Ytdlp
 {
     public:
+        static bool IsInstalled();
+        static bool Download();
+
         static std::string GetVersion();
 
         static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs = std::vector<std::string>(), std::function<void(float)> progressCallback = nullptr);
     private:
+        static std::string GetRelativePath();
+        static std::filesystem::path GetPath();
+        
         static YtdlpError GetError(const std::string& errorString);
 };
 
