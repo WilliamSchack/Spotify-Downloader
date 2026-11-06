@@ -71,7 +71,7 @@ void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
     DependencyInfo::EDependency type = _selectedDependencyType;
     std::thread([this, type]() {
         bool updateAvailable = false;
-        switch (_selectedDependencyType) {
+        switch (type) {
             case DependencyInfo::EDependency::Echolite: {
                 updateAvailable = SelfUpdater::UpdateAvailable();
                 break;
@@ -87,8 +87,12 @@ void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
             }
         }
 
-        SetCheckingForUpdates(false);
-        SetUpdateButtonText(updateAvailable ? "Download Update" : "Check for Updates");
+        // Call gui stuff on the main thread
+        QMetaObject::invokeMethod(this, [this, type, updateAvailable]() {
+            // TODO: Have dict with what dependencies have updates, or just store it in the dependency object
+            SetCheckingForUpdates(false);
+            SetUpdateButtonText(updateAvailable ? "Download Update" : "Check for Updates");
+        }, Qt::QueuedConnection);
     }).detach();
 }
 

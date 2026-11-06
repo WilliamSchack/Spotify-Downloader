@@ -13,6 +13,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMetaObject>
 #include <QDesktopServices>
 #include <QtQml/qqml.h>
 
