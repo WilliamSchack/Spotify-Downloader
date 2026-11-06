@@ -9,8 +9,9 @@ bool Ytdlp::Download()
 {
     // If its downloaded already, dont downloading again
     std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
+    if (std::filesystem::exists(relativePath)) {
         return false;
+    }
 
     // Get the download details
     std::string url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
@@ -46,7 +47,7 @@ bool Ytdlp::Download()
         std::filesystem::perm_options::add
     );
 #endif
-    
+
     return true;
 }
 
@@ -76,7 +77,11 @@ std::filesystem::path Ytdlp::GetPath()
 
 std::string Ytdlp::GetVersion()
 {
-    ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
+    std::filesystem::path ytdlpPath = GetPath();
+    if (ytdlpPath.empty())
+        return "";
+
+    ExternalProcess process(ytdlpPath);
     process.AddArgument("--version");
 
     std::string output = process.Execute().Output;
@@ -87,6 +92,12 @@ std::string Ytdlp::GetVersion()
 YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs, std::function<void(float)> progressCallback)
 {
     YtdlpResult result;
+
+    std::filesystem::path ytdlpPath = GetPath();
+    std::filesystem::path ffmpegPath = Ffmpeg::GetPath();
+    std::filesystem::path quickJsPath = JsRuntime::GetPath();
+    if (ytdlpPath.empty() || ffmpegPath.empty() || quickJsPath.empty())
+        return result;
 
     if (url.empty()) {
         std::cout << "Cannot download, no url was passed" << std::endl;
@@ -103,11 +114,6 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         std::filesystem::remove(pathM4a);
     if (std::filesystem::exists(pathWebm))
         std::filesystem::remove(pathWebm);
-
-    // Get dependencies paths (move to their own files)
-    std::filesystem::path executablePath = FileUtils::GetExecutablePath();
-    std::filesystem::path ffmpegPath = executablePath.parent_path() / FFMPEG_PATH_RELATIVE;
-    std::filesystem::path quickJsPath = executablePath.parent_path() / QUICKJS_PATH_RELATIVE;
 
     // Setup new line callback, get details from the download
     unsigned int bitrate = 0;
@@ -162,7 +168,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     };
 
     // Download
-    ExternalProcess process = ExternalProcess::GetRelativeProcess(YTDLP_PATH_RELATIVE);
+    ExternalProcess process(ytdlpPath);
     process.AddArgument("--ffmpeg-location", ffmpegPath.string());
     process.AddArgument("--js-runtimes", "quickjs:" + quickJsPath.string());
     process.AddArgument("--print", "DETAILS: [bitrate]%(abr)s[duration]%(duration_string)s[extension]%(ext)s");

@@ -16,9 +16,9 @@ class JsRuntime
     public:
         static bool IsInstalled();
         static bool Download();
+        static std::filesystem::path GetPath();
     private:
         static std::string GetRelativePath();
-        static std::filesystem::path GetPath();
 };
 
 #endif

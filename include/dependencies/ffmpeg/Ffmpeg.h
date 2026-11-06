@@ -21,6 +21,7 @@ class Ffmpeg
     public:
         static bool IsInstalled();
         static bool Download();
+        static std::filesystem::path GetPath();
 
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
@@ -33,7 +34,6 @@ class Ffmpeg
         static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate, std::function<void(float)> progressCallback = nullptr);
     private:
         static std::string GetRelativePath();
-        static std::filesystem::path GetPath();
         
         static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback = nullptr);
 };

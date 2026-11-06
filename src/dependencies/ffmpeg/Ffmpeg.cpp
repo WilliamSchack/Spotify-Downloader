@@ -275,6 +275,10 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
 
 std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback)
 {
+    std::filesystem::path ffmpegPath = GetPath();
+    if (ffmpegPath.empty())
+        return "";
+
     // Get the progress
     std::function<void(std::string)> newLineCallback = [&](std::string line) {
         if (progressCallback == nullptr)
@@ -293,7 +297,7 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
     };
 
     // Setup command
-    ExternalProcess process = ExternalProcess::GetRelativeProcess(FFMPEG_PATH_RELATIVE);
+    ExternalProcess process(ffmpegPath);
     for (const std::string& arg : args)
         process.AddArgument(arg);
 
