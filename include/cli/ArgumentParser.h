@@ -4,6 +4,9 @@
 #include "DownloadManager.h"
 #include "MetadataManager.h"
 
+#include "Ytdlp.h"
+#include "Ffmpeg.h"
+
 #include <string>
 
 // Very basic arg parser, only whipped up quick since im using it for another app

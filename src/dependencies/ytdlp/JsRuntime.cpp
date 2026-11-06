@@ -5,6 +5,12 @@ bool JsRuntime::IsInstalled()
     return !GetPath().empty();
 }
 
+bool JsRuntime::IsInstalledRelative()
+{
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    return std::filesystem::exists(relativePath);
+}
+
 bool JsRuntime::Download()
 {
     // If its downloaded already, dont downloading again

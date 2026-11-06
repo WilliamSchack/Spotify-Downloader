@@ -8,7 +8,41 @@ bool ArgumentParser::Parse(int argc, char** argv)
 
     std::string command = argv[1];
 
-    if (command == "downloadtrack" && argc == 4) {
+    if (command == "download-deps" && argc == 2) {
+        std::cout << "Downloading ffmpeg..." << std::endl;
+        if (!Ffmpeg::Download()) {
+            if (Ffmpeg::IsInstalledRelative())
+                std::cout << "ffmpeg is already downloaded" << std::endl;
+            else
+                std::cout << "Failed to download ffmpeg" << std::endl;
+        } else {
+            std::cout << "Successfully downloaded ffmpeg" << std::endl;
+        }
+
+        std::cout << "Downloading yt-dlp..." << std::endl;
+        if (!Ytdlp::Download()) {
+            if (Ytdlp::IsInstalledRelative())
+                std::cout << "yt-dlp is already downloaded" << std::endl;
+            else
+                std::cout << "Failed to download yt-dlp" << std::endl;
+        } else {
+            std::cout << "Successfully downloaded yt-dlp" << std::endl;
+        }
+
+        std::cout << "Downloading quickjs..." << std::endl;
+        if (!JsRuntime::Download()) {
+            if (JsRuntime::IsInstalledRelative())
+                std::cout << "quickjs is already downloaded" << std::endl;
+            else
+                std::cout << "Failed to download quickjs" << std::endl;
+        } else {
+            std::cout << "Successfully downloaded quickjs" << std::endl;
+        }
+
+        return true;
+    }
+
+    if (command == "download-track" && argc == 4) {
         std::string url = argv[2];
         std::string downloadFolder = argv[3];
 
@@ -39,7 +73,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         return true;
     }
 
-    if (command == "getinfo" && argc == 3) {
+    if (command == "get-info" && argc == 3) {
         std::string url = argv[2];
         EPlatform platformType = PlatformDetector::GetPlatformFromUrl(url);
         if (platformType == EPlatform::Unknown) return true;
@@ -87,7 +121,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         return true;
     }
 
-    if (command == "getmetadata" && argc == 3) {
+    if (command == "get-metadata" && argc == 3) {
         std::string filePath = argv[2];
 
         MetadataManager metadata(filePath);

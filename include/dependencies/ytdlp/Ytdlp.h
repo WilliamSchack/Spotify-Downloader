@@ -18,6 +18,7 @@ class Ytdlp
 {
     public:
         static bool IsInstalled();
+        static bool IsInstalledRelative();
         static bool Download();
         static std::filesystem::path GetPath();
 

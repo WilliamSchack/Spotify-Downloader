@@ -7,6 +7,12 @@ bool Ffmpeg::IsInstalled()
     return !GetPath().empty();
 }
 
+bool Ffmpeg::IsInstalledRelative()
+{
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    return std::filesystem::exists(relativePath);
+}
+
 bool Ffmpeg::Download()
 {
     // If its downloaded already, dont downloading again

@@ -5,6 +5,12 @@ bool Ytdlp::IsInstalled()
     return !GetPath().empty();
 }
 
+bool Ytdlp::IsInstalledRelative()
+{
+    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+    return std::filesystem::exists(relativePath);
+}
+
 bool Ytdlp::Download()
 {
     // If its downloaded already, dont downloading again
