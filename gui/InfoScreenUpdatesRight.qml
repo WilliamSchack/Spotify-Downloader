@@ -67,6 +67,10 @@ ColumnLayout
                     radius: 8
 
                     backgroundColour: "#A16583"
+
+                    enabled: !_manager.info.updates.checkingForUpdates
+
+                    onClicked: _manager.info.updates.CheckForUpdatesButtonClicked()
                 }
 
                 CustomButton {
@@ -77,6 +81,8 @@ ColumnLayout
                     radius: 8
 
                     backgroundColour: "#A16583"
+
+                    onClicked: _manager.info.updates.SourceButtonClicked()
                 }
             }
         }

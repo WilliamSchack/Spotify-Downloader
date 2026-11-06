@@ -60,3 +60,29 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
     echoliteInfo->SetVersion(version);
     _dependencies.insert(type, echoliteInfo);
 }
+
+void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
+{
+    _checkingForUpdates = true;
+    emit CheckingForUpdatesChanged();
+
+
+}
+
+void UpdatesScreenGUI::SourceButtonClicked()
+{
+    switch (_selectedDependencyType) {
+        case DependencyInfo::EDependency::Echolite:
+            QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite"));
+            break;
+        case DependencyInfo::EDependency::Ffmpeg:
+            QDesktopServices::openUrl(QUrl("https://ffmpeg.org"));
+            break;
+        case DependencyInfo::EDependency::Ytdlp:
+            QDesktopServices::openUrl(QUrl("https://github.com/yt-dlp/yt-dlp"));
+            break;
+        case DependencyInfo::EDependency::Quickjs:
+            QDesktopServices::openUrl(QUrl("https://bellard.org/quickjs"));
+            break;
+    }
+}

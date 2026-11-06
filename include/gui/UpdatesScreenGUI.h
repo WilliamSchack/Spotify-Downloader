@@ -2,15 +2,18 @@
 #define UPDATESSCREENGUI_H
 
 #include "DependencyInfo.h"
+#include "EasyQProperties.h"
 
 #include <QObject>
 #include <QMap>
+#include <QDesktopServices>
 #include <QtQml/qqml.h>
 
 class UpdatesScreenGUI : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(DependencyInfo* selectedDependency READ GetSelectedDependency NOTIFY SelectedDependencyChanged)
+    SIMPLE_QPROPERTY(bool, checkingForUpdates, CheckingForUpdates, _checkingForUpdates)
 
     public:
         explicit UpdatesScreenGUI(QObject* parent = 0);
@@ -19,12 +22,17 @@ class UpdatesScreenGUI : public QObject
 
         Q_INVOKABLE DependencyInfo* GetDependency(const DependencyInfo::EDependency& dependency) const;
         Q_INVOKABLE DependencyInfo* GetSelectedDependency() const;
+    public slots:
+        void CheckForUpdatesButtonClicked();
+        void SourceButtonClicked();
     private:
         void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& version, const QString& iconSource);
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 
         QMap<DependencyInfo::EDependency, DependencyInfo*> _dependencies;
+
+        bool _checkingForUpdates = false;
     signals:
         void SelectedDependencyChanged();
 };
