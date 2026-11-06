@@ -34,20 +34,6 @@ Window
             _manager.settings.LeavingScreen()
         }
 
-        switch (screen) {
-            case Main.EScreen.Main:
-                screenLoader.source = "MusicScreen.qml"
-                break;
-            case Main.EScreen.Info:
-                screenLoader.source = "InfoScreen.qml"
-                break;
-            case Main.EScreen.Settings:
-                screenLoader.source = "SettingsScreen.qml"
-                break;
-            default:
-                return;
-        }
-
         currentScreen = screen
     }
 
@@ -145,13 +131,15 @@ Window
             }
 
             // Main screen
-            Loader {
-                id: screenLoader
-
+            StackLayout {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
-                source: "MusicScreen.qml"
+                currentIndex: root.currentScreen
+
+                MusicScreen {}
+                InfoScreen {}
+                SettingsScreen {}
             }
         }
     }
