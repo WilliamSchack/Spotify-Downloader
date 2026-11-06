@@ -4,12 +4,10 @@
 #include "EasyQProperties.h"
 
 #include <QObject>
-#include <QtQmlIntegration/qqmlintegration.h>
 
 class DependencyInfo : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
 
     public:
         enum class EDependency
@@ -25,7 +23,7 @@ class DependencyInfo : public QObject
     SIMPLE_QPROPERTY(EDependency, type, Type, _type)
     SIMPLE_QPROPERTY(QString, name, Name, _name)
     SIMPLE_QPROPERTY(QString, version, Version, _version)
-    SIMPLE_QPROPERTY(QString, iconSource, IconSource, _version)
+    SIMPLE_QPROPERTY(QString, iconSource, IconSource, _iconSource)
     SIMPLE_QPROPERTY(bool, upToDate, UpToDate, _upToDate)
 
     public:
