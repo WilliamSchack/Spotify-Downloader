@@ -17,7 +17,7 @@
 #include <regex>
 #include <filesystem>
 
-class Ffmpeg : Dependency<Ffmpeg>
+class Ffmpeg : public Dependency<Ffmpeg>
 {
     friend class Dependency<Ffmpeg>;
 

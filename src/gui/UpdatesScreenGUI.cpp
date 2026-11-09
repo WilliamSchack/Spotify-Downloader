@@ -76,13 +76,13 @@ void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
                 updateAvailable = VersionManager::IsUpdateAvailable();
                 break;
             } case DependencyInfo::EDependency::Ffmpeg: {
-                updateAvailable = Ffmpeg::UpdateAvailable();
+                updateAvailable = Ffmpeg::IsUpdateAvailable();
                 break;
             } case DependencyInfo::EDependency::Ytdlp: {
                 updateAvailable = Ytdlp::IsUpdateAvailable();
                 break;
             } case DependencyInfo::EDependency::Quickjs: {
-                updateAvailable = JsRuntime::UpdateAvailable();
+                updateAvailable = JsRuntime::IsUpdateAvailable();
                 break;
             }
         }

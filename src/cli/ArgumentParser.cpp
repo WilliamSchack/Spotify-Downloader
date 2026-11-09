@@ -10,7 +10,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
 
     if (command == "download-deps" && argc == 2) {
         std::cout << "Downloading ffmpeg..." << std::endl;
-        if (!Ffmpeg::Download()) {
+        if (!Ffmpeg::DownloadExecutable()) {
             if (Ffmpeg::IsInstalledRelative())
                 std::cout << "ffmpeg is already downloaded" << std::endl;
             else
@@ -30,7 +30,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         }
 
         std::cout << "Downloading quickjs..." << std::endl;
-        if (!JsRuntime::Download()) {
+        if (!JsRuntime::DownloadExecutable()) {
             if (JsRuntime::IsInstalledRelative())
                 std::cout << "quickjs is already downloaded" << std::endl;
             else

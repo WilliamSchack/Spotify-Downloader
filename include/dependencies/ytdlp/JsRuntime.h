@@ -1,6 +1,7 @@
 #ifndef JSRUNTIME_H
 #define JSRUNTIME_H
 
+#include "Dependency.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"
 #include "ArchiveHandler.h"
@@ -11,17 +12,15 @@
 // Only checks for and uses quickjs right now
 // May check for more system installed ones in the future but this makes it easy
 
-class JsRuntime
+class JsRuntime : public Dependency<JsRuntime>
 {
-    public:
-        static bool IsInstalled();
-        static bool IsInstalledRelative();
-        static bool Download();
-        static std::filesystem::path GetPath();
+    friend class Dependency<JsRuntime>;
 
-        static bool UpdateAvailable();
     private:
-        static std::string GetRelativePath();
+        static bool DownloadExecutableImpl();
+        static std::string GetVersionImpl();
+        static std::string GetLatestVersionImpl();
+        static std::string GetFileNameImpl();
 };
 
 #endif

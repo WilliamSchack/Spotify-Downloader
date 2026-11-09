@@ -1,17 +1,6 @@
 #include "JsRuntime.h"
 
-bool JsRuntime::IsInstalled()
-{
-    return !GetPath().empty();
-}
-
-bool JsRuntime::IsInstalledRelative()
-{
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    return std::filesystem::exists(relativePath);
-}
-
-bool JsRuntime::Download()
+bool JsRuntime::DownloadExecutableImpl()
 {
     // If its downloaded already, dont downloading again
     std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
@@ -56,31 +45,17 @@ bool JsRuntime::Download()
     return std::filesystem::exists(relativePath);
 }
 
-std::string JsRuntime::GetRelativePath()
+std::string JsRuntime::GetVersionImpl()
 {
-#if WIN32
-    return "qjs.exe";
-#else
+    return "";
+}
+
+std::string JsRuntime::GetLatestVersionImpl()
+{
+    return "";
+}
+
+std::string JsRuntime::GetFileNameImpl()
+{
     return "qjs";
-#endif
-}
-
-std::filesystem::path JsRuntime::GetPath()
-{
-    // Check relative path
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
-        return relativePath;
-    
-    // Check system
-    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("qjs");
-    if (installedPath.has_value())
-        return *installedPath;
-
-    return {};
-}
-
-bool JsRuntime::UpdateAvailable()
-{
-    return true;
 }
