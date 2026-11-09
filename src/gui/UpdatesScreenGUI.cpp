@@ -87,7 +87,7 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
     return GetDependency(_selectedDependencyType);
 }
 
-void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<void()> updateFunction)
+void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction)
 {
     DependencyInfo* echoliteInfo = new DependencyInfo(getVersionFunction, updateAvailableFunction, updateFunction, this);
     echoliteInfo->SetType(type);
@@ -98,39 +98,7 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
 
 void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
 {
-    SetCheckingForUpdates(true);
-
-    // TODO: Set this in qml, makes more sense
-    SetUpdateButtonText("Checking for Updates...");
-
-    // Dont stall the gui thread
-    // TODO: Cleanup when changing between dependencies
-    DependencyInfo::EDependency type = _selectedDependencyType;
-    std::thread([this, type]() {
-        bool updateAvailable = false;
-        switch (type) {
-            case DependencyInfo::EDependency::Echolite: {
-                updateAvailable = VersionManager::IsUpdateAvailable();
-                break;
-            } case DependencyInfo::EDependency::Ffmpeg: {
-                updateAvailable = Ffmpeg::IsUpdateAvailable();
-                break;
-            } case DependencyInfo::EDependency::Ytdlp: {
-                updateAvailable = Ytdlp::IsUpdateAvailable();
-                break;
-            } case DependencyInfo::EDependency::Quickjs: {
-                updateAvailable = JsRuntime::IsUpdateAvailable();
-                break;
-            }
-        }
-
-        // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this, type, updateAvailable]() {
-            // TODO: Have dict with what dependencies have updates, or just store it in the dependency object
-            SetCheckingForUpdates(false);
-            SetUpdateButtonText(updateAvailable ? "Download Update" : "Check for Updates");
-        }, Qt::QueuedConnection);
-    }).detach();
+    _dependencies[_selectedDependencyType]->CheckForUpdate();
 }
 
 void UpdatesScreenGUI::SourceButtonClicked()

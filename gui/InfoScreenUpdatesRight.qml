@@ -62,13 +62,13 @@ ColumnLayout
                 CustomButton {
                     height: parent.height
 
-                    text: _manager.info.updates.updateButtonText
+                    text: root.selectedDependency.checkingForUpdates ? "Checking for Updates..." : (root.selectedDependency.updateAvailable ? "Download Update" : "Check for Updates")
                     font.pixelSize: 16
                     radius: 8
 
                     backgroundColour: "#A16583"
 
-                    enabled: !_manager.info.updates.checkingForUpdates
+                    enabled: !root.selectedDependency.checkingForUpdates
 
                     onClicked: _manager.info.updates.CheckForUpdatesButtonClicked()
                 }

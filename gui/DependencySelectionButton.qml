@@ -60,8 +60,8 @@ ToggleButton {
 
                 Text {
                     // TODO: Replace check/cross with icon
-                    text: root.info.upToDate ? "✓ Up To Date" : "🡻 Update Available"
-                    color: root.info.upToDate ? "#9EFFA5" : "#FF5B5D"
+                    text: root.info.updateAvailable ? "🡻 Update Available" : "✓ Up To Date"
+                    color: root.info.updateAvailable ?  "#FF5B5D" : "#9EFFA5"
                     font.pixelSize: 12
                     font.italic: true
                 }

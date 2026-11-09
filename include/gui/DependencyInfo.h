@@ -4,8 +4,10 @@
 #include "EasyQProperties.h"
 
 #include <functional>
+#include <thread>
 
 #include <QObject>
+#include <QMetaObject>
 
 class DependencyInfo : public QObject
 {
@@ -26,20 +28,28 @@ class DependencyInfo : public QObject
     SIMPLE_QPROPERTY(QString, name, Name, _name)
     SIMPLE_QPROPERTY(QString, version, Version, _version)
     SIMPLE_QPROPERTY(QString, iconSource, IconSource, _iconSource)
-    SIMPLE_QPROPERTY(bool, upToDate, UpToDate, _upToDate)
+    SIMPLE_QPROPERTY(bool, updateAvailable, UpdateAvailable, _updateAvailable)
+    SIMPLE_QPROPERTY(bool, checkingForUpdates, CheckingForUpdates, _checkingForUpdates)
 
     public:
-        explicit DependencyInfo(std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<void()> updateFunction, QObject* parent);
+        explicit DependencyInfo(std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, QObject* parent);
+
+        void CheckForUpdate();
+        void DownloadUpdate();
+    private:
+        void UpdateVersion();
     private:
         std::function<std::string()> _getVersionFunction;
         std::function<bool()> _updateAvailableFunction;
-        std::function<void()> _updateFunction;
+        std::function<bool()> _updateFunction;
 
         EDependency _type = EDependency::Unknown;
         QString _name = "";
         QString _version = "";
         QString _iconSource = "";
-        bool _upToDate = true;
+
+        bool _updateAvailable = false;
+        bool _checkingForUpdates = false;
 };
 
 #endif

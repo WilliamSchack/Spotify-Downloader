@@ -21,8 +21,6 @@ class UpdatesScreenGUI : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(DependencyInfo* selectedDependency READ GetSelectedDependency NOTIFY SelectedDependencyChanged)
-    SIMPLE_QPROPERTY(QString, updateButtonText, UpdateButtonText, _updateButtonText)
-    SIMPLE_QPROPERTY(bool, checkingForUpdates, CheckingForUpdates, _checkingForUpdates)
 
     public:
         explicit UpdatesScreenGUI(QObject* parent = 0);
@@ -35,14 +33,11 @@ class UpdatesScreenGUI : public QObject
         void CheckForUpdatesButtonClicked();
         void SourceButtonClicked();
     private:
-        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<void()> updateFunction);
+        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction);
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 
         QMap<DependencyInfo::EDependency, DependencyInfo*> _dependencies;
-
-        QString _updateButtonText = "Check for Updates";
-        bool _checkingForUpdates = false;
     signals:
         void SelectedDependencyChanged();
 };
