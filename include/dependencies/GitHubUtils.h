@@ -7,7 +7,7 @@
 class GitHubUtils
 {
     public:
-        static std::string GetLatestVersion(const std::string& repoOwner, const std::string& repoName);
+        static std::string GetLatestTag(const std::string& repoOwner, const std::string& repoName);
 };
 
 #endif

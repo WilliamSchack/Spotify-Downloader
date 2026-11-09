@@ -1,6 +1,6 @@
 #include "GitHubUtils.h"
 
-std::string GitHubUtils::GetLatestVersion(const std::string& repoOwner, const std::string& repoName)
+std::string GitHubUtils::GetLatestTag(const std::string& repoOwner, const std::string& repoName)
 {
     NetworkRequest request;
     request.Url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
@@ -19,6 +19,7 @@ std::string GitHubUtils::GetLatestVersion(const std::string& repoOwner, const st
         return "";
     }
 
+    // Get the tag and remove the leading v
     std::string latestTag = responseJson[0]["name"];
     latestTag = latestTag.substr(1);
 }

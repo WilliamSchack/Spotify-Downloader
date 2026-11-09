@@ -5,7 +5,7 @@ std::string VersionManager::GetLatestVersion(bool ignoreCache)
     if (!ignoreCache && !_latestVersionCache.empty())
         return _latestVersionCache;
 
-    std::string latestTag = GitHubUtils::GetLatestVersion("WilliamSchack", "Echolite");
+    std::string latestTag = GitHubUtils::GetLatestTag("WilliamSchack", "Echolite");
     
     // Get the tag and remove the leading v
     latestTag = latestTag.substr(1);
