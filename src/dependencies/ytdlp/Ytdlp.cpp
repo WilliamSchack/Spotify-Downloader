@@ -1,17 +1,6 @@
 #include "Ytdlp.h"
 
-bool Ytdlp::IsInstalled()
-{
-    return !GetPath().empty();
-}
-
-bool Ytdlp::IsInstalledRelative()
-{
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    return std::filesystem::exists(relativePath);
-}
-
-bool Ytdlp::Download()
+bool Ytdlp::DownloadExecutableImpl()
 {
     // If its downloaded already, dont downloading again
     std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
@@ -57,36 +46,7 @@ bool Ytdlp::Download()
     return true;
 }
 
-std::string Ytdlp::GetRelativePath()
-{
-#if WIN32
-    return "yt-dlp.exe";
-#else
-    return "yt-dlp";
-#endif
-}
-
-std::filesystem::path Ytdlp::GetPath()
-{
-    // Check relative path
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
-        return relativePath;
-    
-    // Check system
-    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("yt-dlp");
-    if (installedPath.has_value())
-        return *installedPath;
-
-    return {};
-}
-
-bool Ytdlp::UpdateAvailable()
-{
-    return false;
-}
-
-std::string Ytdlp::GetVersion()
+std::string Ytdlp::GetVersionImpl()
 {
     std::filesystem::path ytdlpPath = GetPath();
     if (ytdlpPath.empty())
@@ -97,6 +57,16 @@ std::string Ytdlp::GetVersion()
 
     std::string output = process.Execute().Output;
     return output;
+}
+
+std::string Ytdlp::GetLatestVersionImpl()
+{
+    return "";
+}
+
+std::string Ytdlp::GetFileNameImpl()
+{
+    return "yt-dlp";
 }
 
 // Assumes the path has no extension

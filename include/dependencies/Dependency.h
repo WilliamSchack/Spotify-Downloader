@@ -2,8 +2,17 @@
 #define DEPENDENCY_H
 
 #include "FileUtils.h"
+#include "ExternalProcess.h"
 
 #include <string>
+#include <optional>
+
+// Required by inheritors:
+// friend class Dependency<Derived>
+// static bool DownloadExecutableImpl();
+// static std::string GetVersionImpl();
+// static std::string GetLatestVersionImpl();
+// static std::string GetFileNameImpl();
 
 template<typename Derived>
 class Dependency
@@ -20,9 +29,9 @@ class Dependency
             return std::filesystem::exists(relativePath);
         }
 
-        static bool DownloadFile()
+        static bool DownloadExecutable()
         {
-            return Derived::DownloadFileImpl();
+            return Derived::DownloadExecutableImpl();
         }
 
         static std::filesystem::path GetPath()
@@ -33,7 +42,7 @@ class Dependency
                 return relativePath;
             
             // Check system
-            std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath(Derived::GetFileName());
+            std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath(GetFileName());
             if (installedPath.has_value())
                 return *installedPath;
 
@@ -62,16 +71,16 @@ class Dependency
 
             return latestVersion != GetVersion();
         }
-    private:
+    protected:
         static std::string GetRelativePath()
         {
 #if WIN32
-            return Derived::GetFileName() + ".exe";
+            return GetFileName() + ".exe";
 #else
-            return Derived::GetFileName();
+            return GetFileName();
 #endif
         }
-
+    private:
         static std::string GetFileName()
         {
             return Derived::GetFileNameImpl();

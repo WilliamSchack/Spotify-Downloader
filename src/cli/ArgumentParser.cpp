@@ -20,7 +20,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         }
 
         std::cout << "Downloading yt-dlp..." << std::endl;
-        if (!Ytdlp::Download()) {
+        if (!Ytdlp::DownloadExecutable()) {
             if (Ytdlp::IsInstalledRelative())
                 std::cout << "yt-dlp is already downloaded" << std::endl;
             else
