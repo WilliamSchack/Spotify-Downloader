@@ -31,6 +31,8 @@ class FileUtils
 
         static std::string EncodePath(const std::filesystem::path& path);
 
+        static bool MoveFile(const std::filesystem::path& fromPath, const std::filesystem::path& toPath);
+
         static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
 
         static std::filesystem::path GetExecutablePath();

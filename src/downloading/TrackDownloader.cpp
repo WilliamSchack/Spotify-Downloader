@@ -261,18 +261,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!std::filesystem::is_directory(targetFolder))
         std::filesystem::create_directories(targetFolder);
 
-    try {
-        std::filesystem::rename(tempDownloadPath, targetDownloadPath);
-    } catch (...) {
-        // If rename fails, assume it is between drives, in that case copy
-        bool copied = std::filesystem::copy_file(tempDownloadPath, targetDownloadPath);
-        std::filesystem::remove(tempDownloadPath);
-
-        // Move error
-        if (!copied) {
-            result.FailReason = "Could not move the file from the temporary folder";
-            return result;
-        }
+    bool fileMoved = FileUtils::MoveFile(tempDownloadPath, targetDownloadPath);
+    if (!fileMoved) {
+        result.FailReason = "Could not move the file from the temporary folder";
+        return result;
     }
 
     result.Success = true;

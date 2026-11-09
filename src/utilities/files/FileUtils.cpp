@@ -92,6 +92,24 @@ FILE* FileUtils::OpenFile(const std::filesystem::path& path, const std::string& 
 #endif
 }
 
+bool FileUtils::MoveFile(const std::filesystem::path& fromPath, const std::filesystem::path& toPath)
+{
+    try {
+        std::filesystem::rename(fromPath, toPath);
+    } catch (...) {
+        // If rename fails, assume it is between drives, in that case copy
+        bool copied = std::filesystem::copy_file(fromPath, toPath);
+        std::filesystem::remove(fromPath);
+
+        // Move error
+        if (!copied) {
+            std::cout << "Failed to move the file from " << fromPath << " to " << toPath;
+            return false;
+        }
+    }
+
+    return true;
+}
 
 std::filesystem::path FileUtils::GetExecutablePath()
 {
