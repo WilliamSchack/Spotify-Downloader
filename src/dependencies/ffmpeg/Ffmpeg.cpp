@@ -91,6 +91,15 @@ std::string Ffmpeg::GetVersionImpl()
 
     std::string output = process.Execute().Output;
 
+    if (!IsInstalledRelative()) {
+        // Dont check for specific version string if installed on the system
+        std::smatch matches;
+        if (!std::regex_search(output, matches, std::regex(R"(version\s(.*?\d)\s)")))
+            return "";
+
+        return matches[1];
+    }
+
 #ifdef __APPLE__
     std::smatch matches;
     if (!std::regex_search(output, matches, std::regex(R"(version\s(\d+\.\d+\.\d+))")))

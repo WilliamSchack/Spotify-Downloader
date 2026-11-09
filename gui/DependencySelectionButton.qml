@@ -18,11 +18,13 @@ ToggleButton {
     onClicked: _manager.info.updates.SelectDependency(info.type)
 
     readonly property string updateAvailableText: {
+        // TODO: Replace check/cross with icon
+
         if (!info.installed)
             return "X Not Installed!"
 
         if (info.installedOnSystem)
-            return "Using System Install"
+            return "System Install"
 
         if (info.updating)
             return "🡻 Updating..."
@@ -76,16 +78,19 @@ ToggleButton {
                 Layout.fillWidth: true
 
                 Text {
+                    Layout.fillWidth: true
+
                     text: root.info.version
                     color: "white"
                     font.pixelSize: 12
                     font.italic: true
+
+                    elide: Text.ElideRight
                 }
 
                 Item { Layout.fillWidth: true }
 
                 Text {
-                    // TODO: Replace check/cross with icon
                     text: root.updateAvailableText
                     color: root.updateAvailableColour
                     font.pixelSize: 12

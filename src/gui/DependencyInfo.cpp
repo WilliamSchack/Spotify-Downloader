@@ -90,8 +90,5 @@ void DependencyInfo::Download()
 
 void DependencyInfo::UpdateVersion()
 {
-    // This may not work properly if the app is installed on the system
-    // Some dependencies (ffmpeg) check the version depending on where its installed from
-
     SetVersion(QString::fromStdString(_getVersionFunction()));
 }
