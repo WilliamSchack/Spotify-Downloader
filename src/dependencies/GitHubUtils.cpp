@@ -2,6 +2,11 @@
 
 std::string GitHubUtils::GetLatestTag(const std::string& repoOwner, const std::string& repoName)
 {
+    return GetRecentTag(repoOwner, repoName, 0);
+}
+
+std::string GitHubUtils::GetRecentTag(const std::string& repoOwner, const std::string& repoName, const int& index)
+{
     NetworkRequest request;
     request.Url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
     request.SetHeader("User-Agent", "WilliamSchack/Echolite");
@@ -19,5 +24,5 @@ std::string GitHubUtils::GetLatestTag(const std::string& repoOwner, const std::s
         return "";
     }
 
-    return responseJson[0]["name"];
+    return responseJson[index]["name"];
 }

@@ -28,9 +28,9 @@ bool Ffmpeg::DownloadExecutableImpl()
     // Get download url from details json
     NetworkRequest appleDetailsRequest;
 	request.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
-    NetworkResponse appleDetailsResponse = request.Get();
+    NetworkResponse appleDetailsResponse = appleDetailsRequest.Get();
 
-    nlohmann::json appleResponseJson = nlohmann::json::parse(response.Body);
+    nlohmann::json appleResponseJson = nlohmann::json::parse(appleDetailsResponse.Body);
     url = appleResponseJson["download"]["zip"]["url"];
     archiveName = "ffmpeg.zip"
     pathInArchive = "ffmpeg";
@@ -64,12 +64,54 @@ bool Ffmpeg::DownloadExecutableImpl()
 
 std::string Ffmpeg::GetVersionImpl()
 {
-    return "";
+    std::filesystem::path path = GetPath();
+    if (path.empty())
+        return "";
+
+    ExternalProcess process(path);
+    process.AddArgument("-version");
+
+    std::string output = process.Execute().Output;
+#ifdef __APPLE__
+    std::smatch matches;
+    if (!std::regex_search(output, matches, std::regex(R"(version\s(\d+\.\d+\.\d+))")))
+        return "";
+
+    return matches[1];
+#else
+    std::smatch matches;
+    if (!std::regex_search(output, matches, std::regex(R"(--extra-version=(.+)\s)")))
+        return "";
+
+    // Reformat version from yyyymmdd > yyyy-mm-dd
+    std::string versionOutput = matches[1];
+    return versionOutput.substr(0, 4) + "-" + versionOutput.substr(4, 2) + "-" + versionOutput.substr(6, 2);
+#endif
 }
 
 std::string Ffmpeg::GetLatestVersionImpl()
 {
-    return "";
+#ifdef __APPLE__
+    NetworkRequest request;
+	request.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
+    NetworkResponse response = request.Get();
+
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to get the latest version: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return "";
+    }
+
+    nlohmann::json json = nlohmann::json::parse(response.Body);
+    return json["version"];
+#else
+    std::string latestTag = GitHubUtils::GetRecentTag("BtbN", "FFmpeg-Builds", 1);
+
+    std::smatch matches;
+    if (!std::regex_search(latestTag, matches, std::regex(R"(\D-(\d+-\d+-\d+)-)")))
+        return "";
+    
+    return matches[1];
+#endif
 }
 
 std::string Ffmpeg::GetFileNameImpl()
