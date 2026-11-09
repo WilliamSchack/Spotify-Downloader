@@ -1,12 +1,18 @@
 #ifndef SELFUPDATER_H
 #define SELFUPDATER_H
 
-// Doesnt really update this app itself, just for checking for updates and the such atm
-// The above may be implemented later
-class SelfUpdater
+#include "NetworkRequest.h"
+#include "JsonUtils.h"
+
+class VersionManager
 {
     public:
-        static bool UpdateAvailable();
+        static std::string GetLatestVersion(bool ignoreCache = false);
+        static bool IsUpdateAvailable(bool ignoreCache = false);
+    private:
+        static inline const std::string GITHUB_TAGS_URL = "https://api.github.com/repos/WilliamSchack/Echolite/tags";
+
+        static inline std::string _latestVersionCache = "";
 };
 
 #endif

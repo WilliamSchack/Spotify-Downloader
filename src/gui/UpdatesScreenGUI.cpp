@@ -73,7 +73,7 @@ void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
         bool updateAvailable = false;
         switch (type) {
             case DependencyInfo::EDependency::Echolite: {
-                updateAvailable = SelfUpdater::UpdateAvailable();
+                updateAvailable = VersionManager::IsUpdateAvailable();
                 break;
             } case DependencyInfo::EDependency::Ffmpeg: {
                 updateAvailable = Ffmpeg::UpdateAvailable();

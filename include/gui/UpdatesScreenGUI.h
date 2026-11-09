@@ -4,7 +4,7 @@
 #include "DependencyInfo.h"
 #include "EasyQProperties.h"
 
-#include "SelfUpdater.h"
+#include "VersionManager.h"
 #include "Ffmpeg.h"
 #include "Ytdlp.h"
 #include "JsRuntime.h"
