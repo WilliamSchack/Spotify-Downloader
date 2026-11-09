@@ -6,6 +6,7 @@
 #include "Ffmpeg.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"
+#include "GitHubUtils.h"
 #include "FileUtils.h"
 #include "MathUtils.h"
 #include "YtdlpResult.h"
@@ -30,6 +31,8 @@ class Ytdlp : public Dependency<Ytdlp>
         static bool DownloadJsRuntime();
         
         static YtdlpError GetError(const std::string& errorString);
+    private:
+        static inline const std::string GITHUB_TAGS_URL = "https://api.github.com/repos/yt-dlp/yt-dlp/tags";
 };
 
 #endif

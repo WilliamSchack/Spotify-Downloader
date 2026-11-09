@@ -56,12 +56,15 @@ std::string Ytdlp::GetVersionImpl()
     process.AddArgument("--version");
 
     std::string output = process.Execute().Output;
+    output = StringUtils::RemoveChar(output, ' ');
+    output = StringUtils::RemoveChar(output, '\n');
+
     return output;
 }
 
 std::string Ytdlp::GetLatestVersionImpl()
 {
-    return "";
+    return GitHubUtils::GetLatestTag("yt-dlp", "yt-dlp");
 }
 
 std::string Ytdlp::GetFileNameImpl()
