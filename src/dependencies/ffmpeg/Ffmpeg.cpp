@@ -1,19 +1,6 @@
 #include "Ffmpeg.h"
 
-#include <iostream>
-
-bool Ffmpeg::IsInstalled()
-{
-    return !GetPath().empty();
-}
-
-bool Ffmpeg::IsInstalledRelative()
-{
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    return std::filesystem::exists(relativePath);
-}
-
-bool Ffmpeg::Download()
+bool Ffmpeg::DownloadExecutableImpl()
 {
     // If its downloaded already, dont downloading again
     std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
@@ -75,33 +62,19 @@ bool Ffmpeg::Download()
     return std::filesystem::exists(relativePath);
 }
 
-std::string Ffmpeg::GetRelativePath()
+std::string Ffmpeg::GetVersionImpl()
 {
-#if WIN32
-    return "ffmpeg.exe";
-#else
+    return "";
+}
+
+std::string Ffmpeg::GetLatestVersionImpl()
+{
+    return "";
+}
+
+std::string Ffmpeg::GetFileNameImpl()
+{
     return "ffmpeg";
-#endif
-}
-
-std::filesystem::path Ffmpeg::GetPath()
-{
-    // Check relative path
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
-        return relativePath;
-    
-    // Check system
-    std::optional<std::filesystem::path> installedPath = ExternalProcess::FindInstalledPath("ffmpeg");
-    if (installedPath.has_value())
-        return *installedPath;
-
-    return {};
-}
-
-bool Ffmpeg::UpdateAvailable()
-{
-    return false;
 }
 
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
