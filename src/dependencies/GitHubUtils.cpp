@@ -19,7 +19,5 @@ std::string GitHubUtils::GetLatestTag(const std::string& repoOwner, const std::s
         return "";
     }
 
-    // Get the tag and remove the leading v
-    std::string latestTag = responseJson[0]["name"];
-    latestTag = latestTag.substr(1);
+    return responseJson[0]["name"];
 }

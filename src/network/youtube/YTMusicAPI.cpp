@@ -435,7 +435,7 @@ std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
 
 	std::string browseId = matches[1];
 	if (StringUtils::Contains(browseId, "\\"))
-		StringUtils::RemoveChar(browseId, '\\');
+		browseId = StringUtils::RemoveChar(browseId, '\\');
 
 	return browseId;
 }

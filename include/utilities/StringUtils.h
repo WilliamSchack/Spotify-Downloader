@@ -22,8 +22,8 @@ class StringUtils
         static bool Contains(const std::wstring& string, const std::wstring& value);
         static std::string ToLower(const std::string& string);
         static std::string ReplaceAll(std::string string, const std::string& from, const std::string& to);
-        static void RemoveChar(std::string& string, const char& c);
-        static void RemoveChar(std::wstring& string, const char& c);
+        static std::string RemoveChar(std::string string, const char& c);
+        static std::wstring RemoveChar(std::wstring string, const char& c);
         static std::string RemoveFirst(const std::string& string, const int& charAmount = 1);
         static std::string RemoveLast(const std::string& string, const int& charAmount = 1);
         static std::vector<std::string> Split(const std::string& string, const std::string& delimiter);

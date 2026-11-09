@@ -4,7 +4,7 @@ std::string FileUtils::ValidateFileName(const std::string& fileName)
 {
     std::string copiedString = fileName;
     for (const char c : INVALID_FILE_CHARS) {
-        StringUtils::RemoveChar(copiedString, c);
+        copiedString = StringUtils::RemoveChar(copiedString, c);
     }
 
     return copiedString;
@@ -14,7 +14,7 @@ std::string FileUtils::ValidateDirectory(const std::string& directoryName)
 {
     std::string copiedString = directoryName;
     for (const char c : INVALID_DIR_CHARS) {
-        StringUtils::RemoveChar(copiedString, c);
+        copiedString = StringUtils::RemoveChar(copiedString, c);
     }
 
     // Remove double seperators (//, \\)

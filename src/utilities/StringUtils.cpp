@@ -74,14 +74,16 @@ std::string StringUtils::ReplaceAll(std::string string, const std::string& from,
     return string;
 }
 
-void StringUtils::RemoveChar(std::string& string, const char& c)
+std::string StringUtils::RemoveChar(std::string string, const char& c)
 {
     string.erase(std::remove(string.begin(), string.end(), c), string.end());
+    return string;
 }
 
-void StringUtils::RemoveChar(std::wstring& string, const char& c)
+std::wstring StringUtils::RemoveChar(std::wstring string, const char& c)
 {
     string.erase(std::remove(string.begin(), string.end(), c), string.end());
+    return string;
 }
 
 std::string StringUtils::RemoveFirst(const std::string& string, const int& charAmount)

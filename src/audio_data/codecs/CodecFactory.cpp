@@ -24,7 +24,7 @@ std::unique_ptr<ICodec> CodecFactory::Create(const std::string& extension)
 
     // Remove dot at the front if it has one
     if (StringUtils::StartsWith(extensionLower, "."))
-        StringUtils::RemoveChar(extensionLower, '.');
+        extensionLower = StringUtils::RemoveChar(extensionLower, '.');
 
     if (extensionLower == "m4a")  return Create(EExtension::M4A);
     if (extensionLower == "aac")  return Create(EExtension::AAC);
