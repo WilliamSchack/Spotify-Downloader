@@ -3,6 +3,8 @@
 
 #include "EasyQProperties.h"
 
+#include <functional>
+
 #include <QObject>
 
 class DependencyInfo : public QObject
@@ -27,8 +29,12 @@ class DependencyInfo : public QObject
     SIMPLE_QPROPERTY(bool, upToDate, UpToDate, _upToDate)
 
     public:
-        explicit DependencyInfo(QObject* parent);
+        explicit DependencyInfo(std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<void()> updateFunction, QObject* parent);
     private:
+        std::function<std::string()> _getVersionFunction;
+        std::function<bool()> _updateAvailableFunction;
+        std::function<void()> _updateFunction;
+
         EDependency _type = EDependency::Unknown;
         QString _name = "";
         QString _version = "";

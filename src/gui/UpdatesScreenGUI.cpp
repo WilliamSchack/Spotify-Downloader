@@ -7,29 +7,63 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
     CreateDependency(
         DependencyInfo::EDependency::Echolite,
         "Echolite",
-        "v" + QString(APP_VERSION),
-        "qrc:/icons/Icon.svg"
+        "qrc:/icons/Icon.svg",
+        []() -> std::string {
+            return APP_VERSION;
+        },
+        []() -> bool {
+            return VersionManager::IsUpdateAvailable(true);
+        },
+        []() -> bool {
+            // TODO: Implement update popup
+            std::cout << "IMPLEMENT ME!" << std::endl;
+            return false;
+        }
     );
 
     CreateDependency(
         DependencyInfo::EDependency::Ffmpeg,
         "ffmpeg",
-        "v",
-        ""
+        "",
+        []() -> std::string {
+            return Ffmpeg::GetVersion();
+        },
+        []() -> bool {
+            return Ffmpeg::IsUpdateAvailable(true);
+        },
+        []() -> bool {
+            return false;
+        }
     );
 
     CreateDependency(
         DependencyInfo::EDependency::Ytdlp,
         "yt-dlp",
-        "v",
-        ""
+        "",
+        []() -> std::string {
+            return Ytdlp::GetVersion();
+        },
+        []() -> bool {
+            return Ytdlp::IsUpdateAvailable(true);
+        },
+        []() -> bool {
+            return false;
+        }
     );
 
     CreateDependency(
         DependencyInfo::EDependency::Quickjs,
         "QuickJs",
-        "v",
-        ""
+        "",
+        []() -> std::string {
+            return JsRuntime::GetVersion();
+        },
+        []() -> bool {
+            return JsRuntime::IsUpdateAvailable(true);
+        },
+        []() -> bool {
+            return false;
+        }
     );
 
     SelectDependency(DependencyInfo::EDependency::Echolite);
@@ -51,19 +85,20 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
     return GetDependency(_selectedDependencyType);
 }
 
-void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& version, const QString& iconSource)
+void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<void()> updateFunction)
 {
-    DependencyInfo* echoliteInfo = new DependencyInfo(this);
+    DependencyInfo* echoliteInfo = new DependencyInfo(getVersionFunction, updateAvailableFunction, updateFunction, this);
     echoliteInfo->SetType(type);
     echoliteInfo->SetName(name);
     echoliteInfo->SetIconSource(iconSource);
-    echoliteInfo->SetVersion(version);
     _dependencies.insert(type, echoliteInfo);
 }
 
 void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
 {
     SetCheckingForUpdates(true);
+
+    // TODO: Set this in qml, makes more sense
     SetUpdateButtonText("Checking for Updates...");
 
     // Dont stall the gui thread
