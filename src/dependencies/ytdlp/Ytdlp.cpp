@@ -48,11 +48,11 @@ bool Ytdlp::DownloadExecutableImpl()
 
 std::string Ytdlp::GetVersionImpl()
 {
-    std::filesystem::path ytdlpPath = GetPath();
-    if (ytdlpPath.empty())
+    std::filesystem::path path = GetPath();
+    if (path.empty())
         return "";
 
-    ExternalProcess process(ytdlpPath);
+    ExternalProcess process(path);
     process.AddArgument("--version");
 
     std::string output = process.Execute().Output;

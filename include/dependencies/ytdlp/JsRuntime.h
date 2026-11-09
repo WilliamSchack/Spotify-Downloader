@@ -9,6 +9,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <regex>
+
 // Only checks for and uses quickjs right now
 // May check for more system installed ones in the future but this makes it easy
 

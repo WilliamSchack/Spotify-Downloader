@@ -11,14 +11,10 @@ bool JsRuntime::DownloadExecutableImpl()
     std::string url = "https://bellard.org/quickjs/binary_releases/";
     std::string archiveName = "quickjs";
     std::string pathInArchive = "qjs";
+    std::string latestVersion = GetLatestVersion();
 
-    // Get the latest version
-    NetworkRequest latestVersionRequest;
-	latestVersionRequest.Url = "https://bellard.org/quickjs/binary_releases/LATEST.json";
-    NetworkResponse latestVersionResponse = latestVersionRequest.Get();
-
-    nlohmann::json latestVersionJson = nlohmann::json::parse(latestVersionResponse.Body);
-    std::string latestVersion = latestVersionJson["version"];
+    if (latestVersion.empty())
+        return false;
 
 #if defined(__APPLE__) || defined(IS_ARM_CPU)
     archiveName += "-cosmo-";
@@ -47,12 +43,38 @@ bool JsRuntime::DownloadExecutableImpl()
 
 std::string JsRuntime::GetVersionImpl()
 {
-    return "";
+    std::filesystem::path path = GetPath();
+    if (path.empty())
+        return "";
+
+    ExternalProcess process(path);
+    process.AddArgument("-h");
+
+    std::string output = process.Execute().Output;
+    
+    std::smatch matches;
+    if (!std::regex_search(output, matches, std::regex(R"(version\s(\d+-\d+-\d+)\s)")))
+        return "";
+
+    return matches[1];
 }
 
 std::string JsRuntime::GetLatestVersionImpl()
 {
-    return "";
+    NetworkRequest request;
+	request.Url = "https://bellard.org/quickjs/binary_releases/LATEST.json";
+    NetworkResponse response = request.Get();
+
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to get the latest version: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return "";
+    }
+
+    nlohmann::json json = nlohmann::json::parse(response.Body);
+    if (json.empty())
+        return "";
+
+    return json["version"];
 }
 
 std::string JsRuntime::GetFileNameImpl()
