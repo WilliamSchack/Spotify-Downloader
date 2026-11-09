@@ -33,7 +33,8 @@ class Ffmpeg : public Dependency<Ffmpeg>
         static bool Normalise(const std::filesystem::path& filePath, const float& targetDb, std::function<void(float)> progressCallback = nullptr);
         static bool SetBitrate(const std::filesystem::path& filePath, const unsigned int& bitrate, std::function<void(float)> progressCallback = nullptr);
     private:
-        static bool DownloadExecutableImpl();
+        static bool DownloadExecutableImpl(std::filesystem::path path);
+        static bool UpdateExecutableImpl();
         static std::string GetVersionImpl();
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();

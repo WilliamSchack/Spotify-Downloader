@@ -1,13 +1,7 @@
 #include "Ytdlp.h"
 
-bool Ytdlp::DownloadExecutableImpl()
+bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
 {
-    // If its downloaded already, dont downloading again
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath)) {
-        return false;
-    }
-
     // Get the download details
     std::string url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
 
@@ -29,19 +23,32 @@ bool Ytdlp::DownloadExecutableImpl()
 
     NetworkRequest request;
     request.Url = url;
-    request.DownloadToFile(relativePath);
+    request.DownloadToFile(path);
 
-    if (!std::filesystem::exists(relativePath))
+    if (!std::filesystem::exists(path))
         return false;
 
 #ifndef WIN32
     // Make it executable
     std::filesystem::permissions(
-        relativePath,
+        path,
         std::filesystem::perms::owner_exec | std::filesystem::perms::group_exec | std::filesystem::perms::others_exec,
         std::filesystem::perm_options::add
     );
 #endif
+
+    return true;
+}
+
+bool Ytdlp::UpdateExecutableImpl()
+{
+    std::filesystem::path path = GetPath();
+    if (path.empty())
+        return false;
+
+    ExternalProcess process(path);
+    process.AddArgument("-U");
+    process.Execute();
 
     return true;
 }

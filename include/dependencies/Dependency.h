@@ -9,7 +9,8 @@
 
 // Required by inheritors:
 // friend class Dependency<Derived>
-// static bool DownloadExecutableImpl();
+// static bool DownloadExecutableImpl(std::filesystem::path path);
+// static bool UpdateExecutableImpl();
 // static std::string GetVersionImpl();
 // static std::string GetLatestVersionImpl();
 // static std::string GetFileNameImpl();
@@ -31,7 +32,20 @@ class Dependency
 
         static bool DownloadExecutable()
         {
-            return Derived::DownloadExecutableImpl();
+            // If its downloaded already, dont downloading again
+            std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+            if (std::filesystem::exists(relativePath))
+                return false;
+
+            return Derived::DownloadExecutableImpl(relativePath);
+        }
+
+        static bool UpdateExecutable()
+        {
+            if (IsInstalledRelative())
+                return false;
+
+            return Derived::UpdateExecutableImpl();
         }
 
         static std::filesystem::path GetPath()

@@ -23,7 +23,8 @@ class Ytdlp : public Dependency<Ytdlp>
     public:
         static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs = std::vector<std::string>(), std::function<void(float)> progressCallback = nullptr);
     private:
-        static bool DownloadExecutableImpl();
+        static bool DownloadExecutableImpl(std::filesystem::path path);
+        static bool UpdateExecutableImpl();
         static std::string GetVersionImpl();
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();

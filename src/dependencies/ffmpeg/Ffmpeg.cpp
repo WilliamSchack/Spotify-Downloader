@@ -1,12 +1,7 @@
 #include "Ffmpeg.h"
 
-bool Ffmpeg::DownloadExecutableImpl()
+bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
 {
-    // If its downloaded already, dont downloading again
-    std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
-    if (std::filesystem::exists(relativePath))
-        return false;
-
     // Get the download details
     std::string url = "";
     std::string archiveName = "";
@@ -55,11 +50,34 @@ bool Ffmpeg::DownloadExecutableImpl()
     request.Url = url;
     request.DownloadToFile(archivePath);
 
-    ArchiveHandler::ExtractFile(archivePath, pathInArchive, relativePath);
+    ArchiveHandler::ExtractFile(archivePath, pathInArchive, path);
 
     std::filesystem::remove(archivePath);
 
-    return std::filesystem::exists(relativePath);
+    return std::filesystem::exists(path);
+}
+
+bool Ffmpeg::UpdateExecutableImpl()
+{
+    std::filesystem::path path = GetPath();
+    if (path.empty())
+        return false;
+
+    std::filesystem::path tempPath = Paths::GetTempDir() / "ffmpeg-temp";
+    bool downloaded = DownloadExecutableImpl(tempPath);
+    if (!downloaded)
+        return false;
+
+    // Replace the current executable with the updated one
+    std::filesystem::path targetPath = FileUtils::GetRelativePath(GetRelativePath());
+    if (std::filesystem::exists(targetPath))
+        std::filesystem::remove(targetPath);
+
+    bool fileMoved = FileUtils::MoveFile(tempPath, targetPath);
+    if (!fileMoved)
+        return false;
+
+    return true;
 }
 
 std::string Ffmpeg::GetVersionImpl()

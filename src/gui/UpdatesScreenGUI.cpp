@@ -1,5 +1,7 @@
 #include "UpdatesScreenGUI.h"
 
+// TODO: Disable updating if installed on the system
+
 UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
 {
     qmlRegisterUncreatableType<DependencyInfo>("Echolite.Info.Updates", 1, 0, "DependencyInfo", "Created in c++");
@@ -32,7 +34,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ffmpeg::IsUpdateAvailable(true);
         },
         []() -> bool {
-            return false;
+            return Ffmpeg::UpdateExecutable();
         }
     );
 
@@ -47,7 +49,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ytdlp::IsUpdateAvailable(true);
         },
         []() -> bool {
-            return false;
+            return Ytdlp::UpdateExecutable();
         }
     );
 
@@ -62,7 +64,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return JsRuntime::IsUpdateAvailable(true);
         },
         []() -> bool {
-            return false;
+            return JsRuntime::UpdateExecutable();
         }
     );
 
