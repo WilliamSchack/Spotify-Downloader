@@ -18,6 +18,12 @@ ToggleButton {
     onClicked: _manager.info.updates.SelectDependency(info.type)
 
     readonly property string updateAvailableText: {
+        if (!info.installed)
+            return "X Not Installed!"
+
+        if (info.installedOnSystem)
+            return "Using System Install"
+
         if (info.updating)
             return "🡻 Updating..."
 
@@ -29,10 +35,10 @@ ToggleButton {
 
     readonly property color updateAvailableColour: {
         if (info.updating)
-            return '#5bc6ff'
+            return "#78d0ff"
 
-        if (info.updateAvailable)
-            return "#FF5B5D"
+        if (!info.installed || info.updateAvailable)
+            return "#ff7e80"
         
         return "#9EFFA5"
     }

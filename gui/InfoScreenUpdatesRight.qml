@@ -15,6 +15,12 @@ ColumnLayout
     spacing: 30
 
     readonly property string updateButtonText: {
+        if (root.selectedDependency.downloading)
+            return "Downloading..."
+
+        if (!root.selectedDependency.installed)
+            return "Download"
+
         if (selectedDependency.updating)
             return "Downloading Update..."
 
@@ -58,8 +64,8 @@ ColumnLayout
             }
 
             Text {
-                text: root.selectedDependency.version
-                color: "white"
+                text: root.selectedDependency.installed ? root.selectedDependency.version : "Not Installed!"
+                color: root.selectedDependency.installed ? "white" : "#ff7e80"
                 font.pixelSize: 16
                 font.italic: true
             }
@@ -81,7 +87,8 @@ ColumnLayout
 
                     backgroundColour: "#A16583"
 
-                    enabled: !root.selectedDependency.checkingForUpdates && !root.selectedDependency.updating
+                    enabled: !root.selectedDependency.checkingForUpdates && !root.selectedDependency.updating && !root.selectedDependency.downloading
+                    visible: (root.selectedDependency.installed && !root.selectedDependency.installedOnSystem) || !root.selectedDependency.installed
 
                     onClicked: _manager.info.updates.CheckForUpdatesButtonClicked()
                 }

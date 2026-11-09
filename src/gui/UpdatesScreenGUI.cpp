@@ -1,7 +1,6 @@
 #include "UpdatesScreenGUI.h"
 
-// TODO: Disable updating if installed on the system
-// TODO: Account for not installed dependencies
+// TODO: Dont allow downloads if all dependencies are not installed
 
 UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
 {
@@ -11,6 +10,12 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         DependencyInfo::EDependency::Echolite,
         "Echolite",
         "qrc:/icons/Icon.svg",
+        []() -> bool {
+            return true;
+        },
+        []() -> bool {
+            return false;
+        },
         []() -> std::string {
             return APP_VERSION;
         },
@@ -21,6 +26,9 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             // TODO: Implement update popup
             std::cout << "IMPLEMENT ME!" << std::endl;
             return false;
+        },
+        []() -> bool {
+            return false;
         }
     );
 
@@ -28,6 +36,12 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         DependencyInfo::EDependency::Ffmpeg,
         "ffmpeg",
         "",
+        []() -> bool {
+            return Ffmpeg::IsInstalled();
+        },
+        []() -> bool {
+            return !Ffmpeg::IsInstalledRelative();
+        },
         []() -> std::string {
             return Ffmpeg::GetVersion();
         },
@@ -36,6 +50,9 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         },
         []() -> bool {
             return Ffmpeg::UpdateExecutable();
+        },
+        []() -> bool {
+            return Ffmpeg::DownloadExecutable();
         }
     );
 
@@ -43,6 +60,12 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         DependencyInfo::EDependency::Ytdlp,
         "yt-dlp",
         "",
+        []() -> bool {
+            return Ytdlp::IsInstalled();
+        },
+        []() -> bool {
+            return !Ytdlp::IsInstalledRelative();
+        },
         []() -> std::string {
             return Ytdlp::GetVersion();
         },
@@ -51,6 +74,9 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         },
         []() -> bool {
             return Ytdlp::UpdateExecutable();
+        },
+        []() -> bool {
+            return Ytdlp::DownloadExecutable();
         }
     );
 
@@ -58,6 +84,12 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         DependencyInfo::EDependency::Quickjs,
         "QuickJs",
         "",
+        []() -> bool {
+            return JsRuntime::IsInstalled();
+        },
+        []() -> bool {
+            return !JsRuntime::IsInstalledRelative();
+        },
         []() -> std::string {
             return JsRuntime::GetVersion();
         },
@@ -66,6 +98,9 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         },
         []() -> bool {
             return JsRuntime::UpdateExecutable();
+        },
+        []() -> bool {
+            return JsRuntime::DownloadExecutable();
         }
     );
 
@@ -88,9 +123,9 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
     return GetDependency(_selectedDependencyType);
 }
 
-void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction)
+void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction)
 {
-    DependencyInfo* echoliteInfo = new DependencyInfo(getVersionFunction, updateAvailableFunction, updateFunction, this);
+    DependencyInfo* echoliteInfo = new DependencyInfo(installedFunction, installedOnSystemFunction, getVersionFunction, updateAvailableFunction, updateFunction, downloadFunction, this);
     echoliteInfo->SetType(type);
     echoliteInfo->SetName(name);
     echoliteInfo->SetIconSource(iconSource);
@@ -101,7 +136,10 @@ void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
 {
     DependencyInfo* info = _dependencies[_selectedDependencyType];
 
-    if (info->IsUpdateAvailable())
+    if (!info->GetInstalled())
+        info->Download();
+
+    if (info->GetUpdateAvailable())
         info->DownloadUpdate();
     else
         info->CheckForUpdate();

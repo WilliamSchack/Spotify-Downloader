@@ -33,7 +33,7 @@ class UpdatesScreenGUI : public QObject
         void CheckForUpdatesButtonClicked();
         void SourceButtonClicked();
     private:
-        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction);
+        void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction);
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 

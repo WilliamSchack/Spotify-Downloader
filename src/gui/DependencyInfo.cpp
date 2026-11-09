@@ -1,16 +1,25 @@
 #include "DependencyInfo.h"
 
-DependencyInfo::DependencyInfo(std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, QObject* parent)
-    : QObject(parent), _getVersionFunction(getVersionFunction), _updateAvailableFunction(updateAvailableFunction), _updateFunction(updateFunction)
+DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, QObject* parent)
+    : QObject(parent), _installedFunction(installedFunction), _installedOnSystemFunction(installedOnSystemFunction), _getVersionFunction(getVersionFunction), _updateAvailableFunction(updateAvailableFunction), _updateFunction(updateFunction), _downloadFunction(downloadFunction)
 {
+    CheckInstalled();
     UpdateVersion();
     CheckForUpdate();
 }
 
-#include <iostream>
+void DependencyInfo::CheckInstalled()
+{
+    SetInstalled(_installedFunction());
+    SetInstalledOnSystem(_installedOnSystemFunction());
+}
 
 void DependencyInfo::CheckForUpdate()
 {
+    CheckInstalled();
+    if (!_installed || _installedOnSystem)
+        return;
+
     std::thread([this]() {
         SetCheckingForUpdates(true);
         bool updateAvailable = _updateAvailableFunction();
@@ -25,6 +34,10 @@ void DependencyInfo::CheckForUpdate()
 
 void DependencyInfo::DownloadUpdate()
 {
+    CheckInstalled();
+    if (!_installed || _installedOnSystem)
+        return;
+
     std::thread([this]() {
         SetUpdating(true);
         bool updated = _updateFunction();
@@ -47,12 +60,38 @@ void DependencyInfo::DownloadUpdate()
     }).detach();
 }
 
-void DependencyInfo::UpdateVersion()
+void DependencyInfo::Download()
 {
-    SetVersion(QString::fromStdString(_getVersionFunction()));
+    CheckInstalled();
+    if (_installed)
+        return;
+
+    std::thread([this]() {
+        SetDownloading(true);
+        bool downloaded = _downloadFunction();
+
+        // Call gui stuff on the main thread
+        QMetaObject::invokeMethod(this, [this, downloaded]() {
+            // TODO: Popup when download failed
+
+            SetDownloading(false);
+
+            if (downloaded) {
+                std::cout << "Successfully downloaded " << _name.toStdString() << std::endl;
+                CheckInstalled();
+                UpdateVersion();
+                SetUpdateAvailable(false);
+            } else {
+                std::cout << "Failed to download " << _name.toStdString() << std::endl;
+            }
+        }, Qt::QueuedConnection);
+    }).detach();
 }
 
-bool DependencyInfo::IsUpdateAvailable()
+void DependencyInfo::UpdateVersion()
 {
-    return _updateAvailable;
+    // This may not work properly if the app is installed on the system
+    // Some dependencies (ffmpeg) check the version depending on where its installed from
+
+    SetVersion(QString::fromStdString(_getVersionFunction()));
 }

@@ -90,6 +90,7 @@ std::string Ffmpeg::GetVersionImpl()
     process.AddArgument("-version");
 
     std::string output = process.Execute().Output;
+
 #ifdef __APPLE__
     std::smatch matches;
     if (!std::regex_search(output, matches, std::regex(R"(version\s(\d+\.\d+\.\d+))")))
