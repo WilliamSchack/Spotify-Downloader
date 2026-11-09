@@ -14,6 +14,19 @@ ColumnLayout
 
     spacing: 30
 
+    readonly property string updateButtonText: {
+        if (selectedDependency.updating)
+            return "Downloading Update..."
+
+        if (selectedDependency.checkingForUpdates)
+            return "Checking for Updates..."
+
+        if (selectedDependency.updateAvailable)
+            return "Download Update"
+
+        return "Check for Updates"
+    }
+
     RowLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 110
@@ -62,13 +75,13 @@ ColumnLayout
                 CustomButton {
                     height: parent.height
 
-                    text: root.selectedDependency.checkingForUpdates ? "Checking for Updates..." : (root.selectedDependency.updateAvailable ? "Download Update" : "Check for Updates")
+                    text: root.updateButtonText
                     font.pixelSize: 16
                     radius: 8
 
                     backgroundColour: "#A16583"
 
-                    enabled: !root.selectedDependency.checkingForUpdates
+                    enabled: !root.selectedDependency.checkingForUpdates && !root.selectedDependency.updating
 
                     onClicked: _manager.info.updates.CheckForUpdatesButtonClicked()
                 }

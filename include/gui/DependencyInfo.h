@@ -30,12 +30,15 @@ class DependencyInfo : public QObject
     SIMPLE_QPROPERTY(QString, iconSource, IconSource, _iconSource)
     SIMPLE_QPROPERTY(bool, updateAvailable, UpdateAvailable, _updateAvailable)
     SIMPLE_QPROPERTY(bool, checkingForUpdates, CheckingForUpdates, _checkingForUpdates)
+    SIMPLE_QPROPERTY(bool, updating, Updating, _updating)
 
     public:
         explicit DependencyInfo(std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, QObject* parent);
 
         void CheckForUpdate();
         void DownloadUpdate();
+
+        bool IsUpdateAvailable();
     private:
         void UpdateVersion();
     private:
@@ -50,6 +53,7 @@ class DependencyInfo : public QObject
 
         bool _updateAvailable = false;
         bool _checkingForUpdates = false;
+        bool _updating = false;
 };
 
 #endif

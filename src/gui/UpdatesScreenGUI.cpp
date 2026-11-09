@@ -1,6 +1,7 @@
 #include "UpdatesScreenGUI.h"
 
 // TODO: Disable updating if installed on the system
+// TODO: Account for not installed dependencies
 
 UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
 {
@@ -98,7 +99,12 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
 
 void UpdatesScreenGUI::CheckForUpdatesButtonClicked()
 {
-    _dependencies[_selectedDependencyType]->CheckForUpdate();
+    DependencyInfo* info = _dependencies[_selectedDependencyType];
+
+    if (info->IsUpdateAvailable())
+        info->DownloadUpdate();
+    else
+        info->CheckForUpdate();
 }
 
 void UpdatesScreenGUI::SourceButtonClicked()

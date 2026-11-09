@@ -42,7 +42,8 @@ class Dependency
 
         static bool UpdateExecutable()
         {
-            if (IsInstalledRelative())
+            // Dont update if installed on the system
+            if (!IsInstalledRelative())
                 return false;
 
             return Derived::UpdateExecutableImpl();

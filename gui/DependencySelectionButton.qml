@@ -17,6 +17,26 @@ ToggleButton {
 
     onClicked: _manager.info.updates.SelectDependency(info.type)
 
+    readonly property string updateAvailableText: {
+        if (info.updating)
+            return "🡻 Updating..."
+
+        if (info.updateAvailable)
+            return "🡻 Update Available"
+        
+        return "✓ Up To Date"
+    }
+
+    readonly property color updateAvailableColour: {
+        if (info.updating)
+            return '#5bc6ff'
+
+        if (info.updateAvailable)
+            return "#FF5B5D"
+        
+        return "#9EFFA5"
+    }
+
     RowLayout {
         anchors.fill: parent
 
@@ -60,8 +80,8 @@ ToggleButton {
 
                 Text {
                     // TODO: Replace check/cross with icon
-                    text: root.info.updateAvailable ? "🡻 Update Available" : "✓ Up To Date"
-                    color: root.info.updateAvailable ?  "#FF5B5D" : "#9EFFA5"
+                    text: root.updateAvailableText
+                    color: root.updateAvailableColour
                     font.pixelSize: 12
                     font.italic: true
                 }

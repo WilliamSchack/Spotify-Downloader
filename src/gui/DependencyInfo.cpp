@@ -26,15 +26,23 @@ void DependencyInfo::CheckForUpdate()
 void DependencyInfo::DownloadUpdate()
 {
     std::thread([this]() {
+        SetUpdating(true);
         bool updated = _updateFunction();
 
-        if (!updated)
-            return;
-
         // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this]() {
-            SetUpdateAvailable(false);
-            UpdateVersion();
+        QMetaObject::invokeMethod(this, [this, updated]() {
+            // TODO: Popup when update failed
+
+            SetUpdating(false);
+
+            if (updated) {
+                std::cout << "Successfully updated " << _name.toStdString() << std::endl;
+                SetUpdateAvailable(false);
+                UpdateVersion();
+            } else {
+                std::cout << "Failed to update " << _name.toStdString() << std::endl;
+                SetUpdateAvailable(true);
+            }
         }, Qt::QueuedConnection);
     }).detach();
 }
@@ -42,4 +50,9 @@ void DependencyInfo::DownloadUpdate()
 void DependencyInfo::UpdateVersion()
 {
     SetVersion(QString::fromStdString(_getVersionFunction()));
+}
+
+bool DependencyInfo::IsUpdateAvailable()
+{
+    return _updateAvailable;
 }

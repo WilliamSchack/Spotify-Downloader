@@ -48,7 +48,12 @@ bool Ytdlp::UpdateExecutableImpl()
 
     ExternalProcess process(path);
     process.AddArgument("-U");
-    process.Execute();
+
+    std::string output = process.Execute().Output;
+    if (StringUtils::StartsWith(output, "ERROR:")) {
+        std::cout << "Failed to update yt-dlp with the output: " << output << std::endl;
+        return false;
+    }
 
     return true;
 }
