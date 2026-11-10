@@ -44,4 +44,9 @@ ToggleButton {
             font.italic: true
         }
     }
+
+    Component.onCompleted: {
+        // Check this initially if its the first one
+        checked = root.info.index === 0
+    }
 }
