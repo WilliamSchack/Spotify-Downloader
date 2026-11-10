@@ -147,7 +147,7 @@ std::string Ffmpeg::GetFileNameImpl()
     return "ffmpeg";
 }
 
-std::vector<GitHubRelease> Ffmpeg::GetReleases()
+std::vector<GitHubRelease> Ffmpeg::GetReleasesImpl(const int& resultsPerPage, const int& page)
 {
     // Use release notes from the ffmpeg github mirror (git.ffmpeg.org has a bot check)
     // Versions will not align with the packaged ffmpeg builds

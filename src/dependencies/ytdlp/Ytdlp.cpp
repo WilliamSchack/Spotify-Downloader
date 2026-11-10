@@ -84,7 +84,7 @@ std::string Ytdlp::GetFileNameImpl()
     return "yt-dlp";
 }
 
-std::vector<GitHubRelease> Ytdlp::GetReleases(const int& resultsPerPage, const int& page)
+std::vector<GitHubRelease> Ytdlp::GetReleasesImpl(const int& resultsPerPage, const int& page)
 {
     return GitHubAPI::GetReleases("yt-dlp", "yt-dlp", resultsPerPage, page);
 }

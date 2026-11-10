@@ -3,6 +3,7 @@
 
 #include "FileUtils.h"
 #include "ExternalProcess.h"
+#include "GitHubAPI.h"
 
 #include <string>
 #include <optional>
@@ -14,6 +15,7 @@
 // static std::string GetVersionImpl();
 // static std::string GetLatestVersionImpl();
 // static std::string GetFileNameImpl();
+// static std::vector<GitHubRelease> GetReleasesImpl(const int& resultsPerPage, const int& page)
 
 template<typename Derived>
 class Dependency
@@ -85,6 +87,11 @@ class Dependency
                 return false;
 
             return latestVersion != GetVersion();
+        }
+
+        static std::vector<GitHubRelease> GetReleases(const int& resultsPerPage = 30, const int& page = 1)
+        {
+            Derived::GetReleasesImpl(resultsPerPage, page);
         }
     protected:
         static std::string GetRelativePath()

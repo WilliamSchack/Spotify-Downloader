@@ -100,7 +100,7 @@ std::string JsRuntime::GetFileNameImpl()
     return "qjs";
 }
 
-std::vector<GitHubRelease> JsRuntime::GetReleases(const int& resultsPerPage, const int& page)
+std::vector<GitHubRelease> JsRuntime::GetReleasesImpl(const int& resultsPerPage, const int& page)
 {
     NetworkRequest request;
     request.Url = "https://bellard.org/quickjs/Changelog";

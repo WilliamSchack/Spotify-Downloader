@@ -23,8 +23,6 @@ class Ffmpeg : public Dependency<Ffmpeg>
     friend class Dependency<Ffmpeg>;
 
     public:
-        static std::vector<GitHubRelease> GetReleases();
-
         static FfmpegAudioDetails GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails = true);
 
         static std::filesystem::path Convert(const std::filesystem::path& currentPath, const EExtension& newExtension, const bool& deleteOriginal = true, std::function<void(float)> progressCallback = nullptr);
@@ -40,6 +38,7 @@ class Ffmpeg : public Dependency<Ffmpeg>
         static std::string GetVersionImpl();
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();
+        static std::vector<GitHubRelease> GetReleasesImpl(const int& resultsPerPage, const int& page);
         
         static std::string Execute(const FfmpegAudioDetails& audioDetails, const std::vector<std::string>& args, const std::function<void(float)>& progressCallback = nullptr);
 };

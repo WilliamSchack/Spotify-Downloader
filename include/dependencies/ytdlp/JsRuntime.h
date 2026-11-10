@@ -4,7 +4,6 @@
 #include "Dependency.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"
-#include "GitHubAPI.h"
 #include "ArchiveHandler.h"
 #include "Paths.h"
 
@@ -19,14 +18,13 @@ class JsRuntime : public Dependency<JsRuntime>
 {
     friend class Dependency<JsRuntime>;
 
-    public:
-        static std::vector<GitHubRelease> GetReleases(const int& resultsPerPage, const int& page);
     private:
         static bool DownloadExecutableImpl(std::filesystem::path path);
         static bool UpdateExecutableImpl();
         static std::string GetVersionImpl();
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();
+        static std::vector<GitHubRelease> GetReleasesImpl(const int& resultsPerPage, const int& page);
 };
 
 #endif
