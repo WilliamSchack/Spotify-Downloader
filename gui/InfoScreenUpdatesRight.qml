@@ -35,8 +35,10 @@ ColumnLayout
 
     RowLayout {
         Layout.fillWidth: true
-        Layout.preferredHeight: 110
-        Layout.maximumHeight: 110
+        Layout.preferredHeight: 100
+        Layout.maximumHeight: 100
+
+        spacing: 20
 
         Image {
             Layout.preferredHeight: parent.height
@@ -51,10 +53,10 @@ ColumnLayout
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Layout.topMargin: 10
-            Layout.bottomMargin: 10
+            Layout.topMargin: 5
+            Layout.bottomMargin: 5
 
-            spacing: 0
+            spacing: 3
 
             Text {
                 text: root.selectedDependency.name
@@ -96,7 +98,7 @@ ColumnLayout
                 CustomButton {
                     height: parent.height
 
-                    text: "Source"
+                    text: "Website"
                     font.pixelSize: 16
                     radius: 8
 
