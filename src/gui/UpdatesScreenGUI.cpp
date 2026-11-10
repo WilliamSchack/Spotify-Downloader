@@ -31,8 +31,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return false;
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
-            // TESTING
-            std::vector<GitHubRelease> releases = JsRuntime::GetReleases(resultsPerPage, page);
+            std::vector<GitHubRelease> releases = VersionManager::GetReleases(resultsPerPage, page);
             
             QList<GUIReleaseInfo> guiReleases;
             for (GitHubRelease release : releases) {
@@ -49,7 +48,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
 
     CreateDependency(
         DependencyInfo::EDependency::Ffmpeg,
-        "ffmpeg",
+        "FFmpeg",
         "",
         []() -> bool {
             return Ffmpeg::IsInstalled();
@@ -70,7 +69,18 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ffmpeg::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
-            return {};
+            std::vector<GitHubRelease> releases = Ffmpeg::GetReleases(resultsPerPage, page);
+            
+            QList<GUIReleaseInfo> guiReleases;
+            for (GitHubRelease release : releases) {
+                GUIReleaseInfo guiRelease;
+                guiRelease.Name = QString::fromStdString(release.Name);
+                guiRelease.Body = QString::fromStdString(release.Body);
+
+                guiReleases.push_back(guiRelease);
+            }
+
+            return guiReleases;
         }
     );
 
@@ -97,7 +107,18 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ytdlp::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
-            return {};
+            std::vector<GitHubRelease> releases = Ytdlp::GetReleases(resultsPerPage, page);
+            
+            QList<GUIReleaseInfo> guiReleases;
+            for (GitHubRelease release : releases) {
+                GUIReleaseInfo guiRelease;
+                guiRelease.Name = QString::fromStdString(release.Name);
+                guiRelease.Body = QString::fromStdString(release.Body);
+
+                guiReleases.push_back(guiRelease);
+            }
+
+            return guiReleases;
         }
     );
 
@@ -124,7 +145,18 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return JsRuntime::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
-            return {};
+            std::vector<GitHubRelease> releases = JsRuntime::GetReleases(resultsPerPage, page);
+            
+            QList<GUIReleaseInfo> guiReleases;
+            for (GitHubRelease release : releases) {
+                GUIReleaseInfo guiRelease;
+                guiRelease.Name = QString::fromStdString(release.Name);
+                guiRelease.Body = QString::fromStdString(release.Body);
+
+                guiReleases.push_back(guiRelease);
+            }
+
+            return guiReleases;
         }
     );
 

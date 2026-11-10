@@ -15,8 +15,7 @@ QList<GUIReleaseInfo> DependencyInfo::GetReleases()
 
 void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page, const bool& useCache)
 {
-    // TODO: Cache releases
-    //       Add view more button
+    // TODO: Add view more button
 
     std::thread([this, resultsPerPage, page, useCache]() {
         SetFailedToGetReleases(false);
