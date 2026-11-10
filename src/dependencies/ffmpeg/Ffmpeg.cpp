@@ -147,6 +147,35 @@ std::string Ffmpeg::GetFileNameImpl()
     return "ffmpeg";
 }
 
+std::vector<GitHubRelease> Ffmpeg::GetReleases()
+{
+    // Use release notes from the ffmpeg github mirror (git.ffmpeg.org has a bot check)
+    // Versions will not align with the packaged ffmpeg builds
+
+    NetworkRequest request;
+    request.Url = "https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/Changelog";
+    NetworkResponse response = request.Get();
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to get ffmpeg release notes: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return {};
+    }
+                     // Its beautiful
+    std::regex regex(R"(\nversion\s(\S+?):[^\n]*\n([\S\s]+?)(?=\nversion\s))");
+    std::vector<GitHubRelease> releases;
+
+    for (std::sregex_iterator i = std::sregex_iterator(response.Body.begin(), response.Body.end(), regex); i != std::sregex_iterator(); i++) {
+        std::smatch matches = *i;
+        
+        GitHubRelease release;
+        release.Name = matches[1];
+        release.Body = matches[2];
+
+        releases.push_back(release);
+    }
+
+    return releases;
+}
+
 FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath, const bool& getVolumeDetails)
 {
     FfmpegAudioDetails details;
