@@ -11,6 +11,8 @@ class GitHubAPI
     public:
         static std::string GetLatestTag(const std::string& repoOwner, const std::string& repoName);
         static std::string GetRecentTag(const std::string& repoOwner, const std::string& repoName, const int& index);
+    private:
+        static NetworkRequest GetRequest(const std::string& endpoint);
 };
 
 #endif

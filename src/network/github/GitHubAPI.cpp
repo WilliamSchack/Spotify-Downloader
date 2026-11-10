@@ -1,5 +1,15 @@
 #include "GitHubAPI.h"
 
+NetworkRequest GitHubAPI::GetRequest(const std::string& endpoint)
+{
+    NetworkRequest request;
+    request.Url = "https://api.github.com/" + endpoint;
+    request.SetHeader("User-Agent", "WilliamSchack/Echolite");
+    request.SetHeader("Content-Type", "application/json");
+
+    return request;
+}
+
 std::string GitHubAPI::GetLatestTag(const std::string& repoOwner, const std::string& repoName)
 {
     return GetRecentTag(repoOwner, repoName, 0);
@@ -7,10 +17,7 @@ std::string GitHubAPI::GetLatestTag(const std::string& repoOwner, const std::str
 
 std::string GitHubAPI::GetRecentTag(const std::string& repoOwner, const std::string& repoName, const int& index)
 {
-    NetworkRequest request;
-    request.Url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";
-    request.SetHeader("User-Agent", "WilliamSchack/Echolite");
-    request.SetHeader("Content-Type", "application/json");
+    NetworkRequest request = GetRequest("repos/" + repoOwner + "/" + repoName + "/tags");
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
