@@ -99,3 +99,29 @@ std::string JsRuntime::GetFileNameImpl()
 {
     return "qjs";
 }
+
+std::vector<GitHubRelease> JsRuntime::GetReleases(const int& resultsPerPage, const int& page)
+{
+    NetworkRequest request;
+    request.Url = "https://bellard.org/quickjs/Changelog";
+    NetworkResponse response = request.Get();
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to get QuickJs release notes: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return {};
+    }
+
+    std::regex regex(R"((\S+?):\n\n([\S\s]+?)\n(?=\n\d|(?![\S\s])))");
+    std::vector<GitHubRelease> releases;
+
+    for (std::sregex_iterator i = std::sregex_iterator(response.Body.begin(), response.Body.end(), regex); i != std::sregex_iterator(); i++) {
+        std::smatch matches = *i;
+        
+        GitHubRelease release;
+        release.Name = matches[1];
+        release.Body = matches[2];
+
+        releases.push_back(release);
+    }
+
+    return releases;
+}
