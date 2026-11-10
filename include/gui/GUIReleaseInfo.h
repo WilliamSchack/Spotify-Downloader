@@ -1,8 +1,6 @@
 #ifndef GUIRELEASEINFO_H
 #define GUIRELEASEINFO_H
 
-#include <string>
-
 #include <QObject>
 
 struct GUIReleaseInfo

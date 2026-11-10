@@ -9,6 +9,7 @@
 #include <thread>
 
 #include <QObject>
+#include <QList>
 #include <QMetaObject>
 
 class DependencyInfo : public QObject
