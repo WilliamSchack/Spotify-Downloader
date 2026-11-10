@@ -33,3 +33,31 @@ std::string GitHubAPI::GetRecentTag(const std::string& repoOwner, const std::str
 
     return responseJson[index]["name"];
 }
+
+std::vector<GitHubRelease> GitHubAPI::GetReleases(const std::string& repoOwner, const std::string& repoName, const int& resultsPerPage, const int& page)
+{
+    NetworkRequest request = GetRequest("repos/" + repoOwner + "/" + repoName + "/releases");
+    NetworkResponse response = request.Get();
+
+    if (response.CurlCode != CURLE_OK) {
+        std::cout << "Failed to get releases: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        return {};
+    }
+
+    nlohmann::json responseJson = nlohmann::json::parse(response.Body);
+    if (!responseJson.is_array()) {
+        std::cout << "Failed to get releases: " << responseJson.dump() << std::endl;
+        return {};
+    }
+
+    std::vector<GitHubRelease> releases;
+    for (nlohmann::json releaseJson : responseJson) {
+        GitHubRelease release;
+        release.Name = releaseJson["name"];
+        release.Body = releaseJson["body"];
+
+        releases.push_back(release);
+    }
+
+    return releases;
+}
