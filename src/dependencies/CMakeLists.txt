@@ -2,8 +2,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/ExternalProcess.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/ArchiveHandler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/VersionManager.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/GitHubUtils.cpp
 )
 
+add_subdirectory(github)
 add_subdirectory(ffmpeg)
 add_subdirectory(ytdlp)

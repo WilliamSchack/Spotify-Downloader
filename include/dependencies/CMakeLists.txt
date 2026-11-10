@@ -6,8 +6,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/ArchiveHandler.h
 	${CMAKE_CURRENT_SOURCE_DIR}/Dependency.h
 	${CMAKE_CURRENT_SOURCE_DIR}/VersionManager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/GitHubUtils.h
 )
 
+add_subdirectory(github)
 add_subdirectory(ffmpeg)
 add_subdirectory(ytdlp)
