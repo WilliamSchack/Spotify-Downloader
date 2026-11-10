@@ -6,18 +6,18 @@
 class Notice
 {
     Q_GADGET
-    Q_PROPERTY(int id READ GetId CONSTANT)
+    Q_PROPERTY(int index READ GetIndex CONSTANT)
     Q_PROPERTY(QString title READ GetTitle CONSTANT)
     Q_PROPERTY(QString releaseDate READ GetReleaseDate CONSTANT)
     Q_PROPERTY(QString content READ GetContent CONSTANT)
 
     public:
-        int     GetId()          const { return Id; }
+        int     GetIndex()       const { return Title; }
         QString GetTitle()       const { return Title; }
         QString GetReleaseDate() const { return ReleaseDate; }
         QString GetContent()     const { return Content; }
 
-        int Id = -1;
+        int Index = 0;
         QString Title = "";
         QString ReleaseDate = "";
         QString Content = "";
