@@ -84,7 +84,7 @@ std::string JsRuntime::GetLatestVersionImpl()
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get the latest version: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        std::cout << "Failed to get the latest version for QuickJs: " << curl_easy_strerror(response.CurlCode) << std::endl;
         return "";
     }
 

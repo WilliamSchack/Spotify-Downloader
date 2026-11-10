@@ -21,13 +21,13 @@ std::string GitHubAPI::GetRecentTag(const std::string& repoOwner, const std::str
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get the latest version: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        std::cout << "Failed to get the latest version for " << repoOwner << "/" << repoName << ": " << curl_easy_strerror(response.CurlCode) << std::endl;
         return "";
     }
 
     nlohmann::json responseJson = nlohmann::json::parse(response.Body);
     if (!responseJson.is_array()) {
-        std::cout << "Failed to get the latest version: " << responseJson.dump() << std::endl;
+        std::cout << "Failed to get the latest version for " << repoOwner << "/" << repoName << ": " << responseJson.dump() << std::endl;
         return "";
     }
 
