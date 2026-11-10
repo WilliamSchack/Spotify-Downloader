@@ -1,30 +1,15 @@
 import QtQuick
 
 Column {
-    property alias label: headerText.text
+    property alias label: header.label
     default property alias content: items.children
 
     width: parent.width
     spacing: 20
 
     // Header
-    Column {
-        width: parent.width
-        height: 34
-        spacing: 10
-
-        Text {
-            id: headerText
-            color: "white"
-            font.bold: true
-            font.pixelSize: 20
-        }
-
-        Rectangle {
-            width: parent.width
-            height: 1
-            color: "#E2A5C4"
-        }
+    Header {
+        id: header
     }
 
     // Items

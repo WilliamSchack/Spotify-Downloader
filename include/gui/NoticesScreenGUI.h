@@ -18,11 +18,13 @@
 class NoticesScreenGUI : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QList<Notice> notices READ GetNotices CONSTANT)
+    Q_PROPERTY(QList<Notice> notices READ GetNotices NOTIFY NoticesChanged)
     Q_PROPERTY(Notice selectedNotice READ GetSelectedNotice NOTIFY SelectedNoticeChanged)
 
     public:
         explicit NoticesScreenGUI(QObject* parent = 0);
+
+        Q_INVOKABLE void SelectNotice(const int& index);
 
         QList<Notice> GetNotices();
         Notice GetSelectedNotice();
@@ -41,6 +43,7 @@ class NoticesScreenGUI : public QObject
 
         std::filesystem::path _noticesFilePathCache = "";
     signals:
+        void NoticesChanged();
         void SelectedNoticeChanged();
 };
 

@@ -12,12 +12,12 @@ class Notice
     Q_PROPERTY(QString content READ GetContent CONSTANT)
 
     public:
-        int     GetIndex()       const { return Title; }
+        int     GetIndex()       const { return Index; }
         QString GetTitle()       const { return Title; }
         QString GetReleaseDate() const { return ReleaseDate; }
         QString GetContent()     const { return Content; }
 
-        int Index = 0;
+        int     Index = 0;
         QString Title = "";
         QString ReleaseDate = "";
         QString Content = "";

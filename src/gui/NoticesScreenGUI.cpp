@@ -2,14 +2,23 @@
 
 NoticesScreenGUI::NoticesScreenGUI(QObject* parent) : QObject(parent)
 {
-    qmlRegisterUncreatableType<Notice>("Echolite.Info.Notices", 1, 0, "Notice", "Created in c++");
-
     UpdateNotices();
+}
+
+Q_INVOKABLE void NoticesScreenGUI::SelectNotice(const int& index)
+{
+    _selectedNoticeIndex = index;
+    emit SelectedNoticeChanged();
 }
 
 QList<Notice> NoticesScreenGUI::GetNotices()
 {
     return _notices;
+}
+
+Notice NoticesScreenGUI::GetSelectedNotice()
+{
+    return _notices[_selectedNoticeIndex];
 }
 
 void NoticesScreenGUI::UpdateNotices()
@@ -35,12 +44,14 @@ void NoticesScreenGUI::UpdateNotices()
 
         Notice notice;
         notice.Index = i;
-        notice.ReleaseDate = noticeJson["release_date"];
-        notice.Title = noticeJson["title"];
-        notice.Content = noticeJson["content"];
+        notice.ReleaseDate = QString::fromStdString(noticeJson["release_date"]);
+        notice.Title = QString::fromStdString(noticeJson["title"]);
+        notice.Content = QString::fromStdString(noticeJson["content"]);
 
         _notices.push_back(notice);
     }
+
+    emit NoticesChanged();
 }
 
 void NoticesScreenGUI::UpdateNoticesCache(const nlohmann::json& json)

@@ -7,6 +7,7 @@ Column
     id: root
 
     width: parent.width
+    height: parent.height
 
     ToggleButtonGroup {
         width: root.width

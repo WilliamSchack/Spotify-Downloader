@@ -28,5 +28,7 @@
         <file>DependencySelectionButton.qml</file>
         <file>MinorSection.qml</file>
         <file>MajorSection.qml</file>
+        <file>NoticeSelectionButton.qml</file>
+        <file>Header.qml</file>
     </qresource>
 </RCC>

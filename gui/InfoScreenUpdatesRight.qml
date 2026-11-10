@@ -141,7 +141,7 @@ ColumnLayout
                 color: "white"
                 font.pixelSize: 14
                 wrapMode: Text.Wrap
-                textFormat: TextEdit.MarkdownText
+                textFormat: Text.MarkdownText
 
                 onLinkActivated: (link) => { Qt.openUrlExternally(link) }
 
