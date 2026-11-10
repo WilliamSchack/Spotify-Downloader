@@ -4,6 +4,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/VersionManager.cpp
 )
 
-add_subdirectory(github)
 add_subdirectory(ffmpeg)
 add_subdirectory(ytdlp)

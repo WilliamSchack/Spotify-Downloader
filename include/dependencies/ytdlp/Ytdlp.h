@@ -6,7 +6,7 @@
 #include "Ffmpeg.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"
-#include "GitHubUtils.h"
+#include "GitHubAPI.h"
 #include "FileUtils.h"
 #include "MathUtils.h"
 #include "YtdlpResult.h"

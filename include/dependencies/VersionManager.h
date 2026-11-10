@@ -1,7 +1,7 @@
 #ifndef SELFUPDATER_H
 #define SELFUPDATER_H
 
-#include "GitHubUtils.h"
+#include "GitHubAPI.h"
 
 class VersionManager
 {

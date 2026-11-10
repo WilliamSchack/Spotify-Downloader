@@ -4,7 +4,9 @@
 #include "NetworkRequest.h"
 #include "JsonUtils.h"
 
-class GitHubUtils
+#include <nlohmann/json.hpp>
+
+class GitHubAPI
 {
     public:
         static std::string GetLatestTag(const std::string& repoOwner, const std::string& repoName);

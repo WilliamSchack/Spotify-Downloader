@@ -132,7 +132,7 @@ std::string Ffmpeg::GetLatestVersionImpl()
     nlohmann::json json = nlohmann::json::parse(response.Body);
     return json["version"];
 #else
-    std::string latestTag = GitHubUtils::GetRecentTag("BtbN", "FFmpeg-Builds", 1);
+    std::string latestTag = GitHubAPI::GetRecentTag("BtbN", "FFmpeg-Builds", 1);
 
     std::smatch matches;
     if (!std::regex_search(latestTag, matches, std::regex(R"(\D-(\d+-\d+-\d+)-)")))

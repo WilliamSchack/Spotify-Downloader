@@ -1,11 +1,11 @@
-#include "GitHubUtils.h"
+#include "GitHubAPI.h"
 
-std::string GitHubUtils::GetLatestTag(const std::string& repoOwner, const std::string& repoName)
+std::string GitHubAPI::GetLatestTag(const std::string& repoOwner, const std::string& repoName)
 {
     return GetRecentTag(repoOwner, repoName, 0);
 }
 
-std::string GitHubUtils::GetRecentTag(const std::string& repoOwner, const std::string& repoName, const int& index)
+std::string GitHubAPI::GetRecentTag(const std::string& repoOwner, const std::string& repoName, const int& index)
 {
     NetworkRequest request;
     request.Url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/tags";

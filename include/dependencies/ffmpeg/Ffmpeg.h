@@ -5,7 +5,7 @@
 #include "FfmpegAudioDetails.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"
-#include "GitHubUtils.h"
+#include "GitHubAPI.h"
 #include "ArchiveHandler.h"
 #include "Paths.h"
 #include "CodecFactory.h"

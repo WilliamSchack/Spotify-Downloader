@@ -76,7 +76,7 @@ std::string Ytdlp::GetVersionImpl()
 
 std::string Ytdlp::GetLatestVersionImpl()
 {
-    return GitHubUtils::GetLatestTag("yt-dlp", "yt-dlp");
+    return GitHubAPI::GetLatestTag("yt-dlp", "yt-dlp");
 }
 
 std::string Ytdlp::GetFileNameImpl()
