@@ -6,7 +6,6 @@ DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::fun
     CheckInstalled();
     UpdateVersion();
     CheckForUpdate();
-    UpdateReleases(30, 1);
 }
 
 QList<GUIReleaseInfo> DependencyInfo::GetReleases()
@@ -14,16 +13,27 @@ QList<GUIReleaseInfo> DependencyInfo::GetReleases()
     return _releases;
 }
 
-void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page)
+void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page, const bool& useCache)
 {
     // TODO: Cache releases
     //       Add view more button
 
-    std::thread([this, resultsPerPage, page]() {
+    std::thread([this, resultsPerPage, page, useCache]() {
         SetFailedToGetReleases(false);
         SetLoadingReleases(true);
 
-        QList<GUIReleaseInfo> releases = _getReleasesFunction(resultsPerPage, page);
+        QList<GUIReleaseInfo> releases;
+        if (useCache) {
+            releases = LoadReleasesCache();
+            
+            if (releases.size() == 0)
+                releases = _getReleasesFunction(resultsPerPage, page);
+        } else {
+            releases = _getReleasesFunction(resultsPerPage, page);
+        }
+
+        if (releases.size() != 0)
+            UpdateReleasesCache(releases);
 
         // Size down headers, they get too big in the gui otherwise
         for (GUIReleaseInfo& release : releases) {
@@ -46,6 +56,79 @@ void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page)
             }
         }, Qt::QueuedConnection);
     }).detach();
+}
+
+void DependencyInfo::UpdateReleasesCache(const QList<GUIReleaseInfo>& releases)
+{
+    std::filesystem::path filePath = GetReleasesCachePath();
+    if (filePath.empty()) {
+        std::cout << "Could not load releases cache for" << _name.toStdString() << ", the file path was not found" << std::endl;
+        return;
+    }
+
+    nlohmann::json json = nlohmann::json::array();
+    for (GUIReleaseInfo release : releases) {
+        nlohmann::json releaseJson = {
+            { "name", release.Name.toStdString() },
+            { "body", release.Body.toStdString() }
+        };
+
+        json.push_back(releaseJson);
+    };
+
+    std::ofstream file(filePath);
+    std::string contents = json.dump(4);
+    file << contents;
+    file.close();
+}
+
+QList<GUIReleaseInfo> DependencyInfo::LoadReleasesCache()
+{
+    std::filesystem::path filePath = GetReleasesCachePath();
+    if (filePath.empty()) {
+        std::cout << "Could not load releases cache for" << _name.toStdString() << ", the file path was not found" << std::endl;
+        return {};
+    }
+
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        std::cout << "Could not open releases cache file at " << filePath << std::endl;
+        return {};
+    }
+
+    std::string contents = std::string((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+    file.close();
+
+    // Parse file
+    nlohmann::json json = nlohmann::json::parse(contents);
+    if (!json.is_array()) {
+        std::cout << "Could not read releases json for " << _name.toStdString() << std::endl;
+        return {};
+    }
+
+    QList<GUIReleaseInfo> releases;
+    for (nlohmann::json releaseJson : json) {
+        GUIReleaseInfo release;
+        release.Name = QString::fromStdString(releaseJson["name"]);
+        release.Body = QString::fromStdString(releaseJson["body"]);
+
+        releases.push_back(release);
+    }
+
+    return releases;
+}
+
+std::filesystem::path DependencyInfo::GetReleasesCachePath()
+{
+    if (!_releasesFilePathCache.empty())
+        return _releasesFilePathCache;
+
+    std::filesystem::path configPath = Paths::GetConfigDir();
+    if (configPath.empty())
+        return "";
+
+    _releasesFilePathCache = configPath / (_name.toStdString() + "_Releases.json");
+    return _releasesFilePathCache;
 }
 
 void DependencyInfo::CheckInstalled()
@@ -71,6 +154,8 @@ void DependencyInfo::CheckForUpdate()
             SetCheckingForUpdates(false);
 
             if (_updateAvailable)
+                UpdateReleases(30, 1, false);
+            else
                 UpdateReleases();
         }, Qt::QueuedConnection);
     }).detach();

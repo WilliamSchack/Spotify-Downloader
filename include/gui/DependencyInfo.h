@@ -3,6 +3,7 @@
 
 #include "EasyQProperties.h"
 #include "GUIReleaseInfo.h"
+#include "Paths.h"
 
 #include <functional>
 #include <thread>
@@ -50,8 +51,12 @@ class DependencyInfo : public QObject
         void DownloadUpdate();
         void Download();
     private:
-        void UpdateReleases(const int& resultsPerPage = 30, const int& page = 1);
+        void UpdateReleases(const int& resultsPerPage = 30, const int& page = 1, const bool& useCache = true);
         void UpdateVersion();
+
+        void UpdateReleasesCache(const QList<GUIReleaseInfo>& releases);
+        QList<GUIReleaseInfo> LoadReleasesCache();
+        std::filesystem::path GetReleasesCachePath();
     private:
         std::function<bool()> _installedFunction;
         std::function<bool()> _installedOnSystemFunction;
@@ -69,6 +74,7 @@ class DependencyInfo : public QObject
         QString _iconSource = "";
 
         QList<GUIReleaseInfo> _releases;
+        std::filesystem::path _releasesFilePathCache = "";
 
         bool _installed = true;
         bool _installedOnSystem = true;
