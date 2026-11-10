@@ -84,6 +84,11 @@ std::string Ytdlp::GetFileNameImpl()
     return "yt-dlp";
 }
 
+std::vector<GitHubRelease> Ytdlp::GetReleases(const int& resultsPerPage, const int& page)
+{
+    return GitHubAPI::GetReleases("yt-dlp", "yt-dlp", resultsPerPage, page);
+}
+
 // Assumes the path has no extension
 YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs, std::function<void(float)> progressCallback)
 {

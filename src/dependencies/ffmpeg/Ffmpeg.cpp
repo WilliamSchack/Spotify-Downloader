@@ -160,7 +160,7 @@ std::vector<GitHubRelease> Ffmpeg::GetReleases()
         return {};
     }
                      // Its beautiful
-    std::regex regex(R"(\nversion\s(\S+?):[^\n]*\n([\S\s]+?)(?=\nversion\s))");
+    std::regex regex(R"(\nversion\s(\S+?):[^\n]*\n([\S\s]+?)\n\n(?=\nversion\s))");
     std::vector<GitHubRelease> releases;
 
     for (std::sregex_iterator i = std::sregex_iterator(response.Body.begin(), response.Body.end(), regex); i != std::sregex_iterator(); i++) {

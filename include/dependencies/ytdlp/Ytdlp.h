@@ -21,6 +21,8 @@ class Ytdlp : public Dependency<Ytdlp>
     friend class Dependency<Ytdlp>;
 
     public:
+        static std::vector<GitHubRelease> GetReleases(const int& resultsPerPage, const int& page);
+
         static YtdlpResult Download(const std::string& url, const std::filesystem::path& pathNoExtension, const std::vector<std::string>& extraArgs = std::vector<std::string>(), std::function<void(float)> progressCallback = nullptr);
     private:
         static bool DownloadExecutableImpl(std::filesystem::path path);
