@@ -16,11 +16,23 @@ QList<GUIReleaseInfo> DependencyInfo::GetReleases()
 
 void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page)
 {
+    // TODO: Cache releases
+    //       Add view more button
+
     std::thread([this, resultsPerPage, page]() {
         SetFailedToGetReleases(false);
         SetLoadingReleases(true);
 
         QList<GUIReleaseInfo> releases = _getReleasesFunction(resultsPerPage, page);
+
+        // Size down headers, they get too big in the gui otherwise
+        for (GUIReleaseInfo& release : releases) {
+            std::string body = release.Body.toStdString();
+            body = StringUtils::ReplaceAll(release.Body.toStdString(), "# ", "## ");
+            body = StringUtils::ReplaceAll(release.Body.toStdString(), "## ", "### ");
+
+            release.Body = QString::fromStdString(body);
+        }
 
         // Call gui stuff on the main thread
         QMetaObject::invokeMethod(this, [this, releases]() {
@@ -57,6 +69,9 @@ void DependencyInfo::CheckForUpdate()
         QMetaObject::invokeMethod(this, [this, updateAvailable]() {
             SetUpdateAvailable(updateAvailable);
             SetCheckingForUpdates(false);
+
+            if (_updateAvailable)
+                UpdateReleases();
         }, Qt::QueuedConnection);
     }).detach();
 }   

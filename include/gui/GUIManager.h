@@ -25,6 +25,7 @@ class GUIManager : public QObject
         SettingsScreenGUI* GetSettingsManager() const;
     private:
         void SetupTrayIcon();
+        void SetupColours();
         void SendNotification(const std::string& message);
     private:
         static inline constexpr int NOTIFICATION_MS = 5000;

@@ -115,7 +115,7 @@ ColumnLayout
         Layout.fillHeight: true
 
         clip: true
-        spacing: 20
+        spacing: 30
 
         property bool scrollBarActive: contentHeight > height
 
@@ -132,9 +132,19 @@ ColumnLayout
             label: modelData.name
 
             Text {
+                width: parent.width
+
                 text: modelData.body
                 color: "white"
                 font.pixelSize: 14
+                wrapMode: Text.Wrap
+                textFormat: TextEdit.MarkdownText
+
+                onLinkActivated: (link) => { Qt.openUrlExternally(link) }
+
+                HoverHandler {
+                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
             }
         }
 

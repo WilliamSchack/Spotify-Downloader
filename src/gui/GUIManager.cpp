@@ -7,6 +7,7 @@ GUIManager::GUIManager(QObject* parent) : QObject(parent)
     _settingsManager = new SettingsScreenGUI(this);
 
     SetupTrayIcon();
+    SetupColours();
 
     connect(_musicManager, &MusicScreenGUI::RequestNotification, this, &GUIManager::SendNotification);
 }
@@ -37,6 +38,15 @@ void GUIManager::SetupTrayIcon()
     _trayIcon.setIcon(QIcon(":/icons/Icon.png"));
     _trayIcon.setContextMenu(trayMenu);
     _trayIcon.show();
+}
+
+void GUIManager::SetupColours()
+{
+    // Cant set the link colour for markdown text in qml, do it here instead
+
+    QPalette palette = qApp->palette();
+    palette.setColor(QPalette::Link, QColor("#4ec1ff"));
+    qApp->setPalette(palette);
 }
 
 void GUIManager::SendNotification(const std::string& message)

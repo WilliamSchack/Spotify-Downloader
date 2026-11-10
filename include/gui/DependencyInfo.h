@@ -50,7 +50,7 @@ class DependencyInfo : public QObject
         void DownloadUpdate();
         void Download();
     private:
-        void UpdateReleases(const int& resultsPerPage, const int& page);
+        void UpdateReleases(const int& resultsPerPage = 30, const int& page = 1);
         void UpdateVersion();
     private:
         std::function<bool()> _installedFunction;
