@@ -19,20 +19,25 @@ ToggleButton {
     ColumnLayout {
         anchors.fill: parent
 
+        anchors.topMargin: 5
+        anchors.bottomMargin: 8
+
         Text {
             Layout.fillWidth: true
+            Layout.fillHeight: true
 
             text: root.info.title
             color: "white"
-            font.pixelSize: 12
-            font.italic: true
+            font.pixelSize: 16
+            font.bold: true
 
             elide: Text.ElideRight
         }
 
-        Item { Layout.fillWidth: true }
-
         Text {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
             text: root.info.releaseDate
             color: "white"
             font.pixelSize: 12
