@@ -2,7 +2,7 @@ import QtQuick
 
 Column {
     property alias label: headerText.text
-    default property alias content: settings.children
+    default property alias content: items.children
 
     width: parent.width
     spacing: 10
@@ -17,7 +17,7 @@ Column {
 
     // Items
     Column {
-        id: settings
+        id: items
         width: parent.width
         spacing: 10
     }

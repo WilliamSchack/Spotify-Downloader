@@ -11,11 +11,9 @@
         <file>SingleCharTextField.qml</file>
         <file>CustomComboBox.qml</file>
         <file>SettingsItem.qml</file>
-        <file>SettingsMajorSection.qml</file>
         <file>CustomTextField.qml</file>
         <file>IntTextField.qml</file>
         <file>DoubleTextField.qml</file>
-        <file>SettingsMinorSection.qml</file>
         <file>SettingsSidebarLink.qml</file>
         <file>SettingsSidebarTrack.qml</file>
         <file>SettingsSidebarGroup.qml</file>
@@ -28,5 +26,7 @@
         <file>InfoScreenNoticesLeft.qml</file>
         <file>InfoScreenUpdatesLeft.qml</file>
         <file>DependencySelectionButton.qml</file>
+        <file>MinorSection.qml</file>
+        <file>MajorSection.qml</file>
     </qresource>
 </RCC>

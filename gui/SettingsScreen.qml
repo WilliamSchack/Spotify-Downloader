@@ -254,10 +254,10 @@ RowLayout {
                     width: parent.width - (settingsFlickableRight.scrollBarActive ? 20 : 0)
                     spacing: 30
 
-                    SettingsMajorSection {
+                    MajorSection {
                         label: "Output"
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionAudio
                             label: "Audio"
 
@@ -332,7 +332,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionMetadata
                             label: "Metadata"
 
@@ -368,7 +368,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionFileManagement
                             label: "File Management"
 
@@ -427,7 +427,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionLyricsFile
                             label: "Lyrics File"
 
@@ -463,7 +463,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionPlaylistFile
                             label: "Playlist File"
 
@@ -510,10 +510,10 @@ RowLayout {
                         }
                     }
 
-                    SettingsMajorSection {
+                    MajorSection {
                         label: "Downloading"
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionDownloadingGeneral
                             label: "General"
 
@@ -569,10 +569,10 @@ RowLayout {
                         }
                     }
 
-                    SettingsMajorSection {
+                    MajorSection {
                         label: "Platforms"
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionYouTube
                             label: "YouTube"
 
@@ -654,10 +654,10 @@ RowLayout {
                         }
                     }
 
-                    SettingsMajorSection {
+                    MajorSection {
                         label: "Interface"
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionInterfaceGeneral
                             label: "General"
 
@@ -680,7 +680,7 @@ RowLayout {
                             }
                         }
 
-                        SettingsMinorSection {
+                        MinorSection {
                             id: sectionUpdates
                             label: "Updates"
 

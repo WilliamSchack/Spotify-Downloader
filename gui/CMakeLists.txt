@@ -14,6 +14,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/IntTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/DoubleTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomComboBox.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/MajorSection.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/MinorSection.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenUpdatesLeft.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenUpdatesRight.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenNoticesLeft.qml
@@ -22,8 +24,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenSupportersRight.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/DependencySelectionButton.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsItem.qml
-	${CMAKE_CURRENT_SOURCE_DIR}/SettingsMajorSection.qml
-	${CMAKE_CURRENT_SOURCE_DIR}/SettingsMinorSection.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarTrack.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarLink.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarGroup.qml
