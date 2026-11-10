@@ -4,6 +4,7 @@
 #include "Notice.h"
 #include "NetworkRequest.h"
 #include "Paths.h"
+#include "StringUtils.h"
 
 #include <string>
 

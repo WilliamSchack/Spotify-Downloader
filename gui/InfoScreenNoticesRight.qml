@@ -31,23 +31,11 @@ ColumnLayout
             policy: flickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
         }
 
-        Text {
+        MarkdownText {
             id: contents
-
             width: parent.width - (flickable.scrollBarActive ? 20 : 0)
-            height: 100
 
             text: _manager.info.notices.selectedNotice.content
-            color: "white"
-            font.pixelSize: 14
-            wrapMode: Text.Wrap
-            textFormat: Text.MarkdownText
-
-            onLinkActivated: (link) => { Qt.openUrlExternally(link) }
-
-            HoverHandler {
-                cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-            }
         }
     }
 }

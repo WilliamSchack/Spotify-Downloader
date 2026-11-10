@@ -30,5 +30,6 @@
         <file>MajorSection.qml</file>
         <file>NoticeSelectionButton.qml</file>
         <file>Header.qml</file>
+        <file>MarkdownText.qml</file>
     </qresource>
 </RCC>

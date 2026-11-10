@@ -134,20 +134,8 @@ ColumnLayout
             width: ListView.view.width - (changelog.scrollBarActive ? 20 : 0)
             label: modelData.name
 
-            Text {
-                width: parent.width
-
+            MarkdownText {
                 text: modelData.body
-                color: "white"
-                font.pixelSize: 14
-                wrapMode: Text.Wrap
-                textFormat: Text.MarkdownText
-
-                onLinkActivated: (link) => { Qt.openUrlExternally(link) }
-
-                HoverHandler {
-                    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
-                }
             }
         }
 
