@@ -34,11 +34,16 @@ void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page, 
         if (releases.size() != 0)
             UpdateReleasesCache(releases);
 
-        // Size down headers, they get too big in the gui otherwise
         for (GUIReleaseInfo& release : releases) {
             std::string body = release.Body.toStdString();
+
+            // Size down headers, they get too big in the gui otherwise
             body = StringUtils::ReplaceAll(release.Body.toStdString(), "# ", "## ");
             body = StringUtils::ReplaceAll(release.Body.toStdString(), "## ", "### ");
+
+            // Angle brackets remove all following text, fix those
+            body = StringUtils::ReplaceAll(release.Body.toStdString(), "<", "&lt;");
+            body = StringUtils::ReplaceAll(release.Body.toStdString(), ">", "&gt;");
 
             release.Body = QString::fromStdString(body);
         }
@@ -139,8 +144,10 @@ void DependencyInfo::CheckInstalled()
 void DependencyInfo::CheckForUpdate()
 {
     CheckInstalled();
-    if (!_installed || _installedOnSystem)
+    if (!_installed || _installedOnSystem) {
+        UpdateReleases();
         return;
+    }
 
     std::thread([this]() {
         SetCheckingForUpdates(true);
