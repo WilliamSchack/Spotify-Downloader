@@ -24,3 +24,8 @@ bool VersionManager::IsUpdateAvailable(bool ignoreCache)
 
     return latestVersion != APP_VERSION;
 }
+
+std::vector<GitHubRelease> VersionManager::GetReleases(const int& resultsPerPage, const int& page)
+{
+    return GitHubAPI::GetReleases("WilliamSchack", "Echolite", resultsPerPage, page);
+}
