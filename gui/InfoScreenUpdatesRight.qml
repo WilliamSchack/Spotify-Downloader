@@ -114,6 +114,7 @@ ColumnLayout
         Layout.fillWidth: true
         Layout.fillHeight: true
 
+        reuseItems: true
         clip: true
         spacing: 30
 
