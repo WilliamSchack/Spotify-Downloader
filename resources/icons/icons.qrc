@@ -2,5 +2,8 @@
     <qresource prefix="/icons">
         <file>Icon.png</file>
         <file>Icon.svg</file>
+        <file>yt-dlp.png</file>
+        <file>FFmpeg.png</file>
+        <file>quickjs.png</file>
     </qresource>
 </RCC>
