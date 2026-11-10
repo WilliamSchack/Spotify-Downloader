@@ -108,18 +108,64 @@ ColumnLayout
         }
     }
 
-    Flickable {
-        id: flickable
+    ListView {
+        id: changelog
 
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        contentWidth: width
+        clip: true
+        spacing: 20
 
         property bool scrollBarActive: contentHeight > height
 
         ScrollBar.vertical: ScrollBar {
-            policy: flickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+            policy: changelog.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+        }
+
+        model: root.selectedDependency.releases
+
+        delegate: MajorSection {
+            required property var modelData
+
+            width: ListView.view.width - (changelog.scrollBarActive ? 20 : 0)
+            label: modelData.name
+
+            Text {
+                text: modelData.body
+                color: "white"
+                font.pixelSize: 14
+            }
+        }
+
+        Row {
+            anchors.centerIn: parent
+            visible: root.selectedDependency.loadingReleases
+            spacing: 10
+    
+            BusyIndicator {
+                running: root.selectedDependency.loadingReleases
+                palette.dark: "white"
+                height: 50
+                width: 50
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Loading Release Notes..."
+                color: "white"
+                font.bold: true
+                font.pixelSize: 28
+            }
+        }
+
+        Text {
+            anchors.centerIn: parent
+            visible: root.selectedDependency.failedToGetReleases
+            text: "Failed to Get Release Notes"
+            color: "white"
+            font.bold: true
+            font.pixelSize: 28
         }
     }
 }

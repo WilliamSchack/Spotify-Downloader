@@ -1,11 +1,39 @@
 #include "DependencyInfo.h"
 
-DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, QObject* parent)
-    : QObject(parent), _installedFunction(installedFunction), _installedOnSystemFunction(installedOnSystemFunction), _getVersionFunction(getVersionFunction), _updateAvailableFunction(updateAvailableFunction), _updateFunction(updateFunction), _downloadFunction(downloadFunction)
+DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction, QObject* parent)
+    : QObject(parent), _installedFunction(installedFunction), _installedOnSystemFunction(installedOnSystemFunction), _getVersionFunction(getVersionFunction), _updateAvailableFunction(updateAvailableFunction), _updateFunction(updateFunction), _downloadFunction(downloadFunction), _getReleasesFunction(getReleasesFunction)
 {
     CheckInstalled();
     UpdateVersion();
     CheckForUpdate();
+    UpdateReleases(30, 1);
+}
+
+QList<GUIReleaseInfo> DependencyInfo::GetReleases()
+{
+    return _releases;
+}
+
+void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page)
+{
+    std::thread([this, resultsPerPage, page]() {
+        SetFailedToGetReleases(false);
+        SetLoadingReleases(true);
+
+        QList<GUIReleaseInfo> releases = _getReleasesFunction(resultsPerPage, page);
+
+        // Call gui stuff on the main thread
+        QMetaObject::invokeMethod(this, [this, releases]() {
+            SetLoadingReleases(false);
+
+            if (releases.size() == 0) {
+                SetFailedToGetReleases(true);
+            } else {
+                _releases = releases;
+                emit ReleasesChanged();
+            }
+        }, Qt::QueuedConnection);
+    }).detach();
 }
 
 void DependencyInfo::CheckInstalled()
@@ -22,6 +50,7 @@ void DependencyInfo::CheckForUpdate()
 
     std::thread([this]() {
         SetCheckingForUpdates(true);
+
         bool updateAvailable = _updateAvailableFunction();
 
         // Call gui stuff on the main thread
@@ -40,6 +69,7 @@ void DependencyInfo::DownloadUpdate()
 
     std::thread([this]() {
         SetUpdating(true);
+
         bool updated = _updateFunction();
 
         // Call gui stuff on the main thread
@@ -68,6 +98,7 @@ void DependencyInfo::Download()
 
     std::thread([this]() {
         SetDownloading(true);
+
         bool downloaded = _downloadFunction();
 
         // Call gui stuff on the main thread

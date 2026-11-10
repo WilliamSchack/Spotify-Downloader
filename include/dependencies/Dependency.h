@@ -91,7 +91,7 @@ class Dependency
 
         static std::vector<GitHubRelease> GetReleases(const int& resultsPerPage = 30, const int& page = 1)
         {
-            Derived::GetReleasesImpl(resultsPerPage, page);
+            return Derived::GetReleasesImpl(resultsPerPage, page);
         }
     protected:
         static std::string GetRelativePath()
