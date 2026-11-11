@@ -8,13 +8,28 @@ ColumnLayout {
     
     spacing: 20
 
-    Text {
-        Layout.alignment: Qt.AlignHCenter
+    Column {
+        Layout.fillWidth: true
 
-        text: "Thank you all for the support!"
-        color: "white"
-        font.bold: true
-        font.pixelSize: 20
+        spacing: 5
+
+        Text {
+            width: parent.width
+
+            text: "Thank you all for the support!"
+            color: "white"
+            font.pixelSize: 20
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        MarkdownText {
+            width: parent.width
+
+            text: "If you want to support development, you can [donate on my Ko-fi](https://ko-fi.com/williamschack) :)"
+            font.pixelSize: 16
+            horizontalAlignment: Text.AlignHCenter
+        }
     }
 
     ListView {

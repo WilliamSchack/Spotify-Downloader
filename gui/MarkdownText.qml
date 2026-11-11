@@ -9,6 +9,7 @@ Column {
     property font font: Qt.font({
         pixelSize: 14
     })
+    property var horizontalAlignment: Text.AlignLeft
 
     width: parent.width
     spacing: paragraphSpacing
@@ -27,6 +28,7 @@ Column {
             font: root.font
             wrapMode: Text.Wrap
             textFormat: Text.MarkdownText
+            horizontalAlignment: root.horizontalAlignment
 
             onLinkActivated: (link) => { Qt.openUrlExternally(link) }
 
