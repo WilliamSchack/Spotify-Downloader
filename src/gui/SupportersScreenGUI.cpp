@@ -34,15 +34,14 @@ void SupportersScreenGUI::UpdateSupporters()
     for (auto it : currentSupportersJson.items()) {
         QList<Supporter> supporters;
         for (nlohmann::json supporterJson : it.value()) {
-            QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["start_date"]), "yyyy/MM/dd");
+            QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["start_date"]), "yyyy-MM-dd");
             int daysSince = qDate.daysTo(QDate::currentDate());
 
             QString timeString = "";
             if (daysSince < 31) {
                 timeString = "For " + QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s");
             } else if (daysSince < 365) {
-                // i know some months are 30 days icbf
-                int monthsSince = std::floor(daysSince / 12.0);
+                int monthsSince = std::floor(daysSince / 30.44);
                 timeString = "For " + QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s");
             } else {
                 int yearsSince = std::floor(daysSince / 365.0);
@@ -66,15 +65,14 @@ void SupportersScreenGUI::UpdateSupporters()
     nlohmann::json oneTimeSupportersJson = json["one_time"];
     QList<Supporter> oneTimeSupporters;
     for (nlohmann::json supporterJson : oneTimeSupportersJson) {
-        QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["date"]), "yyyy/MM/dd");
+        QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["date"]), "yyyy-MM-dd");
         int daysSince = qDate.daysTo(QDate::currentDate());
 
         QString timeString = "";
         if (daysSince < 31) {
             timeString = QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s") + " ago";
         } else if (daysSince < 365) {
-            // i know some months are 30 days icbf
-            int monthsSince = std::floor(daysSince / 12.0);
+            int monthsSince = std::floor(daysSince / 30.44);
             timeString = QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s") + " ago";
         } else {
             int yearsSince = std::floor(daysSince / 365.0);
