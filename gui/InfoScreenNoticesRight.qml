@@ -2,8 +2,7 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
-ColumnLayout
-{
+ColumnLayout {
     width: parent.width
     height: parent.height
     
@@ -37,5 +36,11 @@ ColumnLayout
 
             text: _manager.info.notices.selectedNotice.content
         }
+    }
+
+    LoadingStatus {
+        isLoading: _manager.info.notices.loadingNotices
+        loadingFailed: _manager.info.notices.failedToGetNotices
+        contentLabel: "Notices"
     }
 }

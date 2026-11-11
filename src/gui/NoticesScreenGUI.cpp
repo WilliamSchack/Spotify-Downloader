@@ -18,38 +18,57 @@ QList<Notice> NoticesScreenGUI::GetNotices()
 
 Notice NoticesScreenGUI::GetSelectedNotice()
 {
+    if (_notices.size() <= _selectedNoticeIndex)
+        return {};
+
     return _notices[_selectedNoticeIndex];
 }
 
 void NoticesScreenGUI::UpdateNotices()
 {
-    NetworkRequest request;
-    request.Url = NOTICES_URL;
-    NetworkResponse response = request.Get();
+    SetFailedToGetNotices(false);
+    SetLoadingNotices(true);
 
-    nlohmann::json json;
-    if (response.CurlCode == CURLE_OK) {
-        json = nlohmann::json::parse(response.Body);
-        UpdateNoticesCache(json);
-    } else {
-        std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
-        json = LoadNoticesCache();
-        if (json.empty())
-            return;
-    }
+    std::thread([this]() {
+        NetworkRequest request;
+        request.Url = NOTICES_URL;
+        NetworkResponse response = request.Get();
 
-    _notices.clear();
-    for (int i = 0; i < json.size(); i++) {
-        nlohmann::json noticeJson = json[i];
+        nlohmann::json json;
+        if (response.CurlCode == CURLE_OK) {
+            json = nlohmann::json::parse(response.Body);
+            UpdateNoticesCache(json);
+        } else {
+            std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
+            json = LoadNoticesCache();
+            if (json.empty())
+                return;
+        }
 
-        Notice notice;
-        notice.Index = i;
-        notice.ReleaseDate = QString::fromStdString(noticeJson["release_date"]);
-        notice.Title = QString::fromStdString(noticeJson["title"]);
-        notice.Content = QString::fromStdString(noticeJson["content"]);
+        QList<Notice> notices;
+        for (int i = 0; i < json.size(); i++) {
+            nlohmann::json noticeJson = json[i];
 
-        _notices.push_back(notice);
-    }
+            Notice notice;
+            notice.Index = i;
+            notice.ReleaseDate = QString::fromStdString(noticeJson["release_date"]);
+            notice.Title = QString::fromStdString(noticeJson["title"]);
+            notice.Content = QString::fromStdString(noticeJson["content"]);
+
+            notices.push_back(notice);
+        }
+
+        QMetaObject::invokeMethod(this, [this, notices]() {
+            SetLoadingNotices(false);
+
+            if (notices.size() == 0) {
+                SetFailedToGetNotices(true);
+            } else {
+                _notices = notices;
+                emit NoticesChanged();
+            }
+        }, Qt::QueuedConnection);
+    }).detach();
 
     emit NoticesChanged();
 }

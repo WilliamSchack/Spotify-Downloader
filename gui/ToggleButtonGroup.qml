@@ -2,8 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Item
-{
+Item {
     id: root
 
     property real spacing: 5

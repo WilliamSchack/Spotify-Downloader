@@ -3,8 +3,7 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Echolite.Info.Updates
 
-ColumnLayout
-{
+ColumnLayout {
     id: root
 
     readonly property DependencyInfo selectedDependency: _manager.info.updates.selectedDependency
@@ -140,34 +139,10 @@ ColumnLayout
             }
         }
 
-        Row {
-            anchors.centerIn: parent
-            visible: root.selectedDependency.loadingReleases
-            spacing: 10
-    
-            BusyIndicator {
-                running: root.selectedDependency.loadingReleases
-                palette.dark: "white"
-                height: 50
-                width: 50
-            }
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: "Loading Release Notes..."
-                color: "white"
-                font.bold: true
-                font.pixelSize: 28
-            }
-        }
-
-        Text {
-            anchors.centerIn: parent
-            visible: root.selectedDependency.failedToGetReleases
-            text: "Failed to Get Release Notes"
-            color: "white"
-            font.bold: true
-            font.pixelSize: 28
+        LoadingStatus {
+            isLoading: root.selectedDependency.loadingReleases
+            loadingFailed: root.selectedDependency.failedToGetReleases
+            contentLabel: "Release Notes"
         }
     }
 }

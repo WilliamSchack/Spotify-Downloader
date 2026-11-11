@@ -2,8 +2,7 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
-ColumnLayout
-{
+ColumnLayout {
     width: parent.width
     height: parent.height
     
@@ -44,34 +43,10 @@ ColumnLayout
             info: modelData
         }
 
-        Row {
-            anchors.centerIn: parent
-            visible: _manager.info.supporters.loadingSupporters
-            spacing: 10
-    
-            BusyIndicator {
-                running: _manager.info.supporters.loadingSupporters
-                palette.dark: "white"
-                height: 50
-                width: 50
-            }
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: "Loading Supporters..."
-                color: "white"
-                font.bold: true
-                font.pixelSize: 28
-            }
-        }
-
-        Text {
-            anchors.centerIn: parent
-            visible: _manager.info.supporters.failedToGetSupporters
-            text: "Failed to Get Supporters"
-            color: "white"
-            font.bold: true
-            font.pixelSize: 28
+        LoadingStatus {
+            isLoading: _manager.info.supporters.loadingSupporters
+            loadingFailed: _manager.info.supporters.failedToGetSupporters
+            contentLabel: "Supporters"
         }
     }
 }

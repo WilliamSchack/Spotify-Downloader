@@ -1,11 +1,13 @@
 #ifndef NOTICESSCREENGUI_H
 #define NOTICESSCREENGUI_H
 
+#include "EasyQProperties.h"
 #include "Notice.h"
 #include "NetworkRequest.h"
 #include "Paths.h"
 
 #include <string>
+#include <thread>
 
 #include <nlohmann/json.hpp>
 
@@ -20,7 +22,9 @@ class NoticesScreenGUI : public QObject
     Q_OBJECT
     Q_PROPERTY(QList<Notice> notices READ GetNotices NOTIFY NoticesChanged)
     Q_PROPERTY(Notice selectedNotice READ GetSelectedNotice NOTIFY SelectedNoticeChanged)
-
+    SIMPLE_QPROPERTY(bool, loadingNotices, LoadingNotices, _loadingNotices)
+    SIMPLE_QPROPERTY(bool, failedToGetNotices, FailedToGetNotices, _failedToGetNotices)
+    
     public:
         explicit NoticesScreenGUI(QObject* parent = 0);
 
@@ -42,6 +46,9 @@ class NoticesScreenGUI : public QObject
         int _selectedNoticeIndex = 0;
 
         std::filesystem::path _noticesFilePathCache = "";
+
+        bool _loadingNotices = false;
+        bool _failedToGetNotices = false;
     signals:
         void NoticesChanged();
         void SelectedNoticeChanged();

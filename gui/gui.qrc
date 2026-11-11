@@ -32,5 +32,6 @@
         <file>Header.qml</file>
         <file>MarkdownText.qml</file>
         <file>SupporterSection.qml</file>
+        <file>LoadingStatus.qml</file>
     </qresource>
 </RCC>

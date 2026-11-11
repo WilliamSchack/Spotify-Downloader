@@ -3,8 +3,7 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Echolite.Info.Updates
 
-Column
-{
+Column {
     id: root
 
     width: parent.width

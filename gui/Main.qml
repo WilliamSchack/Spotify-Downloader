@@ -1,8 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-Window
-{
+Window {
     id: root
     visible: true
     width: 1400

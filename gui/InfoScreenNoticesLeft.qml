@@ -2,8 +2,7 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
-Column
-{
+Column {
     id: root
 
     width: parent.width

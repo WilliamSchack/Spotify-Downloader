@@ -1,7 +1,6 @@
 import QtQuick
 
-CustomButton
-{
+CustomButton {
     id: root
 
     property color unselectedBackgroundColour: Qt.alpha("#3A3A3A", 0.5)

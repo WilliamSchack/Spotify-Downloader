@@ -1,7 +1,6 @@
 import QtQuick
 
-Column
-{
+Column {
     property alias label: headerText.text
 
     width: parent.width
