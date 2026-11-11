@@ -16,14 +16,22 @@ MajorSection {
         Repeater {
             model: info.supporters
 
-            Text {
-                required property var modelData
-
+            Row {
                 width: root.width
+                spacing: 10
 
-                text: modelData.name
-                color: "white"
-                font.pixelSize: 14
+                Text {
+                    text: modelData.name
+                    color: "white"
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+
+                Text {
+                    text: modelData.timeString
+                    color: "white"
+                    font.pixelSize: 16
+                }
             }
         }
     }
