@@ -3,6 +3,7 @@
 
 #include "UpdatesScreenGUI.h"
 #include "NoticesScreenGUI.h"
+#include "SupportersScreenGUI.h"
 
 #include <QObject>
 
@@ -17,9 +18,11 @@ class InfoScreenGUI : public QObject
 
         UpdatesScreenGUI* GetUpdatesManager() const;
         NoticesScreenGUI* GetNoticesManager() const;
+        SupportersScreenGUI* GetSupportersManager() const;
     private:
         UpdatesScreenGUI* _updatesManager;
         NoticesScreenGUI* _noticesManager;
+        SupportersScreenGUI* _supportersManager;
 };
 
 #endif

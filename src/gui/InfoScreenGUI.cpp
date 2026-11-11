@@ -4,6 +4,7 @@ InfoScreenGUI::InfoScreenGUI(QObject* parent) : QObject(parent)
 {
     _updatesManager = new UpdatesScreenGUI(this);
     _noticesManager = new NoticesScreenGUI(this);
+    _supportersManager = new SupportersScreenGUI(this);
 }
 
 UpdatesScreenGUI* InfoScreenGUI::GetUpdatesManager() const
@@ -14,4 +15,9 @@ UpdatesScreenGUI* InfoScreenGUI::GetUpdatesManager() const
 NoticesScreenGUI* InfoScreenGUI::GetNoticesManager() const
 {
     return _noticesManager;
+}
+
+SupportersScreenGUI* InfoScreenGUI::GetSupportersManager() const
+{
+    return _supportersManager;
 }
