@@ -35,7 +35,7 @@ class NoticesScreenGUI : public QObject
         nlohmann::json LoadNoticesCache();
         std::filesystem::path GetNoticesCachePath();
     private:
-        static inline const std::string NOTICES_URL = "https://echolite.app/notices.json";
+        static inline const std::string NOTICES_URL = "https://api.echolite.app/notices";
         static inline const std::string CACHE_FILE_NAME = "Notices.json";
 
         QList<Notice> _notices;
