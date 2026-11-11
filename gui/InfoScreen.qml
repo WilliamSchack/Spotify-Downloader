@@ -13,10 +13,13 @@ RowLayout {
     }
 
     property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
+    property bool loadedSupporters: false
 
     function switchInfoScreen(screen: int) {
-        if (screen == InfoScreen.EInfoScreen.Supporters)
+        if (!loadedSupporters && screen == InfoScreen.EInfoScreen.Supporters) {
             _manager.info.supporters.UpdateSupporters()
+            loadedSupporters = true
+        }
 
         currentInfoScreen = screen;
     }

@@ -28,6 +28,15 @@ std::filesystem::path Paths::GetConfigDir()
     return path;
 }
 
+std::filesystem::path Paths::GetCacheDir()
+{
+    std::filesystem::path cacheFolder = GetConfigDir() / CACHE_FOLDER_NAME;
+    if (!std::filesystem::exists(cacheFolder))
+        std::filesystem::create_directory(cacheFolder);
+
+    return cacheFolder;
+}
+
 std::filesystem::path Paths::GetTempDir()
 {
     std::filesystem::path tempFolder = std::filesystem::temp_directory_path() / APP_NAME;

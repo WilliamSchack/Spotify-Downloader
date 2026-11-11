@@ -65,6 +65,7 @@ void NoticesScreenGUI::UpdateNotices()
                 SetFailedToGetNotices(true);
             } else {
                 _notices = notices;
+                SelectNotice(_selectedNoticeIndex);
                 emit NoticesChanged();
             }
         }, Qt::QueuedConnection);
@@ -118,10 +119,10 @@ std::filesystem::path NoticesScreenGUI::GetNoticesCachePath()
     if (!_noticesFilePathCache.empty())
         return _noticesFilePathCache;
 
-    std::filesystem::path configPath = Paths::GetConfigDir();
-    if (configPath.empty())
+    std::filesystem::path cachePath = Paths::GetCacheDir();
+    if (cachePath.empty())
         return "";
 
-    _noticesFilePathCache = configPath / CACHE_FILE_NAME;
+    _noticesFilePathCache = cachePath / CACHE_FILE_NAME;
     return _noticesFilePathCache;
 }

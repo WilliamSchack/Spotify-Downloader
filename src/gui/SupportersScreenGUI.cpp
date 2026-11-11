@@ -88,7 +88,7 @@ void SupportersScreenGUI::UpdateSupporters()
         }
 
         SupporterSection oneTimeSupportersSection;
-        oneTimeSupportersSection.Title = "One Time Supporters";
+        oneTimeSupportersSection.Title = "One Time Donators";
         oneTimeSupportersSection.Supporters = oneTimeSupporters;
         supporterSections.push_back(oneTimeSupportersSection);
 
@@ -145,10 +145,10 @@ std::filesystem::path SupportersScreenGUI::GetSupportersCachePath()
     if (!_supportersFilePathCache.empty())
         return _supportersFilePathCache;
 
-    std::filesystem::path configPath = Paths::GetConfigDir();
-    if (configPath.empty())
+    std::filesystem::path cachePath = Paths::GetCacheDir();
+    if (cachePath.empty())
         return "";
 
-    _supportersFilePathCache = configPath / CACHE_FILE_NAME;
+    _supportersFilePathCache = cachePath / CACHE_FILE_NAME;
     return _supportersFilePathCache;
 }

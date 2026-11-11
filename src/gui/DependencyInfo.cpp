@@ -126,11 +126,11 @@ std::filesystem::path DependencyInfo::GetReleasesCachePath()
     if (!_releasesFilePathCache.empty())
         return _releasesFilePathCache;
 
-    std::filesystem::path configPath = Paths::GetConfigDir();
-    if (configPath.empty())
+    std::filesystem::path cachePath = Paths::GetCacheDir();
+    if (cachePath.empty())
         return "";
 
-    _releasesFilePathCache = configPath / (_name.toStdString() + "_Releases.json");
+    _releasesFilePathCache = cachePath / (_name.toStdString() + "_Releases.json");
     return _releasesFilePathCache;
 }
 
