@@ -52,7 +52,7 @@ void SupportersScreenGUI::UpdateSupporters()
             supporter.Name = QString::fromStdString(supporterJson["name"]);
             supporter.TimeString = timeString;
             
-            supporters.push_back(supporter);
+            supporters.push_front(supporter);
         }
 
         SupporterSection section;
@@ -83,7 +83,7 @@ void SupportersScreenGUI::UpdateSupporters()
         supporter.Name = QString::fromStdString(supporterJson["name"]);
         supporter.TimeString = timeString;
 
-        oneTimeSupporters.push_back(supporter);
+        oneTimeSupporters.push_front(supporter);
     }
 
     SupporterSection oneTimeSupportersSection;
