@@ -1,9 +1,6 @@
 #include "SupportersScreenGUI.h"
 
-SupportersScreenGUI::SupportersScreenGUI(QObject* parent) : QObject(parent)
-{
-    UpdateSupporters();
-}
+SupportersScreenGUI::SupportersScreenGUI(QObject* parent) : QObject(parent) {}
 
 QList<SupporterSection> SupportersScreenGUI::GetSupporterSections()
 {
@@ -12,86 +9,101 @@ QList<SupporterSection> SupportersScreenGUI::GetSupporterSections()
 
 void SupportersScreenGUI::UpdateSupporters()
 {
-    NetworkRequest request;
-    request.Url = SUPPORTERS_URL;
-    NetworkResponse response = request.Get();
+    SetFailedToGetSupporters(false);
+    SetLoadingSupporters(true);
 
-    nlohmann::json json;
-    if (response.CurlCode == CURLE_OK) {
-        json = nlohmann::json::parse(response.Body);
-        UpdateSupportersCache(json);
-    } else {
-        std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
-        json = LoadSupportersCache();
-        if (json.empty())
-            return;
-    }
-    
-    _supporterSections.clear();
+    std::thread([this]() {
+        NetworkRequest request;
+        request.Url = SUPPORTERS_URL;
+        NetworkResponse response = request.Get();
 
-    // Monthly supporters
-    nlohmann::json currentSupportersJson = json["current_supporters"];
-    for (auto it : currentSupportersJson.items()) {
-        QList<Supporter> supporters;
-        for (nlohmann::json supporterJson : it.value()) {
-            QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["start_date"]), "yyyy-MM-dd");
+        nlohmann::json json;
+        if (response.CurlCode == CURLE_OK) {
+            json = nlohmann::json::parse(response.Body);
+            UpdateSupportersCache(json);
+        } else {
+            std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
+            json = LoadSupportersCache();
+            if (json.empty())
+                return;
+        }
+        
+        QList<SupporterSection> supporterSections;
+
+        // Monthly supporters
+        nlohmann::json currentSupportersJson = json["current_supporters"];
+        for (auto it : currentSupportersJson.items()) {
+            QList<Supporter> supporters;
+            for (nlohmann::json supporterJson : it.value()) {
+                QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["start_date"]), "yyyy-MM-dd");
+                int daysSince = qDate.daysTo(QDate::currentDate());
+
+                QString timeString = "";
+                if (daysSince < 31) {
+                    timeString = "For " + QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s");
+                } else if (daysSince < 365) {
+                    int monthsSince = std::floor(daysSince / 30.44);
+                    timeString = "For " + QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s");
+                } else {
+                    int yearsSince = std::floor(daysSince / 365.0);
+                    timeString = "For " + QString::number(yearsSince) + " year" + (yearsSince == 1 ? "" : "s");
+                }
+
+                Supporter supporter;
+                supporter.Name = QString::fromStdString(supporterJson["name"]);
+                supporter.TimeString = timeString;
+                
+                supporters.push_front(supporter);
+            }
+
+            SupporterSection section;
+            section.Title = QString::fromStdString(it.key()) + "s";
+            section.Supporters = supporters;
+            supporterSections.push_back(section);
+        }
+
+        // One time supporters
+        nlohmann::json oneTimeSupportersJson = json["one_time"];
+        QList<Supporter> oneTimeSupporters;
+        for (nlohmann::json supporterJson : oneTimeSupportersJson) {
+            QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["date"]), "yyyy-MM-dd");
             int daysSince = qDate.daysTo(QDate::currentDate());
 
             QString timeString = "";
             if (daysSince < 31) {
-                timeString = "For " + QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s");
+                timeString = QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s") + " ago";
             } else if (daysSince < 365) {
                 int monthsSince = std::floor(daysSince / 30.44);
-                timeString = "For " + QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s");
+                timeString = QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s") + " ago";
             } else {
                 int yearsSince = std::floor(daysSince / 365.0);
-                timeString = "For " + QString::number(yearsSince) + " year" + (yearsSince == 1 ? "" : "s");
+                timeString = QString::number(yearsSince) + " year" + (yearsSince == 1 ? "" : "s") + " ago";
             }
 
             Supporter supporter;
             supporter.Name = QString::fromStdString(supporterJson["name"]);
             supporter.TimeString = timeString;
-            
-            supporters.push_front(supporter);
+
+            oneTimeSupporters.push_front(supporter);
         }
 
-        SupporterSection section;
-        section.Title = QString::fromStdString(it.key()) + "s";
-        section.Supporters = supporters;
-        _supporterSections.push_back(section);
-    }
+        SupporterSection oneTimeSupportersSection;
+        oneTimeSupportersSection.Title = "One Time Supporters";
+        oneTimeSupportersSection.Supporters = oneTimeSupporters;
+        supporterSections.push_back(oneTimeSupportersSection);
 
-    // One time supporters
-    nlohmann::json oneTimeSupportersJson = json["one_time"];
-    QList<Supporter> oneTimeSupporters;
-    for (nlohmann::json supporterJson : oneTimeSupportersJson) {
-        QDate qDate = QDate::fromString(QString::fromStdString(supporterJson["date"]), "yyyy-MM-dd");
-        int daysSince = qDate.daysTo(QDate::currentDate());
+        QMetaObject::invokeMethod(this, [this, supporterSections]() {
+            SetLoadingSupporters(false);
 
-        QString timeString = "";
-        if (daysSince < 31) {
-            timeString = QString::number(daysSince) + " day" + (daysSince == 1 ? "" : "s") + " ago";
-        } else if (daysSince < 365) {
-            int monthsSince = std::floor(daysSince / 30.44);
-            timeString = QString::number(monthsSince) + " month" + (monthsSince == 1 ? "" : "s") + " ago";
-        } else {
-            int yearsSince = std::floor(daysSince / 365.0);
-            timeString = QString::number(yearsSince) + " year" + (yearsSince == 1 ? "" : "s") + " ago";
-        }
+            if (supporterSections.size() == 0) {
+                SetFailedToGetSupporters(true);
+            } else {
+                _supporterSections = supporterSections;
+                emit SupporterSectionsChanged();
+            }
+        }, Qt::QueuedConnection);
 
-        Supporter supporter;
-        supporter.Name = QString::fromStdString(supporterJson["name"]);
-        supporter.TimeString = timeString;
-
-        oneTimeSupporters.push_front(supporter);
-    }
-
-    SupporterSection oneTimeSupportersSection;
-    oneTimeSupportersSection.Title = "One Time Supporters";
-    oneTimeSupportersSection.Supporters = oneTimeSupporters;
-    _supporterSections.push_back(oneTimeSupportersSection);
-
-    emit SupporterSectionsChanged();
+    }).detach();
 }
 
 void SupportersScreenGUI::UpdateSupportersCache(const nlohmann::json& json)

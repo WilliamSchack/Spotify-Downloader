@@ -15,6 +15,9 @@ RowLayout {
     property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
 
     function switchInfoScreen(screen: int) {
+        if (screen == InfoScreen.EInfoScreen.Supporters)
+            _manager.info.supporters.UpdateSupporters()
+
         currentInfoScreen = screen;
     }
 

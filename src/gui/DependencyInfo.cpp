@@ -16,11 +16,10 @@ QList<GUIReleaseInfo> DependencyInfo::GetReleases()
 void DependencyInfo::UpdateReleases(const int& resultsPerPage, const int& page, const bool& useCache)
 {
     // TODO: Add view more button
+    SetFailedToGetReleases(false);
+    SetLoadingReleases(true);
 
     std::thread([this, resultsPerPage, page, useCache]() {
-        SetFailedToGetReleases(false);
-        SetLoadingReleases(true);
-
         QList<GUIReleaseInfo> releases;
         if (useCache) {
             releases = LoadReleasesCache();
@@ -149,9 +148,9 @@ void DependencyInfo::CheckForUpdate()
         return;
     }
 
-    std::thread([this]() {
-        SetCheckingForUpdates(true);
+    SetCheckingForUpdates(true);
 
+    std::thread([this]() {
         bool updateAvailable = _updateAvailableFunction();
 
         // Call gui stuff on the main thread
@@ -173,9 +172,9 @@ void DependencyInfo::DownloadUpdate()
     if (!_installed || _installedOnSystem)
         return;
 
-    std::thread([this]() {
-        SetUpdating(true);
+    SetUpdating(true);
 
+    std::thread([this]() {
         bool updated = _updateFunction();
 
         // Call gui stuff on the main thread
@@ -202,9 +201,9 @@ void DependencyInfo::Download()
     if (_installed)
         return;
 
-    std::thread([this]() {
-        SetDownloading(true);
+    SetDownloading(true);
 
+    std::thread([this]() {
         bool downloaded = _downloadFunction();
 
         // Call gui stuff on the main thread
