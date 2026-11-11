@@ -7,6 +7,8 @@
 #include <QQmlContext>
 #include <QIcon>
 
+#include "SupportersScreenGUI.h"
+
 // TODO: IMPLEMENT THIS:
 //
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
