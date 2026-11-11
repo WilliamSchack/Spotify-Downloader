@@ -59,9 +59,7 @@ void SupportersScreenGUI::UpdateSupporters()
         SupporterSection section;
         section.Title = QString::fromStdString(it.key()) + "s";
         section.Supporters = supporters;
-
-        // Supporter tiers are in reverse order
-        _supporterSections.push_front(section);
+        _supporterSections.push_back(section);
     }
 
     // One time supporters

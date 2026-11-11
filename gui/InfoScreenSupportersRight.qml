@@ -18,42 +18,30 @@ ColumnLayout
         font.pixelSize: 20
     }
 
-    Flickable {
-        id: flickable
+    ListView {
+        id: changelog
+
         Layout.fillWidth: true
         Layout.fillHeight: true
 
+        reuseItems: true
         clip: true
+        spacing: 30
 
-        contentWidth: width
-        contentHeight: contents.height
-        
         property bool scrollBarActive: contentHeight > height
 
         ScrollBar.vertical: ScrollBar {
-            policy: flickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+            policy: changelog.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
         }
 
-        Column {
-            id: contents
-            width: parent.width - (flickable.scrollBarActive ? 20 : 0)
-            spacing: 20
+        model: _manager.info.supporters.supporterSections
 
-            Header {
-                label: "Diamond Supporters"
-            }
+        delegate: SupporterSection {
+            required property var modelData
 
-            Header {
-                label: "Gold Supporters"
-            }
-
-            Header {
-                label: "Supporters"
-            }
-
-            Header {
-                label: "One Time Supporters"
-            }
+            width: ListView.view.width - (changelog.scrollBarActive ? 20 : 0)
+            
+            info: modelData
         }
     }
 }

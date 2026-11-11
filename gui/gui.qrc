@@ -31,5 +31,6 @@
         <file>NoticeSelectionButton.qml</file>
         <file>Header.qml</file>
         <file>MarkdownText.qml</file>
+        <file>SupporterSection.qml</file>
     </qresource>
 </RCC>

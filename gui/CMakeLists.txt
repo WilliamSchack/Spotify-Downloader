@@ -26,6 +26,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenSupportersRight.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/DependencySelectionButton.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/NoticeSelectionButton.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/SupporterSection.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsItem.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarTrack.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarLink.qml

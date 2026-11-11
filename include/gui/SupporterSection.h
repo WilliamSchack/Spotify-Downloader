@@ -4,6 +4,7 @@
 #include "Supporter.h"
 
 #include <QObject>
+#include <QList>
 
 class SupporterSection
 {

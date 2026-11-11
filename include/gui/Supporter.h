@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include <iostream>
+
 class Supporter
 {
     Q_GADGET
@@ -10,7 +12,7 @@ class Supporter
     Q_PROPERTY(QString timeString READ GetTimeString CONSTANT)
 
     public:
-        QString GetName()       const { return Name; }
+        QString GetName()       const { std::cout << "NAME: " << Name.toStdString() << std::endl; return Name; }
         QString GetTimeString() const { return TimeString; }
 
         QString Name = "";

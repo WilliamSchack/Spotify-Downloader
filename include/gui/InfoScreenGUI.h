@@ -12,6 +12,7 @@ class InfoScreenGUI : public QObject
     Q_OBJECT
     Q_PROPERTY(QObject* updates READ GetUpdatesManager CONSTANT)
     Q_PROPERTY(QObject* notices READ GetNoticesManager CONSTANT)
+    Q_PROPERTY(QObject* supporters READ GetSupportersManager CONSTANT)
     
     public:
         explicit InfoScreenGUI(QObject* parent = 0);
