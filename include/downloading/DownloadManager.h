@@ -4,7 +4,6 @@
 #include "PlatformDetector.h"
 #include "PlatformFactory.h"
 #include "TrackDownloader.h"
-#include "DownloadProgress.h"
 #include "DownloadResult.h"
 #include "DownloadEventsQueue.h"
 #include "PlaylistData.h"

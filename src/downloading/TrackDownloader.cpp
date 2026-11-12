@@ -1,6 +1,6 @@
 #include "TrackDownloader.h"
 
-DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, std::function<void(DownloadProgress)> progressCallback, std::function<void(std::filesystem::path)> coverArtDownloadedCallback)
+DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, const std::function<void(DownloadEvent)>& eventCallback)
 {
     DownloadResult result;
     result.Success = false;
@@ -20,7 +20,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::cout << "GETTING TRACK: " << track.Name << std::endl;
     track.Print();
 
-    SetProgress(progressCallback, DownloadProgress(0.0, "Setting Up..."));
+    SetProgress(eventCallback, track, 0.0, "Setting Up...");
 
     // Todo: Move below into seperate files and functions
     //       Just getting it working at the moment
@@ -71,7 +71,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // == Get cover art
     std::cout << "Getting Cover Art..." << std::endl;
-    SetProgress(progressCallback, DownloadProgress(0.1, "Getting Cover Art..."));
+    SetProgress(eventCallback, track, 0.1, "Getting Cover Art...");
 
     std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(track);
     Image image;
@@ -85,13 +85,17 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         if (image.Data != nullptr) {
             std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
 
-            if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
-                coverArtDownloadedCallback(imagePath);
+            if (!imagePath.empty() && eventCallback != nullptr) {
+                TrackCoverArtDownloadedEvent coverArtDownloadedEvent;
+                coverArtDownloadedEvent.TrackUniqueId = track.GetUniqueId();
+                coverArtDownloadedEvent.FilePath = imagePath;
+                eventCallback(coverArtDownloadedEvent);
+            }
         }
     }
 
     // == Get the song on the target platform
-    SetProgress(progressCallback, DownloadProgress(0.1, "Searching..."));
+    SetProgress(eventCallback, track, 0.1, "Searching...");
 
     PlatformSearcherResult searchResult;
     
@@ -109,7 +113,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         }
 
         searchResult = searcher->FindTrack(track, [&](float progress) {
-            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.1, 0.3, progress), "Searching..."));
+            SetProgress(eventCallback, track, MathUtils::Lerp(0.1, 0.3, progress), "Searching...");
         });
 
         if (searchResult.Data.Platform == EPlatform::Unknown) {
@@ -144,10 +148,10 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // Download
     std::cout << "Downloading..." << std::endl;
-    SetProgress(progressCallback, DownloadProgress(0.3, "Downloading Track..."));
+    SetProgress(eventCallback, track, 0.3, "Downloading Track...");
 
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, extraDownloadArgs, [&](float progress) {
-        SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track..."));
+        SetProgress(eventCallback, track, MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track...");
     });
 
     tempDownloadPath = downloadResult.Path;
@@ -177,20 +181,20 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     if (Config::Normalise) {
         std::cout << "Normalising..." << std::endl;
-        SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Normalising Audio..."));
+        SetProgress(eventCallback, track, progressStartPercentage, "Normalising Audio...");
 
         bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NormaliseDb, [&](float progress) {
-            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Normalising Audio..."));
+            SetProgress(eventCallback, track, MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Normalising Audio...");
         });
     }
     
     // == Set bitrate
     else if (Config::ManualBitrate) {
         std::cout << "Setting bitrate..." << std::endl;
-        SetProgress(progressCallback, DownloadProgress(progressStartPercentage, "Setting Bitrate..."));
+        SetProgress(eventCallback, track, progressStartPercentage, "Setting Bitrate...");
 
         bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps[targetCodec->GetExtension()], [&](float progress) {
-            SetProgress(progressCallback, DownloadProgress(MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate..."));
+            SetProgress(eventCallback, track, MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate...");
         });
     }
 
@@ -198,7 +202,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     Lyrics lyrics(ELyricsSource::Unknown);
     if (Config::GetLyrics) {
         std::cout << "Getting Lyrics..." << std::endl;
-        SetProgress(progressCallback, DownloadProgress(progressEndPercentage, "Getting Lyrics..."));
+        SetProgress(eventCallback, track, progressEndPercentage, "Getting Lyrics...");
 
         // Try source platform
         lyrics = LyricsFinder::GetSourceLyrics(track);
@@ -223,7 +227,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // == Assign metadata
-    SetProgress(progressCallback, DownloadProgress(1.0, "Assigning Metadata..."));
+    SetProgress(eventCallback, track, 1.0, "Assigning Metadata...");
 
     int trackNumber = MetadataManager::GetTrackNumber(track);
 
@@ -266,10 +270,14 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     return result;
 }
 
-void TrackDownloader::SetProgress(const std::function<void(DownloadProgress)>& progressCallback, const DownloadProgress& progress)
+void TrackDownloader::SetProgress(const std::function<void(DownloadEvent)>& eventCallback, const TrackData& track, const float& progress, const std::string& message)
 {
-    if (progressCallback == nullptr)
+    if (eventCallback == nullptr)
         return;
 
-    progressCallback(progress);
+    TrackProgressEvent event;
+    event.TrackUniqueId = track.GetUniqueId();
+    event.Progress = progress;
+    event.Message = message;
+    eventCallback(event);
 }

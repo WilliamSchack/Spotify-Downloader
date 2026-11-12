@@ -1,8 +1,5 @@
 #include "DownloadManager.h"
 
-// debugging
-#include <iostream>
-
 DownloadManager::DownloadManager() : _downloadingPlaylist(EPlatform::Unknown) {}
 
 DownloadManager::~DownloadManager()
@@ -221,16 +218,7 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
     std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
 
     while (std::optional<TrackData> track = GetNextTrack()) {
-        DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadProgress p) {
-            TrackProgressEvent event;
-            event.TrackUniqueId = track->GetUniqueId();
-            event.Progress = p.Progress;
-            event.Message = p.Message;
-            _events.Send(event);
-        }, [&](std::filesystem::path coverArtPath) {
-            TrackCoverArtDownloadedEvent event;
-            event.TrackUniqueId = track->GetUniqueId();
-            event.FilePath = coverArtPath;
+        DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadEvent event) {
             _events.Send(event);
         });
 

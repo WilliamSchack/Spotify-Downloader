@@ -16,8 +16,8 @@
 #include "FilePathReserver.h"
 #include "Paths.h"
 #include "SavableTrackTagHandler.h"
-#include "DownloadProgress.h"
 #include "DownloadResult.h"
+#include "DownloadEvents.h"
 
 #include <iostream>
 #include <functional>
@@ -27,9 +27,9 @@
 class TrackDownloader
 {
     public:
-        static DownloadResult DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, std::function<void(DownloadProgress)> progressCallback = nullptr, std::function<void(std::filesystem::path)> coverArtDownloadedCallback = nullptr);
+        static DownloadResult DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, const std::function<void(DownloadEvent)>& eventCallback = nullptr);
     private:
-        static void SetProgress(const std::function<void(DownloadProgress)>& progressCallback, const DownloadProgress& progress);
+        static void SetProgress(const std::function<void(DownloadEvent)>& eventCallback, const TrackData& track, const float& progress, const std::string& message);
 };
 
 #endif
