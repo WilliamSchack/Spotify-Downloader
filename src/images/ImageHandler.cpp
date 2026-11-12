@@ -32,7 +32,7 @@ EImageFormat ImageHandler::GetImageFormat(const std::filesystem::path& path)
 EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
 {
     if (response.Body.size() < 4)
-    return EImageFormat::Unknown;
+        return EImageFormat::Unknown;
     
     // Check bytes
     const unsigned char* bytes = reinterpret_cast<const unsigned char*>(response.Body.data());
@@ -78,6 +78,9 @@ bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image
         image.Width * image.Channels
     );
 
+    if (!image.Data)
+        std::cout << "Failed to save the image as png: " << stbi_failure_reason() << std::endl;
+
     fclose(file);
     return result != 0;
 };
@@ -97,6 +100,9 @@ bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image
         quality
     );
 
+    if (!image.Data)
+        std::cout << "Failed to save the image as jpg: " << stbi_failure_reason() << std::endl;
+
     fclose(file);
     return result != 0;
 };
@@ -106,6 +112,12 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
     Image image;
 
     FILE* file = GetFile(path, "rb");
+
+    if (!file) {
+        std::cout << "FAILED TO OPEN FILE: " << path << std::endl;
+
+    }
+
     if (!file) return image;
 
     image.Format = GetImageFormat(path);
@@ -114,8 +126,11 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
         &image.Width,
         &image.Height,
         &image.Channels,
-        0
+        3
     );
+
+    if (!image.Data)
+        std::cout << "Failed to load the image: " << stbi_failure_reason() << std::endl;
 
     fclose(file);
     return image;
@@ -145,12 +160,15 @@ Image ImageHandler::DownloadImage(const std::string& url)
     image.Format = GetImageFormat(response);
     image.Data = stbi_load_from_memory(
         reinterpret_cast<const stbi_uc*>(response.Body.data()),
-        response.Body.size(),
+        static_cast<int>(response.Body.size()),
         &image.Width,
         &image.Height,
         &image.Channels,
-        0
+        3
     );
+
+    if (!image.Data)
+        std::cout << "Failed to download the image: " << stbi_failure_reason() << std::endl;
 
     return image;
 }

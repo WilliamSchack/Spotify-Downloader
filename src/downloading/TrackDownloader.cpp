@@ -82,10 +82,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         image = ImageHandler::LoadImage(existingImageFilePath);
     } else {
         image = ImageHandler::DownloadImage(track.Album.ImageUrl);
-        std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
+        if (image.Data != nullptr) {
+            std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
 
-        if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
-            coverArtDownloadedCallback(imagePath);
+            if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
+                coverArtDownloadedCallback(imagePath);
+        }
     }
 
     // == Get the song on the target platform
