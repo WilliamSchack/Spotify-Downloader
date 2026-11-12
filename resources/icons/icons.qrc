@@ -6,5 +6,7 @@
         <file>dependencies/quickjs.png</file>
         <file>dependencies/yt-dlp.png</file>
         <file>dependencies/FFmpeg.png</file>
+        <file>platforms/YouTube.png</file>
+        <file>platforms/Spotify.png</file>
     </qresource>
 </RCC>
