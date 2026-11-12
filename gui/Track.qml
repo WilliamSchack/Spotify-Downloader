@@ -149,7 +149,7 @@ Rectangle {
 
             Row {
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 6
+                spacing: 10
 
                 Repeater {
                     model: root.trackData.sources
@@ -157,7 +157,7 @@ Rectangle {
                     Image {
                         required property var modelData
 
-                        width: 15
+                        width: 16
                         height: width
                     
                         source: modelData.iconSource

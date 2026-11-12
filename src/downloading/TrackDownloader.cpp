@@ -64,6 +64,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!Config::Overwrite && std::filesystem::exists(targetDownloadPath)) {
         std::cout << "Not downloading as it already exists: " << track.Name << std::endl;
 
+        TrackSourceFoundEvent sourceFoundEvent;
+        sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
+        sourceFoundEvent.Platform = EPlatform::LocalFile;
+        sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
+        eventCallback(sourceFoundEvent);
+
         // Showing as a success since its already downloaded
         result.Success = true;
         return result;
@@ -131,6 +137,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
             sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
             sourceFoundEvent.Platform = searchPlatform;
             sourceFoundEvent.Link = searchResult.Data.Url;
+            eventCallback(sourceFoundEvent);
         }
     }
 
@@ -278,6 +285,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
         sourceFoundEvent.Platform = EPlatform::LocalFile;
         sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
+        eventCallback(sourceFoundEvent);
     }
 
     result.Success = true;
