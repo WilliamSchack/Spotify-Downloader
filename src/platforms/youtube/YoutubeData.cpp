@@ -19,7 +19,7 @@ std::string YoutubeData::GetTrackDownloadError(const TrackData& track)
 std::vector<std::string> YoutubeData::GetExtraDownloadArgs(const TrackData& track)
 {
     std::vector<std::string> args;
-    std::string extractorArgs = "youtube:player_client=default";
+    std::string extractorArgs = "";
 
     std::filesystem::path cookieFilePath = GetCookiePath();
     bool usingCookies = !cookieFilePath.empty() && !Config::YouTubePOToken.empty();
@@ -28,6 +28,11 @@ std::vector<std::string> YoutubeData::GetExtraDownloadArgs(const TrackData& trac
 
         args.push_back("--cookies");
         args.push_back(FileUtils::PathToUtf8(cookieFilePath));
+    } else {
+        // There is an ongoing issue with ytdlp for the 403 error, currently web_embedded requires a po token
+        // I will most likely need to implement a po provider soon
+
+        extractorArgs = "youtube:player_client=default,-web_embedded";
     }
 
     args.push_back("--extractor-args");
