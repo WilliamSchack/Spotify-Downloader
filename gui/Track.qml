@@ -163,6 +163,20 @@ Rectangle {
                         source: modelData.iconSource
                         sourceSize.width: width
                         sourceSize.height: height
+
+                        MouseArea {
+                            anchors.fill: parent
+
+                            onPressed: {
+                                Qt.openUrlExternally(modelData.link)
+                                sourceTooltip.close()
+                            }
+                        }
+
+                        HoverTooltip {
+                            id: sourceTooltip
+                            text: modelData.link
+                        }
                     }
                 }
             }
