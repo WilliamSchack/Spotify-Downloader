@@ -926,30 +926,6 @@ void Song::NormaliseAudio(QProcess*& process, float normalisedAudioVolume, int b
 }
 
 void Song::GetLyrics() {
-	/*
-	* Musixmatch lyrics cannot be retrieved as the isrc is no longer retrievable
-	* Ill see if i can find a way to get it in v2 but it was retrieved from the spotify api which is no longer possible
-	* 
-	Lyrics musixmatchLyrics = MusixmatchAPI::GetLyrics(Isrc, MusixmatchAPI::LoggingType::Warnings);
-	
-	// Even if type is found, musixmatch can still have bot prevention when getting the lyrics, check for that as well
-	switch (musixmatchLyrics.Type) {
-		case Lyrics::LyricsType::Unsynced:
-			if (musixmatchLyrics.UnsyncedLyrics.empty())
-				break;
-	
-			LyricsData = musixmatchLyrics;
-			return;
-		case Lyrics::LyricsType::Synced:
-			if (musixmatchLyrics.SyncedLyrics.empty())
-				break;
-	
-			LyricsData = musixmatchLyrics;
-			return;
-	}
-	*/
-
-	// If lyrics not found on musixmatch, get from YouTube
 	Lyrics youtubeLyrics = YTMusicAPI().GetLyrics(YoutubeId);
 	LyricsData = youtubeLyrics;
 }

@@ -726,7 +726,6 @@ When I first created this project I has a lot of free time on my hands and was a
 **Packages Used**
 - [Qt](https://www.qt.io/) - [LGPL v3 License](https://doc.qt.io/qt-6/lgpl.html)
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT License](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)
-- [Python Musixmatch API](https://github.com/Strvm/musicxmatch-api) - [MIT License](https://github.com/Strvm/musicxmatch-api?tab=readme-ov-file#license) (Translated to C++)
 - [ffmpeg essentials-www.gyan.dev](https://www.ffmpeg.org/) - [LGPL v2.1 License](https://www.ffmpeg.org/legal.html)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - [Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 - [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1 License](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public License](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
