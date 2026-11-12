@@ -27,7 +27,7 @@ Item {
                 Layout.preferredHeight: parent.height - 15
                 Layout.preferredWidth: parent.height - 15
 
-                source: "qrc:/icons/Ko-fi.png"            
+                source: "qrc:/icons/platforms/Ko-fi.png"            
                 sourceSize.width: parent.height - 15
                 sourceSize.height: parent.height - 15
             }

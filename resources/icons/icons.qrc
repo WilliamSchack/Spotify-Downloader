@@ -2,9 +2,9 @@
     <qresource prefix="/icons">
         <file>Icon.png</file>
         <file>Icon.svg</file>
-        <file>yt-dlp.png</file>
-        <file>FFmpeg.png</file>
-        <file>quickjs.png</file>
-        <file>Ko-fi.png</file>
+        <file>platforms/Ko-fi.png</file>
+        <file>dependencies/quickjs.png</file>
+        <file>dependencies/yt-dlp.png</file>
+        <file>dependencies/FFmpeg.png</file>
     </qresource>
 </RCC>

@@ -49,7 +49,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
     CreateDependency(
         DependencyInfo::EDependency::Ffmpeg,
         "FFmpeg",
-        "qrc:/icons/FFmpeg.png",
+        "qrc:/icons/dependencies/FFmpeg.png",
         []() -> bool {
             return Ffmpeg::IsInstalled();
         },
@@ -87,7 +87,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
     CreateDependency(
         DependencyInfo::EDependency::Ytdlp,
         "yt-dlp",
-        "qrc:/icons/yt-dlp.png",
+        "qrc:/icons/dependencies/yt-dlp.png",
         []() -> bool {
             return Ytdlp::IsInstalled();
         },
@@ -125,7 +125,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
     CreateDependency(
         DependencyInfo::EDependency::Quickjs,
         "QuickJs",
-        "qrc:/icons/quickjs.png", // QuickJs has no icon, this is bellard's github icon
+        "qrc:/icons/dependencies/quickjs.png", // QuickJs has no icon, this is bellard's github icon
         []() -> bool {
             return JsRuntime::IsInstalled();
         },
