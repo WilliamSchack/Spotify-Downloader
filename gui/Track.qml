@@ -64,10 +64,11 @@ Rectangle {
                     Layout.alignment: Qt.AlignVCenter
 
                     // Loaded
-                    Image {
+                    RoundedImage {
                         anchors.fill: parent
                         visible: root.trackData.coverArtUrl !== ""
 
+                        radius: 6
                         source: root.trackData.coverArtUrl
                         sourceSize.width: width * 2
                         sourceSize.height: height * 2
@@ -83,7 +84,7 @@ Rectangle {
                         Rectangle {
                             anchors.fill: parent
 
-                            radius: 4
+                            radius: 6
                             color: "#656565"
                         }
 

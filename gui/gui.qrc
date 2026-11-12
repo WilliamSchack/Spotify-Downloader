@@ -33,5 +33,6 @@
         <file>MarkdownText.qml</file>
         <file>SupporterSection.qml</file>
         <file>LoadingStatus.qml</file>
+        <file>RoundedImage.qml</file>
     </qresource>
 </RCC>
