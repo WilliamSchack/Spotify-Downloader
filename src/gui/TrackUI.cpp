@@ -61,6 +61,29 @@ void TrackUI::FindCoverArtUrl()
     SetCoverArtUrl(path);
 }
 
+void TrackUI::LoadCoverArt()
+{
+    std::thread([this]() {
+        // Check if the cover art exists
+        std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(_data);
+        std::filesystem::path imagePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
+        if (imagePath.empty()) {
+            // Download the image
+            Image image = ImageHandler::DownloadImage(_data.Album.ImageUrl);
+            if (image.Data == nullptr)
+                return;
+
+            imagePath = ImageHandler::SaveImage(imageFilePath, image);
+            if (imagePath.empty())
+                return;
+        }
+        
+        QMetaObject::invokeMethod(this, [this, imagePath]() {
+            SetCoverArtUrl(imagePath);
+        }, Qt::QueuedConnection);
+    }).detach();
+}
+
 void TrackUI::SetProgress(float progress)
 {
     if (MathUtils::FloatsEqual(progress, _progress))

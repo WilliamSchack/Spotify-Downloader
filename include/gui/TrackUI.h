@@ -5,8 +5,10 @@
 #include "MetadataManager.h"
 #include "MathUtils.h"
 #include "Paths.h"
+#include "ImageHandler.h"
 
 #include <filesystem>
+#include <thread>
 
 #include <QObject>
 #include <QUrl>
@@ -37,6 +39,7 @@ class TrackUI : public QObject
 
         void SetCoverArtUrl(const std::filesystem::path& path);
         void FindCoverArtUrl();
+        Q_INVOKABLE void LoadCoverArt();
 
         void SetProgress(float progress);
         void SetStatus(const std::string& status);

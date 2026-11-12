@@ -146,4 +146,12 @@ Rectangle {
             }
         }
     }
+
+    // Happens first time the track comes into view
+    Component.onCompleted: {
+        if (trackData.coverArtUrl != "")
+            return
+        
+        trackData.LoadCoverArt()
+    }
 }
