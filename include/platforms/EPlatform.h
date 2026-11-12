@@ -4,6 +4,7 @@
 enum class EPlatform
 {
     Unknown,
+    LocalFile,
     YouTube,
     Spotify
 };

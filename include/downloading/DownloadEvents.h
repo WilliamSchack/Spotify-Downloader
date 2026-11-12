@@ -2,6 +2,7 @@
 #define DOWNLOADEVENTS_H
 
 #include "TrackData.h"
+#include "EPlatform.h"
 
 #include <string>
 #include <variant>
@@ -18,6 +19,12 @@ struct TrackCoverArtDownloadedEvent
 {
     std::string TrackUniqueId = "";
     std::filesystem::path FilePath = "";
+};
+
+struct TrackSourceFoundEvent
+{
+    EPlatform Platform = EPlatform::Unknown;
+    std::string Link;
 };
 
 struct TrackSucceededEvent
@@ -60,6 +67,7 @@ struct DownloadsPausedEvent {};
 using DownloadEvent = std::variant<
     TrackProgressEvent,
     TrackCoverArtDownloadedEvent,
+    TrackSourceFoundEvent,
     TrackSucceededEvent,
     TrackFailedEvent,
     DownloadStartedEvent,

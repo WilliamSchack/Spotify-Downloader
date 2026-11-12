@@ -125,6 +125,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
             result.FailReason = "Track cannot be found on the search platform";
             return result;
         }
+
+        if (eventCallback != nullptr) {
+            TrackSourceFoundEvent sourceFoundEvent;
+            sourceFoundEvent.Platform = searchPlatform;
+            sourceFoundEvent.Link = searchResult.Data.Url;
+        }
     }
 
     // TODO: Check for youtube flagging your ip
@@ -264,6 +270,12 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     if (!fileMoved) {
         result.FailReason = "Could not move the file from the temporary folder";
         return result;
+    }
+
+    if (eventCallback != nullptr) {
+        TrackSourceFoundEvent sourceFoundEvent;
+        sourceFoundEvent.Platform = EPlatform::LocalFile;
+        sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
     }
 
     result.Success = true;
