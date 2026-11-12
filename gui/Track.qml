@@ -7,25 +7,18 @@ Rectangle {
 
     required property QtObject trackData
     required property QtObject columnWidths
-    property real progressEndSmoothness: 0.02
-    property string progressBarColour: "green"
+    property string progressBarColour: Qt.alpha("green", 0.6)
 
     height: 40
     color: "transparent"
 
     // Progress Gradient
     Rectangle {
-        width: parent.height
-        height: parent.width
-        anchors.centerIn: parent
-        rotation: -90
-        visible: root.trackData.progress > 0
+        width: parent.width * root.trackData.progress
+        height: parent.height
 
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: root.progressBarColour }
-            GradientStop { position: Math.max(0.0, root.trackData.progress - root.progressEndSmoothness); color: root.progressBarColour }
-            GradientStop { position: Math.min(1.0, root.trackData.progress); color: "transparent" }
-        }
+        visible: root.trackData.progress > 0
+        color: root.progressBarColour
     }
 
     Row {
