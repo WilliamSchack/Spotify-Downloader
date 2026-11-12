@@ -128,6 +128,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
         if (eventCallback != nullptr) {
             TrackSourceFoundEvent sourceFoundEvent;
+            sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
             sourceFoundEvent.Platform = searchPlatform;
             sourceFoundEvent.Link = searchResult.Data.Url;
         }
@@ -274,6 +275,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     if (eventCallback != nullptr) {
         TrackSourceFoundEvent sourceFoundEvent;
+        sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
         sourceFoundEvent.Platform = EPlatform::LocalFile;
         sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
     }

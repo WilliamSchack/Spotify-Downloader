@@ -17,6 +17,8 @@ MajorSection {
             model: info.supporters
 
             Row {
+                required property var modelData
+
                 width: root.width
                 spacing: 10
 

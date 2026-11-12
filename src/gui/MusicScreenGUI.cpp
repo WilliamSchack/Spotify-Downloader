@@ -76,7 +76,10 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
             },
             [&](const TrackSourceFoundEvent& e) {
-                
+                std::cout << "TRACK SOURCE FOUND" << std::endl;
+
+                TrackUI* track = _tracksFromId[e.TrackUniqueId];
+                track->AddSource(e.Platform, e.Link);
             },
             [&](const TrackSucceededEvent& e) {
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];

@@ -23,6 +23,7 @@ struct TrackCoverArtDownloadedEvent
 
 struct TrackSourceFoundEvent
 {
+    std::string TrackUniqueId = "";
     EPlatform Platform = EPlatform::Unknown;
     std::string Link;
 };

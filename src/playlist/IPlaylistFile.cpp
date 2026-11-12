@@ -30,7 +30,7 @@ void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesyst
         return;
 
     // Sort by track number
-    std::sort(tracks.begin(), tracks.end(), [](const PlaylistFileTrack t1, const PlaylistFileTrack t2) -> bool {
+    std::sort(tracks.begin(), tracks.end(), [](const PlaylistFileTrack& t1, const PlaylistFileTrack& t2) -> bool {
 		return (t1.Data.TrackNumber < t2.Data.TrackNumber);
 	});
 

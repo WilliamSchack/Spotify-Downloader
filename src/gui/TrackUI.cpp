@@ -3,6 +3,7 @@
 TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data)
 {
     FindCoverArtUrl();
+    AddSource(data.Platform, data.Url);
 }
 
 int TrackUI::GetTrackNumber() const
@@ -28,6 +29,11 @@ QString TrackUI::GetAlbumName() const
 QString TrackUI::GetCoverArtUrl() const
 {
     return _coverArtUrl;
+}
+
+QList<GUISourceInfo> TrackUI::GetSources() const
+{
+    return _sources;
 }
 
 float TrackUI::GetProgress() const
@@ -84,7 +90,40 @@ void TrackUI::LoadCoverArt()
     }).detach();
 }
 
-void TrackUI::SetProgress(float progress)
+void TrackUI::AddSource(const EPlatform& platform, const std::string& link)
+{
+    std::cout << "ADDING SOURCE: " << (int)platform << std::endl;
+
+    QString iconSource = "";
+    QString qLink = QString::fromStdString(link);
+    switch (platform) {
+        case EPlatform::LocalFile:
+            iconSource = "";
+            qLink = QUrl::fromLocalFile(qLink).toString();
+            break;
+        case EPlatform::YouTube:
+            iconSource = "qrc:/icons/platforms/YouTube.png";
+            break;
+        case EPlatform::Spotify:
+            iconSource = "qrc:/icons/platforms/Spotify.png";
+            break;
+    }
+
+    GUISourceInfo info;
+    info.Platform = platform;
+    info.IconSource = iconSource;
+    info.Link = qLink;
+    _sources.push_back(info);
+
+    // Sort by platform index (I could insert based on the other values in the list but i cbf)
+    std::sort(_sources.begin(), _sources.end(), [](const GUISourceInfo& s1, const GUISourceInfo& s2) {
+        return (int)s1.Platform < (int)s2.Platform;
+    });
+
+    emit SourcesChanged();
+}
+
+void TrackUI::SetProgress(const float& progress)
 {
     if (MathUtils::FloatsEqual(progress, _progress))
         return;

@@ -57,6 +57,8 @@ Rectangle {
 
                 spacing: 10
 
+                // TODO: Fix error "Corrupt JPEG data: premature end of data segment"
+
                 // Cover Art
                 Item {
                     Layout.preferredWidth: 30
@@ -148,11 +150,19 @@ Rectangle {
             Row {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 6
+
                 Repeater {
-                    model: 2
-                    Rectangle {
+                    model: root.trackData.sources
+
+                    Image {
+                        required property var modelData
+
                         width: 15
                         height: width
+                    
+                        source: modelData.iconSource
+                        sourceSize.width: width
+                        sourceSize.height: height
                     }
                 }
             }
