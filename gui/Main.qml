@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Window {
     id: root
@@ -153,6 +154,17 @@ Window {
                 MusicScreen {}
                 InfoScreen {}
                 SettingsScreen {}
+
+                // Outer Shadow
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: "black"
+                    shadowOpacity: 0.25
+                    shadowBlur: 0.4
+                    shadowHorizontalOffset: 2
+                    shadowVerticalOffset: 2
+                }
             }
         }
     }
