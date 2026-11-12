@@ -76,23 +76,16 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(track);
     Image image;
 
-    {
-        // In the case that multiple threads try to download the same cover art at the same time, the image will corrupt
-        // This prevents that
-        // TODO: Cleanup these mutexes as they are only deleted when the app closes
-        std::lock_guard<std::mutex> lock(GetCoverArtMutex(track.Album.GetUniqueId()));
-        
-        std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
+    std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
 
-        if (!existingImageFilePath.empty()) {
-            image = ImageHandler::LoadImage(existingImageFilePath);
-        } else {
-            image = ImageHandler::DownloadImage(track.Album.ImageUrl);
-            std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
+    if (!existingImageFilePath.empty()) {
+        image = ImageHandler::LoadImage(existingImageFilePath);
+    } else {
+        image = ImageHandler::DownloadImage(track.Album.ImageUrl);
+        std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
 
-            if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
-                coverArtDownloadedCallback(imagePath);
-        }
+        if (!imagePath.empty() && coverArtDownloadedCallback != nullptr)
+            coverArtDownloadedCallback(imagePath);
     }
 
     // == Get the song on the target platform
@@ -277,10 +270,4 @@ void TrackDownloader::SetProgress(const std::function<void(DownloadProgress)>& p
         return;
 
     progressCallback(progress);
-}
-
-std::mutex& TrackDownloader::GetCoverArtMutex(const std::string& albumUniqueId)
-{
-    std::lock_guard<std::mutex> lock(_coverArtMapMutex);
-    return _coverArtMutexes[albumUniqueId];
 }

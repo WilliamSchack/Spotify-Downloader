@@ -30,10 +30,6 @@ class TrackDownloader
         static DownloadResult DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, std::function<void(DownloadProgress)> progressCallback = nullptr, std::function<void(std::filesystem::path)> coverArtDownloadedCallback = nullptr);
     private:
         static void SetProgress(const std::function<void(DownloadProgress)>& progressCallback, const DownloadProgress& progress);
-        static std::mutex& GetCoverArtMutex(const std::string& albumUniqueId);
-    private:
-        static inline std::mutex _coverArtMapMutex;
-        static inline std::unordered_map<std::string, std::mutex> _coverArtMutexes;
 };
 
 #endif
