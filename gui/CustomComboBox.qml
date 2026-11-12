@@ -12,6 +12,15 @@ ComboBox {
     background: Rectangle {
         width: parent.width
         radius: 3
+
+        InnerShadow {
+            topEnabled: false
+            leftEnabled: false
+
+            radius: 3
+            size: 4
+            strength: 0.2
+        }
     }
     
     indicator: Canvas {

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Effects
 
 // TODO: Visibly disable when enabled is false
 
@@ -31,6 +32,15 @@ TextField {
                 duration: 200
                 easing.type: Easing.OutCubic
             }
+        }
+
+        InnerShadow {
+            bottomEnabled: false
+            rightEnabled: false
+
+            radius: 4
+            size: 6
+            strength: 0.2
         }
     }
 

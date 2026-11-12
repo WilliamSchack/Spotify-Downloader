@@ -56,7 +56,7 @@ Rectangle {
                     Layout.maximumHeight: 40
                     spacing: 5
 
-                    TextField {
+                    CustomTextField {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
@@ -65,11 +65,6 @@ Rectangle {
 
                         verticalAlignment: TextInput.AlignVCenter
                         leftPadding: 10
-
-                        background: Rectangle {
-                            radius: 3
-                            color: "white"
-                        }
 
                         text: _manager.music.addTracksPopup.linkInputText
                         onTextChanged: _manager.music.addTracksPopup.linkInputText = text
@@ -91,7 +86,7 @@ Rectangle {
                     Layout.maximumHeight: 40
                     spacing: 5
 
-                    TextField {
+                    CustomTextField {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         placeholderText: qsTr("Select a Save Location...")
@@ -99,11 +94,6 @@ Rectangle {
 
                         verticalAlignment: TextInput.AlignVCenter
                         leftPadding: 10
-
-                        background: Rectangle {
-                            radius: 3
-                            color: "white"
-                        }
 
                         text: _manager.music.addTracksPopup.folderInputText
                         onTextChanged: _manager.music.addTracksPopup.folderInputText = text

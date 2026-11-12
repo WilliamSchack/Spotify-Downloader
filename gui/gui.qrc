@@ -34,5 +34,6 @@
         <file>SupporterSection.qml</file>
         <file>LoadingStatus.qml</file>
         <file>RoundedImage.qml</file>
+        <file>InnerShadow.qml</file>
     </qresource>
 </RCC>

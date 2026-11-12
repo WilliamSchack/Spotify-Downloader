@@ -73,6 +73,17 @@ Button {
             shadowHorizontalOffset: 2
             shadowVerticalOffset: 2
         }
+
+        InnerShadow {
+            visible: root.backgroundColour.a > 0
+
+            topEnabled: false
+            leftEnabled: false
+
+            radius: root.radius
+            size: 4
+            strength: 0.2 * root.backgroundColour.a
+        }
     }
 
     MouseArea {

@@ -1,12 +1,12 @@
 import QtQuick
 import QtQuick.Controls.Basic
 
-TextField {
+CustomTextField {
     implicitHeight: parent.height
     implicitWidth: implicitHeight
 
-    padding: 0
-    leftPadding: 0 // Needs to be set for text to be centered for some reason
+    leftPadding: 0
+    rightPadding: 0
 
     horizontalAlignment: TextInput.AlignHCenter
     verticalAlignment: TextInput.AlignVCenter
@@ -15,9 +15,4 @@ TextField {
     color: "black"
 
     maximumLength: 1
-
-    background: Rectangle {
-        width: parent.width
-        radius: 3
-    }
 }

@@ -35,6 +35,15 @@ Switch {
             }
         }
 
+        InnerShadow {
+            topEnabled: false
+            leftEnabled: false
+
+            radius: 3
+            size: 4
+            strength: 0.2
+        }
+
         Behavior on color {
             ColorAnimation {
                 duration: 200
