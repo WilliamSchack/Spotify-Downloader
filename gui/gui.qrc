@@ -35,5 +35,7 @@
         <file>LoadingStatus.qml</file>
         <file>RoundedImage.qml</file>
         <file>InnerShadow.qml</file>
+        <file>HoverTooltip.qml</file>
+        <file>StyledBackground.qml</file>
     </qresource>
 </RCC>

@@ -16,6 +16,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomComboBox.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/RoundedImage.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InnerShadow.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/StyledBackground.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/Header.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/MarkdownText.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/MajorSection.qml
@@ -35,6 +36,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/SettingsSidebarGroup.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/LoadingStatus.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/HoverTooltip.qml
 )
 
 qt6_add_resources(QT_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/gui.qrc)
