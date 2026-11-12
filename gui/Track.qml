@@ -7,7 +7,7 @@ Rectangle {
 
     required property QtObject trackData
     required property QtObject columnWidths
-    property string progressBarColour: Qt.alpha("green", 0.6)
+    property string progressBarColour: Qt.alpha('#4DFF36', 0.4)
 
     height: 40
     color: "transparent"
@@ -17,7 +17,7 @@ Rectangle {
         width: parent.width * root.trackData.progress
         height: parent.height
 
-        visible: root.trackData.progress > 0
+        visible: root.trackData.progress > 0 && root.trackData.progress < 1
         color: root.progressBarColour
     }
 

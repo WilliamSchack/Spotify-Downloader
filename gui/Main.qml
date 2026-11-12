@@ -8,7 +8,6 @@ Window {
     width: 1400
     height: 800
     title: qsTr("Minimal Qml")
-    color: "#8f95d3"
 
     flags: Qt.Window | Qt.FramelessWindowHint
 
@@ -38,6 +37,51 @@ Window {
             _manager.settings.EnteringScreen()
 
         currentScreen = screen
+    }
+
+    // Background
+    Item {
+        anchors.fill: parent
+
+        // Playlist image
+        Image {
+            id: backgroundImage
+            anchors.fill: parent
+            anchors.margins: -100
+
+            visible: _manager.music.backgroundImagePath !== ""
+
+            source: _manager.music.backgroundImagePath
+            asynchronous: true
+            fillMode: Image.PreserveAspectCrop
+
+            opacity: 0.8
+
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                blurEnabled: true
+                blur: 1.0
+                blurMax: 40
+                blurMultiplier: 2.0
+            }
+        }
+
+        // Gradient overlay
+        Rectangle {
+            anchors.fill: parent
+            
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.alpha("#D4BBE9", 0.2) }
+                GradientStop { position: 1.0; color: Qt.alpha("#A0D4D1", 0.4) }
+            }
+        }
+
+        // Background / Overlay colour
+        Rectangle {
+            anchors.fill: parent
+
+            color: _manager.music.backgroundImagePath === "" ? "#8f95d3" : Qt.alpha("#3B3B3B", 0.4)
+        }
     }
 
     // Outer Margin

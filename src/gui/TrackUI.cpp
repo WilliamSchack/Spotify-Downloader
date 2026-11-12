@@ -92,8 +92,6 @@ void TrackUI::LoadCoverArt()
 
 void TrackUI::AddSource(const EPlatform& platform, const std::string& link)
 {
-    std::cout << "ADDING SOURCE: " << (int)platform << std::endl;
-
     QString iconSource = "";
     QString qLink = QString::fromStdString(link);
     switch (platform) {

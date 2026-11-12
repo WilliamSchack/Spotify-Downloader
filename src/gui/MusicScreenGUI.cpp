@@ -76,8 +76,6 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
             },
             [&](const TrackSourceFoundEvent& e) {
-                std::cout << "TRACK SOURCE FOUND" << std::endl;
-
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->AddSource(e.Platform, e.Link);
             },
@@ -111,6 +109,8 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _addTracksPopup->SetCheckingInputs(false);
                 _addTracksPopup->SetErrorMessage("");
                 _addTracksPopup->SetVisible(false);
+
+                UpdateBackgroundImage(_downloader.GetPlaylistData());
 
                 emit RequestNotification("Starting the download!");
             },
@@ -147,4 +147,33 @@ void MusicScreenGUI::CheckDownloadEvents()
             }
         }, event.value());
     }
+}
+
+void MusicScreenGUI::UpdateBackgroundImage(const PlaylistData& playlistData)
+{
+    std::thread([this, playlistData]() {
+        std::filesystem::path tempImagesFolder = Paths::GetImagesDir();
+        std::string fileName = playlistData.GetUniqueId();
+        fileName = FileUtils::ValidateFileName(fileName);
+
+        // Check if it exists
+        std::filesystem::path imageFilePathNoExtension = tempImagesFolder / fileName;
+        std::filesystem::path imageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePathNoExtension.parent_path(), imageFilePathNoExtension.filename());
+        if (imageFilePath.empty()) {
+            // Download
+            Image image = ImageHandler::DownloadImage(playlistData.ImageUrl);
+            if (image.Data == nullptr)
+                return;
+
+            imageFilePath = ImageHandler::SaveImage(imageFilePathNoExtension, image);
+            if (imageFilePath.empty())
+                return;
+        }
+
+        QString pathString = QString::fromStdString(FileUtils::PathToUtf8(imageFilePath));
+        pathString = QUrl::fromLocalFile(pathString).toString();
+        QMetaObject::invokeMethod(this, [this, pathString]() {
+            SetBackgroundImagePath(pathString);
+        }, Qt::QueuedConnection);
+    }).detach();
 }

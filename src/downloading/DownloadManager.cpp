@@ -76,6 +76,11 @@ bool DownloadManager::IsPaused() const
     return _downloading && _paused && _unpausedThreads == 0;
 }
 
+PlaylistData DownloadManager::GetPlaylistData() const
+{
+    return _downloadingPlaylist;
+}
+
 bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)
 {
     if (_downloading) {
@@ -148,9 +153,11 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
             tracks.push_back(track);
 
             PlaylistData playlistData(platform);
+            playlistData.Id = track.Id;
             playlistData.Name = track.Name;
             playlistData.Owner = track.GetMainArtist();
             playlistData.TotalTracks = 1;
+            playlistData.ImageUrl = track.Album.ImageUrl;
             _downloadingPlaylist = playlistData;
 
             break;
@@ -164,9 +171,11 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
             tracks = album.Tracks;
 
             PlaylistData playlistData(platform);
+            playlistData.Id = album.Data.Id;
             playlistData.Name = album.Data.Name;
             playlistData.Owner = album.Data.GetMainArtist();
             playlistData.TotalTracks = album.Tracks.size();
+            playlistData.ImageUrl = album.Data.ImageUrl;
             _downloadingPlaylist = playlistData;
 
             break;

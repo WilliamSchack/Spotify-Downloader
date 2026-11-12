@@ -1,14 +1,17 @@
 #ifndef MUSICSCREENGUI_H
 #define MUSICSCREENGUI_H
 
+#include "EasyQProperties.h"
 #include "VariantUtils.h"
 #include "DownloadManager.h"
 #include "DownloadEvents.h"
 #include "AddTracksPopup.h"
 #include "TrackUI.h"
+#include "Paths.h"
 
 #include <iostream>
 #include <map>
+#include <thread>
 
 #include <QObject>
 #include <QList>
@@ -18,8 +21,8 @@ class MusicScreenGUI : public QObject
     Q_OBJECT
     Q_PROPERTY(QObject* addTracksPopup READ GetAddTracksPopup CONSTANT)
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
-
     Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
+    SIMPLE_QPROPERTY(QString, backgroundImagePath, BackgroundImagePath, _backgroundImagePath)
 
     public:
         explicit MusicScreenGUI(QObject* parent = 0);
@@ -33,6 +36,8 @@ class MusicScreenGUI : public QObject
     private:
         void OnDownloadRequested(const std::string& link, const std::string& destinationFolder);
         void CheckDownloadEvents();
+
+        void UpdateBackgroundImage(const PlaylistData& playlistData);
     private:
         inline static const int DOWNLOAD_EVENTS_POLL_INTERVAL_MS = 100;
 
@@ -42,6 +47,8 @@ class MusicScreenGUI : public QObject
 
         QList<QObject*> _tracks;
         std::map<std::string, TrackUI*> _tracksFromId;
+
+        QString _backgroundImagePath;
     signals:
         void TracksChanged();
         void PlayPauseButtonTextChanged();

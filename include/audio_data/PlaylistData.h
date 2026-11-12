@@ -25,6 +25,11 @@ struct PlaylistData
 
     PlaylistData(EPlatform platform) : Platform(platform), Owner(platform) {}
     void Print() const;
+
+    std::string GetUniqueId() const
+    {
+        return "P" + std::to_string((int)Platform) + Id;
+    }
 };
 
 inline void to_json(nlohmann::json& json, const PlaylistData& data)

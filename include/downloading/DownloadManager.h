@@ -39,6 +39,8 @@ class DownloadManager
         bool IsPausing() const;
         bool IsPaused() const;
 
+        PlaylistData GetPlaylistData() const;
+
         DownloadEventsQueue& GetEvents();
     private:
         void StartDownload(const std::string& url, const std::string& directory);
