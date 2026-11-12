@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
  
 Rectangle {
@@ -57,16 +58,42 @@ Rectangle {
                 spacing: 10
 
                 // Cover Art
-                Image {
+                Item {
                     Layout.preferredWidth: 30
                     Layout.preferredHeight: 30
                     Layout.alignment: Qt.AlignVCenter
 
-                    source: root.trackData.coverArtUrl
-                    sourceSize.width: width * 2
-                    sourceSize.height: height * 2
-                    asynchronous: true
-                    fillMode: Image.PreserveAspectCrop
+                    // Loaded
+                    Image {
+                        anchors.fill: parent
+                        visible: root.trackData.coverArtUrl !== ""
+
+                        source: root.trackData.coverArtUrl
+                        sourceSize.width: width * 2
+                        sourceSize.height: height * 2
+                        asynchronous: true
+                        fillMode: Image.PreserveAspectCrop
+                    }
+
+                    // Loading
+                    Item {
+                        anchors.fill: parent
+                        visible: root.trackData.coverArtUrl === ""
+
+                        Rectangle {
+                            anchors.fill: parent
+
+                            radius: 4
+                            color: "#656565"
+                        }
+
+                        BusyIndicator {
+                            anchors.fill: parent
+
+                            running: parent.visible
+                            palette.dark: "white"
+                        }
+                    }
                 }
 
                 Column {
