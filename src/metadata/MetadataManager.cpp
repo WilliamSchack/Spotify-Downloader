@@ -78,6 +78,13 @@ void MetadataManager::SetTrackNumber(const unsigned int& value)
 
 void MetadataManager::SetDiscNumber(const unsigned int& value)
 {
+    if (_codec->GetMetadataType() == EMetadataType::Matroska) {
+        TagLib::String taglibString(std::to_string(value).c_str(), TagLib::String::UTF8);
+        TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+
+        dynamic_cast<TagLib::Matroska::Tag*>(fileTag)->addSimpleTag(TagLib::Matroska::SimpleTag("PART_NUMBER", taglibString, TagLib::Matroska::SimpleTag::TargetTypeValue::Album));
+    }
+
     SetStringField(EMetadataTag::DiscNumber, std::to_string(value));
 }
 
@@ -108,7 +115,7 @@ void MetadataManager::SetCoverImage(const Image& image)
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
     const char* tagId = GetTagId(EMetadataTag::CoverImage);
 
-    std::string mimeType = "";
+    TagLib::String mimeType = "";
     switch (image.Format) {
         case EImageFormat::PNG:
             mimeType = "image/png";
@@ -141,12 +148,21 @@ void MetadataManager::SetCoverImage(const Image& image)
             break;
         } case EMetadataType::XIPH: {
             TagLib::FLAC::Picture* coverArt = new TagLib::FLAC::Picture();
-				coverArt->setData(taglibImage);
-				coverArt->setMimeType(mimeType);
-				coverArt->setType(TagLib::FLAC::Picture::Type::FrontCover);
+            coverArt->setData(taglibImage);
+            coverArt->setMimeType(mimeType);
+            coverArt->setType(TagLib::FLAC::Picture::Type::FrontCover);
 
             dynamic_cast<TagLib::Ogg::XiphComment*>(fileTag)->addPicture(coverArt);
             break;
+        } case EMetadataType::Matroska: {
+            TagLib::VariantMap coverArt;
+            coverArt["data"] = taglibImage;
+            coverArt["mimeType"] = mimeType;
+
+            TagLib::List<TagLib::VariantMap> coverArtList;
+            coverArtList.append(coverArt);
+
+            dynamic_cast<TagLib::Matroska::File*>(_fileRef.file())->setComplexProperties(tagId, coverArtList);
         }
     }
 }
@@ -224,7 +240,8 @@ unsigned int MetadataManager::GetSeconds() const
 
 TrackData MetadataManager::GetAll() const
 {
-    TrackData data(EPlatform::Unknown);
+    TrackData data(EPlatform::LocalFile);
+    data.Url = _fileRef.file()->name();
     
     std::vector<ArtistData> artists;
     std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeparator);
@@ -367,7 +384,41 @@ const char* MetadataManager::GetTagId(const EMetadataTag& tag) const
         return NULL;
     }
 
+    if (metadataType == EMetadataType::Matroska) {
+        switch (tag) {
+            case EMetadataTag::Title:       return "TITLE";
+            case EMetadataTag::Artist:      return "ARTIST";
+            case EMetadataTag::AlbumName:   return "ALBUM";
+            case EMetadataTag::AlbumArtist: return "ARTIST";
+            case EMetadataTag::Publisher:   return "PUBLISHER";
+            case EMetadataTag::Copyright:   return "COPYRIGHT";
+            case EMetadataTag::Comment:     return "COMMENT";
+            case EMetadataTag::ReleaseDate: return "DATE_RECORDED";
+            case EMetadataTag::TrackNumber: return "PART_NUMBER";
+            case EMetadataTag::DiscNumber:  return "PART_NUMBER";
+            case EMetadataTag::Lyrics:      return "LYRICS";
+            case EMetadataTag::CoverImage:  return "PICTURE";
+        };
+
+        return NULL;
+    }
+
     return NULL;
+}
+
+TagLib::Matroska::SimpleTag::TargetTypeValue MetadataManager::GetMatroskaTargetType(const EMetadataTag& tag) const
+{
+    switch (tag) {
+        case EMetadataTag::Title:       return TagLib::Matroska::SimpleTag::TargetTypeValue::Track;
+        case EMetadataTag::Artist:      return TagLib::Matroska::SimpleTag::TargetTypeValue::Track;
+        case EMetadataTag::AlbumName:   return TagLib::Matroska::SimpleTag::TargetTypeValue::Album;
+        case EMetadataTag::AlbumArtist: return TagLib::Matroska::SimpleTag::TargetTypeValue::Album;
+        case EMetadataTag::ReleaseDate: return TagLib::Matroska::SimpleTag::TargetTypeValue::Album;
+        case EMetadataTag::TrackNumber: return TagLib::Matroska::SimpleTag::TargetTypeValue::Track;
+        case EMetadataTag::DiscNumber:  return TagLib::Matroska::SimpleTag::TargetTypeValue::Album;
+    };
+
+    return TagLib::Matroska::SimpleTag::TargetTypeValue::None;
 }
 
 void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string& value) const
@@ -396,6 +447,9 @@ void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string&
         } case EMetadataType::RIFF: {
             dynamic_cast<TagLib::RIFF::Info::Tag*>(fileTag)->setFieldText(tagId, taglibString);
             break;
+        } case EMetadataType::Matroska: {
+            TagLib::Matroska::SimpleTag matroskaTag(tagId, taglibString, GetMatroskaTargetType(tag));
+            dynamic_cast<TagLib::Matroska::Tag*>(fileTag)->addSimpleTag(matroskaTag);
         }
     }
 }
@@ -427,6 +481,14 @@ std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
             if (!fields.contains(tagId)) return "";
 
             return fields[tagId].to8Bit(true);
+        } case EMetadataType::Matroska: {
+            const TagLib::Matroska::SimpleTagsList tagList = dynamic_cast<TagLib::Matroska::Tag*>(fileTag)->simpleTagsList();
+            for (TagLib::Matroska::SimpleTag existingTag : tagList) {
+                if (existingTag.name() == tagId)
+                    return existingTag.toString().to8Bit();
+            }
+
+            return "";
         }
     }
     

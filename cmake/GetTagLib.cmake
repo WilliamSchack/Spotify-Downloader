@@ -7,7 +7,7 @@ include(ExternalProject)
 ExternalProject_Add(
 	taglib
 	GIT_REPOSITORY https://github.com/taglib/taglib.git
-	GIT_TAG v2.1.1
+	GIT_TAG v2.3.2
 	GIT_SHALLOW ON
 	PREFIX "${taglib_INSTALL_DIR}"
 	CMAKE_ARGS

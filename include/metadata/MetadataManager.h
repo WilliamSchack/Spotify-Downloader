@@ -31,6 +31,10 @@
 #include <taglib/flacpicture.h>
 #include <taglib/xiphcomment.h>
 
+#include <taglib/matroskafile.h>
+#include <taglib/matroskatag.h>
+#include <taglib/matroskaattachedfile.h>
+
 #include <filesystem>
 #include <vector>
 
@@ -81,6 +85,8 @@ class MetadataManager
         static int GetTrackNumber(const TrackData& track);
     private:
         const char* GetTagId(const EMetadataTag& tag) const;
+
+        TagLib::Matroska::SimpleTag::TargetTypeValue GetMatroskaTargetType(const EMetadataTag& tag) const;
 
         void SetStringField(const EMetadataTag& tag, const std::string& value) const;
         std::string GetStringField(const EMetadataTag& tag) const;

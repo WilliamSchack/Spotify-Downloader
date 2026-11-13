@@ -7,7 +7,8 @@ enum class EMetadataType
     ID3V2,
     MP4,
     XIPH,
-    RIFF // Not supported by all programs and doesnt support all metadata
+    RIFF, // Not supported by all programs and doesnt support all metadata
+    Matroska
 };
 
 #endif

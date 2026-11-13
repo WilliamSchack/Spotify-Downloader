@@ -245,7 +245,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     int trackNumber = MetadataManager::GetTrackNumber(track);
 
-    std::string publisherText = "Downloaded through " + std::string(APP_NAME) + " by William Schack";
+    std::string publisherText = "Downloaded with " + std::string(APP_NAME) + " by William Schack";
     std::string copyrightText = "";
     copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
     copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
