@@ -68,7 +68,7 @@ NetworkResponse NetworkRequest::DownloadToFile(const std::filesystem::path& file
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFileFunction);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &file);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
     curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 
     response.CurlCode = curl_easy_perform(curl);
@@ -110,7 +110,7 @@ NetworkResponse NetworkRequest::SendRequest(CURL* curl)
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWriteFunction);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response.Body);
-    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+    curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
 
     response.CurlCode = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.HTTPCode);
