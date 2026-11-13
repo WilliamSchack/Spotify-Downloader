@@ -37,5 +37,8 @@
         <file>InnerShadow.qml</file>
         <file>HoverTooltip.qml</file>
         <file>StyledBackground.qml</file>
+        <file>CustomContextMenu.qml</file>
+        <file>CustomMenuItem.qml</file>
+        <file>CustomMenuSeparator.qml</file>
     </qresource>
 </RCC>

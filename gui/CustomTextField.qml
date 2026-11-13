@@ -53,4 +53,50 @@ TextField {
         anchors.rightMargin: 8
         anchors.verticalCenter: root.verticalCenter
     }
+
+    ContextMenu.menu: CustomContextMenu {
+        CustomMenuItem {
+            text: "Cut"
+            enabled: root.enabled && root.selectedText.length > 0
+            onClicked: root.cut()
+        }
+
+        CustomMenuItem {
+            text: "Copy"
+            enabled: root.selectedText.length > 0
+            onClicked: root.copy()
+        }
+
+        CustomMenuItem {
+            text: "Paste"
+            enabled: root.canPaste
+            onClicked: root.paste()
+        }
+
+        CustomMenuItem {
+            text: "Delete"
+            enabled: root.enabled && root.selectedText.length > 0
+            onClicked: root.remove(root.selectionStart, root.selectionEnd)
+        }
+
+        CustomMenuItem {
+            text: "Select All"
+            enabled: root.length > 0
+            onClicked: root.selectAll()
+        }
+
+        CustomMenuSeparator {}
+
+        CustomMenuItem {
+            text: "Undo"
+            enabled: root.canUndo
+            onClicked: root.undo()
+        }
+
+        CustomMenuItem {
+            text: "Redo"
+            enabled: root.canRedo
+            onClicked: root.redo()
+        }
+    }
 }

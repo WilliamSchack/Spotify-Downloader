@@ -14,6 +14,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/IntTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/DoubleTextField.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomComboBox.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/CustomContextMenu.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/CustomMenuItem.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/CustomMenuSeparator.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/RoundedImage.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InnerShadow.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/StyledBackground.qml
