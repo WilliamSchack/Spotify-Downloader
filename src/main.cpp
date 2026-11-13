@@ -2,6 +2,8 @@
 #include "GUIManager.h"
 #include "Config.h"
 
+#include <random>
+
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -52,6 +54,8 @@ int main(int argc, char** argv)
 #else
     std::cout << "Linux" << std::endl;
 #endif
+
+    std::srand(std::time(NULL));
 
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);

@@ -47,7 +47,7 @@ Window {
         Image {
             id: backgroundImage
             anchors.fill: parent
-            anchors.margins: -100
+            anchors.margins: -50
 
             visible: _manager.music.backgroundImagePath !== ""
 
@@ -63,6 +63,8 @@ Window {
                 blur: 1.0
                 blurMax: 40
                 blurMultiplier: 2.0
+                saturation: 0.5
+                contrast: 0.2
             }
         }
 

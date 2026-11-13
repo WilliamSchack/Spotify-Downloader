@@ -5,6 +5,12 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
     _addTracksPopup = new AddTracksPopup(this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
 
+    // Update background image
+    if (Config::RandomDefaultBackground) {
+        int randomIndex = std::rand() % Config::RANDOM_DEFAULT_BACKGROUND_URLS.size();
+        Config::DefaultBackgroundUrl = Config::RANDOM_DEFAULT_BACKGROUND_URLS[randomIndex];
+    }
+
     UpdateBackgroundImage();
 
     // Frequently check download events

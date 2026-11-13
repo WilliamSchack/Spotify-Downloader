@@ -749,6 +749,15 @@ RowLayout {
                             label: "Background"
 
                             SettingsItem {
+                                label: "Random Default Background"
+
+                                CustomSwitch {
+                                    checked: _manager.settings.randomDefaultBackground
+                                    onClicked: _manager.settings.randomDefaultBackground = checked
+                                }
+                            }
+
+                            SettingsItem {
                                 label: "Default Background Url"
 
                                 CustomTextField {
