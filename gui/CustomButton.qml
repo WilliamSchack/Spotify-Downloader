@@ -9,7 +9,7 @@ Button {
     property color backgroundColour: "white"
     property color hoveredColour: Qt.darker(backgroundColour, 1.2)
     property color pressedColour: Qt.darker(backgroundColour, 1.5)
-    property color disabledColour: "#434343"
+    property color disabledColour: Qt.darker(backgroundColour, 2.0)
     property real radius: 3
 
     property alias horizontalAlignment: label.horizontalAlignment

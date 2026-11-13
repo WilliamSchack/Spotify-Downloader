@@ -23,6 +23,7 @@ class MusicScreenGUI : public QObject
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
     Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
     SIMPLE_QPROPERTY(QString, backgroundImagePath, BackgroundImagePath, _backgroundImagePath)
+    SIMPLE_QPROPERTY(bool, loadingBackgroundImage, LoadingBackgroundImage, _loadingBackgroundImage)
 
     public:
         explicit MusicScreenGUI(QObject* parent = 0);
@@ -31,6 +32,8 @@ class MusicScreenGUI : public QObject
         QList<QObject*> GetTracks() const;
 
         QString GetPlayPauseButtonText() const;
+
+        Q_INVOKABLE void UpdateBackgroundImage();
     public slots:
         void PlayPauseButtonPressed();
     private:
@@ -38,6 +41,9 @@ class MusicScreenGUI : public QObject
         void CheckDownloadEvents();
 
         void UpdateBackgroundImage(const PlaylistData& playlistData);
+        void UpdateBackgroundImage(const std::string& url);
+
+        void DisableBackgroundImageLoadingSafely();
     private:
         inline static const int DOWNLOAD_EVENTS_POLL_INTERVAL_MS = 100;
 
@@ -49,6 +55,7 @@ class MusicScreenGUI : public QObject
         std::map<std::string, TrackUI*> _tracksFromId;
 
         QString _backgroundImagePath;
+        bool _loadingBackgroundImage = false;
     signals:
         void TracksChanged();
         void PlayPauseButtonTextChanged();

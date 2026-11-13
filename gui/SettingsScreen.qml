@@ -751,15 +751,22 @@ RowLayout {
                             SettingsItem {
                                 label: "Default Background Url"
 
-                                CustomTextField {}
+                                CustomTextField {
+                                    text: _manager.settings.defaultBackgroundUrl
+                                    onTextEdited: _manager.settings.defaultBackgroundUrl = text
+                                }
 
                                 CustomButton {
                                     width: parent.height * 2 + 10
                                     height: parent.height
 
-                                    text: "Apply"
+                                    enabled: !_manager.music.loadingBackgroundImage
+
+                                    text: _manager.music.loadingBackgroundImage ? "Loading" : "Apply"
                                     textColour: "black"
                                     font.bold: true
+
+                                    onClicked: _manager.music.UpdateBackgroundImage()
                                 }
                             }
                         }

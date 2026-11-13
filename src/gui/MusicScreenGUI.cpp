@@ -5,6 +5,8 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
     _addTracksPopup = new AddTracksPopup(this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
 
+    UpdateBackgroundImage();
+
     // Frequently check download events
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MusicScreenGUI::CheckDownloadEvents);
@@ -155,6 +157,8 @@ void MusicScreenGUI::CheckDownloadEvents()
 
 void MusicScreenGUI::UpdateBackgroundImage(const PlaylistData& playlistData)
 {
+    SetLoadingBackgroundImage(true);
+
     std::thread([this, playlistData]() {
         std::filesystem::path tempImagesFolder = Paths::GetImagesDir();
         std::string fileName = playlistData.GetUniqueId();
@@ -166,18 +170,91 @@ void MusicScreenGUI::UpdateBackgroundImage(const PlaylistData& playlistData)
         if (imageFilePath.empty()) {
             // Download
             Image image = ImageHandler::DownloadImage(playlistData.ImageUrl);
-            if (image.Data == nullptr)
+            if (image.Data == nullptr) {
+                DisableBackgroundImageLoadingSafely();
                 return;
+            }
 
             imageFilePath = ImageHandler::SaveImage(imageFilePathNoExtension, image);
-            if (imageFilePath.empty())
+            if (imageFilePath.empty()) {
+                DisableBackgroundImageLoadingSafely();
                 return;
+            }
         }
 
         QString pathString = QString::fromStdString(FileUtils::PathToUtf8(imageFilePath));
         pathString = QUrl::fromLocalFile(pathString).toString();
         QMetaObject::invokeMethod(this, [this, pathString]() {
             SetBackgroundImagePath(pathString);
+            SetLoadingBackgroundImage(false);
         }, Qt::QueuedConnection);
     }).detach();
+}
+
+void MusicScreenGUI::UpdateBackgroundImage(const std::string& url)
+{
+    SetLoadingBackgroundImage(true);
+
+    std::thread([this, url]() {
+        EPlatform platform = PlatformDetector::GetPlatformFromUrl(url);
+        if (platform == EPlatform::Unknown) {
+            DisableBackgroundImageLoadingSafely();
+            return;
+        }
+
+        std::unique_ptr<IPlatformDownloader> platformDownloader = PlatformFactory::CreateDownloader(platform);
+        if (platformDownloader == nullptr) {
+            DisableBackgroundImageLoadingSafely();
+            return;
+        }
+
+        ELinkType linkType = platformDownloader->GetLinkType(url);
+        if (linkType == ELinkType::Unknown) {
+            DisableBackgroundImageLoadingSafely();
+            return;
+        }
+
+        switch (linkType) {
+            case ELinkType::Track: {
+                TrackData track = platformDownloader->GetTrack(url);
+
+                PlaylistData playlistData(platform);
+                playlistData.Id = track.Id;
+                playlistData.ImageUrl = track.Album.ImageUrl;
+                UpdateBackgroundImage(playlistData);
+
+                break;
+            } case ELinkType::Playlist: {
+                PlaylistTracks playlist = platformDownloader->GetPlaylist(url);
+                UpdateBackgroundImage(playlist.Data);
+
+                break;
+            } case ELinkType::Album: {
+                AlbumTracks album = platformDownloader->GetAlbum(url);
+
+                PlaylistData playlistData(platform);
+                playlistData.Id = album.Data.Id;
+                playlistData.ImageUrl = album.Data.ImageUrl;
+                UpdateBackgroundImage(playlistData);
+
+                break;
+            }
+        }
+    }).detach();
+}
+
+void MusicScreenGUI::UpdateBackgroundImage()
+{
+    if (Config::DefaultBackgroundUrl.empty())
+        return;
+
+    UpdateBackgroundImage(Config::DefaultBackgroundUrl);
+}
+
+void MusicScreenGUI::DisableBackgroundImageLoadingSafely()
+{
+    // Just does it on the gui thread
+    QMetaObject::invokeMethod(this, [this]() {
+        SetLoadingBackgroundImage(false);
+    }, Qt::QueuedConnection);
 }

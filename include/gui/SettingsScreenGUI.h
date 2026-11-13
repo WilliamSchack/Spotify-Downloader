@@ -60,6 +60,8 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(bool, autoCheckForUpdates, AutoCheckForUpdates, Config::AutoCheckForUpdates)
     SIMPLE_QPROPERTY(bool, autoCheckForNotices, AutoCheckForNotices, Config::AutoCheckForNotices)
 
+    STRING_QPROPERTY(defaultBackgroundUrl, DefaultBackgroundUrl, Config::DefaultBackgroundUrl)
+
     Q_PROPERTY(bool allSettingsValid READ GetAllSettingsValid)
     
     public:

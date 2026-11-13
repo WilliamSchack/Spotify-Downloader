@@ -244,8 +244,14 @@ TrackData MetadataManager::GetAll() const
         return TrackData(EPlatform::Unknown);
 
     TrackData data(EPlatform::LocalFile);
+
+    // TODO: Test this properly, for some reason toString isnt a thing on my linux machine at least but just returns a string
+#ifdef WIN32
     data.Url = _fileRef.file()->name().toString().to8Bit(true);
-    
+#else
+    data.Url = _fileRef.file()->name();
+#endif
+
     std::vector<ArtistData> artists;
     std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeparator);
     for (std::string artistName : artistNames) {
