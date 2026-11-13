@@ -4,6 +4,7 @@
 #include "EasyQProperties.h"
 #include "GUIReleaseInfo.h"
 #include "Paths.h"
+#include "Config.h"
 
 #include <functional>
 #include <thread>

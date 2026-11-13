@@ -5,7 +5,9 @@ DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::fun
 {
     CheckInstalled();
     UpdateVersion();
-    CheckForUpdate();
+
+    if (Config::AutoCheckForUpdates)
+        CheckForUpdate();
 }
 
 QList<GUIReleaseInfo> DependencyInfo::GetReleases()
