@@ -71,6 +71,9 @@ nlohmann::ordered_json Config::ToJson()
             { "updates", {
                 { "autoCheckForUpdates", AutoCheckForUpdates },
                 { "autoCheckForNotices", AutoCheckForNotices }
+            }},
+            { "background", {
+                { "defaultBackgroundUrl", DefaultBackgroundUrl }
             }}
         }}
     };
@@ -194,6 +197,9 @@ void Config::FromJson(const nlohmann::json& json)
     // Updates
     AutoCheckForUpdates = JsonUtils::SafelyNavigate<bool>(json, { "interface", "updates", "autoCheckForUpdates" }, AutoCheckForUpdates);
     AutoCheckForNotices = JsonUtils::SafelyNavigate<bool>(json, { "interface", "updates", "autoCheckForNotices" }, AutoCheckForNotices);
+
+    // Background
+    DefaultBackgroundUrl = JsonUtils::SafelyNavigate<std::string>(json, { "interface", "background", "defaultBackgroundUrl" }, DefaultBackgroundUrl);
 }
 
 bool Config::Load()

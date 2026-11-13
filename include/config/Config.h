@@ -93,6 +93,8 @@ class Config
         static inline bool AutoCheckForUpdates = true;
         static inline bool AutoCheckForNotices = true;
 
+        // Background
+        static inline std::string DefaultBackgroundUrl = "";
 
         // Has the requested lyrics sources with 0 as the highest priority
         static inline constexpr ELyricsSource LYRICS_SOURCE_PRIORITY[] = {

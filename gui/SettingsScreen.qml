@@ -207,6 +207,11 @@ RowLayout {
                         }
 
                         SettingsSidebarLink {
+                            label: "Background"
+                            target: sectionBackground
+                        }
+
+                        SettingsSidebarLink {
                             label: "Settings"
                             target: sectionSettings
                         }
@@ -739,6 +744,27 @@ RowLayout {
                             }
                         }
 
+                        MinorSection {
+                            id: sectionBackground
+                            label: "Background"
+
+                            SettingsItem {
+                                label: "Default Background Url"
+
+                                CustomTextField {}
+
+                                CustomButton {
+                                    width: parent.height * 2 + 10
+                                    height: parent.height
+
+                                    text: "Apply"
+                                    textColour: "black"
+                                    font.bold: true
+                                }
+                            }
+                        }
+
+                        // TODO: Add popup for when failed / succeeded
                         MinorSection {
                             id: sectionSettings
                             label: "Settings"
