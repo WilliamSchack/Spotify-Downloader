@@ -7,8 +7,6 @@
 #include <QQmlContext>
 #include <QIcon>
 
-#include "SupportersScreenGUI.h"
-
 // TODO: IMPLEMENT THIS:
 //
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
@@ -58,6 +56,11 @@ int main(int argc, char** argv)
     // Calling before arg parser so qtwebengine can be initialised
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
+
+    // TODO: Decide this better
+#if !defined(__APPLE__) && defined(UNIX)
+    app.setAttribute(Qt::AA_DontUseNativeDialogs)
+#endif
 
     bool argsUsed = ArgumentParser::Parse(argc, argv);
     if (argsUsed) return 0;
