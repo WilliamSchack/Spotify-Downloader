@@ -687,13 +687,19 @@ RowLayout {
                             SettingsItem {
                                 label: "Check For Updates"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.autoCheckForUpdates
+                                    onClicked: _manager.settings.autoCheckForUpdates = checked
+                                }
                             }
 
                             SettingsItem {
                                 label: "Check For Notices"
 
-                                CustomSwitch {}
+                                CustomSwitch {
+                                    checked: _manager.settings.autoCheckForNotices
+                                    onClicked: _manager.settings.autoCheckForNotices = checked
+                                }
                             }
                         }
                     }

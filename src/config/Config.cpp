@@ -64,9 +64,13 @@ nlohmann::ordered_json Config::ToJson()
         }},
         { "interface", {
             { "general", {
+                { "showStatusNotifications", ShowStatusNotifications },
                 { "autoOpenDownloadFolder", AutoOpenDownloadFolder }
             }},
-            { "updates", nlohmann::ordered_json::object() } // Will be filled when settings are implemented
+            { "updates", {
+                { "autoCheckForUpdates", AutoCheckForUpdates },
+                { "autoCheckForNotices", AutoCheckForNotices }
+            }}
         }}
     };
 
@@ -157,9 +161,12 @@ void Config::FromJson(const nlohmann::json& json)
     // == Interface
 
     // General
+    ShowStatusNotifications = JsonUtils::SafelyNavigate<bool>(json, { "interface", "general", "showStatusNotifications" }, ShowStatusNotifications);
     AutoOpenDownloadFolder = JsonUtils::SafelyNavigate<bool>(json, { "interface", "general", "autoOpenDownloadFolder" }, AutoOpenDownloadFolder);
 
     // Updates
+    AutoCheckForUpdates = JsonUtils::SafelyNavigate<bool>(json, { "interface", "updates", "autoCheckForUpdates" }, AutoCheckForUpdates);
+    AutoCheckForNotices = JsonUtils::SafelyNavigate<bool>(json, { "interface", "updates", "autoCheckForNotices" }, AutoCheckForNotices);
 }
 
 void Config::Load()

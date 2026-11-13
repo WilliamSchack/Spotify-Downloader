@@ -82,7 +82,8 @@ class Config
         static inline bool AutoOpenDownloadFolder = true;
 
         // Updates
-
+        static inline bool AutoCheckForUpdates = true;
+        static inline bool AutoCheckForNotices = true;
 
 
         // Has the requested lyrics sources with 0 as the highest priority

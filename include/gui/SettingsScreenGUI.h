@@ -49,6 +49,9 @@ class SettingsScreenGUI : public QObject
 
     SIMPLE_QPROPERTY(bool, showStatusNotifications, ShowStatusNotifications, Config::ShowStatusNotifications)
     SIMPLE_QPROPERTY(bool, autoOpenDownloadFolder, AutoOpenDownloadFolder, Config::AutoOpenDownloadFolder)
+    
+    SIMPLE_QPROPERTY(bool, autoCheckForUpdates, AutoCheckForUpdates, Config::AutoCheckForUpdates)
+    SIMPLE_QPROPERTY(bool, autoCheckForNotices, AutoCheckForNotices, Config::AutoCheckForNotices)
 
     Q_PROPERTY(bool allSettingsValid READ GetAllSettingsValid)
     
