@@ -5,7 +5,6 @@
 
 #include <taglib/matroskafile.h>
 
-// Isnt used as a target codec, only for checking against
 class CodecWEBM : public ICodec
 {
     public:

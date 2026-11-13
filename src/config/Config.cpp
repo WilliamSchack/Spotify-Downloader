@@ -79,6 +79,11 @@ nlohmann::ordered_json Config::ToJson()
         json["output"]["audio"]["bitrate"][keyString] = val;
     }
 
+    for (const auto& [key, val] : LosslessFormats) {
+        std::string keyString = EEXTENSION_NAMES[(int)key];
+        json["output"]["audio"]["losslessFormats"][keyString] = ELOSSLESSCODECFORMAT_NAMES[(int)val];
+    }
+
     return json;
 }
 
@@ -115,15 +120,35 @@ void Config::FromJson(const nlohmann::json& json)
 
     nlohmann::json bitrateJson = JsonUtils::SafelyNavigate(json, { "output", "audio", "bitrate" });
     for (const auto& [key, val] : bitrateJson.items()) {
-        if (!val.is_number_integer())
+        if (!val.is_string())
             continue;
 
-        int indexOfBitrateExtension = VectorUtils::IndexOf(EEXTENSION_NAMES, key);
-        if (indexOfBitrateExtension < 0)
+        int indexOfExtension = VectorUtils::IndexOf(EEXTENSION_NAMES, key);
+        if (indexOfExtension < 0)
             continue;
 
-        EExtension bitrateExtension = static_cast<EExtension>(indexOfBitrateExtension);
-        BitrateKbps[bitrateExtension] = val.get<int>();
+        EExtension extension = static_cast<EExtension>(indexOfExtension);
+        BitrateKbps[extension] = val.get<int>();
+    }
+
+    nlohmann::json losslessFormatsJson = JsonUtils::SafelyNavigate(json, { "output", "audio", "losslessFormats" });
+    for (const auto& [key, val] : losslessFormatsJson.items()) {
+        if (!val.is_string())
+            continue;
+
+        int indexOfExtension = VectorUtils::IndexOf(EEXTENSION_NAMES, key);
+        if (indexOfExtension < 0)
+            continue;
+
+        EExtension extension = static_cast<EExtension>(indexOfExtension);
+
+        int indexOfFormat = VectorUtils::IndexOf(ELOSSLESSCODECFORMAT_NAMES, val.get<std::string>());
+        if (indexOfFormat < 0)
+            continue;
+
+        ELosslessCodecFormat format = static_cast<ELosslessCodecFormat>(indexOfFormat);
+
+        LosslessFormats[extension] = format;
     }
 
     // Metadata

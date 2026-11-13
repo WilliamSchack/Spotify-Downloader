@@ -11,7 +11,22 @@ class CodecFLAC : public ICodec
         EExtension               GetExtension()              const override { return EExtension::FLAC; };
         EMetadataType            GetMetadataType()           const override { return EMetadataType::XIPH; };
         std::string              GetString()                 const override { return "flac"; };
-        std::vector<std::string> GetFfmpegConversionParams() const override { return { "-acodec", "flac", "-af", "aformat=s16:44100", "-ac", "2" }; };
+        std::vector<std::string> GetFfmpegConversionParams() const override {
+            std::vector<std::string> params = { "-acodec", "flac", "-ac", "2" };
+
+            switch (Config::LosslessFormats[EExtension::FLAC]) {
+                case ELosslessCodecFormat::B16H44100:
+                    params.push_back("-af");
+                    params.push_back("aformat=s16:44100");
+                    break;
+                case ELosslessCodecFormat::B16H48000:
+                    params.push_back("-af");
+                    params.push_back("aformat=s16:48000");
+                    break;
+            }
+
+            return params;
+        };
         
         BitrateDetails GetBitrateDetails() const override { 
             return BitrateDetails {

@@ -240,6 +240,9 @@ unsigned int MetadataManager::GetSeconds() const
 
 TrackData MetadataManager::GetAll() const
 {
+    if (_fileRef.file() == nullptr)
+        return TrackData(EPlatform::Unknown);
+
     TrackData data(EPlatform::LocalFile);
     data.Url = _fileRef.file()->name();
     

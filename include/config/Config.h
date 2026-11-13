@@ -5,6 +5,7 @@
 #include "ELyricsSource.h"
 #include "EPlaylistFileType.h"
 #include "ETrackNumberType.h"
+#include "ELosslessCodecFormat.h"
 #include "EIPVersion.h"
 #include "YouTubeCookieFile.h"
 #include "Paths.h"
@@ -31,13 +32,17 @@ class Config
         static inline double NormaliseDb = -14.0;
         static inline bool ManualBitrate = false;
         static inline std::map<EExtension, int> BitrateKbps = {
-            {EExtension::M4A, 128},
-            {EExtension::AAC, 128},
-            {EExtension::MP3, 192},
-            {EExtension::OGG, 128},
-            {EExtension::WAV, 0},  // TODO: Add sample rate settings
-            {EExtension::FLAC, 0}, // TODO: Add sample rate settings
-            {EExtension::WEBM, 0}  // TODO: IMPLEMENT WEBM
+            {EExtension::M4A,  128},
+            {EExtension::AAC,  128},
+            {EExtension::MP3,  192},
+            {EExtension::OGG,  128},
+            {EExtension::WAV,  0},
+            {EExtension::FLAC, 0},
+            {EExtension::WEBM, 128}
+        };
+        static inline std::map<EExtension, ELosslessCodecFormat> LosslessFormats = {
+            {EExtension::WAV,  ELosslessCodecFormat::B16H44100},
+            {EExtension::FLAC, ELosslessCodecFormat::B16H44100}
         };
 
         // Metadata
