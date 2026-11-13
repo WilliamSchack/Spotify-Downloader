@@ -1,6 +1,10 @@
 #include "AddTracksPopup.h"
 
-AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent) {}
+AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent)
+{
+    if (!Config::DefaultSaveLocation.empty() && std::filesystem::exists(Config::DefaultSaveLocation))
+        _folderInputText = QString::fromStdString(FileUtils::PathToUtf8(Config::DefaultSaveLocation));
+}
 
 void AddTracksPopup::PasteButtonClicked()
 {

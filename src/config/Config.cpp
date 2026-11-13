@@ -20,6 +20,7 @@ nlohmann::ordered_json Config::ToJson()
             }},
             { "fileManagement", {
                 { "overwrite", Overwrite },
+                { "defaultSaveLocation", DefaultSaveLocation },
                 { "fileName", {
                     { "tagsOpening", std::string(1, FileNameTagsOpeningChar) },
                     { "tagsClosing", std::string(1, FileNameTagsClosingChar) },
@@ -158,6 +159,7 @@ void Config::FromJson(const nlohmann::json& json)
 
     // File Management
     Overwrite = JsonUtils::SafelyNavigate<bool>(json, { "output", "fileManagement", "overwrite" }, Overwrite);
+    DefaultSaveLocation = FileUtils::PathFromUtf8(JsonUtils::SafelyNavigate<std::string>(json, { "output", "fileManagement", "defaultSaveLocation" }, DefaultSaveLocation));
     readTaggableInputJson({ "output", "fileManagement", "fileName" }, FileNameTagsOpeningChar, FileNameTagsClosingChar, FileName);
     readTaggableInputJson({ "output", "fileManagement", "subFolders" }, SubFoldersTagsOpeningChar, SubFoldersTagsClosingChar, SubFolders);
 

@@ -399,7 +399,25 @@ RowLayout {
                                 }
                             }
 
-                            // TODO: Add validation
+                            SettingsItem {
+                                label: "Default Save Location"
+
+                                CustomTextField {
+                                    // Increasing width to fit with below inputs
+                                    width: 310 + height
+
+                                    text: _manager.settings.defaultSaveLocation
+                                    onTextEdited: _manager.settings.defaultSaveLocation = text
+                                }
+
+                                CustomButton {
+                                    width: parent.height
+                                    height: parent.height
+
+                                    onClicked: _manager.settings.DefaultSaveLocationButtonClicked()
+                                }
+                            }
+
                             SettingsItem {
                                 label: "File Name"
                                 valid: _manager.settings.fileNameValid

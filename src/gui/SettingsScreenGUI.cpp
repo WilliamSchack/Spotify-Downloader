@@ -30,6 +30,9 @@ SettingsScreenGUI::~SettingsScreenGUI()
 void SettingsScreenGUI::EnteringScreen()
 {
     SetupYouTubeCookiesWatcher();
+
+    // Update settings that can be changed outside of this screen
+    emit DefaultSaveLocationChanged();
 }
 
 void SettingsScreenGUI::LeavingScreen()
@@ -80,6 +83,23 @@ void SettingsScreenGUI::SetLosslessFormat(const int& formatIndex)
 bool SettingsScreenGUI::GetFormatIsLossless() const
 {
     return MapUtils::ContainsKey(Config::LosslessFormats, Config::CodecExtension);
+}
+
+void SettingsScreenGUI::DefaultSaveLocationButtonClicked()
+{
+    QFileDialog dialog(nullptr, "Choose output directory", "");
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOptions(QFileDialog::ShowDirsOnly);
+    FileDialogUtils::SetParent(dialog, QGuiApplication::focusWindow());
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+        
+    QString folder = dialog.selectedFiles().first();
+    if (folder.isEmpty())
+        return;
+
+    SetDefaultSaveLocation(folder);
 }
 
 QString SettingsScreenGUI::GetYouTubeCookiesStatus() const

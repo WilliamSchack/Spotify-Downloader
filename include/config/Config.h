@@ -54,6 +54,7 @@ class Config
 
         // File Management
         static inline bool Overwrite = false;
+        static inline std::filesystem::path DefaultSaveLocation = "";
         static inline char FileNameTagsOpeningChar = '<';
         static inline char FileNameTagsClosingChar = '>';
         static inline std::string FileName = "<Song Name> - <Song Artist>";
@@ -69,7 +70,7 @@ class Config
 
         // Playlist File
         static inline bool CreatePlaylistFile = false;
-        static inline EPlaylistFileType PlaylistFileType = EPlaylistFileType::None;
+        static inline EPlaylistFileType PlaylistFileType = EPlaylistFileType::M3U;
         static inline char PlaylistFileNameTagsOpeningChar = '<';
         static inline char PlaylistFileNameTagsClosingChar = '>';
         static inline std::string PlaylistFileName = "<Save Location>/<Playlist Name> - <Playlist Owner>";

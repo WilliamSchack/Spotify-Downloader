@@ -33,6 +33,10 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
 
     _addTracksPopup->SetCheckingInputs(true);
     _addTracksPopup->SetErrorMessage("");
+
+    if (Config::DefaultSaveLocation.empty()) {
+        Config::DefaultSaveLocation = FileUtils::PathFromUtf8(destinationFolder);
+    }
 }
 
 void MusicScreenGUI::PlayPauseButtonPressed()

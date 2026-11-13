@@ -6,6 +6,7 @@
 
 #include "Config.h"
 #include "TrackData.h"
+#include "FileUtils.h"
 
 #include <QStringList>
 
@@ -44,6 +45,20 @@ class EasyQProperties {
         QString Get##functionName() const { return QString::fromStdString(variable); } \
         void Set##functionName(QString value) { \
             std::string castedValue = value.toStdString(); \
+            if (variable == castedValue) return; \
+            variable = castedValue; \
+            emit functionName##Changed(); \
+        }
+
+// Converts std::filesystem::path to QString
+#define PATH_QPROPERTY(qmlName, functionName, variable) \
+    Q_PROPERTY(QString qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
+    Q_SIGNALS: \
+        void functionName##Changed(); \
+    public: \
+        QString Get##functionName() const { return QString::fromStdString(FileUtils::PathToUtf8(variable)); } \
+        void Set##functionName(QString value) { \
+            std::filesystem::path castedValue = FileUtils::PathFromUtf8(value.toStdString()); \
             if (variable == castedValue) return; \
             variable = castedValue; \
             emit functionName##Changed(); \

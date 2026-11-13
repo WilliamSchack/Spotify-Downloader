@@ -35,6 +35,7 @@ class SettingsScreenGUI : public QObject
     ENUM_QPROPERTY(ETrackNumberType, ETRACKNUMBERTYPE_NAMES, trackNumberType, TrackNumberType, Config::TrackNumberType)
     
     SIMPLE_QPROPERTY(bool, overwrite, Overwrite, Config::Overwrite)
+    PATH_QPROPERTY(defaultSaveLocation, DefaultSaveLocation, Config::DefaultSaveLocation)
     TAG_QPROPERTY(fileName, FileName, FileName, SettingsScreenGUI, TrackTagHandler, TrackData(EPlatform::Unknown))
     TAG_QPROPERTY(subFolders, SubFolders, SubFolders, SettingsScreenGUI, TrackTagHandler, TrackData(EPlatform::Unknown))
 
@@ -77,6 +78,7 @@ class SettingsScreenGUI : public QObject
 
         QString GetYouTubeCookiesStatus() const;
     public slots:
+        void DefaultSaveLocationButtonClicked();
         void YouTubeCookiesOpenButtonClicked();
         void YouTubeCookiesPasteButtonClicked();
         void YouTubeCookiesClearButtonClicked();
