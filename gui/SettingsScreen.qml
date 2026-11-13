@@ -775,7 +775,10 @@ RowLayout {
                                     textColour: "black"
                                     font.bold: true
 
-                                    onClicked: _manager.music.UpdateBackgroundImage()
+                                    onClicked: {
+                                        _manager.settings.randomDefaultBackground = false
+                                        _manager.music.BackgroundApplyButtonClicked()
+                                    }
                                 }
                             }
                         }

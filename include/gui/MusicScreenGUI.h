@@ -33,16 +33,16 @@ class MusicScreenGUI : public QObject
         QList<QObject*> GetTracks() const;
 
         QString GetPlayPauseButtonText() const;
-
-        Q_INVOKABLE void UpdateBackgroundImage();
     public slots:
-        void PlayPauseButtonPressed();
+        void PlayPauseButtonClicked();
+        void BackgroundApplyButtonClicked();
     private:
         void OnDownloadRequested(const std::string& link, const std::string& destinationFolder);
         void CheckDownloadEvents();
 
         void UpdateBackgroundImage(const PlaylistData& playlistData);
         void UpdateBackgroundImage(const std::string& url);
+        void UpdateBackgroundImage();
 
         void DisableBackgroundImageLoadingSafely();
     private:

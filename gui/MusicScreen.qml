@@ -59,7 +59,7 @@ Rectangle {
                     
                     Layout.fillHeight: true
 
-                    onClicked: _manager.music.PlayPauseButtonPressed()
+                    onClicked: _manager.music.PlayPauseButtonClicked()
                 }
 
                 CustomButton {

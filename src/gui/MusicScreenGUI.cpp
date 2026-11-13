@@ -47,7 +47,7 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
     }
 }
 
-void MusicScreenGUI::PlayPauseButtonPressed()
+void MusicScreenGUI::PlayPauseButtonClicked()
 {
     if (!_downloader.IsDownloading())
         return;
@@ -58,6 +58,11 @@ void MusicScreenGUI::PlayPauseButtonPressed()
         _downloader.Pause();
 
     emit PlayPauseButtonTextChanged();
+}
+
+void MusicScreenGUI::BackgroundApplyButtonClicked()
+{
+    UpdateBackgroundImage();
 }
 
 QString MusicScreenGUI::GetPlayPauseButtonText() const
