@@ -293,6 +293,7 @@ RowLayout {
                             }
 
                             SettingsItem {
+                                visible: !_manager.settings.formatIsLossless
                                 label: "Audio Bitrate"
 
                                 CustomComboBox {
@@ -328,6 +329,18 @@ RowLayout {
 
                                     boundValue: _manager.settings.bitrate
                                     onValueChanged: (value) => { _manager.settings.bitrate = value }
+                                }
+                            }
+
+                            SettingsItem {
+                                visible: _manager.settings.formatIsLossless
+                                label: "Audio Format"
+
+                                CustomComboBox {
+                                    model: _manager.settings.GetLosslessCodecFormatOptions()
+
+                                    currentIndex: _manager.settings.losslessFormat
+                                    onActivated: (index) => { _manager.settings.losslessFormat = index }
                                 }
                             }
                         }

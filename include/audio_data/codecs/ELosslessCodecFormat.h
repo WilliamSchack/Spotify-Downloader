@@ -8,6 +8,7 @@
 
 enum class ELosslessCodecFormat
 {
+    Unknown,
     B16H44100,
     B16H48000
 };

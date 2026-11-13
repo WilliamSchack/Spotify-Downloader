@@ -6,6 +6,7 @@
 #include "SavableTrackTagHandler.h"
 #include "SavablePlaylistTagHandler.h"
 #include "YouTubeCookieFile.h"
+#include "MapUtils.h"
 
 #include <QObject>
 #include <QGuiApplication>
@@ -23,6 +24,9 @@ class SettingsScreenGUI : public QObject
     SIMPLE_QPROPERTY(bool, manualBitrate, ManualBitrate, Config::ManualBitrate)
     SIMPLE_QPROPERTY(int, bitrate, Bitrate, Config::BitrateKbps[Config::CodecExtension])
     Q_PROPERTY(int bitrateMax READ GetBitrateMax NOTIFY BitrateMaxChanged)
+    REGISTER_QENUM(ELOSSLESSCODECFORMAT_NAMES, LosslessCodecFormat)
+    Q_PROPERTY(int losslessFormat READ GetLosslessFormat WRITE SetLosslessFormat NOTIFY LosslessFormatChanged)
+    Q_PROPERTY(bool formatIsLossless READ GetFormatIsLossless NOTIFY FormatIsLosslessChanged)
 
     SIMPLE_QPROPERTY(bool, getLyrics, GetLyrics, Config::GetLyrics)
     STRING_QPROPERTY(artistsSeparator, ArtistsSeparator, Config::ArtistSeparator)
@@ -61,10 +65,14 @@ class SettingsScreenGUI : public QObject
 
         Q_INVOKABLE void EnteringScreen();
         Q_INVOKABLE void LeavingScreen();
-
         bool GetAllSettingsValid() const;
 
         int GetBitrateMax() const;
+
+        int GetLosslessFormat() const;
+        void SetLosslessFormat(const int& formatIndex);
+        bool GetFormatIsLossless() const;
+
         QString GetYouTubeCookiesStatus() const;
     public slots:
         void YouTubeCookiesOpenButtonClicked();
@@ -88,6 +96,8 @@ class SettingsScreenGUI : public QObject
         QString _youtubeCookiesStatus = "";
     signals:
         void BitrateMaxChanged();
+        void LosslessFormatChanged();
+        void FormatIsLosslessChanged();
         void YouTubeCookiesStatusChanged();
 };
 

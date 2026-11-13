@@ -65,10 +65,16 @@ class EasyQProperties {
             emit functionName##Changed(); \
         }
 
+// Makes the options of an enum available to qml
+#define REGISTER_QENUM(enumStrings, functionName)  \
+    public: \
+        Q_INVOKABLE QStringList Get##functionName##Options() const { return EasyQProperties::GetEnumStrings(enumStrings); }
+
 // Makes an int property
 // Could use Q_ENUM but I would need to change every enum file and pollute the c++ only code with qt
 #define ENUM_QPROPERTY(enumType, enumStrings, qmlName, functionName, variable) \
     Q_PROPERTY(int qmlName READ Get##functionName WRITE Set##functionName NOTIFY functionName##Changed) \
+    REGISTER_QENUM(enumStrings, functionName) \
     Q_SIGNALS: \
         void functionName##Changed(); \
     public: \
@@ -79,7 +85,7 @@ class EasyQProperties {
             variable = castedValue; \
             emit functionName##Changed(); \
         } \
-        Q_INVOKABLE QStringList Get##functionName##Options() const { return EasyQProperties::GetEnumStrings(enumStrings); }
+        
 
 // Used to easily create the tag entries since there is a fair bit to do for them
 // This is really only for the SettingsScreenGUI but its cleaner to keep it here

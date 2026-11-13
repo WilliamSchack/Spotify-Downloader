@@ -5,6 +5,8 @@ SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::LosslessFormatChanged);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::FormatIsLosslessChanged);
     connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
     connect(this, &SettingsScreenGUI::YouTubeCookiesStatusChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
 
@@ -57,6 +59,27 @@ int SettingsScreenGUI::GetBitrateMax() const
     bool youtubeCookiesValid = Config::YouTubeCookiesValid();
     
     return youtubeCookiesValid ? codecBitrateDetails.MaxBitratePremium : codecBitrateDetails.MaxBitrate;
+}
+
+int SettingsScreenGUI::GetLosslessFormat() const
+{
+    if (!GetFormatIsLossless())
+        return 0;
+
+    return (int)Config::LosslessFormats[Config::CodecExtension];
+}
+
+void SettingsScreenGUI::SetLosslessFormat(const int& formatIndex)
+{
+    if (!GetFormatIsLossless())
+        return;
+
+    Config::LosslessFormats[Config::CodecExtension] = static_cast<ELosslessCodecFormat>(formatIndex);
+}
+
+bool SettingsScreenGUI::GetFormatIsLossless() const
+{
+    return MapUtils::ContainsKey(Config::LosslessFormats, Config::CodecExtension);
 }
 
 QString SettingsScreenGUI::GetYouTubeCookiesStatus() const
