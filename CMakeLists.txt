@@ -45,7 +45,7 @@ include_directories(${CURL_INCLUDE_DIR})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS
+find_package(Qt6 6.9 REQUIRED COMPONENTS
 	Core
 	Widgets
 	Qml

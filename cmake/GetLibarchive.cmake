@@ -30,3 +30,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(libarchive)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE archive_static)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE LIBARCHIVE_STATIC)

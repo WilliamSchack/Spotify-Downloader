@@ -23,7 +23,7 @@ Notes:
 **Dependencies**
 - CMake
 - Curl
-- Qt6 (6.7+)
+- Qt6 (6.9+)
   - Qt Quick
   - QtWebEngine
 

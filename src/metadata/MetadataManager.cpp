@@ -244,7 +244,7 @@ TrackData MetadataManager::GetAll() const
         return TrackData(EPlatform::Unknown);
 
     TrackData data(EPlatform::LocalFile);
-    data.Url = _fileRef.file()->name();
+    data.Url = _fileRef.file()->name().toString().to8Bit(true);
     
     std::vector<ArtistData> artists;
     std::vector<std::string> artistNames = SplitArtistNames(GetArtist(), Config::ArtistSeparator);
@@ -488,7 +488,7 @@ std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
             const TagLib::Matroska::SimpleTagsList tagList = dynamic_cast<TagLib::Matroska::Tag*>(fileTag)->simpleTagsList();
             for (TagLib::Matroska::SimpleTag existingTag : tagList) {
                 if (existingTag.name() == tagId)
-                    return existingTag.toString().to8Bit();
+                    return existingTag.toString().to8Bit(true);
             }
 
             return "";

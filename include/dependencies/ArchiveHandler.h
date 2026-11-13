@@ -1,6 +1,8 @@
 #ifndef ARCHIVEHANDLER_H
 #define ARCHIVEHANDLER_H
 
+#include "FileUtils.h"
+
 #include <filesystem>
 #include <functional>
 

@@ -8,7 +8,7 @@ bool ArchiveHandler::Extract(const std::filesystem::path& archivePath, const std
             return EEntryAction::Skip;
 
         const std::filesystem::path fullOutputPath = outputPath / entryName;
-        archive_entry_set_pathname(entry, fullOutputPath.c_str());
+        archive_entry_set_pathname(entry, FileUtils::PathToUtf8(fullOutputPath).c_str());
 
         return EEntryAction::Continue;
     });
@@ -22,7 +22,7 @@ bool ArchiveHandler::ExtractFile(const std::filesystem::path& archivePath, const
         if (!entryName || pathInArchive != entryName)
             return EEntryAction::Skip;
 
-        archive_entry_set_pathname(entry, outputPath.c_str());
+        archive_entry_set_pathname(entry, FileUtils::PathToUtf8(outputPath).c_str());
 
         fileFound = true;
         return EEntryAction::Break;
@@ -56,7 +56,7 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
     archive_write_disk_set_standard_lookup(ext);
     
     bool failed = false;
-    if ((r = archive_read_open_filename(a, archivePath.c_str(), 10240)))
+    if ((r = archive_read_open_filename(a, FileUtils::PathToUtf8(archivePath).c_str(), 10240)))
         failed = true;
     
     while (!failed) {
