@@ -21,8 +21,10 @@ class Config
         static nlohmann::ordered_json ToJson();
         static void FromJson(const nlohmann::json& json);
 
-        static void Load();
-        static void Save();
+        static bool Load();
+        static bool Load(const std::filesystem::path& path);
+        static bool Save();
+        static bool Save(const std::filesystem::path& path);
 
         static bool YouTubeCookiesValid();
     public:

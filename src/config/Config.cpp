@@ -194,22 +194,26 @@ void Config::FromJson(const nlohmann::json& json)
     AutoCheckForNotices = JsonUtils::SafelyNavigate<bool>(json, { "interface", "updates", "autoCheckForNotices" }, AutoCheckForNotices);
 }
 
-void Config::Load()
+bool Config::Load()
 {
-    std::filesystem::path filePath = GetFilePath();
-    if (filePath.empty()) {
+    return Load(GetFilePath());
+}
+
+bool Config::Load(const std::filesystem::path& path)
+{
+    if (path.empty()) {
         std::cout << "Could not load config, the file path was not found" << std::endl;
-        return;
+        return false;
     }
 
-    std::ifstream file(filePath);
+    std::ifstream file(path);
     if (!file.is_open()) {
-        std::cout << "Could not open config file at " << filePath << std::endl;
+        std::cout << "Could not open config file at " << path << std::endl;
 
         // TODO: Load old (v1) config if it exists
         Save();
 
-        return;
+        return false;
     }
 
     std::string contents = std::string((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
@@ -217,20 +221,28 @@ void Config::Load()
 
     nlohmann::json json = nlohmann::json::parse(contents);
     FromJson(json);
+
+    return true;
 }
 
-void Config::Save()
+bool Config::Save()
 {
-    std::filesystem::path filePath = GetFilePath();
-    if (filePath.empty()) {
+    return Save(GetFilePath());
+}
+
+bool Config::Save(const std::filesystem::path& path)
+{
+    if (path.empty()) {
         std::cout << "Could not save config, the file path was not found" << std::endl;
-        return;
+        return false;
     }
 
-    std::ofstream file(filePath);
+    std::ofstream file(path);
     std::string contents = ToJson().dump(4);
     file << contents;
     file.close();
+
+    return true;
 }
 
 bool Config::YouTubeCookiesValid()

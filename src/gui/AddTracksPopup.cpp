@@ -17,14 +17,17 @@ void AddTracksPopup::FolderButtonClicked()
 
     QFileDialog dialog(nullptr, "Choose output directory", "");
     dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOptions(QFileDialog::ShowDirsOnly | QFileDialog::DontUseNativeDialog);
+    dialog.setOptions(QFileDialog::ShowDirsOnly);
     FileDialogUtils::SetParent(dialog, QGuiApplication::focusWindow());
 
-    if (dialog.exec() == QDialog::Accepted) {
-        QString folder = dialog.selectedFiles().first();
-        if (!folder.isEmpty())
-            SetFolderInputText(folder);
-    }
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+        
+    QString folder = dialog.selectedFiles().first();
+    if (folder.isEmpty())
+        return;
+    
+    SetFolderInputText(folder);
 }
 
 void AddTracksPopup::DownloadButtonClicked()

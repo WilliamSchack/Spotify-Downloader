@@ -7,6 +7,7 @@
 #include "SavablePlaylistTagHandler.h"
 #include "YouTubeCookieFile.h"
 #include "MapUtils.h"
+#include "FileDialogUtils.h"
 
 #include <QObject>
 #include <QGuiApplication>
@@ -14,6 +15,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QFileSystemWatcher>
+#include <QMetaProperty>
 
 class SettingsScreenGUI : public QObject
 {
@@ -80,6 +82,8 @@ class SettingsScreenGUI : public QObject
         void YouTubeCookiesClearButtonClicked();
         void YouTubePOTokenPasteButtonClicked();
         void YouTubePOTokenClearButtonClicked();
+        bool SettingsImportButtonClicked();
+        bool SettingsExportButtonClicked();
     private:
         void UpdateYouTubeCookiesStatus();
         void UpdateBitrateFromCookieStatus();
@@ -87,6 +91,8 @@ class SettingsScreenGUI : public QObject
         void SetupYouTubeCookiesWatcher();
         void AddYouTubeCookiesWatcherPath();
         void CleaupYouTubeCookiesWatcher();
+
+        void NotifyAllSettingsChanged();
     private slots:
         void YouTubeCookiesWatcherFileChanged(const QString& path);
     private:

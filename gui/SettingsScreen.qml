@@ -205,6 +205,11 @@ RowLayout {
                             label: "Updates"
                             target: sectionUpdates
                         }
+
+                        SettingsSidebarLink {
+                            label: "Settings"
+                            target: sectionSettings
+                        }
                     }
                 }
             }
@@ -712,6 +717,41 @@ RowLayout {
                                 CustomSwitch {
                                     checked: _manager.settings.autoCheckForNotices
                                     onClicked: _manager.settings.autoCheckForNotices = checked
+                                }
+                            }
+                        }
+
+                        MinorSection {
+                            id: sectionSettings
+                            label: "Settings"
+
+                            SettingsItem {
+                                label: "Import"
+
+                                CustomButton {
+                                    width: 300
+                                    height: parent.height
+
+                                    text: "Import From File"
+                                    textColour: "black"
+                                    font.bold: true
+
+                                    onClicked: _manager.settings.SettingsImportButtonClicked()
+                                }
+                            }
+
+                            SettingsItem {
+                                label: "Export"
+
+                                CustomButton {
+                                    width: 300
+                                    height: parent.height
+
+                                    text: "Export To File"
+                                    textColour: "black"
+                                    font.bold: true
+
+                                    onClicked: _manager.settings.SettingsExportButtonClicked()
                                 }
                             }
                         }

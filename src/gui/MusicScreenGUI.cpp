@@ -120,7 +120,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             },
             [&](const DownloadsFinishedEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
-                    QDesktopServices::openUrl(QUrl("file:///" + QString::fromStdString(e.OutputFolder)));
+                    QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(e.OutputFolder)));
                 
                 std::string notificationMessage = std::to_string(e.SuccessfulDownloads) + " Downloads complete ";
                 if (e.FailedDownloads > 0)
@@ -132,7 +132,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             },
             [&](const DownloadsCancelledEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)
-                    QDesktopServices::openUrl(QUrl("file:///" + QString::fromStdString(e.OutputFolder)));
+                    QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromStdString(e.OutputFolder)));
 
                 std::string notificationMessage = "Download cancelled with " + std::to_string(e.SuccessfulDownloads) + " downloads complete ";
                 if (e.FailedDownloads > 0)

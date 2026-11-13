@@ -131,6 +131,64 @@ void SettingsScreenGUI::YouTubePOTokenClearButtonClicked()
     emit YoutubePOTokenChanged();
 }
 
+bool SettingsScreenGUI::SettingsImportButtonClicked()
+{
+    QFileDialog dialog(nullptr, "Choose input file", "");
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter("JSON (*.json)");
+    FileDialogUtils::SetParent(dialog, QGuiApplication::focusWindow());
+
+    if (dialog.exec() != QDialog::Accepted)
+        return false;
+
+    QString file = dialog.selectedFiles().first();
+    if (file.isEmpty())
+        return false;
+
+    std::filesystem::path path = FileUtils::PathFromUtf8(file.toStdString());
+    bool succeeded = Config::Load(path);
+
+    if (succeeded) {
+        std::cout << "Successfully loaded config from path: " << path << std::endl;
+
+        // Load the new settings
+        NotifyAllSettingsChanged();
+    } else
+        std::cout << "Failed to load config from path: " << path << std::endl;
+
+    return succeeded;
+}
+
+bool SettingsScreenGUI::SettingsExportButtonClicked()
+{
+    QFileDialog dialog(nullptr, "Choose output file", "");
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter("JSON (*.json)");
+    dialog.setDefaultSuffix("json");
+    FileDialogUtils::SetParent(dialog, QGuiApplication::focusWindow());
+
+    if (dialog.exec() != QDialog::Accepted)
+        return false;
+
+    QString file = dialog.selectedFiles().first();
+    if (file.isEmpty())
+        return false;
+
+    std::filesystem::path path = FileUtils::PathFromUtf8(file.toStdString());
+    bool succeeded = Config::Save(path);
+
+    if (succeeded) {
+        std::cout << "Successfully saved config to path: " << path << std::endl;
+        
+        // Open folder
+        QString pathDirectoryString = QString::fromStdString(FileUtils::PathToUtf8(path.parent_path()));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(pathDirectoryString));
+    } else
+        std::cout << "Failed to load save to path: " << path << std::endl;
+
+    return succeeded;
+}
+
 void SettingsScreenGUI::UpdateYouTubeCookiesStatus()
 {
     CookieFile& cookieFile = YouTubeCookieFile::Get();
@@ -210,4 +268,14 @@ void SettingsScreenGUI::YouTubeCookiesWatcherFileChanged(const QString& path)
     YouTubeCookieFile::Get().ClearCache();
 
     UpdateYouTubeCookiesStatus();
+}
+
+void SettingsScreenGUI::NotifyAllSettingsChanged()
+{
+    const QMetaObject* meta = metaObject();
+    for (int i = meta->propertyOffset(); i < meta->propertyCount(); i++) {
+        QMetaProperty property = meta->property(i);
+        if (property.hasNotifySignal())
+            property.notifySignal().invoke(this, Qt::DirectConnection);
+    }
 }
