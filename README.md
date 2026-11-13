@@ -75,6 +75,7 @@ The app and its dependencies will be output to `./build/out/Release`
 - [Taglib](https://github.com/taglib/taglib) - [LGPL v2.1](https://github.com/taglib/taglib/blob/master/COPYING.LGPL), [Mozilla Public](https://github.com/taglib/taglib/blob/master/COPYING.MPL)
 - [nlohmann json](https://github.com/nlohmann/json) - [MIT](https://github.com/nlohmann/json/blob/develop/LICENSE.MIT)
 - [lexbor](https://github.com/lexbor/lexbor) - [Apache 2.0](https://github.com/lexbor/lexbor/blob/master/LICENSE)
+- [stb](https://github.com/nothings/stb) - [Licence](https://github.com/nothings/stb/blob/master/LICENSE)
 - [libarchive](https://github.com/libarchive/libarchive) - [Licence](https://github.com/libarchive/libarchive/blob/master/COPYING)
 
 **Building**
