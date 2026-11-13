@@ -29,12 +29,11 @@ class NoticesScreenGUI : public QObject
         explicit NoticesScreenGUI(QObject* parent = 0);
 
         Q_INVOKABLE void SelectNotice(const int& index);
+        Q_INVOKABLE void UpdateNotices();
 
         QList<Notice> GetNotices();
         Notice GetSelectedNotice();
-    private:
-        void UpdateNotices();
-        
+    private:        
         void UpdateNoticesCache(const nlohmann::json& json);
         nlohmann::json LoadNoticesCache();
         std::filesystem::path GetNoticesCachePath();

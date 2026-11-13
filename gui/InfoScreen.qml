@@ -13,9 +13,16 @@ RowLayout {
     }
 
     property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
+    property bool loadedNotices: _manager.settings.autoCheckForNotices
     property bool loadedSupporters: false
 
     function switchInfoScreen(screen: int) {
+        console.log(loadedNotices + " :: LOADED")
+        if (!loadedNotices && screen == InfoScreen.EInfoScreen.Notices) {
+            _manager.info.notices.UpdateNotices()
+            loadedNotices = true
+        }
+
         if (!loadedSupporters && screen == InfoScreen.EInfoScreen.Supporters) {
             _manager.info.supporters.UpdateSupporters()
             loadedSupporters = true

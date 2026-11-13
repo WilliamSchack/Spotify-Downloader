@@ -2,7 +2,8 @@
 
 NoticesScreenGUI::NoticesScreenGUI(QObject* parent) : QObject(parent)
 {
-    UpdateNotices();
+    if (Config::AutoCheckForNotices)
+        UpdateNotices();
 }
 
 Q_INVOKABLE void NoticesScreenGUI::SelectNotice(const int& index)
