@@ -9,6 +9,7 @@ Button {
     property color textColour: "white"
     property url iconSource: ""
     property int iconMargins: 10
+    property color iconColour: "transparent"
     property color backgroundColour: "white"
     property color hoveredColour: Qt.darker(backgroundColour, 1.2)
     property color pressedColour: Qt.darker(backgroundColour, 1.5)
@@ -40,27 +41,35 @@ Button {
         // Use text / icon if no content
         RowLayout {
             id: noContentParent
-            anchors.fill: parent
+            anchors.fill: label.visible ? parent : null
+            anchors.centerIn: label.visible ? null : parent
             visible: !root.hasContent
             spacing: 5
 
             Image {
                 id: icon
                 Layout.preferredWidth: root.height - root.iconMargins
-                Layout.preferredHeight: root.height - root.iconMargins
+                Layout.preferredHeight: Layout.preferredWidth
                 Layout.alignment: Qt.AlignVCenter
                 visible: root.iconSource !== "" && status === Image.Ready
 
-                source: iconSource
+                source: root.iconSource
                 sourceSize.width: width
                 sourceSize.height: width
+                smooth: true
+
+                layer.enabled: root.iconColour !== "transparent"
+                layer.effect: MultiEffect {
+                    colorization: 1.0
+                    colorizationColor: root.iconColour
+                }
             }
 
             Text {
                 id: label
                 Layout.fillWidth: true
-                Layout.fillHeight: true
                 Layout.alignment: Qt.AlignVCenter
+                visible: root.text !== ""
 
                 text: root.text
                 font: root.font
