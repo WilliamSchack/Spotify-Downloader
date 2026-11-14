@@ -72,7 +72,9 @@ Rectangle {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
 
-                        display: AbstractButton.IconOnly
+                        iconSource: "qrc:/icons/ui/Clipboard.svg"
+                        iconColour: "black"
+
                         //icon.source: "qrc:/icons/Icons/Clipboard_Icon_B.png"
                         onClicked: _manager.music.addTracksPopup.PasteButtonClicked()
                     }
@@ -101,8 +103,9 @@ Rectangle {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
 
-                        display: AbstractButton.IconOnly
-                        //icon.source: "qrc:/icons/Icons/Folder_Icon_B.png"
+                        iconSource: "qrc:/icons/ui/Folder.svg"
+                        iconColour: "black"
+
                         onClicked: _manager.music.addTracksPopup.FolderButtonClicked()
                     }
                 }
@@ -162,7 +165,7 @@ Rectangle {
                     text: "Close"
                     font.bold: true
                     font.pixelSize: 16
-                    backgroundColour: '#808080'
+                    backgroundColour: '#9A607D'
 
                     onClicked: _manager.music.addTracksPopup.visible = false
                 }
