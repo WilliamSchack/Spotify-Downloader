@@ -8,5 +8,17 @@
         <file>dependencies/FFmpeg.png</file>
         <file>platforms/YouTube.png</file>
         <file>platforms/Spotify.png</file>
+        <file>ui/UpdateAvailable.svg</file>
+        <file>ui/Update.svg</file>
+        <file>ui/Settings.svg</file>
+        <file>ui/UpdateUpToDate.svg</file>
+        <file>ui/Pause.svg</file>
+        <file>ui/Play.svg</file>
+        <file>ui/Folder.svg</file>
+        <file>ui/Error.svg</file>
+        <file>ui/Heart.svg</file>
+        <file>ui/Download.svg</file>
+        <file>ui/Clipboard.svg</file>
+        <file>ui/Cross.svg</file>
     </qresource>
 </RCC>

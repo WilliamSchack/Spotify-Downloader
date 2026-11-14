@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300mm"
+   height="300mm"
+   viewBox="0 0 300 300"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs1"><linearGradient
+       id="swatch3"><stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop3" /></linearGradient><linearGradient
+       xlink:href="#swatch3"
+       id="linearGradient3"
+       x1="53.806652"
+       y1="181.12222"
+       x2="193.66469"
+       y2="181.12222"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.0271285,1.002463)" /><linearGradient
+       xlink:href="#swatch3"
+       id="linearGradient4"
+       x1="37.627254"
+       y1="326.73834"
+       x2="303.97876"
+       y2="326.73834"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0.2670445,1.002463)" /><linearGradient
+       xlink:href="#swatch3"
+       id="linearGradient5"
+       x1="150.29469"
+       y1="233.192"
+       x2="288.3877"
+       y2="233.192"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.0271285,1.002463)" /></defs><g
+     id="layer1"
+     transform="translate(-21.070045,-55.218643)"><path
+       style="fill:#ffffff;fill-opacity:0;stroke:url(#linearGradient3);stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 171.95256,82.696483 V 281.55597 L 75.464521,185.06793"
+       id="path1" /><path
+       style="fill:#ffffff;fill-opacity:0;stroke:url(#linearGradient5);stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 171.95256,281.55597 94.72301,-94.72302"
+       id="path2" /><path
+       style="fill:#ffffff;fill-opacity:0;stroke:url(#linearGradient4);stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 59.579298,327.7408 H 282.56079"
+       id="path3" /></g></svg>
