@@ -24,5 +24,7 @@
         <file>ui/Maximise.svg</file>
         <file>ui/Music.svg</file>
         <file>ui/Info.svg</file>
+        <file>ui/Help.svg</file>
+        <file>ui/FolderFilled.svg</file>
     </qresource>
 </RCC>
