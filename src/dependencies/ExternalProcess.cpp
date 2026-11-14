@@ -96,6 +96,11 @@ void ExternalProcess::AddArgument(const std::string& arg, const std::string& val
     AddArgument(value);
 }
 
+std::vector<std::string> ExternalProcess::GetArgs()
+{
+    return _args;
+}
+
 ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::function<void(std::string)> lineAvailableCallback)
 {
     ExternalProcessResult result;

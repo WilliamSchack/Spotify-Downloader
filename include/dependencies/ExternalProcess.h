@@ -32,6 +32,8 @@ class ExternalProcess
         void AddArgument(const std::string& arg);
         void AddArgument(const std::string& arg, const std::string& value);
 
+        std::vector<std::string> GetArgs();
+
         ExternalProcessResult Execute(const int& timeoutMs = 0, std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
 #ifdef WIN32
