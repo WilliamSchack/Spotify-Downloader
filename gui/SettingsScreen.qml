@@ -787,7 +787,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Default Background Url"
-                                tooltip: "The url used to get the background when opening the app before a download\n\nClicking apply will overwrite the current background with this one"
+                                tooltip: "The url used to get the background when opening the app before a download<br />This will not happen when Random Default Background is enabled\n\nClicking apply will overwrite the current background with this one"
 
                                 CustomTextField {
                                     text: _manager.settings.defaultBackgroundUrl

@@ -8,7 +8,7 @@ Item {
 
     property alias label: text.text
     property string tooltip: ""
-    property bool valid: true
+    property string error: ""
 
     default property alias content: inputs.children
 
@@ -61,6 +61,7 @@ Item {
             }
 
             HoverTooltip {
+                enabled: root.tooltip !== ""
                 text: root.tooltip
             }
         }
@@ -154,8 +155,8 @@ Item {
         Image {
             Layout.preferredHeight: parent.height - 5
             Layout.preferredWidth: parent.height - 5
-            visible: !root.valid || opacity > 0
-            opacity: root.valid ? 0 : 1
+            visible: root.error !== "" || opacity > 0
+            opacity: root.error === "" ? 0 : 1
 
             source: "qrc:/icons/ui/Error.svg"
             sourceSize.width: width
@@ -173,6 +174,10 @@ Item {
                     easing.type: Easing.OutCubic
                 }
             }
+
+            HoverTooltip {
+                text: root.error
+            }
         }
 
         Row {
@@ -180,6 +185,11 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             Layout.fillHeight: true
             spacing: 10
+
+            HoverTooltip {
+                enabled: root.error !== ""
+                text: root.error
+            }
         }
     }
 }

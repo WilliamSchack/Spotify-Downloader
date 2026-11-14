@@ -50,7 +50,7 @@ void SettingsScreenGUI::LeavingScreen()
 
 bool SettingsScreenGUI::GetAllSettingsValid() const
 {
-    return _fileNameValid && _subFoldersValid && _lyricsFileNameValid && _playlistFileNameValid;
+    return _fileNameError.isEmpty() && _subFoldersError.isEmpty() && _lyricsFileNameError.isEmpty() && _playlistFileNameError.isEmpty();
 }
 
 int SettingsScreenGUI::GetBitrateMax() const
