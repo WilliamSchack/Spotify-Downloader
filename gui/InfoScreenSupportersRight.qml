@@ -13,14 +13,30 @@ ColumnLayout {
 
         spacing: 5
 
-        Text {
-            width: parent.width
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            text: "Thank you all for the support!"
-            color: "white"
-            font.pixelSize: 20
-            font.bold: true
-            horizontalAlignment: Text.AlignHCenter
+            spacing: 10
+
+            Text {
+                text: "Thank you all for the support"
+                color: "white"
+                font.pixelSize: 20
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Image {
+                anchors.verticalCenter: parent.verticalCenter
+
+                width: 20
+                height: width
+
+                source: "qrc:/icons/ui/Heart.svg"
+                sourceSize.width: width
+                sourceSize.height: width
+                smooth: true
+            }
         }
 
         MarkdownText {

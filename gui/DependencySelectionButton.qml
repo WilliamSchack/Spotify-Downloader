@@ -18,21 +18,22 @@ ToggleButton {
     onClicked: _manager.info.updates.SelectDependency(info.type)
 
     readonly property string updateAvailableText: {
-        // TODO: Replace check/cross with icon
+        if (info.downloading)
+            return "Downloading..."
 
         if (!info.installed)
-            return "X Not Installed!"
+            return "Not Installed!"
 
         if (info.installedOnSystem)
             return "System Install"
 
         if (info.updating)
-            return "🡻 Updating..."
+            return "Updating..."
 
         if (info.updateAvailable)
-            return "🡻 Update Available"
+            return "Update Available"
         
-        return "✓ Up To Date"
+        return "Up To Date"
     }
 
     readonly property color updateAvailableColour: {

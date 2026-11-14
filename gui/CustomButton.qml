@@ -9,7 +9,9 @@ Button {
     property color textColour: "white"
     property url iconSource: ""
     property int iconMargins: 10
+    property int iconSpacing: 5
     property color iconColour: "transparent"
+    property bool iconRotating: false
     property color backgroundColour: "white"
     property color hoveredColour: Qt.darker(backgroundColour, 1.2)
     property color pressedColour: Qt.darker(backgroundColour, 1.5)
@@ -44,7 +46,7 @@ Button {
             anchors.fill: label.visible ? parent : null
             anchors.centerIn: label.visible ? null : parent
             visible: !root.hasContent
-            spacing: 5
+            spacing: root.iconSpacing
 
             Image {
                 id: icon
@@ -64,6 +66,19 @@ Button {
                 layer.effect: MultiEffect {
                     colorization: 1.0
                     colorizationColor: root.iconColour
+                }
+
+                RotationAnimation on rotation {
+                    from: 0
+                    to: 360
+                    duration: 1000
+                    loops: Animation.Infinite
+                    running: root.iconRotating
+
+                    onRunningChanged: {
+                        if (!running)
+                            icon.rotation = 0
+                    }
                 }
             }
 

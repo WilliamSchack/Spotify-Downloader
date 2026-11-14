@@ -32,6 +32,16 @@ ColumnLayout {
         return "Check for Updates"
     }
 
+    readonly property string updateButtonIcon: {
+        if (root.selectedDependency.downloading || !root.selectedDependency.installed)
+            return "qrc:/icons/ui/Download.svg"
+
+        if (selectedDependency.updateAvailable)
+            return "qrc:/icons/ui/UpdateAvailable.svg"
+
+        return "qrc:/icons/ui/Update.svg"
+    }
+
     RowLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 100
@@ -83,9 +93,10 @@ ColumnLayout {
                     height: parent.height
 
                     text: root.updateButtonText
+                    iconSource: root.updateButtonIcon
+                    iconRotating: root.selectedDependency.checkingForUpdates
                     font.pixelSize: 16
                     radius: 8
-
                     backgroundColour: "#A16583"
 
                     enabled: !root.selectedDependency.checkingForUpdates && !root.selectedDependency.updating && !root.selectedDependency.downloading
@@ -98,9 +109,10 @@ ColumnLayout {
                     height: parent.height
 
                     text: "Website"
+                    iconSource: "qrc:/icons/ui/External.svg"
+                    iconMargins: 13
                     font.pixelSize: 16
                     radius: 8
-
                     backgroundColour: "#A16583"
 
                     onClicked: _manager.info.updates.SourceButtonClicked()
