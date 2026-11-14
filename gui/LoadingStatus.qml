@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls.Basic
 
 Item {
     id: root
@@ -15,11 +14,26 @@ Item {
         visible: root.isLoading
         spacing: 10
 
-        BusyIndicator {
-            running: root.isLoading
-            palette.dark: "white"
+        Image {
             height: 50
             width: 50
+
+            source: "qrc:/icons/ui/Update.svg"
+            sourceSize.width: width
+            sourceSize.height: width
+
+            RotationAnimation on rotation {
+                from: 0
+                to: 360
+                duration: 1000
+                loops: Animation.Infinite
+                running: root.isLoading
+
+                onRunningChanged: {
+                    if (!running)
+                        icon.rotation = 0
+                }
+            }
         }
 
         Text {
