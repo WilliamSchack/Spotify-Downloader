@@ -136,16 +136,36 @@ Rectangle {
                 }
             }
 
-            CustomButton {
+            ColumnLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
-                enabled: !_manager.music.addTracksPopup.checkingInputs
-                text: _manager.music.addTracksPopup.checkingInputs ? "Getting Link Details..." : "Add Track(s) & Start Download"
-                font.bold: true
-                font.pixelSize: 16
-                backgroundColour: "#9A607D"
 
-                onClicked: _manager.music.addTracksPopup.DownloadButtonClicked()
+                spacing: 5
+
+                CustomButton {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    enabled: !_manager.music.addTracksPopup.checkingInputs
+                    text: _manager.music.addTracksPopup.checkingInputs ? "Getting Link Details..." : "Add Track(s) & Start Download"
+                    font.bold: true
+                    font.pixelSize: 16
+                    backgroundColour: "#9A607D"
+
+                    onClicked: _manager.music.addTracksPopup.DownloadButtonClicked()
+                }
+
+                CustomButton {
+                    visible: _manager.music.tracks.length != 0
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 30
+                    enabled: !_manager.music.addTracksPopup.checkingInputs
+                    text: "Close"
+                    font.bold: true
+                    font.pixelSize: 16
+                    backgroundColour: '#808080'
+
+                    onClicked: _manager.music.addTracksPopup.visible = false
+                }
             }
         }
     }

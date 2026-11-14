@@ -71,6 +71,7 @@ void MusicScreenGUI::DownloadButtonClicked()
 
     // Start new download
     _addTracksPopup->SetLinkInputText("");
+    _addTracksPopup->SetErrorMessage("");
     _addTracksPopup->SetVisible(true);
 }
 

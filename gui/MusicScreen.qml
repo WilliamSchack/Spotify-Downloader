@@ -64,16 +64,6 @@ Rectangle {
                     onClicked: _manager.music.PlayPauseButtonClicked()
                 }
 
-                /*CustomButton {
-                    text: "Export"
-                    font.pixelSize: 14
-                    spacing: 5
-                    radius: 8
-                    backgroundColour: "#A16583"
-                    
-                    Layout.fillHeight: true
-                }*/
-
                 Rectangle { Layout.fillWidth: true }
             }
         }
