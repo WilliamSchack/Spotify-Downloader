@@ -10,6 +10,7 @@ Popup {
     property int offsetY: 18
 
     padding: 8
+    margins: 4
     font.pixelSize: 12
 
     closePolicy: Popup.NoAutoClose
@@ -25,6 +26,7 @@ Popup {
         color: root.colour
         font: root.font
         textFormat: Text.MarkdownText
+        wrapMode: Text.WordWrap
     }
 
     function move(localPosition) {
