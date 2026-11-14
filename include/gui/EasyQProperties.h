@@ -121,21 +121,21 @@ class EasyQProperties {
     CHAR_QPROPERTY(qmlName##TagsOpeningChar, functionName##TagsOpeningChar, _##qmlName##TagsOpeningChar) \
     CHAR_QPROPERTY(qmlName##TagsClosingChar, functionName##TagsClosingChar, _##qmlName##TagsClosingChar) \
     STRING_QPROPERTY(qmlName, functionName, _##qmlName) \
-    Q_PROPERTY(bool qmlName##Valid READ Get##functionName##Valid NOTIFY functionName##ValidChanged) \
+    Q_PROPERTY(QString qmlName##Error READ Get##functionName##Error NOTIFY functionName##ErrorChanged) \
     Q_SIGNALS: \
-        void functionName##ValidChanged(); \
+        void functionName##ErrorChanged(); \
     public: \
-        bool Get##functionName##Valid() { \
+        QString Get##functionName##Error() { \
             tagHandlerType tagHandler{__VA_ARGS__}; \
             TagHandlerResult result = tagHandler.FormatString(_##qmlName, _##qmlName##TagsOpeningChar, _##qmlName##TagsClosingChar); \
-            _##qmlName##Valid = result.Error == ETagError::None; \
-            return _##qmlName##Valid; \
+            _##qmlName##Error = QString::fromStdString(result.ErrorString); \
+            return _##qmlName##Error; \
         }; \
     private: \
         void Setup##functionName() { \
-            connect(this, &className::functionName##TagsOpeningCharChanged, this, &className::functionName##ValidChanged); \
-            connect(this, &className::functionName##TagsClosingCharChanged, this, &className::functionName##ValidChanged); \
-            connect(this, &className::functionName##Changed, this, &className::functionName##ValidChanged); \
+            connect(this, &className::functionName##TagsOpeningCharChanged, this, &className::functionName##ErrorChanged); \
+            connect(this, &className::functionName##TagsClosingCharChanged, this, &className::functionName##ErrorChanged); \
+            connect(this, &className::functionName##Changed, this, &className::functionName##ErrorChanged); \
             _##qmlName##TagsOpeningChar = Config::configName##TagsOpeningChar; \
             _##qmlName##TagsClosingChar = Config::configName##TagsClosingChar; \
             _##qmlName = Config::configName; \
@@ -149,6 +149,6 @@ class EasyQProperties {
         char _##qmlName##TagsOpeningChar; \
         char _##qmlName##TagsClosingChar; \
         std::string _##qmlName; \
-        bool _##qmlName##Valid;
+        QString _##qmlName##Error;
 
 #endif

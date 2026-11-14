@@ -29,16 +29,24 @@ Popup {
         wrapMode: Text.WordWrap
     }
 
+    onEnabledChanged: {
+        if (enabled && hoverHandler.hovered)
+            root.open()
+        else if (!enabled)
+            root.close()
+    }
+
     function move(localPosition) {
         x = localPosition.x + offsetX
         y = localPosition.y + offsetY
     }
 
     HoverHandler {
+        id: hoverHandler
         parent: root.parent
         
         onHoveredChanged: {
-            if (hovered)
+            if (hovered && root.enabled)
                 root.open()
             else
                 root.close()

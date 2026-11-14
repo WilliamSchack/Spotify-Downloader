@@ -440,7 +440,7 @@ RowLayout {
                             SettingsItem {
                                 label: "File Name"
                                 tooltip: "Specifies how the file will be named<br />If there are files with the same name, the tracks id will be appended to the end\n\nUses the tag start and end for the bounds of tags:<br />eg. \"&lt;&gt;\": \"&lt;Song Name&gt; - &lt;Song Artist&gt;\"\n\n**Valid Tags**<br />" + root.validTrackTagsString
-                                valid: _manager.settings.fileNameValid
+                                error: _manager.settings.fileNameError
                                 
                                 SingleCharTextField {
                                     text: _manager.settings.fileNameTagsOpeningChar
@@ -456,14 +456,14 @@ RowLayout {
                                     text: _manager.settings.fileName
                                     onTextEdited: _manager.settings.fileName = text
 
-                                    valid: _manager.settings.fileNameValid
+                                    valid: _manager.settings.fileNameError === ""
                                 }
                             }
 
                             SettingsItem {
                                 label: "Sub Folders"
                                 tooltip: "Creates folders within the set download path with the layout set here\n\neg. If you want to output to DownloadPath/SongArtist/AlbumName<br />\"&lt;&gt;\": \"&lt;Song Artist&gt;/&lt;Album Name&gt;\"\n\n**Valid Tags**<br />" + root.validTrackTagsString
-                                valid: _manager.settings.subFoldersValid
+                                error: _manager.settings.subFoldersError
 
                                 SingleCharTextField {
                                     text: _manager.settings.subFoldersTagsOpeningChar
@@ -479,7 +479,7 @@ RowLayout {
                                     text: _manager.settings.subFolders
                                     onTextEdited: _manager.settings.subFolders = text
 
-                                    valid: _manager.settings.subFoldersValid
+                                    valid: _manager.settings.subFoldersError === ""
                                 }
                             }
                         }
@@ -501,7 +501,7 @@ RowLayout {
                             SettingsItem {
                                 label: "LRC File Path"
                                 tooltip: "Specifies how the lrc file will be named<br />This must be an **absolute path**. You can use &lt;Save Location&gt; to make it relative\n\neg. A song named \"Song\" by \"Artist\" downloaded at \"C:/Songs\"<br />**Format:** \"&lt;&gt;\": \"&lt;Save Location&gt;/&lt;Song Name&gt; - &lt;Song Artist&gt;\"<br />**Output:** \"C:/Songs/Song - Artist.lrc\n\n**Valid Tags**<br />" + root.validSaveableTrackTagsString
-                                valid: _manager.settings.lyricsFileNameValid
+                                error: _manager.settings.lyricsFileNameError
 
                                 SingleCharTextField {
                                     text: _manager.settings.lyricsFileNameTagsOpeningChar
@@ -517,7 +517,7 @@ RowLayout {
                                     text: _manager.settings.lyricsFileName
                                     onTextEdited: _manager.settings.lyricsFileName = text
 
-                                    valid: _manager.settings.lyricsFileNameValid
+                                    valid: _manager.settings.lyricsFileNameError === ""
                                 }
                             }
                         }
@@ -550,7 +550,7 @@ RowLayout {
                             SettingsItem {
                                 label: "Playlist File Path"
                                 tooltip: "Specifies how the playlist file will be named<br />This must be an **absolute path**. You can use &lt;Save Location&gt; to make it relative\n\neg. An m3u playlist named \"Playlist\" by \"Owner\" downloaded at \"C:/Songs\"<br />**Format:** \"&lt;&gt;\": \"&lt;Save Location&gt;/&lt;Playlist Name&gt; - &lt;Playlist Owner&gt;\"<br />**Output:** \"C:/Songs/Playlist - Owner.m3u\n\n**Valid Tags**<br />" + root.validSaveablePlaylistTagsString
-                                valid: _manager.settings.playlistFileNameValid
+                                error: _manager.settings.playlistFileNameError
 
                                 SingleCharTextField {
                                     text: _manager.settings.playlistFileNameTagsOpeningChar
@@ -566,7 +566,7 @@ RowLayout {
                                     text: _manager.settings.playlistFileName
                                     onTextEdited: _manager.settings.playlistFileName = text
 
-                                    valid: _manager.settings.playlistFileNameValid
+                                    valid: _manager.settings.playlistFileNameError === ""
                                 }
                             }
                         }
