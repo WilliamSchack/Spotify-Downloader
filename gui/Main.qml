@@ -127,6 +127,7 @@ Window {
                         implicitHeight: header.height
 
                         text: "Music"
+                        iconSource: "qrc:/icons/ui/Music.svg"
                         font.pixelSize: 20
                         radius: 10
 
@@ -139,6 +140,7 @@ Window {
                         implicitHeight: header.height
 
                         text: "Info"
+                        iconSource: "qrc:/icons/ui/Info.svg"
                         font.pixelSize: 20
                         radius: 10
 
@@ -149,6 +151,7 @@ Window {
                         implicitHeight: header.height
 
                         text: "Settings"
+                        iconSource: "qrc:/icons/ui/Settings.svg"
                         font.pixelSize: 20
                         radius: 10
 
@@ -167,9 +170,10 @@ Window {
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 
+                    iconSource: "qrc:/icons/ui/Minimise.svg"
+                    iconMargins: 20
                     radius: 20
                     backgroundColour: "#434343"
-                    text: "-"
 
                     onClicked: root.showMinimized()
                 }
@@ -181,9 +185,10 @@ Window {
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 
+                    iconSource: "qrc:/icons/ui/Maximise.svg"
+                    iconMargins: 20
                     radius: 20
                     backgroundColour: "#434343"
-                    text: "o"
 
                     onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
                 }
@@ -195,9 +200,10 @@ Window {
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 
+                    iconSource: "qrc:/icons/ui/Cross.svg"
+                    iconMargins: 20
                     radius: 20
                     backgroundColour: "#434343"
-                    text: "x"
 
                     onClicked: root.close()
                 }

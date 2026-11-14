@@ -58,6 +58,8 @@ Button {
                 sourceSize.height: width
                 smooth: true
 
+                opacity: root.enabled ? 1.0 : 0.5
+
                 layer.enabled: root.iconColour !== "transparent"
                 layer.effect: MultiEffect {
                     colorization: 1.0
