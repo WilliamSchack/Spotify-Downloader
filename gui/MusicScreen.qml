@@ -40,8 +40,11 @@ Rectangle {
 
                 spacing: 8
 
+                // Download / Cancel
                 CustomButton {
                     Layout.fillHeight: true
+
+                    enabled: _manager.music.downloadButtonEnabled
 
                     text: _manager.music.downloadButtonText
                     font.pixelSize: 14
@@ -52,6 +55,7 @@ Rectangle {
                     onClicked: _manager.music.DownloadButtonClicked()
                 }
 
+                // Pause
                 CustomButton {
                     Layout.fillHeight: true
 

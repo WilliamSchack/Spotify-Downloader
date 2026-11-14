@@ -57,14 +57,9 @@ void MusicScreenGUI::DownloadButtonClicked()
     if (_downloader.IsDownloading()) {
         // TODO: Add confirmation popup
         
-        std::thread([this]() {
-            // Might need to wait for the lock so may aswell do it in another thread 
-            _downloader.Stop(); 
-            
-            QMetaObject::invokeMethod(this, [this]() {
-                emit DownloadButtonTextChanged();
-            }, Qt::QueuedConnection);
-        }).detach();
+        _downloader.Stop(); 
+        emit DownloadButtonTextChanged();
+        emit DownloadButtonEnabledChanged();
 
         return;
     }
@@ -102,6 +97,11 @@ QString MusicScreenGUI::GetDownloadButtonText() const
         return "Cancel Download";
 
     return "Start New Download";
+}
+
+bool MusicScreenGUI::GetDownloadButtonEnabled() const
+{
+    return !_downloader.IsStopping();
 }
 
 QString MusicScreenGUI::GetPlayPauseButtonText() const
@@ -143,7 +143,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             [&](const TrackFailedEvent& e) {
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->SetProgress(1.0);
-                track->SetStatus("FAILED: " + e.Reason);
+                track->SetStatus("Failed: " + e.Reason);
             },
             [&](const DownloadStartedEvent& e) {
                 // Remove old tracks
@@ -185,6 +185,7 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit DownloadButtonTextChanged();
+                emit DownloadButtonEnabledChanged();
                 emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },
@@ -199,6 +200,7 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit DownloadButtonTextChanged();
+                emit DownloadButtonEnabledChanged();
                 emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },
