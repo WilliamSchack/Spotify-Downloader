@@ -224,6 +224,17 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
 
     YtdlpError error = GetError(errorString);
     if (error.Error != EYtdlpError::None && error.Error != EYtdlpError::LowQuality) {
+        // Temporary workaround until (https://github.com/yt-dlp/yt-dlp/issues/17989) is fixed
+        // Retries the download 2 more times
+        if (error.Error == EYtdlpError::Forbidden) {
+            for (int i = 0; i < 2; i++) {
+                std::cout << "yt-dlp got error 403, retrying... (Attempt " << i + 1 << ")";
+                YtdlpResult result = Download(url, pathNoExtension, extraArgs, progressCallback);
+                if (result.Error.Error != EYtdlpError::Forbidden)
+                    return result;
+            }
+        }
+
         std::cout << "yt-dlp Error Output: " << output << std::endl;
         result.Error = error;
         return result;
