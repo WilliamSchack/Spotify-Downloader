@@ -44,7 +44,7 @@ Window {
         anchors.fill: parent
 
         // Playlist image
-        Image {
+        CrossfadeImage {
             id: backgroundImage
             anchors.fill: parent
             anchors.margins: -50
@@ -52,7 +52,6 @@ Window {
             visible: _manager.music.backgroundImagePath !== ""
 
             source: _manager.music.backgroundImagePath
-            asynchronous: true
             fillMode: Image.PreserveAspectCrop
 
             opacity: 0.8
