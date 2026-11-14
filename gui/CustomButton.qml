@@ -1,11 +1,14 @@
 import QtQuick
 import QtQuick.Controls.Basic
+import QtQuick.Layouts
 import QtQuick.Effects
 
 Button {
     id: root
 
     property color textColour: "white"
+    property url iconSource: ""
+    property int iconMargins: 10
     property color backgroundColour: "white"
     property color hoveredColour: Qt.darker(backgroundColour, 1.2)
     property color pressedColour: Qt.darker(backgroundColour, 1.5)
@@ -31,21 +34,41 @@ Button {
 
     // Text
     contentItem: Item {
-        implicitWidth: root.hasContent ? contentParent.implicitWidth : label.implicitWidth
-        implicitHeight: root.hasContent ? contentParent.implicitHeight : label.implicitHeight
+        implicitWidth: root.hasContent ? contentParent.implicitWidth : noContentParent.implicitWidth
+        implicitHeight: root.hasContent ? contentParent.implicitHeight : noContentParent.implicitHeight
 
-        // Use text if no content
-        Text {
-            id: label
-            visible: !root.hasContent
-
+        // Use text / icon if no content
+        RowLayout {
+            id: noContentParent
             anchors.fill: parent
-            text: root.text
-            font: root.font
-            opacity: enabled ? 1.0 : 0.3
-            color: root.textColour
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            visible: !root.hasContent
+            spacing: 5
+
+            Image {
+                id: icon
+                Layout.preferredWidth: root.height - root.iconMargins
+                Layout.preferredHeight: root.height - root.iconMargins
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.iconSource !== "" && status === Image.Ready
+
+                source: iconSource
+                sourceSize.width: width
+                sourceSize.height: width
+            }
+
+            Text {
+                id: label
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.alignment: Qt.AlignVCenter
+
+                text: root.text
+                font: root.font
+                opacity: enabled ? 1.0 : 0.3
+                color: root.textColour
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
 
         // Use custom content if assigned
