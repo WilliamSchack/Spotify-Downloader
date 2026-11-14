@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 
+// TODO: Window resizing
+//       Rounded edges on windows 11
 Window {
     id: root
     visible: true

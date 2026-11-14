@@ -135,6 +135,8 @@ Item {
         }
 
         // TODO: Change to warning/error icon
+        //       Add tooltip
+        //       Dont allow changing screens and show popup if invalid
         Rectangle {
             Layout.preferredHeight: parent.height - 5
             Layout.preferredWidth: parent.height - 5

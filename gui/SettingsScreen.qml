@@ -8,6 +8,11 @@ RowLayout {
 
     property real scrollAnimationTime: 200
 
+    property string validTrackTagsString: "**Song Name** - Name of the song<br />**Album Name** - Name of the album<br />**Song Artist** - Name of the first artist in the song<br />**Song Artists** - Name of all the artists in a song separated by \",\"<br />**Album Artist** - Name of the first artist in the songs album<br />**Album Artists** - me of all the artists in a songs album separated by \",\"<br />**Codec** - The output codec<br />**Track Number** - The track number as set in the Track Number setting<br />**Playlist Track Number** - The track number in the playlist, or the album if a playlist is not inputted<br />**Album Track Number** - The track number in the album<br />**Disc Number** - The track number in the disc<br />**Song Time Seconds** - The duration of the song in seconds<br />**Song Time Minutes** - The duration of the song in minutes \"01.23\"<br />**Song Time Hours** - The duration of the song in hours \"00.01.23\"<br />**Year** - The release year of the song<br />**Month** - The release month of the song<br />**Day** - The release day of the song"
+    property string validSaveableTrackTagsString: "**Save Location** - The output path set in the Add Tracks popup<br />" + validTrackTagsString
+    property string validPlaylistTagsString: "**Playlist Name** - Name of the downloaded playlist, album, or track depending on what was inputted<br />**Playlist Owner** - Name of the playlist owner, album main artist, or track main artist"
+    property string validSaveablePlaylistTagsString: "**Save Location** - The output path set in the Add Tracks popup<br />" + validPlaylistTagsString
+
     // Left Area
     Rectangle {
         Layout.fillHeight: true
@@ -434,8 +439,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "File Name"
-                                // TODO: Finish me
-                                tooltip: "Specifies how the file will be named. If there are files with the same name, the tracks id will be appended to the end\n\nUses the tag start and end for the bounds of tags:<br />eg. \"&lt;&gt;\": \"&lt;Song Name&gt; - &lt;Song Artist&gt;\""
+                                tooltip: "Specifies how the file will be named<br />If there are files with the same name, the tracks id will be appended to the end\n\nUses the tag start and end for the bounds of tags:<br />eg. \"&lt;&gt;\": \"&lt;Song Name&gt; - &lt;Song Artist&gt;\"\n\n**Valid Tags**<br />" + root.validTrackTagsString
                                 valid: _manager.settings.fileNameValid
                                 
                                 SingleCharTextField {
@@ -458,6 +462,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Sub Folders"
+                                tooltip: "Creates folders within the set download path with the layout set here\n\neg. If you want to output to DownloadPath/SongArtist/AlbumName<br />\"&lt;&gt;\": \"&lt;Song Artist&gt;/&lt;Album Name&gt;\"\n\n**Valid Tags**<br />" + root.validTrackTagsString
                                 valid: _manager.settings.subFoldersValid
 
                                 SingleCharTextField {
@@ -485,6 +490,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Auto Create On Download"
+                                tooltip: "Creates a .lrc file for each track at the set LRC File path"
 
                                 CustomSwitch {
                                     checked: _manager.settings.createLyricsFile
@@ -493,7 +499,8 @@ RowLayout {
                             }
 
                             SettingsItem {
-                                label: "LRC File Name"
+                                label: "LRC File Path"
+                                tooltip: "Specifies how the lrc file will be named<br />This must be an **absolute path**. You can use &lt;Save Location&gt; to make it relative\n\neg. A song named \"Song\" by \"Artist\" downloaded at \"C:/Songs\"<br />**Format:** \"&lt;&gt;\": \"&lt;Save Location&gt;/&lt;Song Name&gt; - &lt;Song Artist&gt;\"<br />**Output:** \"C:/Songs/Song - Artist.lrc\n\n**Valid Tags**<br />" + root.validSaveableTrackTagsString
                                 valid: _manager.settings.lyricsFileNameValid
 
                                 SingleCharTextField {
@@ -521,6 +528,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Auto Create On Download"
+                                tooltip: "Creates a playlist file when a download finishes containing all the downloaded tracks"
 
                                 CustomSwitch {
                                     checked: _manager.settings.createPlaylistFile
@@ -530,6 +538,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Playlist File Type"
+                                tooltip: "The type of playlist file to save"
 
                                 CustomComboBox {
                                     model: _manager.settings.GetPlaylistFileTypeOptions()
@@ -539,7 +548,8 @@ RowLayout {
                             }
 
                             SettingsItem {
-                                label: "Playlist File Name"
+                                label: "Playlist File Path"
+                                tooltip: "Specifies how the playlist file will be named<br />This must be an **absolute path**. You can use &lt;Save Location&gt; to make it relative\n\neg. An m3u playlist named \"Playlist\" by \"Owner\" downloaded at \"C:/Songs\"<br />**Format:** \"&lt;&gt;\": \"&lt;Save Location&gt;/&lt;Playlist Name&gt; - &lt;Playlist Owner&gt;\"<br />**Output:** \"C:/Songs/Playlist - Owner.m3u\n\n**Valid Tags**<br />" + root.validSaveablePlaylistTagsString
                                 valid: _manager.settings.playlistFileNameValid
 
                                 SingleCharTextField {
@@ -571,6 +581,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Max Simultaneous Downloads"
+                                tooltip: "How many tracks can be downloaded at the same time<br />Does not change in progress downloads\n\nDont use a high number as it can increase CPU usage<br />**6 is recommended** as its a good middle ground"
 
                                 IntTextField {
                                     min: 0
@@ -583,6 +594,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Download Speed Limit"
+                                tooltip: "The speed limit of the download stage\n\n0 is uncapped"
 
                                 DoubleTextField {
                                     min: 0.0
@@ -597,6 +609,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Download Timeout"
+                                tooltip: "The amount of time before the download stage cancels and fails the download\n\nUsed incase when a download gets stuck for any reason"
 
                                 IntTextField {
                                     min: 5000
@@ -611,6 +624,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "IP Version"
+                                tooltip: "The IP Version that will be used for downloading\n\nSet this to one of the values if all downloads fail with a timeout error"
 
                                 CustomComboBox {
                                     model: _manager.settings.GetIPVersionOptions()
@@ -628,7 +642,6 @@ RowLayout {
                             id: sectionYouTube
                             label: "YouTube"
 
-                            // TODO: Make this look good
                             SettingsItem {
                                 label: "Status"
 
@@ -647,9 +660,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Cookies"
-
-                                // TODO: Figure out this input
-                                // Probably will have a file location rather than the upload like v1
+                                tooltip: "The YouTube cookies in the netscape format<br />The cookies must be inputted into the file that opens when you click \"Open File\"\n\nView the readme for instructions on how to get this"
 
                                 CustomButton {
                                     width: 300
@@ -681,6 +692,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "PO Token"
+                                tooltip: "The PO token used along side the cookies\n\nView the readme for instructions on how to get this"
 
                                 CustomTextField {
                                     text: _manager.settings.youtubePOToken
@@ -715,6 +727,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Show Status Notifications"
+                                tooltip: "Shows status updates via system notifications"
 
                                 CustomSwitch {
                                     checked: _manager.settings.showStatusNotifications
@@ -724,6 +737,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Auto Open Download Folder"
+                                tooltip: "Automatically opens the output folder when a download finishes"
 
                                 CustomSwitch {
                                     checked: _manager.settings.autoOpenDownloadFolder
@@ -738,6 +752,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Check For Updates"
+                                tooltip: "Checks for dependency updates when opening the app"
 
                                 CustomSwitch {
                                     checked: _manager.settings.autoCheckForUpdates
@@ -747,6 +762,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Check For Notices"
+                                tooltip: "Checks for notices when opening the app"
 
                                 CustomSwitch {
                                     checked: _manager.settings.autoCheckForNotices
@@ -761,6 +777,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Random Default Background"
+                                tooltip: "Randomly assigns a background based on a preset list of albums"
 
                                 CustomSwitch {
                                     checked: _manager.settings.randomDefaultBackground
@@ -770,6 +787,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Default Background Url"
+                                tooltip: "The url used to get the background when opening the app before a download\n\nClicking apply will overwrite the current background with this one"
 
                                 CustomTextField {
                                     text: _manager.settings.defaultBackgroundUrl
@@ -801,6 +819,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Import"
+                                tooltip: "Sets the settings from a selected .json file<br />This will overwrite your settings\n\nIt is assumed this file is in the correct format<br />You can view the format by exporting the settings below"
 
                                 CustomButton {
                                     width: 300
@@ -816,6 +835,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Export"
+                                tooltip: "Exports the current settings to a .json file"
 
                                 CustomButton {
                                     width: 300
