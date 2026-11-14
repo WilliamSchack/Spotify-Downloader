@@ -230,7 +230,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
             lyrics = LyricsFinder::GetBestLyrics(track);
 
         // Create lyrics file
-        if (lyrics.Type != ELyricsType::None && Config::CreateLyricsFile) {
+        if (Config::CreateLyricsFile && lyrics.Type != ELyricsType::None) {
             SavableTrackTagHandler lyricsFileTagHandler(track);
             lyricsFileTagHandler.SetCodec(targetCodec.get());
             lyricsFileTagHandler.SetSaveLocation(directoryValidated);

@@ -324,7 +324,7 @@ void DownloadManager::FinishDownload()
     std::cout << "Finished all the downloads" << std::endl;
 
     // Create playlist file if required
-    if (Config::PlaylistFileType != EPlaylistFileType::None)
+    if (Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)
         CreatePlaylistFile();
 
     // Send event
