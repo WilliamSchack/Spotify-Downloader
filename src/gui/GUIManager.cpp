@@ -35,7 +35,7 @@ void GUIManager::SetupTrayIcon()
     QMenu* trayMenu = new QMenu();
     trayMenu->addAction(quitAction);
 
-    _trayIcon.setIcon(QIcon(":/icons/Icon.png"));
+    _trayIcon.setIcon(QIcon(":/icons/Icon.svg"));
     _trayIcon.setContextMenu(trayMenu);
     _trayIcon.show();
 }

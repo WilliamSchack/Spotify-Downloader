@@ -3,8 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import QWindowKit
 
-// TODO: Window resizing
-//       Rounded edges on windows 11
 Window {
     id: root
     visible: false
@@ -12,6 +10,7 @@ Window {
     height: 800
     title: "Echolite"
 
+    // Setup the title bar
     WindowAgent {
         id: windowAgent
     }
