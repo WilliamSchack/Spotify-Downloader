@@ -58,6 +58,13 @@ ComboBox {
         background: Rectangle {
             color: item.highlighted ? Qt.alpha('#414141', 0.2) : "transparent"
         }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onPressed: (mouse) => { mouse.accepted = false }
+        }
     }
     
     popup: Popup {
@@ -119,5 +126,12 @@ ComboBox {
             context.lineTo(width - inset, inset);
             context.stroke();
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onPressed: (mouse) => { mouse.accepted = false }
     }
 }

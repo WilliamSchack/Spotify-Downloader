@@ -3,6 +3,7 @@
 SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
 {
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxChanged);
+    connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateMaxPremiumChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::BitrateChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::LosslessFormatChanged);
@@ -62,6 +63,14 @@ int SettingsScreenGUI::GetBitrateMax() const
     bool youtubeCookiesValid = Config::YouTubeCookiesValid();
     
     return youtubeCookiesValid ? codecBitrateDetails.MaxBitratePremium : codecBitrateDetails.MaxBitrate;
+}
+
+int SettingsScreenGUI::GetBitrateMaxPremium() const
+{
+    std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
+    const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();
+    
+    return codecBitrateDetails.MaxBitratePremium;
 }
 
 int SettingsScreenGUI::GetLosslessFormat() const
@@ -256,6 +265,7 @@ void SettingsScreenGUI::UpdateBitrateFromCookieStatus()
     }
 
     emit BitrateMaxChanged();
+    emit BitrateMaxPremiumChanged();
 }
 
 void SettingsScreenGUI::SetupYouTubeCookiesWatcher()

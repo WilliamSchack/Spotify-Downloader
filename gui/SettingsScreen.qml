@@ -273,6 +273,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Codec"
+                                tooltip: "This will be converted from what the searched platform provides<br />For example YouTube provides m4a and webm files, the file will be converted from the m4a or webm to this codec\n\n**This also means that codecs that should be lossless (eg. wav, flac) are lossy as a result**"
 
                                 CustomComboBox {
                                     model: _manager.settings.GetCodecOptions()
@@ -283,6 +284,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Normalise Volume"
+                                tooltip: "Increases/Decreases the volume of the output based on the average over the whole track\n\n**Loud:** -11dB<br />**Normal:** -14dB<br />**Quiet:** -17dB"
 
                                 CustomSwitch {
                                     checked: _manager.settings.normalise
@@ -305,6 +307,7 @@ RowLayout {
                             SettingsItem {
                                 visible: !_manager.settings.formatIsLossless
                                 label: "Audio Bitrate"
+                                tooltip: "**Best Quality:** Doesn't modify the bitrate from the downloaded file<br />**Manual:** Converts the bitrate to the value set on the right\n\nOnly accepts numbers within 33-" + _manager.settings.bitrateMax + " with a multiple of 32\n\nIf you are using YouTube Premium, this value can be increased to " + _manager.settings.bitrateMaxPremium + "kbps"
 
                                 CustomComboBox {
                                     width: 150
@@ -345,6 +348,7 @@ RowLayout {
                             SettingsItem {
                                 visible: _manager.settings.formatIsLossless
                                 label: "Audio Format"
+                                tooltip: "**Only change this if you really need another format**\n\nAll downloads will be lossy so this really just pads out the file"
 
                                 CustomComboBox {
                                     model: _manager.settings.GetLosslessCodecFormatOptions()
@@ -361,6 +365,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Get Lyrics"
+                                tooltip: "Fetches the lyrics and puts it into the metadata"
 
                                 CustomSwitch {
                                     checked: _manager.settings.getLyrics
@@ -370,6 +375,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Artist Separator"
+                                tooltip: "Sets the separator between artists in the metadata\n\n**\"; \" is recommended as it has the most compatibility**"
 
                                 CustomTextField {
                                     text: _manager.settings.artistsSeparator
@@ -379,6 +385,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Track Number"
+                                tooltip: "**Playlist:** Uses the number in the playlist, or the album if a playlist is not inputted<br />**Album:** Uses the number in the album<br />**Disc:** Uses the number in the disc"
 
                                 // TODO: Add notice/warning when using playlist track number
                                 //       that it will use the album number when not downloading a playlist
@@ -397,6 +404,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Overwrite"
+                                tooltip: "Overwrites existing files only if they have the same metadata"
 
                                 CustomSwitch {
                                     checked: _manager.settings.overwrite
@@ -406,6 +414,7 @@ RowLayout {
 
                             SettingsItem {
                                 label: "Default Save Location"
+                                tooltip: "The folder that is inputted into the Add Tracks popup by default"
 
                                 CustomTextField {
                                     // Increasing width to fit with below inputs
@@ -425,6 +434,8 @@ RowLayout {
 
                             SettingsItem {
                                 label: "File Name"
+                                // TODO: Finish me
+                                tooltip: "Specifies how the file will be named. If there are files with the same name, the tracks id will be appended to the end\n\nUses the tag start and end for the bounds of tags:<br />eg. \"&lt;&gt;\": \"&lt;Song Name&gt; - &lt;Song Artist&gt;\""
                                 valid: _manager.settings.fileNameValid
                                 
                                 SingleCharTextField {

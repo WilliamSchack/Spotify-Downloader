@@ -6,6 +6,7 @@ Item {
     id: root
 
     property alias label: text.text
+    property string tooltip: ""
     property bool valid: true
 
     default property alias content: inputs.children
@@ -35,6 +36,19 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             color: "white"
             font.pixelSize: 14
+        }
+
+        // Tooltip
+        Rectangle {
+            width: parent.height
+            height: parent.height
+
+            visible: root.tooltip !== ""
+            color: "white"
+
+            HoverTooltip {
+                text: root.tooltip
+            }
         }
 
         // Indicator

@@ -24,6 +24,7 @@ Popup {
         text: root.text
         color: root.colour
         font: root.font
+        textFormat: Text.MarkdownText
     }
 
     function move(localPosition) {
