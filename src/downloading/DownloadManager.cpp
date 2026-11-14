@@ -106,7 +106,7 @@ bool DownloadManager::RequestDownload(const std::string& url, const std::string&
 void DownloadManager::StartDownload(const std::string& url, const std::string& directory)
 {
     std::string directoryValidated = FileUtils::ValidateDirectory(directory);
-    if (!std::filesystem::exists(directoryValidated)) {
+    if (!std::filesystem::exists(FileUtils::PathFromUtf8(directoryValidated))) {
         DownloadFailedToStartEvent event;
         event.Reason = "The chosen directory is invalid";
         _events.Send(event);
