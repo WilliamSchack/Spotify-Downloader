@@ -77,6 +77,7 @@ The app and its dependencies will be output to `./build/out/Release`
 - [lexbor](https://github.com/lexbor/lexbor) - [Apache 2.0](https://github.com/lexbor/lexbor/blob/master/LICENSE)
 - [stb](https://github.com/nothings/stb) - [Licence](https://github.com/nothings/stb/blob/master/LICENSE)
 - [libarchive](https://github.com/libarchive/libarchive) - [Licence](https://github.com/libarchive/libarchive/blob/master/COPYING)
+- [QWindowKit](https://github.com/stdware/qwindowkit/tree/main) - [Apache 2.0](https://github.com/stdware/qwindowkit/blob/main/LICENSE)
 
 **Building**
 - ffmpeg builds:

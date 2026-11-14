@@ -1,17 +1,30 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
+import QWindowKit
 
 // TODO: Window resizing
 //       Rounded edges on windows 11
 Window {
     id: root
-    visible: true
+    visible: false
     width: 1400
     height: 800
-    title: qsTr("Minimal Qml")
+    title: "Echolite"
 
-    flags: Qt.Window | Qt.FramelessWindowHint
+    WindowAgent {
+        id: windowAgent
+    }
+
+    Component.onCompleted: {
+        windowAgent.setup(root)
+        windowAgent.setTitleBar(header)
+        windowAgent.setSystemButton(WindowAgent.Minimize, minimiseButton)
+        windowAgent.setSystemButton(WindowAgent.Maximize, maximiseButton)
+        windowAgent.setSystemButton(WindowAgent.Close, closeButton)
+        windowAgent.setHitTestVisible(screenButtons)
+        root.visible = true
+    }
 
     enum EScreen
     {
@@ -108,6 +121,7 @@ Window {
                 spacing: 15
 
                 ToggleButtonGroup {
+                    id: screenButtons
                     spacing: 15
 
                     ToggleButton {
@@ -143,19 +157,14 @@ Window {
                     }
                 }
 
-                // Space / Draggable Area
-                // TODO: Test this on other platforms
-                MouseArea {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-
-                    onPressed: root.startSystemMove() 
-                }
+                Item { Layout.fillWidth: true }
 
                 // TODO: Change min/max/close button icons
 
                 // Minimise
                 CustomButton {
+                    id: minimiseButton
+
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 
@@ -168,6 +177,8 @@ Window {
 
                 // Maximise
                 CustomButton {
+                    id: maximiseButton
+
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 
@@ -178,8 +189,10 @@ Window {
                     onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
                 }
 
-                // Quit
+                // Close
                 CustomButton {
+                    id: closeButton
+
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
 

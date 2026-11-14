@@ -77,6 +77,7 @@ include(cmake/GetStb.cmake)
 include(cmake/GetCppcodec.cmake)
 include(cmake/GetLexbor.cmake)
 include(cmake/GetLibarchive.cmake)
+include(cmake/GetQWindowKit.cmake)
 
 # Include files
 add_subdirectory(include)

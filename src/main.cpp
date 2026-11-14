@@ -9,6 +9,9 @@
 #include <QQmlContext>
 #include <QIcon>
 
+#include <QtQuick/QQuickWindow>
+#include <QWKQuick/qwkquickglobal.h>
+
 // TODO: IMPLEMENT THIS:
 //
 // When getting a playlist, instead of fetching each track individually for its details (because we get fuck all from the playlist site),
@@ -57,7 +60,9 @@ int main(int argc, char** argv)
 
     std::srand(std::time(NULL));
 
-    // Calling before arg parser so qtwebengine can be initialised
+    // Setting up qt before arg parser so qtwebengine can be initialised
+    QQuickWindow::setDefaultAlphaBuffer(true);
+
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
 
@@ -73,6 +78,7 @@ int main(int argc, char** argv)
 
     GUIManager manager;
     QQmlApplicationEngine engine;
+    QWK::registerTypes(&engine);
     engine.rootContext()->setContextProperty("_manager", &manager);
     engine.load(QUrl("qrc:/gui/Main.qml"));
 
