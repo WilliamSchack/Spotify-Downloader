@@ -13,6 +13,12 @@ Rectangle {
     // Background Dim
     color: Qt.alpha("#000000", 0.4)
 
+    // Steal mouse inputs
+    MouseArea {
+        anchors.fill: parent
+        onPressed: (mouse) => { mouse.accepted = true }
+    }
+
     // Popup
     StyledBackground {
         anchors.centerIn: parent

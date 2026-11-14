@@ -33,11 +33,12 @@ class DownloadManager
 
         void Pause();
         void Resume();
-        void Cancel();
+        void Stop();
 
         bool IsDownloading() const;
         bool IsPausing() const;
         bool IsPaused() const;
+        bool IsStopping() const;
 
         PlaylistData GetPlaylistData() const;
 

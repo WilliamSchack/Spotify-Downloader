@@ -47,7 +47,7 @@ void DownloadManager::Resume()
     _queueCv.notify_all();
 }
 
-void DownloadManager::Cancel()
+void DownloadManager::Stop()
 {
     if (!_downloading)
         return;
@@ -74,6 +74,11 @@ bool DownloadManager::IsPausing() const
 bool DownloadManager::IsPaused() const
 {
     return _downloading && _paused && _unpausedThreads == 0;
+}
+
+bool DownloadManager::IsStopping() const
+{
+    return _downloading && _stopping;
 }
 
 PlaylistData DownloadManager::GetPlaylistData() const
@@ -318,6 +323,7 @@ void DownloadManager::FinishDownload()
         _events.Send(event);
 
         _downloading = false;
+        _stopping = false;
         return;
     }
 

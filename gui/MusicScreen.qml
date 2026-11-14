@@ -41,28 +41,30 @@ Rectangle {
                 spacing: 8
 
                 CustomButton {
-                    text: "Download Tracks (4/8)"
+                    Layout.fillHeight: true
+
+                    text: _manager.music.downloadButtonText
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
                     backgroundColour: "#A16583"
-                    
-                    Layout.fillHeight: true
+
+                    onClicked: _manager.music.DownloadButtonClicked()
                 }
 
                 CustomButton {
+                    Layout.fillHeight: true
+
                     text: _manager.music.playPauseButtonText;
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
                     backgroundColour: "#A16583"
-                    
-                    Layout.fillHeight: true
 
                     onClicked: _manager.music.PlayPauseButtonClicked()
                 }
 
-                CustomButton {
+                /*CustomButton {
                     text: "Export"
                     font.pixelSize: 14
                     spacing: 5
@@ -70,41 +72,9 @@ Rectangle {
                     backgroundColour: "#A16583"
                     
                     Layout.fillHeight: true
-                }
+                }*/
 
                 Rectangle { Layout.fillWidth: true }
-
-                // Search should be changed to its own thing
-                CustomButton {
-                    text: "Search"
-                    font.pixelSize: 14
-                    spacing: 5
-                    radius: 8
-                    backgroundColour: Qt.alpha("#707070", 0.4)
-                    
-                    Layout.preferredWidth: 150
-                    Layout.fillHeight: true
-                }
-
-                CustomButton {
-                    text: "Track Number"
-                    font.pixelSize: 14
-                    spacing: 5
-                    radius: 8
-                    backgroundColour: Qt.alpha("#707070", 0.4)
-                    
-                    Layout.fillHeight: true
-                }
-
-                CustomButton {
-                    text: "Filter"
-                    font.pixelSize: 14
-                    spacing: 5
-                    radius: 8
-                    backgroundColour: Qt.alpha("#707070", 0.4)
-                    
-                    Layout.fillHeight: true
-                }
             }
         }
 

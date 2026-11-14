@@ -8,10 +8,11 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
     // Update background image
     if (Config::RandomDefaultBackground) {
         int randomIndex = std::rand() % Config::RANDOM_DEFAULT_BACKGROUND_URLS.size();
-        Config::DefaultBackgroundUrl = Config::RANDOM_DEFAULT_BACKGROUND_URLS[randomIndex];
+        UpdateBackgroundImage(Config::RANDOM_DEFAULT_BACKGROUND_URLS[randomIndex]);
+    } else {
+        UpdateBackgroundImage();
     }
 
-    UpdateBackgroundImage();
 
     // Frequently check download events
     QTimer* timer = new QTimer(this);
@@ -47,6 +48,32 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
     }
 }
 
+void MusicScreenGUI::DownloadButtonClicked()
+{
+    if (_downloader.IsStopping())
+        return;
+    
+    // Cancel
+    if (_downloader.IsDownloading()) {
+        // TODO: Add confirmation popup
+        
+        std::thread([this]() {
+            // Might need to wait for the lock so may aswell do it in another thread 
+            _downloader.Stop(); 
+            
+            QMetaObject::invokeMethod(this, [this]() {
+                emit DownloadButtonTextChanged();
+            }, Qt::QueuedConnection);
+        }).detach();
+
+        return;
+    }
+
+    // Start new download
+    _addTracksPopup->SetLinkInputText("");
+    _addTracksPopup->SetVisible(true);
+}
+
 void MusicScreenGUI::PlayPauseButtonClicked()
 {
     if (!_downloader.IsDownloading())
@@ -63,6 +90,17 @@ void MusicScreenGUI::PlayPauseButtonClicked()
 void MusicScreenGUI::BackgroundApplyButtonClicked()
 {
     UpdateBackgroundImage();
+}
+
+QString MusicScreenGUI::GetDownloadButtonText() const
+{
+    if (_downloader.IsStopping())
+        return "Cancelling...";
+    
+    if (_downloader.IsDownloading())
+        return "Cancel Download";
+
+    return "Start New Download";
 }
 
 QString MusicScreenGUI::GetPlayPauseButtonText() const
@@ -128,7 +166,7 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _addTracksPopup->SetVisible(false);
 
                 UpdateBackgroundImage(_downloader.GetPlaylistData());
-
+                emit DownloadButtonTextChanged();
                 emit RequestNotification("Starting the download!");
             },
             [&](const DownloadFailedToStartEvent& e) {
@@ -145,6 +183,8 @@ void MusicScreenGUI::CheckDownloadEvents()
                 else
                     notificationMessage += "with no errors!";
 
+                emit DownloadButtonTextChanged();
+                emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },
             [&](const DownloadsCancelledEvent& e) {
@@ -157,6 +197,8 @@ void MusicScreenGUI::CheckDownloadEvents()
                 else
                     notificationMessage += "with no errors!";
 
+                emit DownloadButtonTextChanged();
+                emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },
             [&](const DownloadsPausedEvent& e) {

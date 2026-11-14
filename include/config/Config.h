@@ -138,7 +138,13 @@ class Config
             "https://open.spotify.com/album/0EnC43BBsNlC5AZP2UYtgP",
             "https://open.spotify.com/album/3YQA0MVV7U5puzsxGSOhlU",
             "https://open.spotify.com/album/7C9OlFso6Y67XNk53XPatP",
-            "https://open.spotify.com/album/2896XcljcjOVEZVXy0u6CI"
+            "https://open.spotify.com/album/2896XcljcjOVEZVXy0u6CI",
+            "https://open.spotify.com/album/2dIGnmEIy1WZIcZCFSj6i8",
+            "https://open.spotify.com/album/5lEphbceIgaK1XxWeSrC9E",
+            "https://open.spotify.com/album/0jJ7mMkCkTe7p9EJgSRxgi",
+            "https://open.spotify.com/album/0bCAjiUamIFqKJsekOYuRw",
+            "https://open.spotify.com/album/5jJGGsAztgUEXUHHZ2zrah",
+            "https://open.spotify.com/album/6f6tko6NWoH00cyFOl4VYQ"
         };
 
         // Has the requested lyrics sources with 0 as the highest priority
