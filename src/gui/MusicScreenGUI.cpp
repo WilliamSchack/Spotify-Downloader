@@ -2,6 +2,9 @@
 
 MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
 {
+    connect(this, &MusicScreenGUI::DownloadButtonTextChanged, this, &MusicScreenGUI::DownloadButtonIconChanged);
+    connect(this, &MusicScreenGUI::PlayPauseButtonTextChanged, this, &MusicScreenGUI::PlayPauseButtonIconChanged);
+
     _addTracksPopup = new AddTracksPopup(this);
     connect(_addTracksPopup, &AddTracksPopup::DownloadRequested, this, &MusicScreenGUI::OnDownloadRequested);
 
@@ -12,7 +15,6 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
     } else {
         UpdateBackgroundImage();
     }
-
 
     // Frequently check download events
     QTimer* timer = new QTimer(this);
@@ -99,6 +101,14 @@ QString MusicScreenGUI::GetDownloadButtonText() const
     return "Start New Download";
 }
 
+QString MusicScreenGUI::GetDownloadButtonIcon() const
+{
+    if (_downloader.IsDownloading())
+        return "qrc:/icons/ui/Cross.svg";
+
+    return "qrc:/icons/ui/Download.svg";
+}
+
 bool MusicScreenGUI::GetDownloadButtonEnabled() const
 {
     return !_downloader.IsStopping();
@@ -116,6 +126,14 @@ QString MusicScreenGUI::GetPlayPauseButtonText() const
         return "Pausing...";
 
     return "Pause";
+}
+
+QString MusicScreenGUI::GetPlayPauseButtonIcon() const
+{
+    if (_downloader.IsPaused() || _downloader.IsPausing())
+        return "qrc:/icons/ui/Play.svg";
+
+    return "qrc:/icons/ui/Pause.svg";
 }
 
 void MusicScreenGUI::CheckDownloadEvents()

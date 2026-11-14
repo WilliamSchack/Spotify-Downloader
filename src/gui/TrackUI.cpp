@@ -96,7 +96,7 @@ void TrackUI::AddSource(const EPlatform& platform, const std::string& link)
     QString qLink = QString::fromStdString(link);
     switch (platform) {
         case EPlatform::LocalFile:
-            iconSource = "";
+            iconSource = "qrc:/icons/ui/FolderFilled.svg";
             qLink = QUrl::fromLocalFile(qLink).toString();
             break;
         case EPlatform::YouTube:

@@ -169,6 +169,7 @@ Rectangle {
                         HoverTooltip {
                             id: sourceTooltip
                             text: modelData.link
+                            markdownText: false
                         }
                     }
                 }

@@ -8,6 +8,7 @@ Popup {
     property color colour: "white"
     property int offsetX: 18
     property int offsetY: 18
+    property bool markdownText: true
 
     padding: 8
     margins: 4
@@ -25,7 +26,7 @@ Popup {
         text: root.text
         color: root.colour
         font: root.font
-        textFormat: Text.MarkdownText
+        textFormat: root.markdownText ? Text.MarkdownText : Text.PlainText
         wrapMode: Text.WordWrap
     }
 

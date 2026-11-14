@@ -23,8 +23,10 @@ class MusicScreenGUI : public QObject
     Q_PROPERTY(QObject* addTracksPopup READ GetAddTracksPopup CONSTANT)
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
     Q_PROPERTY(QString downloadButtonText READ GetDownloadButtonText NOTIFY DownloadButtonTextChanged);
+    Q_PROPERTY(QString downloadButtonIcon READ GetDownloadButtonIcon NOTIFY DownloadButtonIconChanged);
     Q_PROPERTY(bool downloadButtonEnabled READ GetDownloadButtonEnabled NOTIFY DownloadButtonEnabledChanged);
     Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
+    Q_PROPERTY(QString playPauseButtonIcon READ GetPlayPauseButtonIcon NOTIFY PlayPauseButtonIconChanged);
     SIMPLE_QPROPERTY(QString, backgroundImagePath, BackgroundImagePath, _backgroundImagePath)
     SIMPLE_QPROPERTY(bool, loadingBackgroundImage, LoadingBackgroundImage, _loadingBackgroundImage)
 
@@ -35,8 +37,10 @@ class MusicScreenGUI : public QObject
         QList<QObject*> GetTracks() const;
 
         QString GetDownloadButtonText() const;
+        QString GetDownloadButtonIcon() const;
         bool GetDownloadButtonEnabled() const;
         QString GetPlayPauseButtonText() const;
+        QString GetPlayPauseButtonIcon() const;
     public slots:
         void DownloadButtonClicked();
         void PlayPauseButtonClicked();
@@ -65,8 +69,10 @@ class MusicScreenGUI : public QObject
     signals:
         void TracksChanged();
         void DownloadButtonTextChanged();
+        void DownloadButtonIconChanged();
         void DownloadButtonEnabledChanged();
         void PlayPauseButtonTextChanged();
+        void PlayPauseButtonIconChanged();
         void RequestNotification(const std::string& message);
 };
 

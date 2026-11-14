@@ -52,6 +52,9 @@ Rectangle {
                     radius: 8
                     backgroundColour: "#A16583"
 
+                    iconSource: _manager.music.downloadButtonIcon
+                    iconMargins: 15
+
                     onClicked: _manager.music.DownloadButtonClicked()
                 }
 
@@ -59,11 +62,14 @@ Rectangle {
                 CustomButton {
                     Layout.fillHeight: true
 
-                    text: _manager.music.playPauseButtonText;
+                    text: _manager.music.playPauseButtonText
                     font.pixelSize: 14
                     spacing: 5
                     radius: 8
                     backgroundColour: "#A16583"
+
+                    iconSource: _manager.music.playPauseButtonIcon
+                    iconMargins: 15
 
                     onClicked: _manager.music.PlayPauseButtonClicked()
                 }
