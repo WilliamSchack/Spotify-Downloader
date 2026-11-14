@@ -20,5 +20,9 @@
         <file>ui/Download.svg</file>
         <file>ui/Clipboard.svg</file>
         <file>ui/Cross.svg</file>
+        <file>ui/Minimise.svg</file>
+        <file>ui/Maximise.svg</file>
+        <file>ui/Music.svg</file>
+        <file>ui/Info.svg</file>
     </qresource>
 </RCC>
