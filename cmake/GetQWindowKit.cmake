@@ -8,7 +8,7 @@ set(QWINDOWKIT_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     QWindowKit
     GIT_REPOSITORY https://github.com/stdware/qwindowkit.git
-    GIT_TAG 1.5.0
+    GIT_TAG main
     GIT_SHALLOW TRUE
 )
 
