@@ -27,7 +27,7 @@ Rectangle {
 
         // Number
         Item {
-            width: root.columnWidths.number
+            width: parent.width * root.columnWidths.number
             height: parent.height
             Text {
                 anchors.centerIn: parent
@@ -39,7 +39,7 @@ Rectangle {
 
         // Title / Artist
         Item {
-            width: root.columnWidths.title
+            width: parent.width * root.columnWidths.title
             height: parent.height
             
             RowLayout {
@@ -121,7 +121,7 @@ Rectangle {
 
         // Album
         Item {
-            width: root.columnWidths.album
+            width: parent.width * root.columnWidths.album
             height: parent.height
             Text {
                 width: parent.width
@@ -137,7 +137,7 @@ Rectangle {
 
         // Sources
         Item {
-            width: root.columnWidths.sources
+            width: parent.width * root.columnWidths.sources
             height: parent.height
 
             Row {
@@ -177,7 +177,7 @@ Rectangle {
 
         // Download Status
         Item {
-            width: root.columnWidths.downloadStatus
+            width: parent.width * root.columnWidths.downloadStatus
             height: parent.height
             Text {
                 width: parent.width

@@ -85,14 +85,13 @@ Rectangle {
             }
 
             // Column Widths (Will be adjustable later)
-            // Idealy change these to a percentage of the window width
             QtObject {
                 id: columnWidths
-                property real number: 30
-                property real title: 350
-                property real album: 350
-                property real sources: 100
-                property real downloadStatus: 200
+                property real number: 0.05
+                property real title: 0.25
+                property real album: 0.25
+                property real sources: 0.15
+                property real downloadStatus: 0.3
             }
 
             ColumnLayout {
@@ -112,7 +111,7 @@ Rectangle {
 
                         // Number
                         Item {
-                            width: columnWidths.number
+                            width: parent.width * columnWidths.number
                             height: parent.height
                             Text {
                                 anchors.centerIn: parent
@@ -124,7 +123,7 @@ Rectangle {
 
                         // Title / Artist
                         Item {
-                            width: columnWidths.title
+                            width: parent.width * columnWidths.title
                             height: parent.height
                             
                             Text {
@@ -137,7 +136,7 @@ Rectangle {
 
                         // Album
                         Item {
-                            width: columnWidths.album
+                            width: parent.width * columnWidths.album
                             height: parent.height
                             
                             Text {
@@ -150,7 +149,7 @@ Rectangle {
 
                         // Sources
                         Item {
-                            width: columnWidths.sources
+                            width: parent.width * columnWidths.sources
                             height: parent.height
                             
                             Text {
@@ -163,7 +162,7 @@ Rectangle {
 
                         // Download Status
                         Item {
-                            width: columnWidths.downloadStatus
+                            width: parent.width * columnWidths.downloadStatus
                             height: parent.height
                             
                             Text {
