@@ -1,6 +1,11 @@
-<img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
+<img width="3087" height="957" alt="EcholiteBanner" src="https://github.com/user-attachments/assets/b82b6bbf-53d5-4262-97eb-d6f49d906a92" />
 
-# Spotify Downloader
+### v2 (Echolite) is coming SOON!
+
+so soon in fact that if you check tomorrow it could be out...
+
+--- 
+
 [![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Downloads](https://img.shields.io/github/downloads/WilliamSchack/Spotify-Downloader/total?label=Downloads&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
 [![Open Issues](https://img.shields.io/github/issues/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aopen)
