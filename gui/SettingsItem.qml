@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Effects
 
 Item {
     id: root
@@ -31,20 +32,33 @@ Item {
         anchors.fill: parent
         spacing: 10
 
-        Text {
-            id: text
-            Layout.alignment: Qt.AlignVCenter
-            color: "white"
-            font.pixelSize: 14
-        }
-
         // Tooltip
-        Rectangle {
-            width: parent.height
-            height: parent.height
+        Row {
+            Layout.fillHeight: true
+            anchors.verticalCenter: parent.verticalCenter
 
-            visible: root.tooltip !== ""
-            color: "white"
+            spacing: 8
+
+            // Text
+            Text {
+                id: text
+                anchors.verticalCenter: parent.verticalCenter
+                color: "white"
+                font.pixelSize: 14
+            }
+
+            // Tooltip
+            Image {
+                width: parent.height - 10
+                height: width
+                anchors.verticalCenter: parent.verticalCenter
+                
+                visible: root.tooltip !== ""
+
+                source: "qrc:/icons/ui/Help.svg"
+                sourceSize.width: width
+                sourceSize.height: height
+            }
 
             HoverTooltip {
                 text: root.tooltip
@@ -137,13 +151,21 @@ Item {
         // TODO: Change to warning/error icon
         //       Add tooltip
         //       Dont allow changing screens and show popup if invalid
-        Rectangle {
+        Image {
             Layout.preferredHeight: parent.height - 5
             Layout.preferredWidth: parent.height - 5
-
             visible: !root.valid || opacity > 0
             opacity: root.valid ? 0 : 1
-            color: "red"
+
+            source: "qrc:/icons/ui/Error.svg"
+            sourceSize.width: width
+            sourceSize.height: height
+
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                colorization: 1.0
+                colorizationColor: "#FF7E80"
+            }
 
             Behavior on opacity {
                 NumberAnimation {
