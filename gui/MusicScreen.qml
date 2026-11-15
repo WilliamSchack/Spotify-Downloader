@@ -120,10 +120,14 @@ Rectangle {
                         color: Qt.alpha('#6a6a6a', 0.2)
                     }
 
-                    contentItem: Rectangle {
-                        width: progressBar.width * progressBar.value
-                        height: progressBar.height
-                        color: Qt.alpha('#4DFF36', 0.4)
+                    contentItem: Item {
+                        visible: _manager.music.tracks.length > 0
+
+                        Rectangle {
+                            width: progressBar.width * progressBar.visualPosition
+                            height: progressBar.height
+                            color: Qt.alpha('#4DFF36', 0.4)
+                        }
                     }
 
                     Behavior on value {
