@@ -27,5 +27,6 @@
         <file>ui/Help.svg</file>
         <file>ui/FolderFilled.svg</file>
         <file>ui/External.svg</file>
+        <file>ui/Explicit.svg</file>
     </qresource>
 </RCC>

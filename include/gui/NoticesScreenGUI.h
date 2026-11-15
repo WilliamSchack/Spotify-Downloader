@@ -16,8 +16,6 @@
 #include <QList>
 #include <QtQml/qqml.h>
 
-// TODO: Add alert when new notice
-
 class NoticesScreenGUI : public QObject
 {
     Q_OBJECT

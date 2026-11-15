@@ -23,6 +23,7 @@ class TrackUI : public QObject
     Q_PROPERTY(QString name READ GetName CONSTANT)
     Q_PROPERTY(QString artistNames READ GetArtistNames CONSTANT)
     Q_PROPERTY(QString albumName READ GetAlbumName CONSTANT)
+    Q_PROPERTY(bool explicit READ GetExplicit CONSTANT)
     Q_PROPERTY(QString coverArtUrl READ GetCoverArtUrl NOTIFY CoverArtUrlChanged)
     Q_PROPERTY(QList<GUISourceInfo> sources READ GetSources NOTIFY SourcesChanged)
     Q_PROPERTY(float progress READ GetProgress NOTIFY ProgressChanged)
@@ -36,6 +37,7 @@ class TrackUI : public QObject
         QString GetName() const;
         QString GetArtistNames() const;
         QString GetAlbumName() const;
+        bool GetExplicit() const;
         QString GetCoverArtUrl() const;
         QList<GUISourceInfo> GetSources() const;
 

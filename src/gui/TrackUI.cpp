@@ -26,6 +26,11 @@ QString TrackUI::GetAlbumName() const
     return QString::fromStdString(_data.Album.Name);
 }
 
+bool TrackUI::GetExplicit() const
+{
+    return _data.Explicit;
+}
+
 QString TrackUI::GetCoverArtUrl() const
 {
     return _coverArtUrl;

@@ -48,7 +48,7 @@ Rectangle {
         Item {
             width: parent.width * root.columnWidths.title
             height: parent.height
-            
+
             RowLayout {
                 width: parent.width
                 height: parent.height
@@ -106,6 +106,7 @@ Rectangle {
                     // Title
                     Text {
                         width: parent.width
+                        height: parent.height / 2
                         rightPadding: 20
                         text: root.trackData.name
                         color: "white"
@@ -113,14 +114,35 @@ Rectangle {
                         elide: Text.ElideRight
                     }
 
-                    // Artist
-                    Text {
+                    Row {
                         width: parent.width
-                        rightPadding: 20
-                        text: root.trackData.artistNames
-                        color: "white"
-                        font.pixelSize: 12
-                        elide: Text.ElideRight
+                        height: parent.height / 2
+
+                        spacing: 5
+
+                        // Explicit
+                        Image {
+                            visible: root.trackData.explicit
+                            width: parent.height - 7
+                            height: width
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            source: "qrc:/icons/ui/Explicit.svg"
+                            sourceSize.width: width
+                            sourceSize.height: height
+                            smooth: true
+                        }
+
+                        // Artist
+                        Text {
+                            width: parent.width
+                            anchors.verticalCenter: parent.verticalCenter
+                            rightPadding: 20
+                            text: root.trackData.artistNames
+                            color: "white"
+                            font.pixelSize: 12
+                            elide: Text.ElideRight
+                        }
                     }
                 }
             }
