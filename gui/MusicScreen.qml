@@ -227,7 +227,7 @@ Rectangle {
 
                     property bool scrollBarActive: contentHeight > height
 
-                    ScrollBar.vertical: ScrollBar {
+                    ScrollBar.vertical: CustomScrollBar {
                         policy: trackList.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                     }
 

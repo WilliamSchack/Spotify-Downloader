@@ -28,7 +28,7 @@ Item {
             
             property bool scrollBarActive: contentHeight > height
 
-            ScrollBar.vertical: ScrollBar {
+            ScrollBar.vertical: CustomScrollBar {
                 policy: flickable.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
             }
 

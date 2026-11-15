@@ -126,7 +126,7 @@ RowLayout {
                 
                 property bool scrollBarActive: contentHeight > height
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: CustomScrollBar {
                     policy: settingsFlickableLeft.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                 }
 
@@ -265,7 +265,7 @@ RowLayout {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: CustomScrollBar {
                     policy: settingsFlickableRight.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                 }
 

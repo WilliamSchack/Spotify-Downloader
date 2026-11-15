@@ -17,6 +17,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomContextMenu.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomMenuItem.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/CustomMenuSeparator.qml
+	${CMAKE_CURRENT_SOURCE_DIR}/CustomScrollBar.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/RoundedImage.qml
 	${CMAKE_CURRENT_SOURCE_DIR}/InnerShadow.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/StyledBackground.qml

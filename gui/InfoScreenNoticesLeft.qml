@@ -21,7 +21,7 @@ Item {
 
         property bool scrollBarActive: contentHeight > height
 
-        ScrollBar.vertical: ScrollBar {
+        ScrollBar.vertical: CustomScrollBar {
             policy: notices.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
         }
 

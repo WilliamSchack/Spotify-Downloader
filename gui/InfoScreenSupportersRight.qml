@@ -60,7 +60,7 @@ ColumnLayout {
 
         property bool scrollBarActive: contentHeight > height
 
-        ScrollBar.vertical: ScrollBar {
+        ScrollBar.vertical: CustomScrollBar {
             policy: changelog.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
         }
 

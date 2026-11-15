@@ -134,7 +134,7 @@ ColumnLayout {
         property bool scrollBarActive: contentHeight > height
 
         // TODO: Fix the scrollbar changing height while scrolling
-        ScrollBar.vertical: ScrollBar {
+        ScrollBar.vertical: CustomScrollBar {
             policy: changelog.scrollBarActive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
         }
 
