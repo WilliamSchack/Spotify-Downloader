@@ -33,8 +33,11 @@ ColumnLayout {
     }
 
     readonly property string updateButtonIcon: {
-        if (root.selectedDependency.downloading || !root.selectedDependency.installed)
+        if (!root.selectedDependency.installed)
             return "qrc:/icons/ui/Download.svg"
+
+        if (root.selectedDependency.downloading || root.selectedDependency.updating)
+            return "qrc:/icons/ui/Update.svg"
 
         if (selectedDependency.updateAvailable)
             return "qrc:/icons/ui/UpdateAvailable.svg"
@@ -94,7 +97,7 @@ ColumnLayout {
 
                     text: root.updateButtonText
                     iconSource: root.updateButtonIcon
-                    iconRotating: root.selectedDependency.checkingForUpdates
+                    iconRotating: !enabled
                     font.pixelSize: 16
                     radius: 8
                     backgroundColour: "#A16583"

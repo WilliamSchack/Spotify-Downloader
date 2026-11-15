@@ -159,6 +159,7 @@ void DependencyInfo::CheckForUpdate()
         QMetaObject::invokeMethod(this, [this, updateAvailable]() {
             SetUpdateAvailable(updateAvailable);
             SetCheckingForUpdates(false);
+            UpdateVersion();
 
             if (_updateAvailable)
                 UpdateReleases(30, 1, false);
