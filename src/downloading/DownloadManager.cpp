@@ -203,6 +203,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
     // Setup
     _failedDownloads = 0;
     _successfulDownloads = 0;
+    _totalTracks = tracks.size();
     _downloadingDir = directoryValidated;
     _downloadedFilePaths.clear();
     _trackQueue = std::deque<TrackData>(tracks.begin(), tracks.end());
@@ -220,7 +221,7 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         _unpausedThreads = threadCount;
     }
 
-    Logger::Info("Starting download for (" + url + ") and outputting to (" + directoryValidated + ")");
+    Logger::Info("Starting download for (" + url + ") with (" + std::to_string(tracks.size()) + ") tracks, outputting to (" + directoryValidated + ")");
     Logger::Flush();
 
     for (int i = 0; i < threadCount; i++) {
@@ -322,7 +323,7 @@ void DownloadManager::CreatePlaylistFile()
 void DownloadManager::FinishDownload()
 {
     if (_stopping) {
-        Logger::Info("Downloads cancelled");
+        Logger::Info("Downloads cancelled: Successes (" + std::to_string(_successfulDownloads) + "), Failures (" + std::to_string(_failedDownloads) + ") / " + std::to_string(_totalTracks));
 
         DownloadsCancelledEvent event;
         event.FailedDownloads = _failedDownloads;
@@ -338,7 +339,7 @@ void DownloadManager::FinishDownload()
         return;
     }
 
-    Logger::Info("Finished all the downloads");
+    Logger::Info("Finished all downloads: Successes (" + std::to_string(_successfulDownloads) + "), Failures (" + std::to_string(_failedDownloads) + ") / " + std::to_string(_totalTracks));
 
     // Create playlist file if required
     if (Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)

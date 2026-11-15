@@ -57,6 +57,7 @@ class DownloadManager
         std::atomic<int> _threadsDownloading = 0;
         std::atomic<int> _failedDownloads = 0;
         std::atomic<int> _successfulDownloads = 0;
+        std::atomic<int> _totalTracks = 0;
 
         bool _paused = false;
         bool _stopping = false;
