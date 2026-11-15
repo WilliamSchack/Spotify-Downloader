@@ -104,6 +104,9 @@ QList<GUIReleaseInfo> DependencyInfo::LoadReleasesCache()
     std::string contents = std::string((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
     file.close();
 
+    if (contents.empty())
+        return {};
+
     // Parse file
     nlohmann::json json = nlohmann::json::parse(contents);
     if (!json.is_array()) {

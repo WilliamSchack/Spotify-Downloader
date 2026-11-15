@@ -54,6 +54,8 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
 	WebEngineCore
 )
 
+qt_standard_project_setup(REQUIRES 6.9)
+
 # Add the executable
 add_executable(${PROJECT_NAME})
 

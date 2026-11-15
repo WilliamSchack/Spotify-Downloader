@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     appFont.setFamily(":/fonts/Roboto.ttf");
     app.setFont(appFont);
 
-    // TODO: Decide this better
+    // TODO: Decide this better, TEST ME
 #if !defined(__APPLE__) && defined(UNIX)
     app.setAttribute(Qt::AA_DontUseNativeDialogs)
 #endif
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     QQmlApplicationEngine engine;
     QWK::registerTypes(&engine);
     engine.rootContext()->setContextProperty("_manager", &manager);
-    engine.load(QUrl("qrc:/gui/Main.qml"));
+    engine.loadFromModule(APP_NAME, "Main");
 
     int output = app.exec();
 
