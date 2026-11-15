@@ -19,6 +19,13 @@ Rectangle {
 
         visible: root.trackData.progress > 0 && root.trackData.progress < 1
         color: root.progressBarColour
+
+        Behavior on width {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.InOutCubic
+            }
+        }
     }
 
     Row {

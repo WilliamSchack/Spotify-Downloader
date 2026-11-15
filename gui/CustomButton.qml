@@ -133,6 +133,13 @@ Button {
             size: 4
             strength: 0.2 * root.backgroundColour.a
         }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 100
+                easing.type: Easing.OutCubic
+            }
+        }
     }
 
     MouseArea {

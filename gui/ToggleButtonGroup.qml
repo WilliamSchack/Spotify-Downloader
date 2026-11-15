@@ -7,6 +7,7 @@ Item {
 
     property real spacing: 5
     property bool horizontal: true
+    property alias checkedButton: buttonGroup.checkedButton
 
     default property alias content: layout.data
 
@@ -14,6 +15,7 @@ Item {
     implicitHeight: layout.implicitHeight
 
     ButtonGroup {
+        id: buttonGroup
         buttons: layout.children
     }
 
