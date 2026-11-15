@@ -186,7 +186,20 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
     dependencyInfo->SetIconSource(iconSource);
     _dependencies.insert(type, dependencyInfo);
 
+    connect(dependencyInfo, &DependencyInfo::InstalledChanged, this, &UpdatesScreenGUI::AnyDependencyInstalledChanged);
     connect(dependencyInfo, &DependencyInfo::UpdateAvailableChanged, this, &UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged);
+}
+
+void UpdatesScreenGUI::AnyDependencyInstalledChanged()
+{
+    for (DependencyInfo* info : _dependencies) {
+        if (!info->GetInstalled()) {
+            SetAllInstalled(false);
+            return;
+        }
+    }
+
+    SetAllInstalled(true);
 }
 
 void UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged()

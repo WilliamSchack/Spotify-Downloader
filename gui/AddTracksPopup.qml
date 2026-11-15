@@ -132,7 +132,19 @@ Popup {
                 font.pixelSize: 16
                 backgroundColour: "#9A607D"
 
-                onClicked: _manager.music.addTracksPopup.DownloadButtonClicked()
+                onClicked: {
+                    if (_manager.info.updates.allInstalled) {
+                        _manager.music.addTracksPopup.DownloadButtonClicked()
+                        return
+                    }
+
+                    const dialog = messageDialogComponent.createObject(root, {
+                        title: "Could Not Start Download",
+                        text: "One or more of the dependencies are not installed. Please install all the dependencies from the Info Screen in the Updates tab, or on your system. If they are already installed on your system make sure they are in your PATH",
+                        standardButtons: Dialog.Ok
+                    })
+                    dialog.open()
+                }
             }
 
             CustomButton {

@@ -43,6 +43,9 @@ Dialog {
     }
 
     contentItem: Text {
+        leftPadding: 10
+        rightPadding: 10
+
         text: root.text
         color: "white"
         font.pixelSize: 14

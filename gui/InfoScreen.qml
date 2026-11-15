@@ -77,7 +77,7 @@ RowLayout {
                         font.pixelSize: 20
                         radius: 8
 
-                        unselectedBackgroundColour: _manager.info.updates.anyUpdateAvailable ? Qt.alpha('#b32222', 0.6) : Qt.alpha("#707070", 0.6)
+                        unselectedBackgroundColour: (!_manager.info.updates.allInstalled || _manager.info.updates.anyUpdateAvailable) ? Qt.alpha('#b32222', 0.6) : Qt.alpha("#707070", 0.6)
 
                         checked: true
 

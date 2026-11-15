@@ -21,6 +21,7 @@ class UpdatesScreenGUI : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(DependencyInfo* selectedDependency READ GetSelectedDependency NOTIFY SelectedDependencyChanged)
+    SIMPLE_QPROPERTY(bool, allInstalled, AllInstalled, _allInstalled)
     SIMPLE_QPROPERTY(bool, anyUpdateAvailable, AnyUpdateAvailable, _anyUpdateAvailable)
 
     public:
@@ -36,12 +37,14 @@ class UpdatesScreenGUI : public QObject
     private:
         void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction);
 
+        void AnyDependencyInstalledChanged();
         void AnyDependencyUpdateAvailableChanged();
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 
         QMap<DependencyInfo::EDependency, DependencyInfo*> _dependencies;
         
+        bool _allInstalled = false;
         bool _anyUpdateAvailable = false;
     signals:
         void SelectedDependencyChanged();

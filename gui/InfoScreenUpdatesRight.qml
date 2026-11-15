@@ -33,11 +33,11 @@ ColumnLayout {
     }
 
     readonly property string updateButtonIcon: {
-        if (!root.selectedDependency.installed)
-            return "qrc:/icons/ui/Download.svg"
-
         if (root.selectedDependency.downloading || root.selectedDependency.updating)
             return "qrc:/icons/ui/Update.svg"
+
+        if (!root.selectedDependency.installed)
+            return "qrc:/icons/ui/Download.svg"
 
         if (selectedDependency.updateAvailable)
             return "qrc:/icons/ui/UpdateAvailable.svg"
