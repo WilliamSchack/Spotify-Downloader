@@ -56,7 +56,6 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 	if (json.is_null() || json.empty())
 		return TrackData(EPlatform::Unknown);
 
-
 	TrackData track(EPlatform::YouTube);
 	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
 	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
@@ -89,10 +88,24 @@ TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
 
 		if (album.Artists.size() == 0 && artists.size() > 0)
 			album.SetMainArtist(artists[0]);
-
-		if (album.ImageUrl.empty() && json.contains("thumbnails"))
-			album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
 	}
+
+    if (album.Url == "") {
+        // Sometimes youtube just doesnt provide an album at all
+        // In most cases this is a single so just fill out the details assuming that
+        // Here it also doesnt provide a release date so thats a bit unfortunate
+
+        track.TrackNumber = 1;
+
+        album.Artists = artists;
+        album.Id = track.Id;
+        album.Url = track.Url;
+        album.Name = track.Name;
+        album.TotalTracks = 1;
+    }
+
+    if (album.ImageUrl.empty() && json.contains("thumbnails"))
+        album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
 
 	track.Album = album;
 	track.Artists = artists;
@@ -213,7 +226,7 @@ PlaylistTracks YTMusicAPI::ParsePlaylistJson(const nlohmann::json& json)
 	// Tracks
 	if (json.contains("tracks")) {
 		std::vector<TrackData> tracks;
-		for (int i = 0; i < tracks.size(); i++) {
+		for (int i = 0; i < json["tracks"].size(); i++) {
             const nlohmann::json& trackJson = json["tracks"][i];
 			TrackData track = ParseTrackJson(trackJson);
             // TODO: Check if this playlist track number is correct
@@ -677,11 +690,12 @@ nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
 		postData["playlistId"] = id;
 	} else {
 		postData["videoId"] = id;
+        postData["playlistId"] = "RDAMVM" + id;
 		postData["watchEndpointMusicSupportedConfigs"] = {
-			"watchEndpointMusicConfig", {
+			{"watchEndpointMusicConfig", {
 				{"hasPersistentPlaylistPanel", true},
 				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
-			}
+			}}
 		};
 	}
 

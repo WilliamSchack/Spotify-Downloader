@@ -258,6 +258,19 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
     Logger::Info("Starting download on thread: " + threadSs.str());
 
     while (std::optional<TrackData> track = GetNextTrack()) {
+        if (track->Id.empty()) {
+            TrackFailedEvent event;
+            event.TrackUniqueId = track->GetUniqueId();
+            event.Reason = "Could not find the id for this track";
+            _events.Send(event);
+
+            _failedDownloads++;
+
+            Logger::Warning("Track (" + event.TrackUniqueId + ") failed to download with the error: " + event.Reason);
+
+            continue;
+        }
+
         DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadEvent event) {
             _events.Send(event);
         });

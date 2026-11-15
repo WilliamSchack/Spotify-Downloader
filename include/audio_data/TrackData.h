@@ -6,6 +6,7 @@
 #include "EPlatform.h"
 #include "ArtistData.h"
 #include "AlbumData.h"
+#include "FileUtils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -40,7 +41,16 @@ struct TrackData
     std::string GetUniqueId() const
     {
         // Id could be the same across platforms
-        return std::to_string((int)Platform) + Id;
+        std::string uniqueId = "T" + std::to_string((int)Platform);
+
+        if (Id.empty()) {
+            uniqueId += FileUtils::ValidateFileName(Name);
+            if (Artists.size() > 0)
+                uniqueId += Artists[0].GetUniqueId();
+
+            return uniqueId;
+        } else
+            return uniqueId + Id;
     }
 
     ArtistData GetMainArtist() const

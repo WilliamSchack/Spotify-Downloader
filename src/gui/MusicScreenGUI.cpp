@@ -164,6 +164,9 @@ void MusicScreenGUI::CheckDownloadEvents()
                 _tracksFromId[e.TrackUniqueId]->SetCoverArtUrl(e.FilePath);
             },
             [&](const TrackSourceFoundEvent& e) {
+                if (e.Link.empty())
+                    return;
+
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->AddSource(e.Platform, e.Link);
             },

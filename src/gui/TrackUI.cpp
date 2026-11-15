@@ -3,7 +3,9 @@
 TrackUI::TrackUI(const TrackData& data, QObject* parent) : QObject(parent), _data(data)
 {
     FindCoverArtUrl();
-    AddSource(data.Platform, data.Url);
+
+    if (!data.Url.empty())
+        AddSource(data.Platform, data.Url);
 }
 
 int TrackUI::GetTrackNumber() const

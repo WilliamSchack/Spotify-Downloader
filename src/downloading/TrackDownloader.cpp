@@ -20,7 +20,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     SetProgress(eventCallback, track, 0.0, "Setting Up...");
 
-    // Todo: Move below into seperate files and functions
+    // TODO: Move below into seperate files and functions
     //       Just getting it working at the moment
 
     // == Get paths

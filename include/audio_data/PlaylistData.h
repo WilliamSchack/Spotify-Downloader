@@ -5,6 +5,7 @@
 #include "EPlatform.h"
 #include "TrackData.h"
 #include "ArtistData.h"
+#include "FileUtils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -29,7 +30,16 @@ struct PlaylistData
 
     std::string GetUniqueId() const
     {
-        return "P" + std::to_string((int)Platform) + Id;
+        std::string uniqueId = "P" + std::to_string((int)Platform);
+
+        if (Id.empty()) {
+            uniqueId += FileUtils::ValidateFileName(Name);
+            if (Owner.Platform != EPlatform::Unknown)
+                uniqueId += Owner.GetUniqueId();
+
+            return uniqueId;
+        } else
+            return uniqueId + Id;
     }
 };
 

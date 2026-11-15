@@ -3,6 +3,7 @@
 
 #include "Logger.h"
 #include "EPlatform.h"
+#include "FileUtils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -19,6 +20,16 @@ struct ArtistData
 
     ArtistData(EPlatform platform) : Platform(platform) {}
     void Print() const;
+
+    std::string GetUniqueId() const
+    {
+        std::string uniqueId = "AR" + std::to_string((int)Platform);
+
+        if (Id.empty())
+            return uniqueId + FileUtils::ValidateFileName(Name);
+        else
+            return uniqueId + Id;
+    }
 };
 
 inline void to_json(nlohmann::json& json, const ArtistData& data)
