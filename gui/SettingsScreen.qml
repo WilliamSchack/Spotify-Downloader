@@ -281,6 +281,11 @@ RowLayout {
                                 tooltip: "This will be converted from what the searched platform provides<br />For example YouTube provides m4a and webm files, the file will be converted from the m4a or webm to this codec\n\n**This also means that codecs that should be lossless (eg. wav, flac) are lossy as a result**"
 
                                 CustomComboBox {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     model: _manager.settings.GetCodecOptions()
                                     currentIndex: _manager.settings.codec
                                     onActivated: (index) => { _manager.settings.codec = index }
@@ -292,11 +297,18 @@ RowLayout {
                                 tooltip: "Increases/Decreases the volume of the output based on the average over the whole track\n\n**Loud:** -11dB<br />**Normal:** -14dB<br />**Quiet:** -17dB"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.normalise
                                     onClicked: _manager.settings.normalise = checked
                                 }
 
                                 DoubleTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     enabled: _manager.settings.normalise
                                     min: -50.0
                                     max: 50.0
@@ -315,7 +327,8 @@ RowLayout {
                                 tooltip: "**Best Quality:** Doesn't modify the bitrate from the downloaded file<br />**Manual:** Converts the bitrate to the value set on the right\n\nOnly accepts numbers within 33-" + _manager.settings.bitrateMax + " with a multiple of 32\n\nIf you are using YouTube Premium, this value can be increased to " + _manager.settings.bitrateMaxPremium + "kbps"
 
                                 CustomComboBox {
-                                    width: 150
+                                    Layout.fillHeight: true
+                                    implicitWidth: 150
 
                                     model: ["Best Quality", "Manual"]
 
@@ -324,6 +337,11 @@ RowLayout {
                                 }
 
                                 IntTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     // Should change based on codec, premium status, and auto update when manualBitrate (Same as v1)
                                     enabled: _manager.settings.manualBitrate
                                     min: 33
@@ -356,6 +374,11 @@ RowLayout {
                                 tooltip: "**Only change this if you really need another format**\n\nAll downloads will be lossy so this really just pads out the file"
 
                                 CustomComboBox {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     model: _manager.settings.GetLosslessCodecFormatOptions()
 
                                     currentIndex: _manager.settings.losslessFormat
@@ -373,6 +396,8 @@ RowLayout {
                                 tooltip: "Fetches the lyrics and puts it into the metadata"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.getLyrics
                                     onClicked: _manager.settings.getLyrics = checked
                                 }
@@ -383,6 +408,11 @@ RowLayout {
                                 tooltip: "Sets the separator between artists in the metadata\n\n**\"; \" is recommended as it has the most compatibility**"
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.artistsSeparator
                                     onTextEdited: _manager.settings.artistsSepanrator = text
                                 }
@@ -396,6 +426,11 @@ RowLayout {
                                 //       that it will use the album number when not downloading a playlist
 
                                 CustomComboBox {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     model: _manager.settings.GetTrackNumberTypeOptions()
                                     currentIndex: _manager.settings.trackNumberType
                                     onActivated: (index) => { _manager.settings.trackNumberType = index }
@@ -412,6 +447,8 @@ RowLayout {
                                 tooltip: "Overwrites existing files only if they have the same metadata"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.overwrite
                                     onClicked: _manager.settings.overwrite = checked
                                 }
@@ -422,16 +459,19 @@ RowLayout {
                                 tooltip: "The folder that is inputted into the Add Tracks popup by default"
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
                                     // Increasing width to fit with below inputs
-                                    width: 310 + height
+                                    Layout.maximumWidth: 310 + height
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
                                     text: _manager.settings.defaultSaveLocation
                                     onTextEdited: _manager.settings.defaultSaveLocation = text
                                 }
 
                                 CustomButton {
-                                    width: parent.height
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height
 
                                     onClicked: _manager.settings.DefaultSaveLocationButtonClicked()
                                 }
@@ -443,16 +483,25 @@ RowLayout {
                                 error: _manager.settings.fileNameError
                                 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.fileNameTagsOpeningChar
                                     onTextEdited: _manager.settings.fileNameTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.fileNameTagsClosingChar
                                     onTextEdited: _manager.settings.fileNameTagsClosingChar = text
                                 }
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.fileName
                                     onTextEdited: _manager.settings.fileName = text
 
@@ -466,16 +515,25 @@ RowLayout {
                                 error: _manager.settings.subFoldersError
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.subFoldersTagsOpeningChar
                                     onTextEdited: _manager.settings.subFoldersTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.subFoldersTagsClosingChar
                                     onTextEdited: _manager.settings.subFoldersTagsClosingChar = text
                                 }
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.subFolders
                                     onTextEdited: _manager.settings.subFolders = text
 
@@ -504,16 +562,25 @@ RowLayout {
                                 error: _manager.settings.lyricsFileNameError
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.lyricsFileNameTagsOpeningChar
                                     onTextEdited: _manager.settings.lyricsFileNameTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.lyricsFileNameTagsClosingChar
                                     onTextEdited: _manager.settings.lyricsFileNameTagsClosingChar = text
                                 }
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.lyricsFileName
                                     onTextEdited: _manager.settings.lyricsFileName = text
 
@@ -531,6 +598,8 @@ RowLayout {
                                 tooltip: "Creates a playlist file when a download finishes containing all the downloaded tracks"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.createPlaylistFile
                                     onClicked: _manager.settings.createPlaylistFile = checked
                                 }
@@ -541,6 +610,11 @@ RowLayout {
                                 tooltip: "The type of playlist file to save"
 
                                 CustomComboBox {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     model: _manager.settings.GetPlaylistFileTypeOptions()
                                     currentIndex: _manager.settings.playlistFileType
                                     onActivated: (index) => { _manager.settings.playlistFileType = index }
@@ -553,16 +627,25 @@ RowLayout {
                                 error: _manager.settings.playlistFileNameError
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.playlistFileNameTagsOpeningChar
                                     onTextEdited: _manager.settings.playlistFileNameTagsOpeningChar = text
                                 }
 
                                 SingleCharTextField {
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.playlistFileNameTagsClosingChar
                                     onTextEdited: _manager.settings.playlistFileNameTagsClosingChar = text
                                 }
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.playlistFileName
                                     onTextEdited: _manager.settings.playlistFileName = text
 
@@ -584,6 +667,11 @@ RowLayout {
                                 tooltip: "How many tracks can be downloaded at the same time<br />Does not change in progress downloads\n\nDont use a high number as it can increase CPU usage<br />**6 is recommended** as its a good middle ground"
 
                                 IntTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     min: 0
                                     max: 128
 
@@ -597,6 +685,11 @@ RowLayout {
                                 tooltip: "The speed limit of the download stage\n\n0 is uncapped"
 
                                 DoubleTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     min: 0.0
                                     max: 999999999.9
                                     rightText: "MB/s"
@@ -612,6 +705,11 @@ RowLayout {
                                 tooltip: "The amount of time before the download stage cancels and fails the download\n\nUsed incase when a download gets stuck for any reason"
 
                                 IntTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     min: 5000
                                     max: 999999999
                                     rightText: "ms"
@@ -627,6 +725,11 @@ RowLayout {
                                 tooltip: "The IP Version that will be used for downloading\n\nSet this to one of the values if all downloads fail with a timeout error"
 
                                 CustomComboBox {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     model: _manager.settings.GetIPVersionOptions()
                                     currentIndex: _manager.settings.ipVersion
                                     onActivated: (index) => { _manager.settings.ipVersion = index }
@@ -646,8 +749,11 @@ RowLayout {
                                 label: "Status"
 
                                 Text {
+                                    Layout.minimumWidth: 100
                                     // Fill to next settings: input + 2 buttons + 2 spaces
-                                    width: 300 + 2 * height + 10 * 2
+                                    Layout.maximumWidth: 300 + 2 * height + 10 * 2
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
                                     text: _manager.settings.youtubeCookiesStatus
                                     textFormat: Text.RichText
@@ -663,8 +769,10 @@ RowLayout {
                                 tooltip: "The YouTube cookies in the netscape format<br />The cookies must be inputted into the file that opens when you click \"Open File\"\n\nView the readme for instructions on how to get this"
 
                                 CustomButton {
-                                    width: 300
-                                    height: parent.height
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
                                     text: "Open File"
                                     textColour: "black"
@@ -675,16 +783,22 @@ RowLayout {
 
                                 // Paste
                                 CustomButton {
-                                    width: parent.height
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height
+
+                                    iconSource: "qrc:/icons/ui/Clipboard.svg"
+                                    iconColour: "black"
 
                                     onClicked: _manager.settings.YouTubeCookiesPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
-                                    width: parent.height
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height
+
+                                    iconSource: "qrc:/icons/ui/Cross.svg"
+                                    iconColour: "black"
 
                                     onClicked: _manager.settings.YouTubeCookiesClearButtonClicked()
                                 }
@@ -695,22 +809,33 @@ RowLayout {
                                 tooltip: "The PO token used along side the cookies\n\nView the readme for instructions on how to get this"
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.youtubePOToken
                                     onTextEdited: _manager.settings.youtubePOToken = text
                                 }
 
                                 // Paste
                                 CustomButton {
-                                    width: parent.height
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height
+
+                                    iconSource: "qrc:/icons/ui/Clipboard.svg"
+                                    iconColour: "black"
 
                                     onClicked: _manager.settings.YouTubePOTokenPasteButtonClicked()
                                 }
 
                                 // Clear
                                 CustomButton {
-                                    width: parent.height
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height
+
+                                    iconSource: "qrc:/icons/ui/Cross.svg"
+                                    iconColour: "black"
 
                                     onClicked: _manager.settings.YouTubePOTokenClearButtonClicked()
                                 }
@@ -730,6 +855,8 @@ RowLayout {
                                 tooltip: "Shows status updates via system notifications"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.showStatusNotifications
                                     onClicked: _manager.settings.showStatusNotifications = checked
                                 }
@@ -740,6 +867,8 @@ RowLayout {
                                 tooltip: "Automatically opens the output folder when a download finishes"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.autoOpenDownloadFolder
                                     onClicked: _manager.settings.autoOpenDownloadFolder = checked
                                 }
@@ -755,6 +884,8 @@ RowLayout {
                                 tooltip: "Checks for dependency updates when opening the app"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.autoCheckForUpdates
                                     onClicked: _manager.settings.autoCheckForUpdates = checked
                                 }
@@ -765,6 +896,8 @@ RowLayout {
                                 tooltip: "Checks for notices when opening the app"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.autoCheckForNotices
                                     onClicked: _manager.settings.autoCheckForNotices = checked
                                 }
@@ -780,6 +913,8 @@ RowLayout {
                                 tooltip: "Randomly assigns a background based on a preset list of albums"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.randomDefaultBackground
                                     onClicked: _manager.settings.randomDefaultBackground = checked
                                 }
@@ -790,13 +925,18 @@ RowLayout {
                                 tooltip: "The url used to get the background when opening the app before a download<br />This will not happen when Random Default Background is enabled\n\nClicking apply will overwrite the current background with this one"
 
                                 CustomTextField {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
                                     text: _manager.settings.defaultBackgroundUrl
                                     onTextEdited: _manager.settings.defaultBackgroundUrl = text
                                 }
 
                                 CustomButton {
-                                    width: parent.height * 2 + 10
-                                    height: parent.height
+                                    Layout.fillHeight: true
+                                    implicitWidth: parent.height * 2 + 10
 
                                     enabled: !_manager.music.loadingBackgroundImage
 
@@ -822,8 +962,10 @@ RowLayout {
                                 tooltip: "Sets the settings from a selected .json file<br />This will overwrite your settings\n\nIt is assumed this file is in the correct format<br />You can view the format by exporting the settings below"
 
                                 CustomButton {
-                                    width: 300
-                                    height: parent.height
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
                                     text: "Import From File"
                                     textColour: "black"
@@ -838,8 +980,10 @@ RowLayout {
                                 tooltip: "Exports the current settings to a .json file"
 
                                 CustomButton {
-                                    width: 300
-                                    height: parent.height
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
 
                                     text: "Export To File"
                                     textColour: "black"
