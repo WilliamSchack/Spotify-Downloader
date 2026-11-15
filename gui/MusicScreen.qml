@@ -213,6 +213,8 @@ Rectangle {
         anchors.fill: parent
         color: Qt.alpha("#000000", 0.4)
         radius: parent.radius
+        opacity: addTracksPopup.visible ? 1.0 : 0.0
+        visible: opacity > 0
 
         // Consume mouse input
         MouseArea {
@@ -221,12 +223,14 @@ Rectangle {
             onPressed: (mouse) => { mouse.accepted = true }
         }
 
-        AddTracksPopup {}
-
         Behavior on opacity {
             NumberAnimation {
-                duration: root.fadeDurationMs
+                duration: addTracksPopup.fadeDurationMs
             }
         }
+    }
+
+    AddTracksPopup {
+        id: addTracksPopup
     }
 }
