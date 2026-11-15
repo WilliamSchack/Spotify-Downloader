@@ -208,8 +208,25 @@ Rectangle {
         }
     }
 
-    // Popups
-    AddTracksPopup {
-        id: addTracksPopup
+    // Popup
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.alpha("#000000", 0.4)
+        radius: parent.radius
+
+        // Consume mouse input
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onPressed: (mouse) => { mouse.accepted = true }
+        }
+
+        AddTracksPopup {}
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.fadeDurationMs
+            }
+        }
     }
 }

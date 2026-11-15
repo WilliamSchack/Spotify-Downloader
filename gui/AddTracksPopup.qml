@@ -5,13 +5,15 @@ import QtQuick.Layouts
 Popup {
     id: root
 
-    property int fadeDurationMs: 200
+    property int fadeDurationMs: 100
 
-    parent: Overlay.overlay
+    //parent: contentArea
     anchors.centerIn: parent
-    visible: _manager.music.addTracksPopup.visible
+    visible: _manager.music.addTracksPopup.visible && (parent ? parent.visible : false)
 
-    modal: true
+    modal: false
+    dim: false
+    focus: true
     closePolicy: Popup.NoAutoClose
 
     padding: 20
@@ -176,16 +178,6 @@ Popup {
             from: 1.0
             to: 0.0
             duration: root.fadeDurationMs
-        }
-    }
-
-    Overlay.modal: Rectangle {
-        color: Qt.alpha("#000000", 0.4)
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: root.fadeDurationMs
-            }
         }
     }
 }
