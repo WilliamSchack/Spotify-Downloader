@@ -1,13 +1,13 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Popup {
     id: root
 
     property int fadeDurationMs: 100
 
-    //parent: contentArea
     anchors.centerIn: parent
     visible: _manager.music.addTracksPopup.visible && (parent ? parent.visible : false)
 
@@ -19,8 +19,24 @@ Popup {
     padding: 20
     width: 560 + padding * 2
 
+    Component {
+        id: messageDialogComponent
+        CustomMessageDialog {}
+    }
+
     background: StyledBackground {
         radius: 20
+
+        // Outer Shadow
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            shadowOpacity: 0.25
+            shadowBlur: 0.4
+            shadowHorizontalOffset: 4
+            shadowVerticalOffset: 4
+        }
     }
 
     contentItem: ColumnLayout {
@@ -102,34 +118,6 @@ Popup {
             }
         }
 
-        // Error popup
-        Label {
-            Layout.fillWidth: true
-            
-            visible: _manager.music.addTracksPopup.errorMessage != ""
-
-            padding: 10
-
-            text: _manager.music.addTracksPopup.errorMessage
-            color: "white"
-            font.pixelSize: 16
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-
-            background: Rectangle {
-                radius: 3
-
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: Qt.alpha('#9f5151', 0.8) }
-                    GradientStop { position: 1.0; color: Qt.alpha('#773131', 0.8) }
-                }
-
-                border.color: '#c56c6c'
-                border.width: 3
-            }
-        }
-
         ColumnLayout {
             Layout.fillWidth: true
 
@@ -178,6 +166,20 @@ Popup {
             from: 1.0
             to: 0.0
             duration: root.fadeDurationMs
+        }
+    }
+
+    Connections {
+        target: _manager.music.addTracksPopup
+        function onStartError(error) {
+            console.log("ON ERROR")
+
+            const dialog = messageDialogComponent.createObject(root, {
+                title: "Could Not Start Download",
+                text: error,
+                standardButtons: Dialog.Ok
+            })
+            dialog.open()
         }
     }
 }

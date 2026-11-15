@@ -82,6 +82,9 @@ class SettingsScreenGUI : public QObject
         bool GetFormatIsLossless() const;
 
         QString GetYouTubeCookiesStatus() const;
+
+        Q_INVOKABLE bool ImportSettingsFromFile();
+        Q_INVOKABLE bool ExportSettingsToFile();
     public slots:
         void DefaultSaveLocationButtonClicked();
         void YouTubeCookiesOpenButtonClicked();
@@ -89,8 +92,6 @@ class SettingsScreenGUI : public QObject
         void YouTubeCookiesClearButtonClicked();
         void YouTubePOTokenPasteButtonClicked();
         void YouTubePOTokenClearButtonClicked();
-        bool SettingsImportButtonClicked();
-        bool SettingsExportButtonClicked();
     private:
         void UpdateYouTubeCookiesStatus();
         void UpdateBitrateFromCookieStatus();

@@ -9,6 +9,8 @@ Window {
     visible: false
     width: 1400
     height: 800
+    minimumWidth: 800
+    minimumHeight: 400
     title: "Echolite"
 
     // Setup the title bar
@@ -24,6 +26,11 @@ Window {
         windowAgent.setSystemButton(WindowAgent.Close, closeButton)
         windowAgent.setHitTestVisible(screenButtons)
         root.visible = true
+    }
+
+    Component {
+        id: messageDialogComponent
+        CustomMessageDialog {}
     }
 
     enum EScreen
@@ -42,8 +49,18 @@ Window {
     function switchScreen(screen: int) {
         if (currentScreen == Main.EScreen.Settings && screen != Main.EScreen.Settings)  {
             // Cannot leave if any settings are invalid
-            if (!_manager.settings.allSettingsValid)
+            if (!_manager.settings.allSettingsValid) {
+                const dialog = messageDialogComponent.createObject(root.contentItem, {
+                    title: "Invalid Settings",
+                    text: "One or more settings are invalid, please fix them",
+                    standardButtons: Dialog.Ok
+                })
+                dialog.open()
+
+                screenButtons.checkedButton = settingsScreenButton
+
                 return;
+            }
             
             _manager.settings.LeavingScreen()
         }
@@ -151,6 +168,7 @@ Window {
                     }
 
                     ToggleButton {
+                        id: settingsScreenButton
                         implicitHeight: header.height
 
                         text: "Settings"

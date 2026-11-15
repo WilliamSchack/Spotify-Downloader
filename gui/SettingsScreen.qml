@@ -13,6 +13,11 @@ RowLayout {
     property string validPlaylistTagsString: "**Playlist Name** - Name of the downloaded playlist, album, or track depending on what was inputted<br />**Playlist Owner** - Name of the playlist owner, album main artist, or track main artist"
     property string validSaveablePlaylistTagsString: "**Save Location** - The output path set in the Add Tracks popup<br />" + validPlaylistTagsString
 
+    Component {
+        id: messageDialogComponent
+        CustomMessageDialog {}
+    }
+
     // Left Area
     Rectangle {
         Layout.fillHeight: true
@@ -952,7 +957,6 @@ RowLayout {
                             }
                         }
 
-                        // TODO: Add popup for when failed / succeeded
                         MinorSection {
                             id: sectionSettings
                             label: "Settings"
@@ -971,7 +975,15 @@ RowLayout {
                                     textColour: "black"
                                     font.bold: true
 
-                                    onClicked: _manager.settings.SettingsImportButtonClicked()
+                                    onClicked: {
+                                        const importedSettings = _manager.settings.ImportSettingsFromFile()
+                                        const dialog = messageDialogComponent.createObject(root, {
+                                            title: importedSettings ? "Import Success" : "Import Failed",
+                                            text: importedSettings ? "Successfully imported settings from the chosen file" : "Could not load this file",
+                                            standardButtons: Dialog.Ok
+                                        })
+                                        dialog.open()
+                                    }
                                 }
                             }
 
@@ -989,7 +1001,17 @@ RowLayout {
                                     textColour: "black"
                                     font.bold: true
 
-                                    onClicked: _manager.settings.SettingsExportButtonClicked()
+                                    onClicked: {
+                                        const exportedSettings = _manager.settings.ExportSettingsToFile()
+                                        if (!exportedSettings) {
+                                            const dialog = messageDialogComponent.createObject(root, {
+                                                title: "Export Failed",
+                                                text: "Could not export to this file",
+                                                standardButtons: Dialog.Ok
+                                            })
+                                            dialog.open()
+                                        }
+                                    }
                                 }
                             }
                         }

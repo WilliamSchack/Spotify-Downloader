@@ -160,7 +160,7 @@ void SettingsScreenGUI::YouTubePOTokenClearButtonClicked()
     emit YoutubePOTokenChanged();
 }
 
-bool SettingsScreenGUI::SettingsImportButtonClicked()
+bool SettingsScreenGUI::ImportSettingsFromFile()
 {
     QFileDialog dialog(nullptr, "Choose input file", "");
     dialog.setFileMode(QFileDialog::ExistingFile);
@@ -188,7 +188,7 @@ bool SettingsScreenGUI::SettingsImportButtonClicked()
     return succeeded;
 }
 
-bool SettingsScreenGUI::SettingsExportButtonClicked()
+bool SettingsScreenGUI::ExportSettingsToFile()
 {
     QFileDialog dialog(nullptr, "Choose output file", "");
     dialog.setFileMode(QFileDialog::AnyFile);

@@ -17,10 +17,11 @@ class AddTracksPopup : public QObject
     SIMPLE_QPROPERTY(bool, checkingInputs, CheckingInputs, _checkingInputs)
     SIMPLE_QPROPERTY(QString, linkInputText, LinkInputText, _linkInputText)
     SIMPLE_QPROPERTY(QString, folderInputText, FolderInputText, _folderInputText)
-    SIMPLE_QPROPERTY(QString, errorMessage, ErrorMessage, _errorMessage)
 
     public:
         explicit AddTracksPopup(QObject* parent = 0);
+
+        void SetError(const std::string& errorString);
     public slots:
         void PasteButtonClicked();
         void FolderButtonClicked();
@@ -31,9 +32,11 @@ class AddTracksPopup : public QObject
 
         QString _linkInputText = "";
         QString _folderInputText = "";
-        QString _errorMessage = "";
     signals:
         void DownloadRequested(const std::string& link, const std::string& destinationFolder);
+
+        // For qml
+        void startError(const QString& error);
 };
 
 #endif

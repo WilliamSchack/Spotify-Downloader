@@ -6,6 +6,14 @@ AddTracksPopup::AddTracksPopup(QObject* parent) : QObject(parent)
         _folderInputText = QString::fromStdString(FileUtils::PathToUtf8(Config::DefaultSaveLocation));
 }
 
+void AddTracksPopup::SetError(const std::string& errorString)
+{
+    if (errorString.empty())
+        return;
+
+    emit startError(QString::fromStdString(errorString));
+}
+
 void AddTracksPopup::PasteButtonClicked()
 {
     const QClipboard* clipboard = QApplication::clipboard();

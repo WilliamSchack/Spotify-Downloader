@@ -38,12 +38,11 @@ void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::str
     bool downloadDispatched = _downloader.RequestDownload(link, destinationFolder);
     if (!downloadDispatched) {
         _addTracksPopup->SetCheckingInputs(false);
-        _addTracksPopup->SetErrorMessage("Failed to dispatch download... (This should not happen)");
+        _addTracksPopup->SetError("Failed to dispatch download... (This should not happen)");
         return;
     }
 
     _addTracksPopup->SetCheckingInputs(true);
-    _addTracksPopup->SetErrorMessage("");
 
     if (Config::DefaultSaveLocation.empty()) {
         Config::DefaultSaveLocation = FileUtils::PathFromUtf8(destinationFolder);
@@ -68,7 +67,6 @@ void MusicScreenGUI::DownloadButtonClicked()
 
     // Start new download
     _addTracksPopup->SetLinkInputText("");
-    _addTracksPopup->SetErrorMessage("");
     _addTracksPopup->SetVisible(true);
 }
 
@@ -181,7 +179,6 @@ void MusicScreenGUI::CheckDownloadEvents()
                 emit TracksChanged();
                 
                 _addTracksPopup->SetCheckingInputs(false);
-                _addTracksPopup->SetErrorMessage("");
                 _addTracksPopup->SetVisible(false);
 
                 UpdateBackgroundImage(_downloader.GetPlaylistData());
@@ -190,7 +187,7 @@ void MusicScreenGUI::CheckDownloadEvents()
             },
             [&](const DownloadFailedToStartEvent& e) {
                 _addTracksPopup->SetCheckingInputs(false);
-                _addTracksPopup->SetErrorMessage("Error: " + QString::fromStdString(e.Reason));
+                _addTracksPopup->SetError("Error: " + e.Reason);
             },
             [&](const DownloadsFinishedEvent& e) {
                 if (e.SuccessfulDownloads > 0 && Config::AutoOpenDownloadFolder)

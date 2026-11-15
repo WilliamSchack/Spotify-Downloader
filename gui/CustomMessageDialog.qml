@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import QtQuick.Effects
 
 Dialog {
     id: root
@@ -19,6 +20,17 @@ Dialog {
 
     background: StyledBackground {
         radius: 5
+
+        // Outer Shadow
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: "black"
+            shadowOpacity: 0.25
+            shadowBlur: 0.4
+            shadowHorizontalOffset: 4
+            shadowVerticalOffset: 4
+        }
     }
 
     header: Text {
@@ -35,6 +47,7 @@ Dialog {
         color: "white"
         font.pixelSize: 14
         wrapMode: Text.WordWrap
+        horizontalAlignment: TextInput.AlignHCenter
     }
 
     footer: DialogButtonBox {
