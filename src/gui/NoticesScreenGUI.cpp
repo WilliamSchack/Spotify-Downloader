@@ -55,8 +55,7 @@ void NoticesScreenGUI::UpdateNotices()
             int noticesDifference = 0;
             if (noticesCache.size() != 0)
                 noticesDifference = json.size() - noticesCache.size();
-
-            _newNotices = noticesDifference;
+                
             SetNewNoticeAvailable(noticesDifference > 0);
 
             QList<Notice*> notices;
@@ -70,11 +69,7 @@ void NoticesScreenGUI::UpdateNotices()
                 notice->Content = QString::fromStdString(noticeJson["content"]);
                 notice->SetIsNew(noticesDifference > 0);
 
-                connect(notice, &Notice::IsNewChanged, this, [this]() {
-                    _newNotices--;
-                    if (_newNotices <= 0)
-                        SetNewNoticeAvailable(false);
-                });
+                connect(notice, &Notice::IsNewChanged, this, &NoticesScreenGUI::AnyNoticeIsNewChanged);
 
                 notices.push_back(notice);
 
@@ -148,4 +143,16 @@ std::filesystem::path NoticesScreenGUI::GetNoticesCachePath()
 
     _noticesFilePathCache = cachePath / CACHE_FILE_NAME;
     return _noticesFilePathCache;
+}
+
+void NoticesScreenGUI::AnyNoticeIsNewChanged()
+{
+    for (Notice* notice : _notices) {
+        if (notice->GetIsNew()){
+            SetNewNoticeAvailable(true);
+            return;
+        }
+    }
+
+    SetNewNoticeAvailable(false);
 }

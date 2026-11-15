@@ -39,6 +39,8 @@ class NoticesScreenGUI : public QObject
         void UpdateNoticesCache(const nlohmann::json& json);
         nlohmann::json LoadNoticesCache();
         std::filesystem::path GetNoticesCachePath();
+
+        void AnyNoticeIsNewChanged();
     private:
         static inline const std::string NOTICES_URL = "https://api.echolite.app/notices";
         static inline const std::string CACHE_FILE_NAME = "Notices.json";
@@ -51,7 +53,6 @@ class NoticesScreenGUI : public QObject
         bool _loadingNotices = false;
         bool _failedToGetNotices = false;
         bool _newNoticeAvailable = false;
-        int _newNotices = 0;
     signals:
         void NoticesChanged();
         void SelectedNoticeChanged();

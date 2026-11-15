@@ -13,7 +13,7 @@ Item {
         Header {
             Layout.fillWidth: true
 
-            label: _manager.info.notices.selectedNotice.title
+            label: _manager.info.notices.selectedNotice ? _manager.info.notices.selectedNotice.title : ""
         }
 
         Flickable {
@@ -36,7 +36,7 @@ Item {
                 id: contents
                 width: parent.width - (flickable.scrollBarActive ? 20 : 0)
 
-                text: _manager.info.notices.selectedNotice.content
+                text: _manager.info.notices.selectedNotice ? _manager.info.notices.selectedNotice.content : ""
             }
         }
     }

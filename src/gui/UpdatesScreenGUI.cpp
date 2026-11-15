@@ -23,8 +23,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return VersionManager::IsUpdateAvailable(true);
         },
         []() -> bool {
-            // TODO: Implement update popup
-            std::cout << "IMPLEMENT ME!" << std::endl;
+            QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite"));
             return false;
         },
         []() -> bool {
@@ -181,11 +180,25 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
 
 void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction)
 {
-    DependencyInfo* echoliteInfo = new DependencyInfo(installedFunction, installedOnSystemFunction, getVersionFunction, updateAvailableFunction, updateFunction, downloadFunction, getReleasesFunction, this);
-    echoliteInfo->SetType(type);
-    echoliteInfo->SetName(name);
-    echoliteInfo->SetIconSource(iconSource);
-    _dependencies.insert(type, echoliteInfo);
+    DependencyInfo* dependencyInfo = new DependencyInfo(installedFunction, installedOnSystemFunction, getVersionFunction, updateAvailableFunction, updateFunction, downloadFunction, getReleasesFunction, this);
+    dependencyInfo->SetType(type);
+    dependencyInfo->SetName(name);
+    dependencyInfo->SetIconSource(iconSource);
+    _dependencies.insert(type, dependencyInfo);
+
+    connect(dependencyInfo, &DependencyInfo::UpdateAvailableChanged, this, &UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged);
+}
+
+void UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged()
+{
+    for (DependencyInfo* info : _dependencies) {
+        if (info->GetUpdateAvailable()) {
+            SetAnyUpdateAvailable(true);
+            return;
+        }
+    }
+
+    SetAnyUpdateAvailable(false);
 }
 
 void UpdatesScreenGUI::CheckForUpdatesButtonClicked()

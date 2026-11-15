@@ -163,7 +163,7 @@ Window {
                         font.pixelSize: 20
                         radius: 10
 
-                        unselectedBackgroundColour: _manager.info.notices.newNoticeAvailable ? Qt.alpha('#b32222', 0.8) : Qt.alpha("#3A3A3A", 0.5)
+                        unselectedBackgroundColour: (_manager.info.updates.anyUpdateAvailable || _manager.info.notices.newNoticeAvailable) ? Qt.alpha('#b32222', 0.8) : Qt.alpha("#3A3A3A", 0.5)
 
                         onClicked: root.switchScreen(Main.EScreen.Info)
                     }
