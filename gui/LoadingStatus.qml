@@ -15,6 +15,7 @@ Item {
         spacing: 10
 
         Image {
+            id: visuals
             height: 50
             width: 50
 
@@ -31,7 +32,7 @@ Item {
 
                 onRunningChanged: {
                     if (!running)
-                        icon.rotation = 0
+                        visuals.rotation = 0
                 }
             }
         }

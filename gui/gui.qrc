@@ -41,5 +41,6 @@
         <file>CustomMenuItem.qml</file>
         <file>CustomMenuSeparator.qml</file>
         <file>CrossfadeImage.qml</file>
+        <file>CustomMessageDialog.qml</file>
     </qresource>
 </RCC>
