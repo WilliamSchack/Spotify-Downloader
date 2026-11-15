@@ -16,6 +16,10 @@
 #include <string>
 #include <map>
 
+#ifdef WIN32
+#include <QSettings>
+#endif
+
 class Config
 {
     public:
@@ -154,6 +158,10 @@ class Config
         };
     private:
         static std::filesystem::path GetFilePath();
+
+#ifdef WIN32
+        static void LoadV1Config();
+#endif
     private:
         static inline const std::string FILE_NAME = "Config.json";
 

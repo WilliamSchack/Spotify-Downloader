@@ -218,7 +218,9 @@ bool Config::Load(const std::filesystem::path& path)
     if (!file.is_open()) {
         Logger::Warning("Could not open config file at " + FileUtils::PathToUtf8(path));
 
-        // TODO: Load old (v1) config if it exists
+#ifdef WIN32
+        LoadV1Config();
+#endif
         Save();
 
         return false;
@@ -279,3 +281,76 @@ std::filesystem::path Config::GetFilePath()
     _filePathCache = configPath / FILE_NAME;
     return _filePathCache;
 }
+
+#ifdef WIN32
+void Config::LoadV1Config()
+{
+    QSettings settings("WilliamSchack", "Spotify Downloader");
+
+    // Check if v1 was used at all
+    if (!settings.allKeys().size() != 0)
+        return;
+    
+    // Output
+    settings.beginGroup("Output");
+    Overwrite = settings.value("overwriteEnabled", Overwrite).toBool();
+    CodecExtension = (EExtension)settings.value("codecIndex", (int)CodecExtension).toInt();
+    TrackNumberType = (ETrackNumberType)settings.value("trackNumberIndex", (int)TrackNumberType).toInt();
+    Normalise = settings.value("normalizeEnabled", Normalise).toBool();
+    NormaliseDb = settings.value("normalizeVolume", NormaliseDb).toFloat();
+    GetLyrics = settings.value("getLyrics", GetLyrics).toBool();
+    ManualBitrate = !settings.value("automaticBestQuality", !ManualBitrate).toBool();
+    BitrateKbps[EExtension::M4A] = settings.value("audioBitrateM4A", BitrateKbps[EExtension::M4A]).toInt();
+    BitrateKbps[EExtension::AAC] = settings.value("audioBitrateAAC", BitrateKbps[EExtension::AAC]).toInt();
+    BitrateKbps[EExtension::MP3] = settings.value("audioBitrateMP3", BitrateKbps[EExtension::MP3]).toInt();
+    BitrateKbps[EExtension::OGG] = settings.value("audioBitrateOGG", BitrateKbps[EExtension::OGG]).toInt();
+    DefaultSaveLocation = FileUtils::PathFromUtf8(settings.value("saveLocation", "").toString().toStdString());
+    ArtistSeparator = settings.value("artistSeparator", QString::fromStdString(ArtistSeparator)).toString().toStdString();
+
+    std::string fileNameTag = settings.value("songOutputFormatTag", QString(FileNameTagsOpeningChar) + QString(FileNameTagsClosingChar)).toString().toStdString();
+    FileNameTagsOpeningChar = fileNameTag[0];
+    FileNameTagsClosingChar = fileNameTag[1];
+    FileName = settings.value("songOutputFormat", QString::fromStdString(FileName)).toString().toStdString();
+
+    std::string subFoldersTag = settings.value("subFoldersTag", QString(SubFoldersTagsOpeningChar) + QString(SubFoldersTagsClosingChar)).toString().toStdString();
+    SubFoldersTagsOpeningChar = subFoldersTag[0];
+    SubFoldersTagsClosingChar = subFoldersTag[1];
+    SubFolders = settings.value("subFolders", QString::fromStdString(SubFolders)).toString().toStdString();
+
+    CreateLyricsFile = settings.value("lrcFileNameTag", CreateLyricsFile).toBool();
+    std::string lyricsFileNameTag = settings.value("lrcFileNameTag", QString(LyricsFileNameTagsOpeningChar) + QString(LyricsFileNameTagsClosingChar)).toString().toStdString();
+    LyricsFileNameTagsOpeningChar = lyricsFileNameTag[0];
+    LyricsFileNameTagsClosingChar = lyricsFileNameTag[1];
+    LyricsFileName = settings.value("lrcFileName", QString::fromStdString(LyricsFileName)).toString().toStdString();
+
+    PlaylistFileType = (EPlaylistFileType)settings.value("playlistFileTypeIndex", (int)PlaylistFileType).toInt();
+    CreatePlaylistFile = PlaylistFileType != EPlaylistFileType::None;
+    std::string playlistFileNameTag = settings.value("playlistFileNameTag", QString(PlaylistFileNameTagsOpeningChar) + QString(PlaylistFileNameTagsClosingChar)).toString().toStdString();
+    PlaylistFileNameTagsOpeningChar = lyricsFileNameTag[0];
+    PlaylistFileNameTagsClosingChar = lyricsFileNameTag[1];
+    PlaylistFileName = settings.value("playlistFileName", QString::fromStdString(PlaylistFileName)).toString().toStdString();
+
+    settings.endGroup();
+
+    // Downloading
+    settings.beginGroup("Downloading");
+    ShowStatusNotifications = settings.value("statusNotificationsEnabled", ShowStatusNotifications).toBool();
+    PerDownloadThreads = settings.value("downloaderThreads", PerDownloadThreads).toInt();
+    DownloadSpeedLimit = settings.value("downloadSpeedLimit", DownloadSpeedLimit).toFloat();
+    DownloadTimeoutMs = settings.value("downloadTimeout", DownloadTimeoutMs).toInt();
+    IPVersion = (EIPVersion)settings.value("forceIPVersionIndex", (int)IPVersion).toInt();
+    settings.endGroup();
+
+    // Interface
+    settings.beginGroup("Interface");
+    AutoOpenDownloadFolder = settings.value("autoOpenDownloadFolder", AutoOpenDownloadFolder).toBool();
+    AutoCheckForUpdates = settings.value("checkForUpdates", AutoCheckForUpdates).toBool();
+    AutoCheckForNotices = settings.value("checkForNotices", AutoCheckForNotices).toBool();
+    settings.endGroup();
+
+    // Delete the old settings
+    settings.clear();
+
+    Logger::Info("Loaded and deleted settings from v1");
+}
+#endif

@@ -179,11 +179,11 @@ std::filesystem::path Logger::GetLogsDir()
 
 #ifdef WIN32
     EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("APPDATA");
-    path = appdataPath.Value / APP_NAME;
+    configDir = appdataPath.Value / APP_NAME;
 #elif __APPLE__
     EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
     std::filesystem::path configPath = homePath.Value / ".config";
-    path = configPath / APP_NAME;
+    configDir = configPath / APP_NAME;
 #else
     EnvironmentVariable<std::filesystem::path> xgdConfigPath = EnvironmentUtils::GetVariablePath("XDG_CONFIG_HOME");
     std::filesystem::path configPath = xgdConfigPath.Value;
