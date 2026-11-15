@@ -28,7 +28,7 @@ nlohmann::json SpotifyAPI::GetPageJson(const std::string& endpoint, const std::s
     if (jsonString64.empty()) return nlohmann::json::object();
 
     // Decode json from base64
-    std::string jsonString = base64::decode<std::string>(jsonString64);
+    std::string jsonString = base64_decode(jsonString64);
     nlohmann::json json = nlohmann::json::parse(jsonString);
 
     return json["entities"]["items"].front();

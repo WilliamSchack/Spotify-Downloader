@@ -10,8 +10,7 @@
 #include "TrackData.h"
 #include "AlbumTracks.h"
 #include "PlaylistTracks.h"
-
-#include <cppcodec/base64_default_rfc4648.hpp>
+#include "Base64.h"
 
 #include <iostream>
 #include <regex>
