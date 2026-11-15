@@ -1,3 +1,4 @@
+#include "Logger.h"
 #include "ArgumentParser.h"
 #include "GUIManager.h"
 #include "Config.h"
@@ -58,6 +59,8 @@ int main(int argc, char** argv)
     std::cout << "Linux" << std::endl;
 #endif
 
+    Logger::Init();
+    
     std::srand(std::time(NULL));
 
     // Setting up qt before arg parser so qtwebengine can be initialised

@@ -264,7 +264,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString, const std::vector<std
 
     error.Parsed = errorString;
     std::string errorLower = StringUtils::ToLower(errorString);
-    
+    bool hasCookies = VectorUtils::Contains(args, std::string("--cookies"));
 
     if (StringUtils::Contains(errorLower, "invalid po_token configuration")) {
         error.Details = "PO Token is invalid";
@@ -274,7 +274,7 @@ YtdlpError Ytdlp::GetError(const std::string& errorString, const std::vector<std
 
     // Check for error 403, means cookies have expired if set, otherwise forbidden
     if (StringUtils::Contains(errorLower, "http error 403: forbidden")) {
-        if (VectorUtils::Contains(args, std::string("--cookies"))) {
+        if (hasCookies) {
             error.Details = "Your cookies have expired. Please reset them and the PO Token";
             error.Error = EYtdlpError::CookiesExpired;
             return error;
@@ -311,15 +311,14 @@ YtdlpError Ytdlp::GetError(const std::string& errorString, const std::vector<std
         std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::endl;
 
         std::string errorOutput = "Video is unavailable, try downloading again";
-        //if (cookiesAssigned) errorOutput += " or resetting/removing cookies";
+        if (hasCookies) errorOutput += " or resetting/removing cookies";
 
         error.Details = errorOutput;
         error.Error = EYtdlpError::Unavailable;
         return error;
     }
 
-    // Check if a low quality version was downloaded with premium
-    std::cout << "CHECK FOR PREMIUM IN YTDLP ERROR" << std::endl;
+    // TODO: Check if a low quality version was downloaded with premium
     //if (hasPremium && bitrate < 200) {
     //	qInfo() << SpotifyId << "Does not have a high quality version for the YouTube ID:" << YoutubeId;
     //  error.Details = "Video does not have a high quality version, output will be non-premium quality";

@@ -11,6 +11,7 @@ class Paths
     public:
         static std::filesystem::path GetConfigDir();
         static std::filesystem::path GetCacheDir();
+        static std::filesystem::path GetLogsDir();
         static std::filesystem::path GetTempDir();
         static std::filesystem::path GetDownloadsDir();
         static std::filesystem::path GetImagesDir();
@@ -19,6 +20,7 @@ class Paths
         static std::filesystem::path FindExistingTrackImagePath(const TrackData& track);
     private:
         static inline const std::string CACHE_FOLDER_NAME = "Cache";
+        static inline const std::string LOGS_FOLDER_NAME = "Logs";
         static inline const std::string DOWNLOADS_FOLDER_NAME = "Downloads";
         static inline const std::string IMAGES_FOLDER_NAME = "CoverArt";
 };

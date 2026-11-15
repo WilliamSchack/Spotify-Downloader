@@ -146,7 +146,7 @@ Window {
 
                         text: "Music"
                         iconSource: "qrc:/icons/ui/Music.svg"
-                        iconSpacing: 8
+                        iconSpacing: 7
                         font.pixelSize: 20
                         radius: 10
 
@@ -160,7 +160,6 @@ Window {
 
                         text: "Info"
                         iconSource: "qrc:/icons/ui/Info.svg"
-                        iconSpacing: 8
                         font.pixelSize: 20
                         radius: 10
 
@@ -173,7 +172,7 @@ Window {
 
                         text: "Settings"
                         iconSource: "qrc:/icons/ui/Settings.svg"
-                        iconSpacing: 8
+                        iconSpacing: 7
                         font.pixelSize: 20
                         radius: 10
 
