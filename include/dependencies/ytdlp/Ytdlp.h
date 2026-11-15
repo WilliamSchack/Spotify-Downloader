@@ -1,6 +1,7 @@
 #ifndef YTDLP_H
 #define YTDLP_H
 
+#include "Logger.h"
 #include "Dependency.h"
 #include "YtdlpResult.h"
 #include "JsRuntime.h"

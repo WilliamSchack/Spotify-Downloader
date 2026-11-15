@@ -1,6 +1,7 @@
 #ifndef PLAYLISTDATA_H
 #define PLAYLISTDATA_H
 
+#include "Logger.h"
 #include "EPlatform.h"
 #include "TrackData.h"
 #include "ArtistData.h"
@@ -49,7 +50,7 @@ inline void to_json(nlohmann::json& json, const PlaylistData& data)
 inline void PlaylistData::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

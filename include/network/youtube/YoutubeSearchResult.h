@@ -1,6 +1,7 @@
 #ifndef YOUTUBESEARCHRESULT_H
 #define YOUTUBESEARCHRESULT_H
 
+#include "Logger.h"
 #include "EYoutubeCategory.h"
 #include "TrackData.h"
 #include "AlbumData.h"
@@ -44,7 +45,7 @@ inline void to_json(nlohmann::json& json, const YoutubeSearchResult& data)
 inline void YoutubeSearchResult::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

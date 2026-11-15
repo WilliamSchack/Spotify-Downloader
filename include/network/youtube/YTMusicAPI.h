@@ -5,6 +5,7 @@
 #ifndef YTMUSICAPI_H
 #define YTMUSICAPI_H
 
+#include "Logger.h"
 #include "EYoutubeCategory.h"
 #include "YoutubeSearchResult.h"
 #include "YouTubeCookieFile.h"

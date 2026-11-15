@@ -1,6 +1,7 @@
 #ifndef SUPPORTERSSCREENGUI_H
 #define SUPPORTERSSCREENGUI_H
 
+#include "Logger.h"
 #include "EasyQProperties.h"
 #include "SupporterSection.h"
 #include "NetworkRequest.h"

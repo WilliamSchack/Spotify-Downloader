@@ -1,6 +1,7 @@
 #ifndef YOUTUBEDATA_H
 #define YOUTUBEDATA_H
 
+#include "Logger.h"
 #include "IPlatformData.h"
 #include "YouTubeCookieFile.h"
 #include "YTMusicAPI.h"

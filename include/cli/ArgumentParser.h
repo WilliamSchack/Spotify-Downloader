@@ -1,6 +1,7 @@
 #ifndef ARGUMENTPARSER_H
 #define ARGUMENTPARSER_H
 
+#include "Logger.h"
 #include "DownloadManager.h"
 #include "MetadataManager.h"
 

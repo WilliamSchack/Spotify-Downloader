@@ -1,6 +1,7 @@
 #ifndef NOTICESSCREENGUI_H
 #define NOTICESSCREENGUI_H
 
+#include "Logger.h"
 #include "EasyQProperties.h"
 #include "Notice.h"
 #include "NetworkRequest.h"

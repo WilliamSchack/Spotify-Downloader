@@ -1,6 +1,7 @@
 #ifndef EXTERNALPROCESS_H
 #define EXTERNALPROCESS_H
 
+#include "Logger.h"
 #include "ExternalProcessResult.h"
 #include "FileUtils.h"
 #include "StringUtils.h"

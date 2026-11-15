@@ -1,6 +1,7 @@
 #ifndef COOKIEFILE_H
 #define COOKIEFILE_H
 
+#include "Logger.h"
 #include "Paths.h"
 
 #include <fstream>

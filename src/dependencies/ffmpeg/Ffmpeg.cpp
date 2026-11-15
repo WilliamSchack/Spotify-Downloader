@@ -125,7 +125,7 @@ std::string Ffmpeg::GetLatestVersionImpl()
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get the latest version for FFmpeg: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get the latest version for FFmpeg: " + std::string(curl_easy_strerror(response.CurlCode)));
         return "";
     }
 
@@ -156,7 +156,7 @@ std::vector<GitHubRelease> Ffmpeg::GetReleasesImpl(const int& resultsPerPage, co
     request.Url = "https://raw.githubusercontent.com/FFmpeg/FFmpeg/refs/heads/master/Changelog";
     NetworkResponse response = request.Get();
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get FFmpeg release notes: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get FFmpeg release notes: " + std::string(curl_easy_strerror(response.CurlCode)));
         return {};
     }
                      // Its beautiful
@@ -182,7 +182,7 @@ FfmpegAudioDetails Ffmpeg::GetAudioDetails(const std::filesystem::path& filePath
 
     std::filesystem::path ffmpegPath = GetPath();
     if (ffmpegPath.empty()) {
-        std::cout << "FFmpeg is not installed..." << std::endl;
+        Logger::Warning("FFmpeg is not installed...");
         return details;
     }
 
@@ -362,7 +362,7 @@ std::string Ffmpeg::Execute(const FfmpegAudioDetails& audioDetails, const std::v
 {
     std::filesystem::path ffmpegPath = GetPath();
     if (ffmpegPath.empty()) {
-        std::cout << "FFmpeg is not installed..." << std::endl;
+        Logger::Warning("FFmpeg is not installed...");
         return "";
     }
 

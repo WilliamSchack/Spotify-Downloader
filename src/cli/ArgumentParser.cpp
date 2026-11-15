@@ -9,34 +9,34 @@ bool ArgumentParser::Parse(int argc, char** argv)
     std::string command = argv[1];
 
     if (command == "download-deps" && argc == 2) {
-        std::cout << "Downloading ffmpeg..." << std::endl;
+        Logger::Info("Downloading ffmpeg...");
         if (!Ffmpeg::DownloadExecutable()) {
             if (Ffmpeg::IsInstalledRelative())
-                std::cout << "ffmpeg is already downloaded" << std::endl;
+                Logger::Info("ffmpeg is already downloaded");
             else
-                std::cout << "Failed to download ffmpeg" << std::endl;
+                Logger::Warning("Failed to download ffmpeg");
         } else {
-            std::cout << "Successfully downloaded ffmpeg" << std::endl;
+            Logger::Info("Successfully downloaded ffmpeg");
         }
 
-        std::cout << "Downloading yt-dlp..." << std::endl;
+        Logger::Info("Downloading yt-dlp...");
         if (!Ytdlp::DownloadExecutable()) {
             if (Ytdlp::IsInstalledRelative())
-                std::cout << "yt-dlp is already downloaded" << std::endl;
+                Logger::Info("yt-dlp is already downloaded");
             else
-                std::cout << "Failed to download yt-dlp" << std::endl;
+                Logger::Warning("Failed to download yt-dlp");
         } else {
-            std::cout << "Successfully downloaded yt-dlp" << std::endl;
+            Logger::Info("Successfully downloaded yt-dlp");
         }
 
-        std::cout << "Downloading quickjs..." << std::endl;
+        Logger::Info("Downloading quickjs...");
         if (!JsRuntime::DownloadExecutable()) {
             if (JsRuntime::IsInstalledRelative())
-                std::cout << "quickjs is already downloaded" << std::endl;
+                Logger::Info("quickjs is already downloaded");
             else
-                std::cout << "Failed to download quickjs" << std::endl;
+                Logger::Warning("Failed to download quickjs");
         } else {
-            std::cout << "Successfully downloaded quickjs" << std::endl;
+            Logger::Info("Successfully downloaded quickjs");
         }
 
         return true;
@@ -64,10 +64,10 @@ bool ArgumentParser::Parse(int argc, char** argv)
         DownloadResult downloadedResult = TrackDownloader::DownloadTrack(track, searchPlatform, downloadFolder);
 
         if (downloadedResult.Success) {
-            std::cout << "Successfully downloaded (" << downloadedResult.FilePath << ")" << std::endl;
+            Logger::Out("Successfully downloaded (" + FileUtils::PathToUtf8(downloadedResult.FilePath) + ")");
             // Will output download results for each track with file names etc. when properly implementing the cli
         } else {
-            std::cout << "Failed to download" << std::endl;
+            Logger::Warning("Failed to download");
         }
 
         return true;
@@ -84,13 +84,13 @@ bool ArgumentParser::Parse(int argc, char** argv)
         
         switch (linkType) {
             case ELinkType::Track:
-                platform->GetTrack(url).Print();
+                Logger::Out(platform->GetTrack(url).ToJson().dump(4));
                 break;
             case ELinkType::Playlist:
-                platform->GetPlaylist(url).Print();
+                Logger::Out(platform->GetPlaylist(url).ToJson().dump(4));
                 break;
             case ELinkType::Album:
-                platform->GetAlbum(url).Print();
+                Logger::Out(platform->GetAlbum(url).ToJson().dump(4));
                 break;
         }
 
@@ -116,7 +116,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         if (track.Platform == EPlatform::Unknown) return true;
 
         PlatformSearcherResult searchResult = searcher->FindTrack(track);
-        searchResult.Print();
+        Logger::Out(searchResult.ToJson().dump(4));
         
         return true;
     }
@@ -127,7 +127,7 @@ bool ArgumentParser::Parse(int argc, char** argv)
         MetadataManager metadata(filePath);
         TrackData trackData = metadata.GetAll();
 
-        trackData.Print();
+        Logger::Out(trackData.ToJson().dump(4));
 
         return true;
     }

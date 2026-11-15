@@ -75,7 +75,7 @@ PlaylistTracks SpotifyAPI::GetPlaylist(const std::string& id)
     
     if (_spotifyAuth.Authorization.empty()) {
         // Could not get auth, return first 30 tracks
-        std::cout << "Failed to get spotify auth. Getting the first 30 playlist tracks..." << std::endl;
+        Logger::Info("Failed to get spotify auth. Getting the first 30 playlist tracks...");
         
         nlohmann::json json = GetPageJson("playlist", id);
         if (json.empty() || json.is_null()) return PlaylistTracks();

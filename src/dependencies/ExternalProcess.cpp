@@ -117,7 +117,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     HANDLE hReadPipe;
     HANDLE hWritePipe;
     if (!CreatePipe(&hReadPipe, &hWritePipe, &securityAttributes, 0)) {
-        std::cout << "Failed to create process pipe" << std::endl;
+        Logger::Warning("Failed to create process pipe");
         return result;
     }
 
@@ -152,7 +152,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     if (!processStarted) {
         CloseHandle(hReadPipe);
 
-        std::cout << "Process not started" << std::endl;
+        Logger::Warning("Process not started");
         return result;
     }
 
@@ -316,7 +316,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     }
 
     if (killed) {
-        std::cout << "Process timed out" << std::endl;
+        Logger::Info("Process timed out");
         kill(-pid, SIGKILL);
     }
 

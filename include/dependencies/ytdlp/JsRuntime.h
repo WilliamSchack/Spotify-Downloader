@@ -1,6 +1,7 @@
 #ifndef JSRUNTIME_H
 #define JSRUNTIME_H
 
+#include "Logger.h"
 #include "Dependency.h"
 #include "ExternalProcess.h"
 #include "NetworkRequest.h"

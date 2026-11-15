@@ -84,7 +84,7 @@ std::string JsRuntime::GetLatestVersionImpl()
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get the latest version for QuickJs: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get the latest version for QuickJs: " + std::string(curl_easy_strerror(response.CurlCode)));
         return "";
     }
 
@@ -106,7 +106,7 @@ std::vector<GitHubRelease> JsRuntime::GetReleasesImpl(const int& resultsPerPage,
     request.Url = "https://bellard.org/quickjs/Changelog";
     NetworkResponse response = request.Get();
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get QuickJs release notes: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get QuickJs release notes: " + std::string(curl_easy_strerror(response.CurlCode)));
         return {};
     }
 

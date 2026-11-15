@@ -1,6 +1,7 @@
 #ifndef GUIMANAGER_H
 #define GUIMANAGER_H
 
+#include "Logger.h"
 #include "MusicScreenGUI.h"
 #include "InfoScreenGUI.h"
 #include "SettingsScreenGUI.h"

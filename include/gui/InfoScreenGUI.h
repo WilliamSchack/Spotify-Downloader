@@ -1,6 +1,7 @@
 #ifndef INFOSCREENGUI_H
 #define INFOSCREENGUI_H
 
+#include "Logger.h"
 #include "UpdatesScreenGUI.h"
 #include "NoticesScreenGUI.h"
 #include "SupportersScreenGUI.h"

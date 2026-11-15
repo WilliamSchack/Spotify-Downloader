@@ -1,6 +1,7 @@
 #ifndef FILEUTILS_H
 #define FILEUTILS_H
 
+#include "Logger.h"
 #include "StringUtils.h"
 #include "EnvironmentUtils.h"
 

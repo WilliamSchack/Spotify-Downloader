@@ -40,7 +40,7 @@ void NoticesScreenGUI::UpdateNotices()
             json = nlohmann::json::parse(response.Body);
             UpdateNoticesCache(json);
         } else {
-            std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
+            Logger::Warning("Failed to get notices, using cache: " + std::string(curl_easy_strerror(response.CurlCode)));
             json = LoadNoticesCache();
             if (json.empty())
                 return;
@@ -79,7 +79,7 @@ void NoticesScreenGUI::UpdateNoticesCache(const nlohmann::json& json)
 {
     std::filesystem::path filePath = GetNoticesCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load notices cache, the file path was not found" << std::endl;
+        Logger::Warning("Could not load notices cache, the file path was not found");
         return;
     }
 
@@ -93,13 +93,13 @@ nlohmann::json NoticesScreenGUI::LoadNoticesCache()
 {
     std::filesystem::path filePath = GetNoticesCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load notices cache, the file path was not found" << std::endl;
+        Logger::Warning("Could not load notices cache, the file path was not found");
         return {};
     }
 
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cout << "Could not open notices cache file at " << filePath << std::endl;
+        Logger::Warning("Could not open notices cache file at " + FileUtils::PathToUtf8(filePath));
         return {};
     }
 
@@ -108,7 +108,7 @@ nlohmann::json NoticesScreenGUI::LoadNoticesCache()
 
     nlohmann::json json = nlohmann::json::parse(contents);
     if (!json.is_array()) {
-        std::cout << "Could not read notices json" << std::endl;
+        Logger::Warning("Could not read notices json");
         return {};
     }
 

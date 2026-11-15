@@ -1,6 +1,7 @@
 #ifndef PLAYLISTTRACKS_H
 #define PLAYLISTTRACKS_H
 
+#include "Logger.h"
 #include "PlaylistData.h"
 #include "TrackData.h"
 
@@ -14,6 +15,7 @@ struct PlaylistTracks
     std::vector<TrackData> Tracks;
 
     PlaylistTracks() : Data(EPlatform::Unknown) {}
+    nlohmann::json ToJson() const;
     void Print() const;
 };
 
@@ -25,10 +27,15 @@ inline void to_json(nlohmann::json& json, const PlaylistTracks& data)
     };
 }
 
+inline nlohmann::json PlaylistTracks::ToJson() const
+{
+    return *json;
+}
+
 inline void PlaylistTracks::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef SETTINGSSCREENGUI_H
 #define SETTINGSSCREENGUI_H
 
+#include "Logger.h"
 #include "EasyQProperties.h"
 #include "Config.h"
 #include "SavableTrackTagHandler.h"

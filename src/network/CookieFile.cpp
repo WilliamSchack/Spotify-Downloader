@@ -22,7 +22,7 @@ std::string CookieFile::Read()
     std::ifstream file(_path);
 
     if (!file.is_open()) {
-        std::cout << "Could not open cookie file at " << _path << std::endl;
+        Logger::Warning("Could not open cookie file at " + FileUtils::PathToUtf8(_path));
         return "";
     }
 
@@ -49,7 +49,7 @@ void CookieFile::Clear()
 {
     std::ofstream file(_path);
     if (!file.is_open()) {
-        std::cout << "Could not open cookie file at " << _path << std::endl;
+        Logger::Warning("Could not open cookie file at " + FileUtils::PathToUtf8(_path));
         return;
     }
 

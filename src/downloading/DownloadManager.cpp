@@ -89,7 +89,7 @@ PlaylistData DownloadManager::GetPlaylistData() const
 bool DownloadManager::RequestDownload(const std::string& url, const std::string& directory)
 {
     if (_downloading) {
-        std::cout << "This DownloadManager is already downloading, use another or wait for this to finish to start a new download" << std::endl;
+        Logger::Info("This DownloadManager is already downloading, use another or wait for this to finish to start a new download");
         return false;
     }
 
@@ -229,7 +229,9 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
 
 void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std::string& directory)
 {
-    std::cout << "THREAD: " << std::this_thread::get_id() << std::endl;
+    std::ostringstream threadSs;
+    threadSs << std::this_thread::get_id();
+    Logger::Info("Starting download on thread: " + threadSs.str());
 
     while (std::optional<TrackData> track = GetNextTrack()) {
         DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadEvent event) {
@@ -255,14 +257,14 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
 
             _failedDownloads++;
             
-            std::cout << "Track (" << event.TrackUniqueId << ") failed to download with the error: " << event.Reason << std::endl;
+            Logger::Warning("Track (" + event.TrackUniqueId + ") failed to download with the error: " + event.Reason);
         }
     }
 
     if (--_threadsDownloading == 0)
         FinishDownload();
 
-    std::cout << "THREAD: " << std::this_thread::get_id() << " FINISHED DOWNLOADING" << std::endl;
+    Logger::Info("Thread finished downloading: " + threadSs.str());
 }
 
 std::optional<TrackData> DownloadManager::GetNextTrack()
@@ -295,7 +297,7 @@ void DownloadManager::CreatePlaylistFile()
     TagHandlerResult tagResult = tagHandler.FormatString(Config::PlaylistFileName, Config::PlaylistFileNameTagsOpeningChar, Config::PlaylistFileNameTagsClosingChar);
     if (tagResult.Error != ETagError::None) {
         // TODO: Add event for failed playlist file (if needed)
-        std::cout << "Could not get the playlist file name with the error: " + tagResult.ErrorString << std::endl;
+        Logger::Warning("Could not get the playlist file name with the error: " + tagResult.ErrorString);
         return;
     }
 
@@ -303,7 +305,7 @@ void DownloadManager::CreatePlaylistFile()
     std::unique_ptr<IPlaylistFile> playlistFile = PlaylistFileFactory::Create(Config::PlaylistFileType);
     if (playlistFile == nullptr) {
         // TODO: Add event for failed playlist file (if needed)
-        std::cout << "I forgot to implement the playlist file type (" << (int)Config::PlaylistFileType << ")... please inform me of this, thanks :)";
+        Logger::Warning("I forgot to implement the playlist file type (" + std::to_string((int)Config::PlaylistFileType) + ")... please inform me of this, thanks :)");
         return;
     }
     
@@ -314,7 +316,7 @@ void DownloadManager::CreatePlaylistFile()
 void DownloadManager::FinishDownload()
 {
     if (_stopping) {
-        std::cout << "Downloads cancelled" << std::endl;
+        Logger::Info("Downloads cancelled");
 
         DownloadsCancelledEvent event;
         event.FailedDownloads = _failedDownloads;
@@ -327,7 +329,7 @@ void DownloadManager::FinishDownload()
         return;
     }
 
-    std::cout << "Finished all the downloads" << std::endl;
+    Logger::Info("Finished all the downloads");
 
     // Create playlist file if required
     if (Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)

@@ -103,7 +103,7 @@ bool FileUtils::MoveFile(const std::filesystem::path& fromPath, const std::files
 
         // Move error
         if (!copied) {
-            std::cout << "Failed to move the file from " << fromPath << " to " << toPath;
+            Logger::Warning("Failed to move the file from " + PathToUtf8(fromPath) + " to " + PathToUtf8(toPath));
             return false;
         }
     }
@@ -117,10 +117,12 @@ std::filesystem::path FileUtils::GetExecutablePath()
     char buffer[MAX_PATH];
     DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
     if (len == 0) {
-        std::cout << "Could not get executable path. Error: " << GetLastError() << std::endl;
+        std::ostringstream errorSs;
+        errorSs << "Could not get executable path. Error: " << GetLastError();
+        Logger::Warning(errorSs.str());
         return {};
     } else if (len == MAX_PATH) {
-        std::cout << "Path truncated, file path is too long." << std::endl;
+        Logger::Warning("Path truncated, file path is too long.");
         return {};
     }
 
@@ -129,7 +131,7 @@ std::filesystem::path FileUtils::GetExecutablePath()
     char buffer[PATH_MAX];
     uint32_t size = sizeof(buffer);
     if (_NSGetExecutablePath(buffer, &size) != 0) {
-        std::cout << "Could not get executable path" << std::endl;
+        Logger::Warning("Could not get executable path");
         return {};
     }
 
@@ -138,7 +140,7 @@ std::filesystem::path FileUtils::GetExecutablePath()
     char buffer[PATH_MAX];
     ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
     if (len == -1) {
-        std::cout << "Could not get executable path" << std::endl;
+        Logger::Warning("Could not get executable path");
         return {};
     }
 

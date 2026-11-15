@@ -9,8 +9,20 @@ void Logger::Init()
         return;
 
     // Remove previous log
-    if (std::filesystem::exists(path))
-        FileUtils::MoveFile(path, path.parent_path() / "PreviousLog.log");
+    if (std::filesystem::exists(path)) {
+        std::filesystem::path newPath = path.parent_path() / "PreviousLog.log";
+
+        // FileUtils::MoveFile
+        try {
+            std::filesystem::rename(path, newPath);
+        } catch (...) {
+            // If rename fails, assume it is between drives, in that case copy
+            bool copied = std::filesystem::copy_file(path, newPath);
+            std::filesystem::remove(path);
+
+            // Move error
+        }
+    }
 
     _file = std::ofstream(path);
     if (!_file.is_open()) {
@@ -34,37 +46,37 @@ void Logger::Flush()
 void Logger::Debug(const std::string& message)
 {
     Log(ELogLevel::Debug, message);
-    std::cerr << message << std::endl;
+    std::cerr << message << "\n";
 }
 
 void Logger::Info(const std::string& message)
 {
     Log(ELogLevel::Info, message);
-    std::cerr << message << std::endl;
+    std::cerr << message << "\n";
 }
 
 void Logger::Warning(const std::string& message)
 {
     Log(ELogLevel::Warning, message);
-    std::cerr << message << std::endl;
+    std::cerr << message << "\n";
 }
 
 void Logger::Error(const std::string& message)
 {
     Log(ELogLevel::Error, message);
-    std::cerr << message << std::endl;
+    std::cerr << message << "\n";
 }
 
 void Logger::Fatal(const std::string& message)
 {
     Log(ELogLevel::Fatal, message);
-    std::cerr << message << std::endl;
+    std::cerr << message << "\n";
 }
 
 void Logger::Out(const std::string& message)
 {
     Log(ELogLevel::Out, message);
-    std::cout << message << std::endl;
+    std::cout << message << "\n";
 }
 
 void Logger::Log(const ELogLevel& logLevel, const std::string& message)
@@ -150,10 +162,47 @@ std::filesystem::path Logger::GetFilePath()
     if (!_filePathCache.empty())
         return _filePathCache;
 
-    std::filesystem::path configPath = Paths::GetLogsDir();
+    std::filesystem::path configPath = GetLogsDir();
     if (configPath.empty())
         return "";
 
     _filePathCache = configPath / FILE_NAME;
     return _filePathCache;
+}
+
+std::filesystem::path Logger::GetLogsDir()
+{
+    // Would use paths but I want to use the logger in FileUtils so its defined here
+    // just means a little bit of duplicate code
+
+    // Paths::GetConfigDir
+    std::filesystem::path configDir = "";
+
+#ifdef WIN32
+    EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("APPDATA");
+    path = appdataPath.Value / APP_NAME;
+#elif __APPLE__
+    EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
+    std::filesystem::path configPath = homePath.Value / ".config";
+    path = configPath / APP_NAME;
+#else
+    EnvironmentVariable<std::filesystem::path> xgdConfigPath = EnvironmentUtils::GetVariablePath("XDG_CONFIG_HOME");
+    std::filesystem::path configPath = xgdConfigPath.Value;
+    if (!xgdConfigPath.Exists) {
+        EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
+        configPath = homePath.Value / ".config";
+    }
+
+    configDir = configPath / APP_NAME;
+#endif
+
+    if (!std::filesystem::exists(configDir))
+        std::filesystem::create_directories(configDir);
+
+    // Get logs dir
+    std::filesystem::path logsFolder = configDir / LOGS_FOLDER_NAME;
+    if (!std::filesystem::exists(logsFolder))
+        std::filesystem::create_directory(logsFolder);
+
+    return logsFolder;
 }

@@ -31,8 +31,6 @@ EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string
 
     bufferSize = GetEnvironmentVariableW(StringUtils::ToWString(key).c_str(), &buffer[0], bufferSize);
     if (!bufferSize) {
-        std::cout << "Could not retrieve environment variable: " << key << std::endl;
-
         output.Value = L"";
         output.Exists = false;
         return output;
@@ -48,8 +46,6 @@ EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string
 
     char* value = std::getenv(key.c_str());
     if (value == NULL) {
-        std::cout << "Could not retrieve environment variable: " << key << std::endl;
-
         output.Value = "";
         output.Exists = false;
         return output;

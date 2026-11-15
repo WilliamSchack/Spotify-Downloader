@@ -16,9 +16,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         return result;
     }
 
-    // Should be removed later
-    std::cout << "GETTING TRACK: " << track.Name << std::endl;
-    track.Print();
+    Logger::Info(track.GetUniqueId() + ": Starting download");
 
     SetProgress(eventCallback, track, 0.0, "Setting Up...");
 
@@ -62,7 +60,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     result.FilePath = targetDownloadPath;
 
     if (!Config::Overwrite && std::filesystem::exists(targetDownloadPath)) {
-        std::cout << "Not downloading as it already exists: " << track.Name << std::endl;
+        Logger::Info(track.GetUniqueId() + ": Not downloading as it already exists");
 
         TrackSourceFoundEvent sourceFoundEvent;
         sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
@@ -76,7 +74,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // == Get cover art
-    std::cout << "Getting Cover Art..." << std::endl;
+    Logger::Info(track.GetUniqueId() + ": Getting Cover Art");
     SetProgress(eventCallback, track, 0.1, "Getting Cover Art...");
 
     std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(track);
@@ -110,10 +108,11 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         searchResult.Confidence = 1;
         searchResult.Data = track;
     } else {
-        std::cout << "Searching on different platform..." << std::endl;
+        Logger::Info(track.GetUniqueId() + ": Searching on a different platform (" + std::to_string((int)searchPlatform) + ")");
 
         std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
         if (searcher == nullptr) {
+            Logger::Warning(track.GetUniqueId() + ": Searcher not implemented for the platform (" + std::to_string((int)searchPlatform) + ")");
             result.FailReason = "Searcher not implemented for the platform: " + std::to_string((int)searchPlatform);
             return result;
         }
@@ -123,7 +122,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
         });
 
         if (searchResult.Data.Platform == EPlatform::Unknown) {
-            std::cout << "Could not find track: " << track.Name << std::endl;
+            Logger::Info(track.GetUniqueId() + ": Could not find the track");
 
             // TODO: let the user input a platform url to download in this case
 
@@ -161,7 +160,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     // Download
-    std::cout << "Downloading..." << std::endl;
+    Logger::Info(track.GetUniqueId() + ": Downloading");
     SetProgress(eventCallback, track, 0.3, "Downloading Track...");
 
     YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, extraDownloadArgs, [&](float progress) {
@@ -172,13 +171,13 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     // TODO: Handle errors properly
     if (downloadResult.Error.Error != EYtdlpError::None) {
-        std::cout << downloadResult.Error.Details << std::endl;
+        Logger::Info(track.GetUniqueId() + ": " + downloadResult.Error.Details);
         result.FailReason = downloadResult.Error.Details;
         return result;
     }
 
     // Check if downloaded codec is different to the target, if so, convert it
-    std::cout << "Converting..." << std::endl;
+    Logger::Info(track.GetUniqueId() + ": Converting");
 
     std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
     if (downloadedCodec == nullptr) {
@@ -194,7 +193,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     float progressEndPercentage = Config::GetLyrics ? 0.9 : 1.0;
 
     if (Config::Normalise) {
-        std::cout << "Normalising..." << std::endl;
+        Logger::Info(track.GetUniqueId() + ": Normalising");
         SetProgress(eventCallback, track, progressStartPercentage, "Normalising Audio...");
 
         bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NormaliseDb, [&](float progress) {
@@ -204,7 +203,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     
     // == Set bitrate
     else if (Config::ManualBitrate) {
-        std::cout << "Setting bitrate..." << std::endl;
+        Logger::Info(track.GetUniqueId() + ": Setting bitrate");
         SetProgress(eventCallback, track, progressStartPercentage, "Setting Bitrate...");
 
         bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps[targetCodec->GetExtension()], [&](float progress) {
@@ -215,7 +214,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     // == Get lyrics
     Lyrics lyrics(ELyricsSource::Unknown);
     if (Config::GetLyrics) {
-        std::cout << "Getting Lyrics..." << std::endl;
+        Logger::Info(track.GetUniqueId() + ": Getting lyrics");
         SetProgress(eventCallback, track, progressEndPercentage, "Getting Lyrics...");
 
         // Try source platform

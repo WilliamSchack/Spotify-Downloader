@@ -9,7 +9,7 @@ std::string YoutubeData::GetTrackDownloadError(const TrackData& track)
     bool ageRestricted = AgeRestricted(track.Id);
 
     if (ageRestricted && !cookiesValid) {
-        std::cout << "Track is age restricted with no cookies assigned" << std::endl;
+        Logger::Info("Track is age restricted with no cookies assigned");
         return "Video is Age Restricted. Please assign YouTube cookies in the downloading settings";
     }
 

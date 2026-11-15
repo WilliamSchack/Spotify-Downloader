@@ -1,6 +1,7 @@
 #ifndef GITHUBAPI_H
 #define GITHUBAPI_H
 
+#include "Logger.h"
 #include "GitHubRelease.h"
 #include "NetworkRequest.h"
 #include "JsonUtils.h"

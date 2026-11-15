@@ -1,6 +1,7 @@
 #ifndef SEARCHERRESULT_H
 #define SEARCHERRESULT_H
 
+#include "Logger.h"
 #include "TrackData.h"
 
 struct PlatformSearcherResult
@@ -9,6 +10,7 @@ struct PlatformSearcherResult
     double Confidence = 0.0;
 
     PlatformSearcherResult() : Data(EPlatform::Unknown) {}
+    nlohmann::json ToJson() const;
     void Print() const;
 };
 
@@ -20,10 +22,15 @@ inline void to_json(nlohmann::json& json, const PlatformSearcherResult& data)
     };
 }
 
+inline nlohmann::json PlatformSearcherResult::ToJson() const
+{
+    return *this;
+}
+
 inline void PlatformSearcherResult::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef TRACKDATA_H
 #define TRACKDATA_H
 
+#include "Logger.h"
 #include "StringUtils.h"
 #include "EPlatform.h"
 #include "ArtistData.h"
@@ -33,6 +34,7 @@ struct TrackData
     std::vector<ArtistData> Artists;
 
     TrackData(EPlatform platform) : Platform(platform), Album(platform) {}
+    nlohmann::json ToJson() const;
     void Print() const;
 
     std::string GetUniqueId() const
@@ -92,10 +94,15 @@ inline void to_json(nlohmann::json& json, const TrackData& data)
     };
 }
 
+inline nlohmann::json TrackData::ToJson() const
+{
+    return *this;
+}
+
 inline void TrackData::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

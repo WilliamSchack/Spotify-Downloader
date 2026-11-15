@@ -22,7 +22,7 @@ void SupportersScreenGUI::UpdateSupporters()
             json = nlohmann::json::parse(response.Body);
             UpdateSupportersCache(json);
         } else {
-            std::cout << "Failed to get notices, using cache: " << curl_easy_strerror(response.CurlCode) << std::endl;
+            Logger::Warning("Failed to get notices, using cache: " + std::string(curl_easy_strerror(response.CurlCode)));
             json = LoadSupportersCache();
             if (json.empty())
                 return;
@@ -110,7 +110,7 @@ void SupportersScreenGUI::UpdateSupportersCache(const nlohmann::json& json)
 {
     std::filesystem::path filePath = GetSupportersCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load notices cache, the file path was not found" << std::endl;
+        Logger::Warning("Could not load notices cache, the file path was not found");
         return;
     }
 
@@ -124,13 +124,13 @@ nlohmann::json SupportersScreenGUI::LoadSupportersCache()
 {
     std::filesystem::path filePath = GetSupportersCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load notices cache, the file path was not found" << std::endl;
+        Logger::Warning("Could not load notices cache, the file path was not found");
         return {};
     }
 
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cout << "Could not open notices cache file at " << filePath << std::endl;
+        Logger::Warning("Could not open notices cache file at " + FileUtils::PathToUtf8(filePath));
         return {};
     }
 

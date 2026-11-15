@@ -1,6 +1,7 @@
 #ifndef SPOTIFYAPI_H
 #define SPOTIFYAPI_H
 
+#include "Logger.h"
 #include "SpotifyAuthRetriever.h"
 #include "NetworkRequest.h"
 #include "HtmlParser.h"

@@ -1,6 +1,7 @@
 #ifndef FFMPEG_H
 #define FFMPEG_H
 
+#include "Logger.h"
 #include "Dependency.h"
 #include "FfmpegAudioDetails.h"
 #include "ExternalProcess.h"

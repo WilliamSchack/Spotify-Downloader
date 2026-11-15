@@ -1,6 +1,7 @@
 #ifndef DOWNLOADMANAGER_H
 #define DOWNLOADMANAGER_H
 
+#include "Logger.h"
 #include "PlatformDetector.h"
 #include "PlatformFactory.h"
 #include "TrackDownloader.h"

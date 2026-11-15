@@ -32,7 +32,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
     delete webProfile;
 
     if (!foundAll) {
-        std::cout << "Could not retrieve spotify auth" << std::endl;
+        Logger::Warning("Could not retrieve spotify auth");
         return SpotifyAuth();
     }
 
@@ -47,7 +47,7 @@ SpotifyAuth SpotifyAuthRetriever::GetAuth(const std::string& url)
 
     std::smatch matches;
     if (!std::regex_search(mobileJs, matches, std::regex(PLAYLIST_QUERY_REGEX))) {
-        std::cout << "Could not retrieve spotify auth" << std::endl;
+        Logger::Warning("Could not retrieve spotify auth");
         return SpotifyAuth();
     }
     auth.PlaylistQueryHash = matches[1];

@@ -1,6 +1,7 @@
 #ifndef TRACKDOWNLOADER_H
 #define TRACKDOWNLOADER_H
 
+#include "Logger.h"
 #include "Config.h"
 #include "ELinkType.h"
 #include "CodecFactory.h"

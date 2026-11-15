@@ -51,7 +51,7 @@ bool Ytdlp::UpdateExecutableImpl()
 
     std::string output = process.Execute().Output;
     if (StringUtils::StartsWith(output, "ERROR:")) {
-        std::cout << "Failed to update yt-dlp with the output: " << output << std::endl;
+        Logger::Warning("Failed to update yt-dlp with the output: " + output);
         return false;
     }
 
@@ -98,11 +98,12 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     std::filesystem::path ffmpegPath = Ffmpeg::GetPath();
     std::filesystem::path quickJsPath = JsRuntime::GetPath();
     if (ytdlpPath.empty() || ffmpegPath.empty() || quickJsPath.empty()) {
-        std::cout << "yt-dlp and/or its dependencies are not installed: ";
-        std::cout << "yt-dlp (" << (ytdlpPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
-        std::cout << "ffmpeg (" << (ffmpegPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
-        std::cout << "quickjs (" << (quickJsPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
-        std::cout << std::endl;
+        std::ostringstream errorSs;
+        errorSs << "yt-dlp and/or its dependencies are not installed: ";
+        errorSs << "yt-dlp (" << (ytdlpPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        errorSs << "ffmpeg (" << (ffmpegPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        errorSs << "quickjs (" << (quickJsPath.empty() ? "NOT INSTALLED" : "INSTALLED") << ") ";
+        Logger::Warning(errorSs.str());
 
         YtdlpError error;
         error.Details = "yt-dlp is not installed";
@@ -113,7 +114,7 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
     }
 
     if (url.empty()) {
-        std::cout << "Cannot download, no url was passed" << std::endl;
+        Logger::Warning("Cannot download, no url was passed");
         return result;
     }
 
@@ -228,21 +229,21 @@ YtdlpResult Ytdlp::Download(const std::string& url, const std::filesystem::path&
         // Retries the download 2 more times
         if (error.Error == EYtdlpError::Forbidden) {
             for (int i = 0; i < 2; i++) {
-                std::cout << "yt-dlp got error 403, retrying... (Attempt " << i + 1 << ")";
+                Logger::Warning("yt-dlp got error 403, retrying... (Attempt " + std::to_string(i + 1) + ")");
                 YtdlpResult result = Download(url, pathNoExtension, extraArgs, progressCallback);
                 if (result.Error.Error != EYtdlpError::Forbidden)
                     return result;
             }
         }
 
-        std::cout << "yt-dlp Error Output: " << output << std::endl;
+        Logger::Warning("yt-dlp Error Output: " + output);
         result.Error = error;
         return result;
     }
 
     // Check if the file exists
     if (!std::filesystem::exists(downloadedPath)) {
-        std::cout << output << std::endl;
+        Logger::Warning("yt-dlp failed with an unknown error: " + output);
 
         error.Details = "Download failed with an unknown error, try downloading again";
         error.Error = EYtdlpError::Unknown;
@@ -308,8 +309,6 @@ YtdlpError Ytdlp::GetError(const std::string& errorString, const std::vector<std
 
     // Video Unavailable
     if (StringUtils::Contains(errorLower, "video unavailable. this content")) {
-        std::cout << "CHECK FOR COOKIES IN YTDLP ERROR" << std::endl;
-
         std::string errorOutput = "Video is unavailable, try downloading again";
         if (hasCookies) errorOutput += " or resetting/removing cookies";
 

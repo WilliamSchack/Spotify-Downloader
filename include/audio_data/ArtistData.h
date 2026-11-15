@@ -1,6 +1,7 @@
 #ifndef ARTISTDATA_H
 #define ARTISTDATA_H
 
+#include "Logger.h"
 #include "EPlatform.h"
 
 #include <nlohmann/json.hpp>
@@ -33,7 +34,7 @@ inline void to_json(nlohmann::json& json, const ArtistData& data)
 inline void ArtistData::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

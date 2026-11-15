@@ -212,13 +212,13 @@ bool Config::Load()
 bool Config::Load(const std::filesystem::path& path)
 {
     if (path.empty()) {
-        std::cout << "Could not load config, the file path was not found" << std::endl;
+        Logger::Warning("Could not load config, the file path was not found");
         return false;
     }
 
     std::ifstream file(path);
     if (!file.is_open()) {
-        std::cout << "Could not open config file at " << path << std::endl;
+        Logger::Warning("Could not open config file at " + FileUtils::PathToUtf8(path));
 
         // TODO: Load old (v1) config if it exists
         Save();
@@ -232,6 +232,8 @@ bool Config::Load(const std::filesystem::path& path)
     nlohmann::json json = nlohmann::json::parse(contents);
     FromJson(json);
 
+    Logger::Info("Loaded the config from (" + FileUtils::PathToUtf8(path) + "): " + json.dump());
+
     return true;
 }
 
@@ -243,14 +245,17 @@ bool Config::Save()
 bool Config::Save(const std::filesystem::path& path)
 {
     if (path.empty()) {
-        std::cout << "Could not save config, the file path was not found" << std::endl;
+        Logger::Warning("Could not save config, the file path was not found");
         return false;
     }
 
     std::ofstream file(path);
-    std::string contents = ToJson().dump(4);
+    nlohmann::json json = ToJson();
+    std::string contents = json.dump(4);
     file << contents;
     file.close();
+
+    Logger::Info("Saved the config: " + json.dump());
 
     return true;
 }

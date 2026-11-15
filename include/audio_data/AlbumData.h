@@ -1,6 +1,7 @@
 #ifndef ALBUMDATA_H
 #define ALBUMDATA_H
 
+#include "Logger.h"
 #include "EPlatform.h"
 #include "EAlbumType.h"
 #include "ArtistData.h"
@@ -70,7 +71,7 @@ inline void to_json(nlohmann::json& json, const AlbumData& data)
 inline void AlbumData::Print() const
 {
     nlohmann::json json = *this;
-    std::cout << json.dump(4) << std::endl;
+    Logger::Info(json.dump(4));
 }
 
 #endif

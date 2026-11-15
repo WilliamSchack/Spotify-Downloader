@@ -1,6 +1,7 @@
 #ifndef SPOTIFYAUTHRETRIEVER_H
 #define SPOTIFYAUTHRETRIEVER_H
 
+#include "Logger.h"
 #include "SpotifyAuth.h"
 #include "SpotifyAuthInterceptor.h"
 #include "NetworkRequest.h"

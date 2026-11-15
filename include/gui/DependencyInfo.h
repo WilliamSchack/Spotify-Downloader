@@ -1,6 +1,7 @@
 #ifndef DEPENDENCYINFO_H
 #define DEPENDENCYINFO_H
 
+#include "Logger.h"
 #include "EasyQProperties.h"
 #include "GUIReleaseInfo.h"
 #include "Paths.h"

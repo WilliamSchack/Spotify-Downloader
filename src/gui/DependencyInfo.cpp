@@ -67,7 +67,7 @@ void DependencyInfo::UpdateReleasesCache(const QList<GUIReleaseInfo>& releases)
 {
     std::filesystem::path filePath = GetReleasesCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load releases cache for" << _name.toStdString() << ", the file path was not found" << std::endl;
+        Logger::Warning("Could not load releases cache for " + _name.toStdString() + ", the file path was not found");
         return;
     }
 
@@ -91,13 +91,13 @@ QList<GUIReleaseInfo> DependencyInfo::LoadReleasesCache()
 {
     std::filesystem::path filePath = GetReleasesCachePath();
     if (filePath.empty()) {
-        std::cout << "Could not load releases cache for" << _name.toStdString() << ", the file path was not found" << std::endl;
+        Logger::Warning("Could not load releases cache for " + _name.toStdString() + ", the file path was not found");
         return {};
     }
 
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cout << "Could not open releases cache file at " << filePath << std::endl;
+        Logger::Warning("Could not open releases cache file at " + FileUtils::PathToUtf8(filePath));
         return {};
     }
 
@@ -107,7 +107,7 @@ QList<GUIReleaseInfo> DependencyInfo::LoadReleasesCache()
     // Parse file
     nlohmann::json json = nlohmann::json::parse(contents);
     if (!json.is_array()) {
-        std::cout << "Could not read releases json for " << _name.toStdString() << std::endl;
+        Logger::Warning("Could not read releases json for " + _name.toStdString());
         return {};
     }
 
@@ -186,11 +186,11 @@ void DependencyInfo::DownloadUpdate()
             SetUpdating(false);
 
             if (updated) {
-                std::cout << "Successfully updated " << _name.toStdString() << std::endl;
+                Logger::Info("Successfully updated " + _name.toStdString());
                 SetUpdateAvailable(false);
                 UpdateVersion();
             } else {
-                std::cout << "Failed to update " << _name.toStdString() << std::endl;
+                Logger::Warning("Failed to update " + _name.toStdString());
                 SetUpdateAvailable(true);
             }
         }, Qt::QueuedConnection);
@@ -215,12 +215,12 @@ void DependencyInfo::Download()
             SetDownloading(false);
 
             if (downloaded) {
-                std::cout << "Successfully downloaded " << _name.toStdString() << std::endl;
+                Logger::Info("Successfully downloaded " + _name.toStdString());
                 CheckInstalled();
                 UpdateVersion();
                 SetUpdateAvailable(false);
             } else {
-                std::cout << "Failed to download " << _name.toStdString() << std::endl;
+                Logger::Warning("Failed to download " + _name.toStdString());
             }
         }, Qt::QueuedConnection);
     }).detach();

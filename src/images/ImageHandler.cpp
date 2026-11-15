@@ -17,7 +17,7 @@ EImageFormat ImageHandler::GetImageFormat(const std::string& string)
     if (format == "png")                     return EImageFormat::PNG;
     if (format == "jpg" || format == "jpeg") return EImageFormat::JPG;
 
-    std::cout << "Found unkown image format: " << format << std::endl;
+    Logger::Warning("Found unkown image format: " + format);
     return EImageFormat::Unknown;
 }
 
@@ -43,7 +43,7 @@ EImageFormat ImageHandler::GetImageFormat(const NetworkResponse& response)
     if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
         return EImageFormat::JPG;
 
-    std::cout << "Found unknown image format: " << bytes << std::endl;
+    Logger::Warning("Found unknown image format: " + std::string(reinterpret_cast<const char*>(bytes)));
     return EImageFormat::Unknown;
 }
 
@@ -56,7 +56,7 @@ std::filesystem::path ImageHandler::SaveImage(const std::filesystem::path& pathN
     if (image.Format == EImageFormat::JPG) imageSaved = SaveJpg(path, image);
 
     if (!imageSaved) {
-        std::cout << "Unable to save image, format is not implemented" << std::endl;
+        Logger::Warning("Unable to save image, format is not implemented");
         return {};
     }
 
@@ -79,7 +79,7 @@ bool ImageHandler::SavePng(const std::filesystem::path& path, const Image& image
     );
 
     if (!image.Data)
-        std::cout << "Failed to save the image as png: " << stbi_failure_reason() << std::endl;
+        Logger::Warning("Failed to save the image as png: " + std::string(stbi_failure_reason()));
 
     fclose(file);
     return result != 0;
@@ -101,7 +101,7 @@ bool ImageHandler::SaveJpg(const std::filesystem::path& path, const Image& image
     );
 
     if (!image.Data)
-        std::cout << "Failed to save the image as jpg: " << stbi_failure_reason() << std::endl;
+        Logger::Warning("Failed to save the image as jpg: " + std::string(stbi_failure_reason()));
 
     fclose(file);
     return result != 0;
@@ -112,13 +112,10 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
     Image image;
 
     FILE* file = GetFile(path, "rb");
-
     if (!file) {
-        std::cout << "FAILED TO OPEN FILE: " << path << std::endl;
-
+        Logger::Warning("Failed to open image at the path: " + FileUtils::PathToUtf8(path));
+        return image;
     }
-
-    if (!file) return image;
 
     image.Format = GetImageFormat(path);
     image.Data = stbi_load_from_file(
@@ -130,7 +127,7 @@ Image ImageHandler::LoadImage(const std::filesystem::path& path)
     );
 
     if (!image.Data)
-        std::cout << "Failed to load the image: " << stbi_failure_reason() << std::endl;
+        Logger::Warning("Failed to load the image: " + std::string(stbi_failure_reason()));
 
     fclose(file);
     return image;
@@ -145,12 +142,12 @@ Image ImageHandler::DownloadImage(const std::string& url)
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to download image: " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to download image: " + std::string(curl_easy_strerror(response.CurlCode)));
         return image;
     }
 
     if (response.HTTPCode != 200) {
-        std::cout << "Failed to download image: HTTP " << response.HTTPCode << std::endl;
+        Logger::Warning("Failed to download image: HTTP " + std::to_string(response.HTTPCode));
         return image;
     }
 
@@ -168,7 +165,7 @@ Image ImageHandler::DownloadImage(const std::string& url)
     );
 
     if (!image.Data)
-        std::cout << "Failed to download the image: " << stbi_failure_reason() << std::endl;
+        Logger::Warning("Failed to download the image: " + std::string(stbi_failure_reason()));
 
     return image;
 }

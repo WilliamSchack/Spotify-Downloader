@@ -44,23 +44,26 @@
 
 int main(int argc, char** argv)
 {
-    std::cout << "Running version " << APP_VERSION << " on ";
+    Logger::Init();
+
+    std::ostringstream versionSs;
+    versionSs << "Running version " << APP_VERSION << " on ";
 #ifdef IS_ARM_CPU
-    std::cout << "ARM ";
+    versionSs << "ARM ";
 #else
-    std::cout << "x64 ";
+    versionSs << "x64 ";
 #endif
 
 #ifdef WIN32
-    std::cout << "Windows" << std::endl;
+    versionSs << "Windows" << std::endl;
 #elif __APPLE__
-    std::cout << "Mac" << std::endl;
+    versionSs << "Mac" << std::endl;
 #else
-    std::cout << "Linux" << std::endl;
+    versionSs << "Linux" << std::endl;
 #endif
 
-    Logger::Init();
-    
+    Logger::Info(versionSs.str());
+
     std::srand(std::time(NULL));
 
     // Setting up qt before arg parser so qtwebengine can be initialised

@@ -178,12 +178,12 @@ bool SettingsScreenGUI::ImportSettingsFromFile()
     bool succeeded = Config::Load(path);
 
     if (succeeded) {
-        std::cout << "Successfully loaded config from path: " << path << std::endl;
+        Logger::Info("Successfully loaded config from path: " + FileUtils::PathToUtf8(path));
 
         // Load the new settings
         NotifyAllSettingsChanged();
     } else
-        std::cout << "Failed to load config from path: " << path << std::endl;
+        Logger::Warning("Failed to load config from path: " + FileUtils::PathToUtf8(path));
 
     return succeeded;
 }
@@ -207,13 +207,13 @@ bool SettingsScreenGUI::ExportSettingsToFile()
     bool succeeded = Config::Save(path);
 
     if (succeeded) {
-        std::cout << "Successfully saved config to path: " << path << std::endl;
+        Logger::Info("Successfully saved config to path: " + FileUtils::PathToUtf8(path));
         
         // Open folder
         QString pathDirectoryString = QString::fromStdString(FileUtils::PathToUtf8(path.parent_path()));
         QDesktopServices::openUrl(QUrl::fromLocalFile(pathDirectoryString));
     } else
-        std::cout << "Failed to load save to path: " << path << std::endl;
+        Logger::Warning("Failed to load save to path: " + FileUtils::PathToUtf8(path));
 
     return succeeded;
 }
@@ -282,7 +282,7 @@ void SettingsScreenGUI::AddYouTubeCookiesWatcherPath()
     QString filePathQString = QString::fromStdString(FileUtils::PathToUtf8(filePath));
     if (!_youtubeCookiesWatcher.files().contains(filePathQString)) {
         if (!_youtubeCookiesWatcher.addPath(filePathQString))
-            std::cout << "Failed to watch cookie file at: " << filePath << std::endl;
+            Logger::Warning("Failed to watch cookie file at: " + FileUtils::PathToUtf8(filePath));
     }
 }
 

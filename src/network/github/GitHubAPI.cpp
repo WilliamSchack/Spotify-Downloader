@@ -21,13 +21,13 @@ std::string GitHubAPI::GetRecentTag(const std::string& repoOwner, const std::str
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get the latest version for " << repoOwner << "/" << repoName << ": " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get the latest version for " + repoOwner + "/" + repoName + ": " + std::string(curl_easy_strerror(response.CurlCode)));
         return "";
     }
 
     nlohmann::json responseJson = nlohmann::json::parse(response.Body);
     if (!responseJson.is_array()) {
-        std::cout << "Failed to get the latest version for " << repoOwner << "/" << repoName << ": " << responseJson.dump() << std::endl;
+        Logger::Warning("Failed to get the latest version for " + repoOwner + "/" + repoName + ": " + responseJson.dump());
         return "";
     }
 
@@ -40,13 +40,13 @@ std::vector<GitHubRelease> GitHubAPI::GetReleases(const std::string& repoOwner, 
     NetworkResponse response = request.Get();
 
     if (response.CurlCode != CURLE_OK) {
-        std::cout << "Failed to get releases for " << repoOwner << "/" << repoName << ": " << curl_easy_strerror(response.CurlCode) << std::endl;
+        Logger::Warning("Failed to get releases for " + repoOwner + "/" + repoName + ": " + std::string(curl_easy_strerror(response.CurlCode)));
         return {};
     }
 
     nlohmann::json responseJson = nlohmann::json::parse(response.Body);
     if (!responseJson.is_array()) {
-        std::cout << "Failed to get releases for " << repoOwner << "/" << repoName << ": " << responseJson.dump() << std::endl;
+        Logger::Warning("Failed to get releases for " + repoOwner + "/" + repoName + ": " + responseJson.dump());
         return {};
     }
 

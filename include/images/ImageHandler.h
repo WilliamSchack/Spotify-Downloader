@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 
+#include "Logger.h"
 #include "Image.h"
 #include "NetworkRequest.h"
 #include "StringUtils.h"
