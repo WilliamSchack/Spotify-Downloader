@@ -6,6 +6,11 @@ Rectangle {
     radius: 10
     color: "transparent"
 
+    Component {
+        id: messageDialogComponent
+        CustomMessageDialog {}
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 0
@@ -52,7 +57,24 @@ Rectangle {
                     iconSource: _manager.music.downloadButtonIcon
                     iconMargins: 15
 
-                    onClicked: _manager.music.DownloadButtonClicked()
+                    onClicked: {
+                        if (!_manager.music.downloadButtonCancels) {
+                            _manager.music.DownloadButtonClicked()
+                            return
+                        }
+
+                        const dialog = messageDialogComponent.createObject(root.contentItem, {
+                            title: "Cancel Download",
+                            text: "Are you sure you want to cancel the download?",
+                            standardButtons: Dialog.Yes | Dialog.No
+                        })
+
+                        dialog.onAccepted.connect(function() {
+                            _manager.music.DownloadButtonClicked()
+                        })
+                        
+                        dialog.open()
+                    }
                 }
 
                 // Pause

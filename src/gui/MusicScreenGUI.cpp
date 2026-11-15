@@ -5,6 +5,8 @@ MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
     connect(this, &MusicScreenGUI::TracksChanged, this, &MusicScreenGUI::TracksDownloadsCompletedChanged);
     connect(this, &MusicScreenGUI::TracksChanged, this, &MusicScreenGUI::DownloadErrorsChanged);
     connect(this, &MusicScreenGUI::DownloadButtonTextChanged, this, &MusicScreenGUI::DownloadButtonIconChanged);
+    connect(this, &MusicScreenGUI::DownloadButtonTextChanged, this, &MusicScreenGUI::DownloadButtonEnabledChanged);
+    connect(this, &MusicScreenGUI::DownloadButtonTextChanged, this, &MusicScreenGUI::DownloadButtonCancelsChanged);
     connect(this, &MusicScreenGUI::PlayPauseButtonTextChanged, this, &MusicScreenGUI::PlayPauseButtonIconChanged);
 
     _addTracksPopup = new AddTracksPopup(this);
@@ -72,7 +74,6 @@ void MusicScreenGUI::DownloadButtonClicked()
         
         _downloader.Stop(); 
         emit DownloadButtonTextChanged();
-        emit DownloadButtonEnabledChanged();
 
         return;
     }
@@ -122,6 +123,11 @@ QString MusicScreenGUI::GetDownloadButtonIcon() const
 bool MusicScreenGUI::GetDownloadButtonEnabled() const
 {
     return !_downloader.IsStopping();
+}
+
+bool MusicScreenGUI::GetDownloadButtonCancels() const
+{
+    return _downloader.IsDownloading();
 }
 
 QString MusicScreenGUI::GetPlayPauseButtonText() const
@@ -217,7 +223,6 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit DownloadButtonTextChanged();
-                emit DownloadButtonEnabledChanged();
                 emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },
@@ -232,7 +237,6 @@ void MusicScreenGUI::CheckDownloadEvents()
                     notificationMessage += "with no errors!";
 
                 emit DownloadButtonTextChanged();
-                emit DownloadButtonEnabledChanged();
                 emit PlayPauseButtonTextChanged();
                 emit RequestNotification(notificationMessage);
             },

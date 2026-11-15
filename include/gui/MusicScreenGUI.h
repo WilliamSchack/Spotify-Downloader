@@ -27,6 +27,7 @@ class MusicScreenGUI : public QObject
     Q_PROPERTY(QString downloadButtonText READ GetDownloadButtonText NOTIFY DownloadButtonTextChanged);
     Q_PROPERTY(QString downloadButtonIcon READ GetDownloadButtonIcon NOTIFY DownloadButtonIconChanged);
     Q_PROPERTY(bool downloadButtonEnabled READ GetDownloadButtonEnabled NOTIFY DownloadButtonEnabledChanged);
+    Q_PROPERTY(bool downloadButtonCancels READ GetDownloadButtonCancels NOTIFY DownloadButtonCancelsChanged);
     Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
     Q_PROPERTY(QString playPauseButtonIcon READ GetPlayPauseButtonIcon NOTIFY PlayPauseButtonIconChanged);
     SIMPLE_QPROPERTY(QString, backgroundImagePath, BackgroundImagePath, _backgroundImagePath)
@@ -43,6 +44,7 @@ class MusicScreenGUI : public QObject
         QString GetDownloadButtonText() const;
         QString GetDownloadButtonIcon() const;
         bool GetDownloadButtonEnabled() const;
+        bool GetDownloadButtonCancels() const;
         QString GetPlayPauseButtonText() const;
         QString GetPlayPauseButtonIcon() const;
     public slots:
@@ -77,6 +79,7 @@ class MusicScreenGUI : public QObject
         void DownloadButtonTextChanged();
         void DownloadButtonIconChanged();
         void DownloadButtonEnabledChanged();
+        void DownloadButtonCancelsChanged();
         void PlayPauseButtonTextChanged();
         void PlayPauseButtonIconChanged();
         void RequestNotification(const std::string& message);
