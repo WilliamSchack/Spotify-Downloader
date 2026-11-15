@@ -441,9 +441,6 @@ RowLayout {
                                 label: "Track Number"
                                 tooltip: "**Playlist:** Uses the number in the playlist, or the album if a playlist is not inputted<br />**Album:** Uses the number in the album<br />**Disc:** Uses the number in the disc"
 
-                                // TODO: Add notice/warning when using playlist track number
-                                //       that it will use the album number when not downloading a playlist
-
                                 CustomComboBox {
                                     Layout.minimumWidth: 100
                                     Layout.maximumWidth: 300

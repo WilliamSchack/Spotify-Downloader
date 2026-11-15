@@ -12,15 +12,15 @@ Q_INVOKABLE void NoticesScreenGUI::SelectNotice(const int& index)
     emit SelectedNoticeChanged();
 }
 
-QList<Notice> NoticesScreenGUI::GetNotices()
+QList<Notice*> NoticesScreenGUI::GetNotices()
 {
     return _notices;
 }
 
-Notice NoticesScreenGUI::GetSelectedNotice()
+Notice* NoticesScreenGUI::GetSelectedNotice()
 {
     if (_notices.size() <= _selectedNoticeIndex)
-        return {};
+        return nullptr;
 
     return _notices[_selectedNoticeIndex];
 }
@@ -35,31 +35,53 @@ void NoticesScreenGUI::UpdateNotices()
         request.Url = NOTICES_URL;
         NetworkResponse response = request.Get();
 
+        nlohmann::json noticesCache = LoadNoticesCache();
+
         nlohmann::json json;
         if (response.CurlCode == CURLE_OK) {
             json = nlohmann::json::parse(response.Body);
             UpdateNoticesCache(json);
         } else {
             Logger::Warning("Failed to get notices, using cache: " + std::string(curl_easy_strerror(response.CurlCode)));
-            json = LoadNoticesCache();
-            if (json.empty())
+            json = noticesCache;
+            if (noticesCache.empty())
                 return;
         }
+        QMetaObject::invokeMethod(this, [this, json, noticesCache]() {
+            // Must make the notices on the main thread
 
-        QList<Notice> notices;
-        for (int i = 0; i < json.size(); i++) {
-            nlohmann::json noticeJson = json[i];
+            // Mark any new notices
+            // Dont mark new notices if this is the first time opening the app
+            int noticesDifference = 0;
+            if (noticesCache.size() != 0)
+                noticesDifference = json.size() - noticesCache.size();
 
-            Notice notice;
-            notice.Index = i;
-            notice.ReleaseDate = QString::fromStdString(noticeJson["release_date"]);
-            notice.Title = QString::fromStdString(noticeJson["title"]);
-            notice.Content = QString::fromStdString(noticeJson["content"]);
+            _newNotices = noticesDifference;
+            SetNewNoticeAvailable(noticesDifference > 0);
 
-            notices.push_back(notice);
-        }
+            QList<Notice*> notices;
+            for (int i = 0; i < json.size(); i++) {
+                nlohmann::json noticeJson = json[i];
 
-        QMetaObject::invokeMethod(this, [this, notices]() {
+                Notice* notice = new Notice(this);
+                notice->Index = i;
+                notice->ReleaseDate = QString::fromStdString(noticeJson["release_date"]);
+                notice->Title = QString::fromStdString(noticeJson["title"]);
+                notice->Content = QString::fromStdString(noticeJson["content"]);
+                notice->SetIsNew(noticesDifference > 0);
+
+                connect(notice, &Notice::IsNewChanged, this, [this]() {
+                    _newNotices--;
+                    if (_newNotices <= 0)
+                        SetNewNoticeAvailable(false);
+                });
+
+                notices.push_back(notice);
+
+                if (noticesDifference > 0)
+                    noticesDifference--;
+            }
+
             SetLoadingNotices(false);
 
             if (notices.size() == 0) {

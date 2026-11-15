@@ -14,6 +14,7 @@ RowLayout {
 
     property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
     property bool loadedNotices: _manager.settings.autoCheckForNotices
+    property bool firstNoticesOpen: true
     property bool loadedSupporters: false
 
     function switchInfoScreen(screen: int) {
@@ -25,6 +26,17 @@ RowLayout {
         if (!loadedSupporters && screen == InfoScreen.EInfoScreen.Supporters) {
             _manager.info.supporters.UpdateSupporters()
             loadedSupporters = true
+        }
+
+        if (firstNoticesOpen && currentInfoScreen != InfoScreen.EInfoScreen.Notices && screen == InfoScreen.EInfoScreen.Notices && !_manager.info.notices.loadingNotices) {
+            // If the first notice is new, disable it when first clicking onto the screen as it will be selected
+            if (_manager.info.notices.notices.length > 0) {
+                let firstNotice = _manager.info.notices.notices[0]
+                if (firstNotice.isNew)
+                    firstNotice.isNew = false
+            }
+
+            firstNoticesOpen = false;
         }
 
         currentInfoScreen = screen;
@@ -81,7 +93,7 @@ RowLayout {
                         font.pixelSize: 20
                         radius: 8
 
-                        unselectedBackgroundColour: Qt.alpha("#707070", 0.6)
+                        unselectedBackgroundColour: _manager.info.notices.newNoticeAvailable ? Qt.alpha('#b32222', 0.6) : Qt.alpha("#707070", 0.6)
 
                         onClicked: root.switchInfoScreen(InfoScreen.EInfoScreen.Notices)
                     }

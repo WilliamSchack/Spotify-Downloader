@@ -149,7 +149,6 @@ Item {
             }
         }
 
-        // TODO: Dont allow changing screens and show popup if invalid
         Image {
             Layout.preferredHeight: parent.height - 5
             Layout.preferredWidth: parent.height - 5

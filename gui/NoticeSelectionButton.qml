@@ -14,7 +14,10 @@ ToggleButton {
 
     radius: 6
 
-    onClicked: _manager.info.notices.SelectNotice(info.index)
+    onClicked: {
+        _manager.info.notices.SelectNotice(info.index)
+        root.info.isNew = false
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -43,6 +46,20 @@ ToggleButton {
             font.pixelSize: 12
             font.italic: true
         }
+    }
+    
+    // New indicator
+    Text {
+        visible: root.info.isNew
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
+        text: "-"
+        color: "red"
+        font.pixelSize: 25
+        textFormat: Text.MarkdownText
+        verticalAlignment: Text.AlignVCenter
     }
 
     Component.onCompleted: {
