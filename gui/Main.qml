@@ -211,7 +211,7 @@ Window {
                     radius: 20
                     backgroundColour: "#434343"
 
-                    onClicked: root.visibility === Window.Maximized ? root.showNormal() : root.showMaximized()
+                    onClicked: root.toggleMaximized()
                 }
 
                 // Close
