@@ -245,7 +245,6 @@ TrackData MetadataManager::GetAll() const
 
     TrackData data(EPlatform::LocalFile);
 
-    // TODO: Test this properly, for some reason toString isnt a thing on my linux machine at least but just returns a string
 #ifdef WIN32
     data.Url = _fileRef.file()->name().toString().to8Bit(true);
 #else

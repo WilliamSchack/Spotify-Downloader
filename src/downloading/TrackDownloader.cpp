@@ -126,8 +126,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
             // TODO: let the user input a platform url to download in this case
 
-            // TODO: Insert which search platform
-            result.FailReason = "Track cannot be found on the search platform";
+            result.FailReason = "Track cannot be found on the search platform (" + std::to_string((int)searchPlatform) + ")";
             return result;
         }
 
@@ -139,8 +138,6 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
             eventCallback(sourceFoundEvent);
         }
     }
-
-    // TODO: Check for youtube flagging your ip
 
     // == Download
     
@@ -169,7 +166,6 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
 
     tempDownloadPath = downloadResult.Path;
 
-    // TODO: Handle errors properly
     if (downloadResult.Error.Error != EYtdlpError::None) {
         Logger::Info(track.GetUniqueId() + ": " + downloadResult.Error.Details);
         result.FailReason = downloadResult.Error.Details;

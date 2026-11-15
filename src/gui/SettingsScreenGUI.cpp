@@ -59,8 +59,6 @@ bool SettingsScreenGUI::GetAllSettingsValid() const
 
 int SettingsScreenGUI::GetBitrateMax() const
 {
-    // TODO: Update tooltip with low, good, high quality bitrate settings
-
     std::unique_ptr<ICodec> codec = CodecFactory::Create(Config::CodecExtension);
     const BitrateDetails& codecBitrateDetails = codec->GetBitrateDetails();
 
@@ -300,8 +298,6 @@ void SettingsScreenGUI::CheckPlaylistFileCreationFromType()
 
 void SettingsScreenGUI::SetupYouTubeCookiesWatcher()
 {
-    // TODO: Do this every time the screen opens, doesnt work on sequential setting screen opens
-
     connect(&_youtubeCookiesWatcher, &QFileSystemWatcher::fileChanged, this, &SettingsScreenGUI::YouTubeCookiesWatcherFileChanged);
     AddYouTubeCookiesWatcherPath();
 }

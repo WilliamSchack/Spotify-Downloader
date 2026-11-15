@@ -567,6 +567,8 @@ RowLayout {
                                 tooltip: "Creates a .lrc file for each track at the set LRC File path"
 
                                 CustomSwitch {
+                                    Layout.fillHeight: true
+
                                     checked: _manager.settings.createLyricsFile
                                     onClicked: _manager.settings.createLyricsFile = checked
                                 }

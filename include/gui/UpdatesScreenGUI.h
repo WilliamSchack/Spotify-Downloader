@@ -37,8 +37,8 @@ class UpdatesScreenGUI : public QObject
     private:
         void CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction);
 
-        void AnyDependencyInstalledChanged();
-        void AnyDependencyUpdateAvailableChanged();
+        void CheckAllDependenciesInstalled();
+        void CheckAllDependenciesUpToDate();
     private:
         DependencyInfo::EDependency _selectedDependencyType;
 

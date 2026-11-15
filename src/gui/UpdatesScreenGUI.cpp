@@ -1,7 +1,5 @@
 #include "UpdatesScreenGUI.h"
 
-// TODO: Dont allow downloads if all dependencies are not installed
-
 UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
 {
     qmlRegisterUncreatableType<DependencyInfo>("Echolite.Info.Updates", 1, 0, "DependencyInfo", "Created in c++");
@@ -159,6 +157,9 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         }
     );
 
+    CheckAllDependenciesInstalled();
+    CheckAllDependenciesUpToDate();
+    
     SelectDependency(DependencyInfo::EDependency::Echolite);
 }
 
@@ -186,11 +187,11 @@ void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type,
     dependencyInfo->SetIconSource(iconSource);
     _dependencies.insert(type, dependencyInfo);
 
-    connect(dependencyInfo, &DependencyInfo::InstalledChanged, this, &UpdatesScreenGUI::AnyDependencyInstalledChanged);
-    connect(dependencyInfo, &DependencyInfo::UpdateAvailableChanged, this, &UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged);
+    connect(dependencyInfo, &DependencyInfo::InstalledChanged, this, &UpdatesScreenGUI::CheckAllDependenciesInstalled);
+    connect(dependencyInfo, &DependencyInfo::UpdateAvailableChanged, this, &UpdatesScreenGUI::CheckAllDependenciesUpToDate);
 }
 
-void UpdatesScreenGUI::AnyDependencyInstalledChanged()
+void UpdatesScreenGUI::CheckAllDependenciesInstalled()
 {
     for (DependencyInfo* info : _dependencies) {
         if (!info->GetInstalled()) {
@@ -202,7 +203,7 @@ void UpdatesScreenGUI::AnyDependencyInstalledChanged()
     SetAllInstalled(true);
 }
 
-void UpdatesScreenGUI::AnyDependencyUpdateAvailableChanged()
+void UpdatesScreenGUI::CheckAllDependenciesUpToDate()
 {
     for (DependencyInfo* info : _dependencies) {
         if (info->GetUpdateAvailable()) {

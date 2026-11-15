@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls.Basic
 
+// TODO: Fix when mouse is hovering over this (flashing)
+
 Popup {
     id: root
 

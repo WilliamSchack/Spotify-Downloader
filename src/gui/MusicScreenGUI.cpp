@@ -70,8 +70,6 @@ void MusicScreenGUI::DownloadButtonClicked()
     
     // Cancel
     if (_downloader.IsDownloading()) {
-        // TODO: Add confirmation popup
-        
         _downloader.Stop(); 
         emit DownloadButtonTextChanged();
 
