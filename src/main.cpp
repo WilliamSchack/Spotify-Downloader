@@ -71,6 +71,7 @@ int main(int argc, char** argv)
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
+    app.setFont(QFont(":/fonts/Roboto.ttf"));
 
     // TODO: Decide this better
 #if !defined(__APPLE__) && defined(UNIX)
