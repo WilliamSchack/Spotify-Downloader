@@ -41,6 +41,11 @@ class DownloadManager
         bool IsPaused() const;
         bool IsStopping() const;
 
+        int GetSuccessfulDownloads() const;
+        int GetFailedDownloads() const;
+        int GetCompletedDownloads() const;
+        int GetTotalTracks() const;
+
         PlaylistData GetPlaylistData() const;
 
         DownloadEventsQueue& GetEvents();

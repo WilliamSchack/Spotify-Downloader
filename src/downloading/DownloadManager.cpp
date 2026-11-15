@@ -81,6 +81,26 @@ bool DownloadManager::IsStopping() const
     return _downloading && _stopping;
 }
 
+int DownloadManager::GetSuccessfulDownloads() const
+{
+    return _successfulDownloads;
+}
+
+int DownloadManager::GetFailedDownloads() const
+{
+    return _failedDownloads;
+}
+
+int DownloadManager::GetCompletedDownloads() const
+{
+    return _successfulDownloads + _failedDownloads;
+}
+
+int DownloadManager::GetTotalTracks() const
+{
+    return _totalTracks;
+}
+
 PlaylistData DownloadManager::GetPlaylistData() const
 {
     return _downloadingPlaylist;

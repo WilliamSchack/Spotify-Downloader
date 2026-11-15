@@ -6,7 +6,7 @@ ToggleButton {
 
     required property var info
 
-    implicitWidth: parent.width
+    implicitWidth: parent ? parent.width : 0
     height: 50
 
     unselectedBackgroundColour: "transparent"

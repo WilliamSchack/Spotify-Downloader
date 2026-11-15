@@ -2,6 +2,8 @@
 
 MusicScreenGUI::MusicScreenGUI(QObject* parent) : QObject(parent)
 {
+    connect(this, &MusicScreenGUI::TracksChanged, this, &MusicScreenGUI::TracksDownloadsCompletedChanged);
+    connect(this, &MusicScreenGUI::TracksChanged, this, &MusicScreenGUI::DownloadErrorsChanged);
     connect(this, &MusicScreenGUI::DownloadButtonTextChanged, this, &MusicScreenGUI::DownloadButtonIconChanged);
     connect(this, &MusicScreenGUI::PlayPauseButtonTextChanged, this, &MusicScreenGUI::PlayPauseButtonIconChanged);
 
@@ -31,6 +33,16 @@ AddTracksPopup* MusicScreenGUI::GetAddTracksPopup() const
 QList<QObject*> MusicScreenGUI::GetTracks() const
 {
     return _tracks;
+}
+
+int MusicScreenGUI::GetDownloadsCompleted() const
+{
+    return _downloader.GetCompletedDownloads();
+}
+
+int MusicScreenGUI::GetDownloadErrors() const
+{
+    return _downloader.GetFailedDownloads();
 }
 
 void MusicScreenGUI::OnDownloadRequested(const std::string& link, const std::string& destinationFolder)
@@ -155,11 +167,16 @@ void MusicScreenGUI::CheckDownloadEvents()
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->SetProgress(1.0);
                 track->SetStatus("Download Succeeded!");
+
+                emit TracksDownloadsCompletedChanged();
             },
             [&](const TrackFailedEvent& e) {
                 TrackUI* track = _tracksFromId[e.TrackUniqueId];
                 track->SetProgress(1.0);
                 track->SetStatus("Failed: " + e.Reason);
+
+                emit TracksDownloadsCompletedChanged();
+                emit DownloadErrorsChanged();
             },
             [&](const DownloadStartedEvent& e) {
                 // Remove old tracks

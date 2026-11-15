@@ -1,6 +1,3 @@
-// TEMPORARY, only used for repeaters
-pragma ComponentBehavior: Bound
-
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -75,6 +72,12 @@ Rectangle {
                 }
 
                 Rectangle { Layout.fillWidth: true }
+
+                Text {
+                    text: "Downloads Completed: " + _manager.music.downloadsCompleted + "/" + _manager.music.tracks.length + " (" + _manager.music.downloadErrors + " Error" + (_manager.music.downloadErrors === 1 ? "" : "s") + ")"
+                    font.pixelSize: 14
+                    color: "white"
+                }
             }
         }
 
@@ -92,7 +95,7 @@ Rectangle {
 
             // Column Widths (Will be adjustable later)
             QtObject {
-                id: columnWidths
+                id: columnWidthsObject
                 property real number: 0.05
                 property real title: 0.25
                 property real album: 0.25
@@ -103,6 +106,33 @@ Rectangle {
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
+
+                // Progress Bar
+                ProgressBar {
+                    id: progressBar
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 5
+
+                    value: _manager.music.tracks.length > 0 ? (_manager.music.downloadsCompleted / _manager.music.tracks.length) : 0
+
+                    background: Rectangle {
+                        color: Qt.alpha('#6a6a6a', 0.2)
+                    }
+
+                    contentItem: Rectangle {
+                        width: progressBar.width * progressBar.value
+                        height: progressBar.height
+                        color: Qt.alpha('#4DFF36', 0.4)
+                    }
+
+                    Behavior on value {
+                        NumberAnimation {
+                            duration: 500
+                            easing.type: Easing.InOutCubic
+                        }
+                    }
+                }
 
                 // Top Section
                 Rectangle {
@@ -117,7 +147,7 @@ Rectangle {
 
                         // Number
                         Item {
-                            width: parent.width * columnWidths.number
+                            width: parent.width * columnWidthsObject.number
                             height: parent.height
                             Text {
                                 anchors.centerIn: parent
@@ -129,7 +159,7 @@ Rectangle {
 
                         // Title / Artist
                         Item {
-                            width: parent.width * columnWidths.title
+                            width: parent.width * columnWidthsObject.title
                             height: parent.height
                             
                             Text {
@@ -142,7 +172,7 @@ Rectangle {
 
                         // Album
                         Item {
-                            width: parent.width * columnWidths.album
+                            width: parent.width * columnWidthsObject.album
                             height: parent.height
                             
                             Text {
@@ -155,7 +185,7 @@ Rectangle {
 
                         // Sources
                         Item {
-                            width: parent.width * columnWidths.sources
+                            width: parent.width * columnWidthsObject.sources
                             height: parent.height
                             
                             Text {
@@ -168,7 +198,7 @@ Rectangle {
 
                         // Download Status
                         Item {
-                            width: parent.width * columnWidths.downloadStatus
+                            width: parent.width * columnWidthsObject.downloadStatus
                             height: parent.height
                             
                             Text {
@@ -200,7 +230,7 @@ Rectangle {
                     delegate: Track {
                         required property QtObject modelData
                         trackData: modelData
-                        columnWidths: columnWidths
+                        columnWidths: columnWidthsObject
                         width: ListView.view.width
                     }
                 }

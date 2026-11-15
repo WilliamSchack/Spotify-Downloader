@@ -22,6 +22,8 @@ class MusicScreenGUI : public QObject
     Q_OBJECT
     Q_PROPERTY(QObject* addTracksPopup READ GetAddTracksPopup CONSTANT)
     Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
+    Q_PROPERTY(int downloadsCompleted READ GetDownloadsCompleted NOTIFY TracksDownloadsCompletedChanged)
+    Q_PROPERTY(int downloadErrors READ GetDownloadErrors NOTIFY DownloadErrorsChanged)
     Q_PROPERTY(QString downloadButtonText READ GetDownloadButtonText NOTIFY DownloadButtonTextChanged);
     Q_PROPERTY(QString downloadButtonIcon READ GetDownloadButtonIcon NOTIFY DownloadButtonIconChanged);
     Q_PROPERTY(bool downloadButtonEnabled READ GetDownloadButtonEnabled NOTIFY DownloadButtonEnabledChanged);
@@ -35,6 +37,8 @@ class MusicScreenGUI : public QObject
 
         AddTracksPopup* GetAddTracksPopup() const;
         QList<QObject*> GetTracks() const;
+        int GetDownloadsCompleted() const;
+        int GetDownloadErrors() const;
 
         QString GetDownloadButtonText() const;
         QString GetDownloadButtonIcon() const;
@@ -68,6 +72,8 @@ class MusicScreenGUI : public QObject
         bool _loadingBackgroundImage = false;
     signals:
         void TracksChanged();
+        void TracksDownloadsCompletedChanged();
+        void DownloadErrorsChanged();
         void DownloadButtonTextChanged();
         void DownloadButtonIconChanged();
         void DownloadButtonEnabledChanged();

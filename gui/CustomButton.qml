@@ -32,7 +32,6 @@ Button {
     implicitWidth: contentItem.implicitWidth + leftPadding + rightPadding
     implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
 
-    font.family: "Roboto"
     font.pixelSize: 14
 
     // Text
