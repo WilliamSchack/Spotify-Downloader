@@ -93,9 +93,7 @@ nlohmann::ordered_json Config::ToJson()
 }
 
 void Config::FromJson(const nlohmann::json& json)
-{
-    // TODO: create taggable input setting type ts is annoying
-
+{\
     // Does validating for everything incase the file was modified outside the program
 
     // Helpers
@@ -262,9 +260,8 @@ bool Config::Save(const std::filesystem::path& path)
 
 bool Config::YouTubeCookiesValid()
 {
-    // TODO:
-    // Need to add some way of checking the po token, or checking when updating it in the settings screen
-    // Also should check the age to check if age restricted videos can be accessed
+    // TODO: Need to add some way of checking the po token, or checking when updating it in the settings screen
+    //       Also should check the age to check if age restricted videos can be accessed
 
     bool cookiesValid = YouTubeCookieFile::Get().CookiesValid();
     return cookiesValid && !YouTubePOToken.empty();

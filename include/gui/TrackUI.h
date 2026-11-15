@@ -28,7 +28,6 @@ class TrackUI : public QObject
     Q_PROPERTY(QList<GUISourceInfo> sources READ GetSources NOTIFY SourcesChanged)
     Q_PROPERTY(float progress READ GetProgress NOTIFY ProgressChanged)
     Q_PROPERTY(QString status READ GetStatus NOTIFY StatusChanged)
-    // TODO: Add Explicit Field
 
     public:
         explicit TrackUI(const TrackData& data, QObject* parent = nullptr);

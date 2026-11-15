@@ -2,8 +2,6 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Effects
 
-// TODO: Visibly disable when enabled is false
-
 TextField {
     id: root
     implicitHeight: parent.height
@@ -25,7 +23,7 @@ TextField {
         width: root.width
         radius: 3
 
-        color: root.valid ? "white" : '#ffdedd'
+        color: root.enabled ? (root.valid ? "white" : '#ffdedd') : Qt.darker("white", 1.1)
 
         Behavior on color {
             ColorAnimation {
