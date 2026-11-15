@@ -210,7 +210,6 @@ Rectangle {
 
     // Popups
     AddTracksPopup {
-        id: addTracksPopups
-        radius: parent.radius
+        id: addTracksPopup
     }
 }
