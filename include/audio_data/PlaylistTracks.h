@@ -29,7 +29,7 @@ inline void to_json(nlohmann::json& json, const PlaylistTracks& data)
 
 inline nlohmann::json PlaylistTracks::ToJson() const
 {
-    return *json;
+    return *this;
 }
 
 inline void PlaylistTracks::Print() const

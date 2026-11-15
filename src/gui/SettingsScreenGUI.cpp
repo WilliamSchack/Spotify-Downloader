@@ -46,6 +46,8 @@ void SettingsScreenGUI::LeavingScreen()
     CleaupYouTubeCookiesWatcher();
 
     Config::Save();
+
+    Logger::Flush();
 }
 
 bool SettingsScreenGUI::GetAllSettingsValid() const

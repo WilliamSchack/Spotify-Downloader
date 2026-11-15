@@ -55,11 +55,11 @@ int main(int argc, char** argv)
 #endif
 
 #ifdef WIN32
-    versionSs << "Windows" << std::endl;
+    versionSs << "Windows";
 #elif __APPLE__
-    versionSs << "Mac" << std::endl;
+    versionSs << "Mac";
 #else
-    versionSs << "Linux" << std::endl;
+    versionSs << "Linux";
 #endif
 
     Logger::Info(versionSs.str());
@@ -88,27 +88,10 @@ int main(int argc, char** argv)
     engine.rootContext()->setContextProperty("_manager", &manager);
     engine.load(QUrl("qrc:/gui/Main.qml"));
 
-    //std::unique_ptr<IPlatformDownloader> platform = PlatformFactory::CreateDownloader(EPlatform::Spotify);
-    //TrackData track = platform->GetTrack("https://open.spotify.com/track/1RKUoGiLEbcXN4GY4spQDx?si=7972b777acb546f3");
-    //
-    //Lyrics lyrics = LyricsFinder::GetLyrics(track, EPlatform::YouTube);
-    //LyricsFile::Create("/home/william/mnt/main/Music/LyricsTemp", track, lyrics);
+    int output = app.exec();
 
-    //DownloadManager::Download("https://music.youtube.com/watch?v=kky1L2jzc8c", "/home/william/mnt/main/Music/Test");
+    Logger::Info("Exiting");
+    Logger::Flush();
 
-    //DownloadManager().Download("https://open.spotify.com/track/1Jq89qHEa2S1bu9ah1wavm?si=34745d9cea014987", "/home/william/mnt/main/Music/Test");
-    //DownloadManager().Download("https://open.spotify.com/playlist/2MFRaOYBqQRIWjWEQfTiAD?si=b35674a40943425c", "/home/william/mnt/main/Music/Test");
-    //DownloadManager::Download("https://open.spotify.com/playlist/6xetLvEBK7k13730fmA1yP?si=UBrtGqnmS32xVmgd0PWJ0g", "/home/william/mnt/main/Music/Test");
-    //DownloadManager::Download("https://open.spotify.com/playlist/4E5YNtoIyQrhtGuHr3Eb9U?si=beead3b4ce3845ad", "/home/william/mnt/main/Music/PlaylistTest");
-    //DownloadManager::Download("https://open.spotify.com/track/31ZfD4958k80aCeMl719KC?si=58cf0c29d95f4d88", "/home/william/mnt/main/Music");
-    //DownloadManager::Download("https://open.spotify.com/track/4d1CObMrwGif0yDhphYeO1?si=c498829f2829498a", "/home/william/mnt/main/Music");
-    //DownloadManager::Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "/home/william/mnt/main/Music");
-    //DownloadManager().Download("https://open.spotify.com/track/1BmrBper5i6UFr5QwNirWB?si=538ceb8f18d149dc", "C:\\Users\\William\\Music");
-    //DownloadManager::Download("https://open.spotify.com/album/4GRPvwkbXfKXNGfrIJAGCE?si=BfZ1WHfnTkG_P8J9quPtIw", "/home/william/mnt/main/Music/AlbumTest");
-    //DownloadManager::Download("https://open.spotify.com/album/1JLclTNvD2eXpJ0BiJXmpy?si=dbpaiLrmTnKj2VYxzsiLgg", "/home/william/mnt/main/Music/AlbumTest");
-    //DownloadManager::Download("https://open.spotify.com/playlist/1P95wXqcWer0Lsw8Mr5CXL?si=e77e7abc77be4a9f", "/home/william/mnt/main/Music/AlbumTest");
-    //DownloadManager::Download("https://open.spotify.com/playlist/4E5YNtoIyQrhtGuHr3Eb9U?si=0ea99e52fb094258", "/home/william/mnt/main/Music/PlaylistTest");
-    //DownloadManager::Download("https://open.spotify.com/playlist/62MNXgDSeAT8DPUWhdUifC?si=6f6b66ac97c4407c", "/home/william/mnt/main/Music/PlaylistTest");
-
-    return app.exec();
+    return output;
 }

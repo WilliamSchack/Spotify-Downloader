@@ -220,6 +220,9 @@ void DownloadManager::StartDownload(const std::string& url, const std::string& d
         _unpausedThreads = threadCount;
     }
 
+    Logger::Info("Starting download for (" + url + ") and outputting to (" + directoryValidated + ")");
+    Logger::Flush();
+
     for (int i = 0; i < threadCount; i++) {
         _threads.emplace_back([this, searchPlatform, directoryValidated]() {
             ThreadDownload(searchPlatform, directoryValidated);
@@ -259,6 +262,9 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
             
             Logger::Warning("Track (" + event.TrackUniqueId + ") failed to download with the error: " + event.Reason);
         }
+        
+        // Keep the log file up to date incase of a crash
+        Logger::Flush();
     }
 
     if (--_threadsDownloading == 0)
@@ -326,6 +332,9 @@ void DownloadManager::FinishDownload()
 
         _downloading = false;
         _stopping = false;
+
+        Logger::Flush();
+
         return;
     }
 
@@ -343,6 +352,8 @@ void DownloadManager::FinishDownload()
     _events.Send(event);
 
     _downloading = false;
+
+    Logger::Flush();
 }
 
 void DownloadManager::CleanupThreads()

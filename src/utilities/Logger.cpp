@@ -89,8 +89,7 @@ void Logger::Log(const ELogLevel& logLevel, const std::string& message)
     if (_file.is_open()) {
         _file << entry.str();
 
-        // Flush on errors or higher
-        // The file will flush on exit
+        // Make sure the log file is up to date with errors
         if (logLevel >= ELogLevel::Error)
             _file.flush();
     }
