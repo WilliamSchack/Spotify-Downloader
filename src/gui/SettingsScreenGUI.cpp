@@ -162,6 +162,14 @@ void SettingsScreenGUI::YouTubePOTokenClearButtonClicked()
     emit YoutubePOTokenChanged();
 }
 
+void SettingsScreenGUI::OpenLogsFolderButtonClicked()
+{
+    Logger::Flush();
+
+    QString logsFileQString = QString::fromStdString(FileUtils::PathToUtf8(Logger::GetLogsDir()));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(logsFileQString));
+}
+
 bool SettingsScreenGUI::ImportSettingsFromFile()
 {
     QFileDialog dialog(nullptr, "Choose input file", "");

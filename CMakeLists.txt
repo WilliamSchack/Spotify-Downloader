@@ -96,6 +96,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	CURL::libcurl
 )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE "$<$<CONFIG:Debug>:QT_QML_DEBUG>")
+
 # Extra setup
 if (WIN32)
 	# Hide console

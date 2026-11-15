@@ -37,7 +37,7 @@ RowLayout {
             property bool trackScrolling: true
 
             property SettingsSidebarLink activeLink: null
-            property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading, sidebarGroupPlatforms, sidebarGroupInterface]
+            property list<SettingsSidebarGroup> groups: [sidebarGroupOutput, sidebarGroupDownloading, sidebarGroupPlatforms, sidebarGroupInterface, sidebarGroupMisc]
             property int activeGroupIndex: 0
 
             function updateLinkFromScroll() {
@@ -220,10 +220,24 @@ RowLayout {
                             label: "Background"
                             target: sectionBackground
                         }
+                    }
+
+                    SettingsSidebarGroup {
+                        id: sidebarGroupMisc
+                        label: "Miscellaneous"
+                        animationTime: root.scrollAnimationTime
+                        flickable: settingsFlickableRight
+                        activeLink: sidebarRoot.activeLink
+                        onActivated: (link, group, clicked) => { sidebarRoot.setActiveLink(link, group, clicked) }
 
                         SettingsSidebarLink {
                             label: "Settings"
                             target: sectionSettings
+                        }
+
+                        SettingsSidebarLink {
+                            label: "Logging"
+                            target: sectionLogging
                         }
                     }
                 }
@@ -956,6 +970,10 @@ RowLayout {
                                 }
                             }
                         }
+                    }
+
+                    MajorSection {
+                        label: "Miscellaneous"
 
                         MinorSection {
                             id: sectionSettings
@@ -1012,6 +1030,28 @@ RowLayout {
                                             dialog.open()
                                         }
                                     }
+                                }
+                            }
+                        }
+
+                        MinorSection {
+                            id: sectionLogging
+                            label: "Logging"
+
+                            SettingsItem {
+                                label: "Logs Folder"
+
+                                CustomButton {
+                                    Layout.minimumWidth: 100
+                                    Layout.maximumWidth: 300
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+
+                                    text: "Open Logs Folder"
+                                    textColour: "black"
+                                    font.bold: true
+
+                                    onClicked: _manager.settings.OpenLogsFolderButtonClicked();
                                 }
                             }
                         }

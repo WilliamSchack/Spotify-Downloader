@@ -33,6 +33,9 @@ class Logger
         static void Error(const std::string& message);
         static void Fatal(const std::string& message);
         static void Out(const std::string& message);
+
+        static std::filesystem::path GetFilePath();
+        static std::filesystem::path GetLogsDir();
     private:
         static void Log(const ELogLevel& logLevel, const std::string& message);
 
@@ -42,8 +45,6 @@ class Logger
 
         static std::string GetLogLevelString(const ELogLevel& logLevel);
         static std::string GetTimestamp();
-        static std::filesystem::path GetFilePath();
-        static std::filesystem::path GetLogsDir();
     private:
         static inline const std::string LOGS_FOLDER_NAME = "Logs";
         static inline const std::string FILE_NAME = "Log.log";
