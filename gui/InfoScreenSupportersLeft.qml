@@ -2,10 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 
 Item {
-    id: root
-
-    width: parent.width
-    height: parent.height
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     CustomButton {
         width: parent.width

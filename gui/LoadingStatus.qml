@@ -7,7 +7,8 @@ Item {
     required property bool loadingFailed
     required property string contentLabel
 
-    anchors.fill: parent
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     Row {
         anchors.centerIn: parent

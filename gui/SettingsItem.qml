@@ -35,7 +35,7 @@ Item {
         // Tooltip
         Row {
             Layout.fillHeight: true
-            anchors.verticalCenter: parent.verticalCenter
+            Layout.alignment: Qt.AlignVCenter
 
             spacing: 8
 

@@ -8,8 +8,8 @@ ColumnLayout {
 
     readonly property DependencyInfo selectedDependency: _manager.info.updates.selectedDependency
 
-    width: parent.width
-    height: parent.height
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     spacing: 30
 

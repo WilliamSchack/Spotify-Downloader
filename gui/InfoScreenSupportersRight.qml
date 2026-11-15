@@ -3,8 +3,8 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 ColumnLayout {
-    width: parent.width
-    height: parent.height
+    implicitWidth: parent.width
+    implicitHeight: parent.height
     
     spacing: 20
 

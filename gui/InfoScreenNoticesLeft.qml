@@ -2,14 +2,12 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
-Column {
-    id: root
-
-    width: parent.width
-    height: parent.height
+Item {
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     ButtonGroup {
-        buttons: notices.contentItem.children
+        id: buttonsGroup
     }
 
     ListView {
@@ -32,6 +30,7 @@ Column {
         delegate: NoticeSelectionButton {
             required property var modelData
 
+            ButtonGroup.group: buttonsGroup
             width: ListView.view.width - (notices.scrollBarActive ? 20 : 0)
 
             info: modelData

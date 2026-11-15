@@ -96,13 +96,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	CURL::libcurl
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE QT_QML_DEBUG)
-
-# Enable debug logging on RELWITHDEBINFO configuration
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:RELWITHDEBINFO>:QT_MESSAGELOGCONTEXT>
-)
-
 # Extra setup
 if (WIN32)
 	# Hide console

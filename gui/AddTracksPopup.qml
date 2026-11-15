@@ -172,8 +172,6 @@ Popup {
     Connections {
         target: _manager.music.addTracksPopup
         function onStartError(error) {
-            console.log("ON ERROR")
-
             const dialog = messageDialogComponent.createObject(root, {
                 title: "Could Not Start Download",
                 text: error,

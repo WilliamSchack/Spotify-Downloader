@@ -17,7 +17,6 @@ RowLayout {
     property bool loadedSupporters: false
 
     function switchInfoScreen(screen: int) {
-        console.log(loadedNotices + " :: LOADED")
         if (!loadedNotices && screen == InfoScreen.EInfoScreen.Notices) {
             _manager.info.notices.UpdateNotices()
             loadedNotices = true

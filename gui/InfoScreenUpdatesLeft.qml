@@ -3,11 +3,9 @@ import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Echolite.Info.Updates
 
-Column {
-    id: root
-
-    width: parent.width
-    height: parent.height
+Item {
+    implicitWidth: parent.width
+    implicitHeight: parent.height
 
     Flickable {
         id: flickable
