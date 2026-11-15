@@ -8,6 +8,8 @@ SettingsScreenGUI::SettingsScreenGUI(QObject* parent) : QObject(parent)
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::LosslessFormatChanged);
     connect(this, &SettingsScreenGUI::CodecChanged, this, &SettingsScreenGUI::FormatIsLosslessChanged);
+    connect(this, &SettingsScreenGUI::CreatePlaylistFileChanged, this, &SettingsScreenGUI::CheckPlaylistFileCreationFromToggle);
+    connect(this, &SettingsScreenGUI::PlaylistFileTypeChanged, this, &SettingsScreenGUI::CheckPlaylistFileCreationFromType);
     connect(this, &SettingsScreenGUI::YoutubePOTokenChanged, this, &SettingsScreenGUI::UpdateYouTubeCookiesStatus);
     connect(this, &SettingsScreenGUI::YouTubeCookiesStatusChanged, this, &SettingsScreenGUI::UpdateBitrateFromCookieStatus);
 
@@ -276,6 +278,24 @@ void SettingsScreenGUI::UpdateBitrateFromCookieStatus()
 
     emit BitrateMaxChanged();
     emit BitrateMaxPremiumChanged();
+}
+
+void SettingsScreenGUI::CheckPlaylistFileCreationFromToggle()
+{
+    if (!Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)
+        SetPlaylistFileType((int)EPlaylistFileType::None);
+
+    if (Config::CreatePlaylistFile && Config::PlaylistFileType == EPlaylistFileType::None)
+        SetPlaylistFileType((int)EPlaylistFileType::M3U);
+}
+
+void SettingsScreenGUI::CheckPlaylistFileCreationFromType()
+{
+    if (!Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)
+        SetCreatePlaylistFile(true);
+
+    if (Config::CreatePlaylistFile && Config::PlaylistFileType == EPlaylistFileType::None)
+        SetCreatePlaylistFile(false);
 }
 
 void SettingsScreenGUI::SetupYouTubeCookiesWatcher()

@@ -98,6 +98,9 @@ class SettingsScreenGUI : public QObject
         void UpdateYouTubeCookiesStatus();
         void UpdateBitrateFromCookieStatus();
 
+        void CheckPlaylistFileCreationFromToggle();
+        void CheckPlaylistFileCreationFromType();
+
         void SetupYouTubeCookiesWatcher();
         void AddYouTubeCookiesWatcherPath();
         void CleaupYouTubeCookiesWatcher();
