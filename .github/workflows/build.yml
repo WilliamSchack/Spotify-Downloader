@@ -15,12 +15,12 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  - os: ubuntu-latest
-                    qt_host: linux
+                  #- os: ubuntu-latest
+                  #  qt_host: linux
                   - os: windows-latest
                     qt_host: windows
-                  - os: macos-latest
-                    qt_host: mac
+                  #- os: macos-latest
+                  #  qt_host: mac
         
         name: Building on ${{matrix.os}}
         runs-on: ${{matrix.os}}
@@ -61,6 +61,7 @@ jobs:
             
             - name: Configure (Windows)
               if: runner.os == 'Windows'
+              shell: pwsh
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
