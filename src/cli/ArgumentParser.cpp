@@ -45,7 +45,7 @@ bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
 }
 
 // Requires QtWebEngine to be setup
-bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
+bool ArgumentParser::ParseAfterGUI(int argc, char** argv)
 {
     if (argc <= 1)
         return false;
