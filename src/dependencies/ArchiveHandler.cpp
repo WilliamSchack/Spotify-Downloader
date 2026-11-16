@@ -1,7 +1,10 @@
 #include "ArchiveHandler.h"
 
-bool ArchiveHandler::Extract(const std::filesystem::path& archivePath, const std::filesystem::path& outputPath)
+bool ArchiveHandler::Extract(const std::filesystem::path& archivePath, std::filesystem::path outputPath)
 {
+    // Resolve symlinks, will cause errors otherwise
+    outputPath = std::filesystem::weakly_canonical(outputPath);
+    
     return ExtractEntries(archivePath, [&outputPath](struct archive_entry* entry) {
         const char* entryName = archive_entry_pathname(entry);
         if (!entryName)
@@ -14,8 +17,11 @@ bool ArchiveHandler::Extract(const std::filesystem::path& archivePath, const std
     });
 }
 
-bool ArchiveHandler::ExtractFile(const std::filesystem::path& archivePath, const std::string& pathInArchive, const std::filesystem::path& outputPath)
+bool ArchiveHandler::ExtractFile(const std::filesystem::path& archivePath, const std::string& pathInArchive, std::filesystem::path outputPath)
 {
+    // Resolve symlinks, will cause errors otherwise
+    outputPath = std::filesystem::weakly_canonical(outputPath);
+
     bool fileFound = false;
     bool success = ExtractEntries(archivePath, [&outputPath, &pathInArchive, &fileFound](struct archive_entry* entry) {
         const char* entryName = archive_entry_pathname(entry);
@@ -91,7 +97,7 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
             if (r < ARCHIVE_OK)
                 fprintf(stderr, "%s\n", archive_error_string(ext));
             if (r < ARCHIVE_WARN) {
-                Logger::Warning("Archive Write Header Failed: " + std::string(archive_error_string(a)));
+                Logger::Warning("Archive Write Header Failed: " + std::string(archive_error_string(ext)));
                 failed = true;
                 break;
             }
@@ -101,7 +107,7 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
         if (r < ARCHIVE_OK)
             fprintf(stderr, "%s\n", archive_error_string(ext));
         if (r < ARCHIVE_WARN) {
-            Logger::Warning("Archive Write Finish Failed: " + std::string(archive_error_string(a)));
+            Logger::Warning("Archive Write Finish Failed: " + std::string(archive_error_string(ext)));
             failed = true;
         }
 

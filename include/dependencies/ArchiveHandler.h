@@ -13,8 +13,8 @@
 class ArchiveHandler
 {
     public:
-        static bool Extract(const std::filesystem::path& archivePath, const std::filesystem::path& outputPath);
-        static bool ExtractFile(const std::filesystem::path& archivePath, const std::string& pathInArchive, const std::filesystem::path& outputPath);
+        static bool Extract(const std::filesystem::path& archivePath, std::filesystem::path outputPath);
+        static bool ExtractFile(const std::filesystem::path& archivePath, const std::string& pathInArchive, std::filesystem::path outputPath);
     private:
         enum class EEntryAction
         {

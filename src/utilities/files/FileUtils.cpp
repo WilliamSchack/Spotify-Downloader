@@ -23,7 +23,7 @@ std::string FileUtils::ValidateDirectory(const std::string& directoryName)
 
 #ifndef _WIN32
     // Replace home dir
-    if (StringUtils::StartsWith(copiedString, "~")) {
+    if (StringUtils::StartsWith(copiedString, "~/") || StringUtils::StartsWith(copiedString, "~\\")) {
         EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
         if (homePath.Exists) {
             std::string homePathString = PathToUtf8(homePath.Value);
