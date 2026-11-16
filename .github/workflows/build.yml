@@ -15,8 +15,8 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  #- os: ubuntu-latest
-                  #  qt_host: linux
+                  - os: ubuntu-latest
+                    qt_host: linux
                   - os: windows-latest
                     qt_host: windows
                   #- os: macos-latest
@@ -44,12 +44,22 @@ jobs:
               run: vcpkg install curl
 
             # Install Qt
-            - name: Install Qt
+            - name: Install Qt (Linux)
+              if: runner.os == 'Linux'
               uses: jurplel/install-qt-action@v4
               with:
                 version: '6.9.3'
                 host: ${{ matrix.qt_host }}
-                modules: 'qtwebengine qtwebchannel qtpositioning'
+                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport qtwayland'
+                cache: true
+
+            - name: Install Qt (Windows/MacOS)
+              if: runner.os != 'Linux'
+              uses: jurplel/install-qt-action@v4
+              with:
+                version: '6.9.3'
+                host: ${{ matrix.qt_host }}
+                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport'
                 cache: true
 
             # Configure & Build
