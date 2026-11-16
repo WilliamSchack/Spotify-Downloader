@@ -65,7 +65,7 @@ jobs:
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
-                -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+                "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 
             - name: Build
               run: cmake --build build --config Release
