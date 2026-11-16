@@ -16,7 +16,8 @@
 class ArgumentParser
 {
     public:
-        static bool Parse(int argc, char** argv);
+        static bool ParseBeforeGUI(int argc, char** argv);
+        static bool ParseAfterGUI(int argc, char** argv);
 };
 
 #endif

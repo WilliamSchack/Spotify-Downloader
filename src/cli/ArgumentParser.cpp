@@ -1,7 +1,7 @@
 #include "ArgumentParser.h"
 
 // Returns if the args were valid
-bool ArgumentParser::Parse(int argc, char** argv)
+bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
 {
     if (argc <= 1)
         return false;
@@ -41,6 +41,16 @@ bool ArgumentParser::Parse(int argc, char** argv)
 
         return true;
     }
+    return false;
+}
+
+// Requires QtWebEngine to be setup
+bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
+{
+    if (argc <= 1)
+        return false;
+
+    std::string command = argv[1];
 
     if (command == "download-track" && argc == 4) {
         std::string url = argv[2];

@@ -66,8 +66,8 @@ int main(int argc, char** argv)
 
     std::srand(std::time(NULL));
 
-    // Setting up qt before arg parser so qtwebengine can be initialised
-    QQuickWindow::setDefaultAlphaBuffer(true);
+    bool argsUsed = ArgumentParser::ParseBeforeGUI(argc, argv);
+    if (argsUsed) return 0;
 
     QApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
@@ -77,12 +77,7 @@ int main(int argc, char** argv)
     appFont.setFamily(QFontDatabase::applicationFontFamilies(fontId).at(0));
     app.setFont(appFont);
 
-    // TODO: Decide this better, TEST ME
-#if !defined(__APPLE__) && defined(__unix__)
-    //app.setAttribute(Qt::AA_DontUseNativeDialogs);
-#endif
-
-    bool argsUsed = ArgumentParser::Parse(argc, argv);
+    argsUsed = ArgumentParser::ParseAfterGUI(argc, argv);
     if (argsUsed) return 0;
 
     Config::Load();
