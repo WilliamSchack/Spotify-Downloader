@@ -22,12 +22,12 @@ bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
 #elif __APPLE__
     // Get download url from details json
     NetworkRequest appleDetailsRequest;
-	request.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
+	appleDetailsRequest.Url = "https://evermeet.cx/ffmpeg/info/ffmpeg/release";
     NetworkResponse appleDetailsResponse = appleDetailsRequest.Get();
 
     nlohmann::json appleResponseJson = nlohmann::json::parse(appleDetailsResponse.Body);
     url = appleResponseJson["download"]["zip"]["url"];
-    archiveName = "ffmpeg.zip"
+    archiveName = "ffmpeg.zip";
     pathInArchive = "ffmpeg";
 #else
     url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/";
