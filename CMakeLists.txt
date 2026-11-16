@@ -157,7 +157,6 @@ elseif (APPLE)
             COMMAND  ${MACDEPLOYQT_EXECUTABLE}
                 "$<TARGET_BUNDLE_DIR:${PROJECT_NAME}>"
                 "-qmldir=${CMAKE_SOURCE_DIR}/gui"
-                -dmg # Temp
             VERBATIM
         )
     endif()

@@ -16,9 +16,12 @@
 - [QWindowKit](https://github.com/stdware/qwindowkit/tree/main) - [Apache 2.0](https://github.com/stdware/qwindowkit/blob/main/LICENSE)
 
 **Building**
-- [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) - [MIT](https://github.com/linuxdeploy/linuxdeploy/blob/master/LICENSE.txt)
-- [linuxdeploy-plugin-qt](https://github.com/linuxdeploy/linuxdeploy-plugin-qt) - [MIT](https://github.com/linuxdeploy/linuxdeploy-plugin-qt)
-- [appimagetool](https://github.com/AppImage/appimagetool) - [MIT](https://github.com/AppImage/appimagetool/blob/main/LICENSE)
+- Linux:
+	- [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) - [MIT](https://github.com/linuxdeploy/linuxdeploy/blob/master/LICENSE.txt)
+	- [linuxdeploy-plugin-qt](https://github.com/linuxdeploy/linuxdeploy-plugin-qt) - [MIT](https://github.com/linuxdeploy/linuxdeploy-plugin-qt)
+	- [appimagetool](https://github.com/AppImage/appimagetool) - [MIT](https://github.com/AppImage/appimagetool/blob/main/LICENSE)
+- MacOS
+	- [create-dmg](https://github.com/create-dmg/create-dmg) - [MIT](https://github.com/create-dmg/create-dmg/blob/master/LICENSE)
 
 **Other**
 - [Python YT Music API](https://github.com/sigma67/ytmusicapi) - [MIT](https://github.com/sigma67/ytmusicapi/blob/main/LICENSE) (Translated to C++)

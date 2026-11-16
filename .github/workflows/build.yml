@@ -19,8 +19,8 @@ jobs:
                 include:
                   - os: ubuntu-latest
                     qt_host: linux
-                  - os: windows-latest
-                    qt_host: windows
+                  #- os: windows-latest
+                  #  qt_host: windows
                   - os: macos-latest
                     qt_host: mac
         
@@ -66,14 +66,14 @@ jobs:
 
             # Configure & Build
             - name: Configure (Linux)
-              if: runner.os != 'Windows'
+              if: runner.os == 'Linux'
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
                 -DCREATE_APPIMAGE=ON
 
             - name: Configure (MacOS)
-              if: runner.os != 'Windows'
+              if: runner.os != 'macOS'
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
@@ -89,17 +89,17 @@ jobs:
             - name: Build
               run: cmake --build build --config Release
 
-            # Install dependencies
-            - name: Install Dependencies (Linux)
+            # Download dependencies
+            - name: Download Dependencies (Linux)
               if: runner.os == 'Linux'
               # Only install on the appimage
               run: ./build/out/Echolite-x86_64.AppImage download-deps
 
-            - name: Install Dependencies (MacOS)
+            - name: Download Dependencies (MacOS)
               if: runner.os == 'macOS'
               run: ./build/out/Release/Echolite.app/Contents/MacOS/Echolite download-deps
 
-            - name: Install Dependencies (Windows)
+            - name: Download Dependencies (Windows)
               if: runner.os == 'Windows'
               run: ./build/out/Release/Echolite.exe download-deps
 
@@ -127,4 +127,5 @@ jobs:
 
             - name: Package (Windows)
               if: runner.os == 'Windows'
-              run: tree build/out/Release
+              shell: pwsh
+              run: ls -R build/out/Release
