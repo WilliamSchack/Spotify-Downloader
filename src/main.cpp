@@ -73,12 +73,13 @@ int main(int argc, char** argv)
     app.setWindowIcon(QIcon(":/icons/Icon.png"));
 
     QFont appFont = app.font();
-    appFont.setFamily(":/fonts/Roboto.ttf");
+    int fontId = QFontDatabase::addApplicationFont(":/fonts/Roboto.ttf");
+    appFont.setFamily(QFontDatabase::applicationFontFamilies(fontId).at(0));
     app.setFont(appFont);
 
     // TODO: Decide this better, TEST ME
 #if !defined(__APPLE__) && defined(UNIX)
-    app.setAttribute(Qt::AA_DontUseNativeDialogs)
+    //app.setAttribute(Qt::AA_DontUseNativeDialogs);
 #endif
 
     bool argsUsed = ArgumentParser::Parse(argc, argv);

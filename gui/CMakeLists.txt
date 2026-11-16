@@ -1,6 +1,6 @@
 qt6_add_qml_module(${PROJECT_NAME}_qml
-    URI Echolite
-    VERSION 1.0
+    URI ${PROJECT_NAME}
+    STATIC
     QML_FILES
         Main.qml
         common/CustomButton.qml
@@ -49,4 +49,5 @@ qt6_add_qml_module(${PROJECT_NAME}_qml
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${PROJECT_NAME}_qml
+    ${PROJECT_NAME}_qmlplugin
 )
