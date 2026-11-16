@@ -18,6 +18,8 @@ Make sure these dependencies are in your PATH, otherwise you will need to specif
 
 Either download it manually, or use the command
 
+`git clone https://github.com/WilliamSchack/Echolite`
+
 2 - **Configure & Build the app:**
 
 Execute the following in the root folder:
