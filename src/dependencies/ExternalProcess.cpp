@@ -246,6 +246,13 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
         close(pipeFd[1]);
 
         execv(pathStr.c_str(), argv.data());
+
+        if (errno == ENOEXEC) {
+            // If it cant be executed, assume its a cosmo binary and open it via the shell
+            argv.insert(argv.begin(), "sh");
+            execv("/bin/sh", argv.data());
+        }
+
         _exit(127);
     }
     close(pipeFd[1]);
