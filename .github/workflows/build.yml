@@ -1,6 +1,11 @@
 name: Test Build
 
-on: workflow_dispatch
+# Testing, runs when this file has changed
+on:
+  push:
+    branches: [v2]
+    paths:
+      - '.github/workflows/build.yml'
 
 # Testing to see if building works on all platforms
 
@@ -21,6 +26,8 @@ jobs:
         runs-on: ${{matrix.os}}
 
         steps:
+            - uses: actions/checkout@v4
+
             # Install Curl
             - name: Install Curl 
               if: runner.os == 'Linux'
