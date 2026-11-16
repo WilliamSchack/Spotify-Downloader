@@ -29,18 +29,18 @@ jobs:
             - uses: actions/checkout@v4
 
             # Install Curl
-            - name: Install Curl 
+            - name: Install Curl (Linux)
               if: runner.os == 'Linux'
               run: |
-                sudo apt update
-                sudo apt install -y libcurl4-openssl-dev
+                sudo apt-get update
+                sudo apt-get install -y libcurl4-openssl-dev
             
-            - name: Install Curl
+            - name: Install Curl (MacOS)
               if: runner.os == 'macOS'
               run: brew install curl
 
-            - name: Install Curl
-              if: runner.os ==  'Windows'
+            - name: Install Curl (Windows)
+              if: runner.os == 'Windows'
               run: vcpkg install curl
 
             # Install Qt
@@ -48,14 +48,25 @@ jobs:
               uses: jurplel/install-qt-action@v4
               with:
                 version: '6.9.3'
-                host: ${{matrix.qt_host}}
+                host: ${{ matrix.qt_host }}
                 modules: 'qtwebengine qtwebchannel qtpositioning'
                 cache: true
 
             # Configure & Build
-            - name: Configure & Build
-              run: |
+            - name: Configure (Linux/MacOS)
+              if: runner.os != 'Windows'
+              run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-                cmake --build build --config Release
+                -DINCLUDE_DEPS=ON
             
+            - name: Configure (Windows)
+              if: runner.os == 'Windows'
+              run: >
+                cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+                -DINCLUDE_DEPS=ON
+                -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+
+            - name: Build
+              run: cmake --build build --config Release
+
             # Doing nothing at the moment with it, just testing if its working
