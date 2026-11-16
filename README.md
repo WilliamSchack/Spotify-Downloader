@@ -34,7 +34,6 @@ Notes:
 Execute the following in the root folder:
 
 ```
-mkdir build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```

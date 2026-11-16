@@ -1,0 +1,54 @@
+name: Test Build
+
+on: workflow_dispatch
+
+# Testing to see if building works on all platforms
+
+jobs:
+    build:
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                  - os: ubuntu-latest
+                    qt_host: linux
+                  - os: windows-latest
+                    qt_host: windows
+                  - os: macos-latest
+                    qt_host: mac
+        
+        name: Building on ${{matrix.os}}
+        runs-on: ${{matrix.os}}
+
+        steps:
+            # Install Curl
+            - name: Install Curl 
+              if: runner.os == 'Linux'
+              run: |
+                sudo apt update
+                sudo apt install -y libcurl4-openssl-dev
+            
+            - name: Install Curl
+              if: runner.os == 'macOS'
+              run: brew install curl
+
+            - name: Install Curl
+              if: runner.os ==  'Windows'
+              run: vcpkg install curl
+
+            # Install Qt
+            - name: Install Qt
+              uses: jurplel/install-qt-action@v4
+              with:
+                version: '6.9.3'
+                host: ${{matrix.qt_host}}
+                modules: 'qtwebengine qtwebchannel qtpositioning'
+                cache: true
+
+            # Configure & Build
+            - name: Configure & Build
+              run: |
+                cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+                cmake --build build --config Release
+            
+            # Doing nothing at the moment with it, just testing if its working
