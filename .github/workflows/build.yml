@@ -17,8 +17,8 @@ jobs:
                 include:
                   - os: ubuntu-latest
                     qt_host: linux
-                  - os: windows-latest
-                    qt_host: windows
+                  #- os: windows-latest
+                  #  qt_host: windows
                   #- os: macos-latest
                   #  qt_host: mac
         
@@ -50,7 +50,7 @@ jobs:
               with:
                 version: '6.9.3'
                 host: ${{ matrix.qt_host }}
-                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport qtwayland'
+                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport qtwaylandcompositor'
                 cache: true
 
             - name: Install Qt (Windows/MacOS)
