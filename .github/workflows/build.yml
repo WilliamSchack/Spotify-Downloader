@@ -9,6 +9,8 @@ on:
 
 # Testing to see if building works on all platforms
 
+# here to start the workflow
+
 jobs:
     build:
         strategy:

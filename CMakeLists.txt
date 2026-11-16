@@ -106,27 +106,24 @@ if (WIN32)
         WIN32_EXECUTABLE TRUE
     )
 
-    # Add curl dll
-    message(STATUS "CURL_LIBRARY: (${CURL_LIBRARY})")
-    message(STATUS "CURL_LIBRARIES: (${CURL_LIBRARIES})")
-    message(STATUS "CURL_INCLUDE_DIR: (${CURL_INCLUDE_DIR})")
-
-    get_filename_component(CURL_LIB_DIR ${CURL_LIBRARY} DIRECTORY)
-    find_file(CURL_DLL
-        NAMES libcurl.dll
-        HINTS "${CURL_LIB_DIR}/../bin"
-        NO_DEFAULT_PATH
-    )
-
-    if (CURL_DLL)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${CURL_DLL}
-                $<TARGET_FILE_DIR:${PROJECT_NAME}>
-            VERBATIM
-        )
-    else()
-        message(WARNING "libcurl.dll was not found. The app will not run")
+    # Add curl dll, vcpkg copies it already
+    if (NOT VCPKG_TOOLCHAIN)
+        get_target_property(CURL_DLL CURL::libcurl IMPORTED_LOCATION)
+        if (CURL_DLL)
+            file(TO_CMAKE_PATH "${CURL_DLL}" CURL_DLL)
+            if (CURL_DLL MATCHES "/lib/libcurl\\.lib$")
+                # If the path is the .lib file, change to the dll file
+                string(REPLACE "/lib/libcurl.lib" "/bin/libcurl.dll" CURL_DLL "${CURL_DLL}")
+            endif()
+            
+            add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${CURL_DLL}
+                    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            )
+        else()
+            message(WARNING "libcurl.dll was not found. The app will not run if it is not present")
+        endif()
     endif()
 
 	# Add qt libraries
