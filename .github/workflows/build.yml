@@ -15,10 +15,10 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  - os: ubuntu-latest
-                    qt_host: linux
-                  #- os: windows-latest
-                  #  qt_host: windows
+                  #- os: ubuntu-latest
+                  #  qt_host: linux
+                  - os: windows-latest
+                    qt_host: windows
                   #- os: macos-latest
                   #  qt_host: mac
         

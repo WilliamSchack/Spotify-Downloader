@@ -107,6 +107,10 @@ if (WIN32)
     )
 
     # Add curl dll
+    message(STATUS "CURL_LIBRARY: (${CURL_LIBRARY})")
+    message(STATUS "CURL_LIBRARIES: (${CURL_LIBRARIES})")
+    message(STATUS "CURL_INCLUDE_DIR: (${CURL_INCLUDE_DIR})")
+
     get_filename_component(CURL_LIB_DIR ${CURL_LIBRARY} DIRECTORY)
     find_file(CURL_DLL
         NAMES libcurl.dll
@@ -124,6 +128,7 @@ if (WIN32)
     else()
         message(WARNING "libcurl.dll was not found. The app will not run")
     endif()
+
 	# Add qt libraries
     if (INCLUDE_DEPS)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
