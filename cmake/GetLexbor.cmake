@@ -19,5 +19,6 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             $<TARGET_FILE:lexbor>
             $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        VERBATIM
     )
 endif()

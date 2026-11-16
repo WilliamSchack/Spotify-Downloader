@@ -49,6 +49,6 @@ if(WIN32)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${taglib_INSTALL_DIR}/bin/tag.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>
-		DEPENDS "${STAMP_DIR}/taglib-install" # Wait for install
+		VERBATIM
 	)
 endif()

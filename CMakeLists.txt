@@ -101,25 +101,29 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "$<$<CONFIG:Debug>:QT_QML_DEB
 
 # Extra setup
 if (WIN32)
-	# Hide console
-	set_target_properties(${PROJECT_NAME} PROPERTIES
-		WIN32_EXECUTABLE TRUE
-	)
-
-	# Add curl dll
-	get_target_property(CURL_DLL CURL::libcurl IMPORTED_LOCATION)
-	file(TO_CMAKE_PATH "${CURL_DLL}" CURL_DLL)
-	if (CURL_DLL MATCHES "/lib/libcurl\\.lib$")
-		# If the path is the .lib file, change to the dll file
-		string(REPLACE "/lib/libcurl.lib" "/bin/libcurl.dll" CURL_DLL "${CURL_DLL}")
-	endif()
-	
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CURL_DLL}
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    # Hide console
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
     )
 
+    # Add curl dll
+    get_filename_component(CURL_LIB_DIR ${CURL_LIBRARY} DIRECTORY)
+    find_file(CURL_DLL
+        NAMES libcurl.dll
+        HINTS "${CURL_LIB_DIR}/../bin"
+        NO_DEFAULT_PATH
+    )
+
+    if (CURL_DLL)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CURL_DLL}
+                $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+        )
+    else()
+        message(WARNING "libcurl.dll was not found. The app will not run")
+    endif()
 	# Add qt libraries
     if (INCLUDE_DEPS)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -127,7 +131,7 @@ if (WIN32)
                 "$<TARGET_FILE:${PROJECT_NAME}>"
                 --no-translations
                 --compiler-runtime
-                "--qmldir ${CMAKE_SOURCE_DIR}/gui"
+                --qmldir "${CMAKE_SOURCE_DIR}/gui"
             VERBATIM
         )
     endif()

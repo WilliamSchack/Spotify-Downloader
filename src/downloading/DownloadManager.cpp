@@ -372,7 +372,7 @@ void DownloadManager::FinishDownload()
         return;
     }
 
-    Logger::Info("Finished all downloads: Successes (" + std::to_string(_successfulDownloads) + "), Failures (" + std::to_string(_failedDownloads) + ") / " + std::to_string(_totalTracks));
+    Logger::Info("Finished all downloads: Successes (" + std::to_string(_successfulDownloads) + "), Failures (" + std::to_string(_failedDownloads) + "), Total (" + std::to_string(_totalTracks) + ")");
 
     // Create playlist file if required
     if (Config::CreatePlaylistFile && Config::PlaylistFileType != EPlaylistFileType::None)
