@@ -137,6 +137,12 @@ Window {
                 Layout.bottomMargin: 4
                 spacing: 15
 
+                // Center the screen buttons on macos
+                Item {
+                    visible: Qt.platform.os === "osx"
+                    Layout.fillWidth: true
+                }
+
                 ToggleButtonGroup {
                     id: screenButtons
                     spacing: 15
@@ -187,6 +193,7 @@ Window {
                 // Minimise
                 CustomButton {
                     id: minimiseButton
+                    visible: Qt.platform.os !== "osx"
 
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
@@ -202,6 +209,7 @@ Window {
                 // Maximise
                 CustomButton {
                     id: maximiseButton
+                    visible: Qt.platform.os !== "osx"
 
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
@@ -217,6 +225,7 @@ Window {
                 // Close
                 CustomButton {
                     id: closeButton
+                    visible: Qt.platform.os !== "osx"
 
                     Layout.preferredWidth: parent.height
                     Layout.fillHeight: true
