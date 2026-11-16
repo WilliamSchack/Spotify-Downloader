@@ -56,8 +56,10 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
     archive_write_disk_set_standard_lookup(ext);
     
     bool failed = false;
-    if ((r = archive_read_open_filename(a, FileUtils::PathToUtf8(archivePath).c_str(), 10240)))
+    if ((r = archive_read_open_filename(a, FileUtils::PathToUtf8(archivePath).c_str(), 10240))) {
+        Logger::Warning("Archive Read Failed: " + std::string(archive_error_string(a)));
         failed = true;
+    }
     
     while (!failed) {
         r = archive_read_next_header(a, &entry);
@@ -66,6 +68,7 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
         if (r < ARCHIVE_OK)
             fprintf(stderr, "%s\n", archive_error_string(a));
         if (r < ARCHIVE_WARN) {
+            Logger::Warning("Archive Read Next Header Failed: " + std::string(archive_error_string(a)));
             failed = true;
             break;
         }
@@ -88,6 +91,7 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
             if (r < ARCHIVE_OK)
                 fprintf(stderr, "%s\n", archive_error_string(ext));
             if (r < ARCHIVE_WARN) {
+                Logger::Warning("Archive Write Header Failed: " + std::string(archive_error_string(a)));
                 failed = true;
                 break;
             }
@@ -96,8 +100,10 @@ bool ArchiveHandler::ExtractEntries(const std::filesystem::path& archivePath, co
         r = archive_write_finish_entry(ext);
         if (r < ARCHIVE_OK)
             fprintf(stderr, "%s\n", archive_error_string(ext));
-        if (r < ARCHIVE_WARN)
+        if (r < ARCHIVE_WARN) {
+            Logger::Warning("Archive Write Finish Failed: " + std::string(archive_error_string(a)));
             failed = true;
+        }
 
         if (entryAction == EEntryAction::Break)
             break;

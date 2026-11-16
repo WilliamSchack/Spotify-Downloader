@@ -1,5 +1,25 @@
 include (FetchContent)
 
+# Get ZLIB first, required for most zip files
+set(ZLIB_INSTALL OFF CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+    zlib
+    GIT_REPOSITORY https://github.com/madler/zlib.git
+    GIT_TAG v1.4
+    GIT_SHALLOW TRUE
+    EXCLUDE_FROM_ALL
+)
+
+FetchContent_MakeAvailable(zlib)
+
+#set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} CACHE PATH "" FORCE)
+#set(ZLIB_LIBRARY zlibstatic CACHE STRING "" FORCE)
+#set(ZLIB_ROOT ${zlib_SOURCE_DIR} CACHE PATH "" FORCE)
+
+# Get libarchive
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TEST OFF CACHE BOOL "" FORCE)
 set(ENABLE_INSTALL OFF CACHE BOOL "" FORCE)

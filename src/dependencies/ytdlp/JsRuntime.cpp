@@ -69,7 +69,7 @@ std::string JsRuntime::GetVersionImpl()
     process.AddArgument("-h");
 
     std::string output = process.Execute().Output;
-    
+
     std::smatch matches;
     if (!std::regex_search(output, matches, std::regex(R"(version\s(\d+-\d+-\d+)\s)")))
         return "";
