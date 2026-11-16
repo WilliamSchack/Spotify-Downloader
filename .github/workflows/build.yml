@@ -15,8 +15,8 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  - os: ubuntu-latest
-                    qt_host: linux
+                  #- os: ubuntu-latest
+                  #  qt_host: linux
                   #- os: windows-latest
                   #  qt_host: windows
                   - os: macos-latest
@@ -71,7 +71,7 @@ jobs:
                 -DCREATE_APPIMAGE=ON
 
             - name: Configure (MacOS)
-              if: runner.os != 'macOS'
+              if: runner.os == 'macOS'
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
