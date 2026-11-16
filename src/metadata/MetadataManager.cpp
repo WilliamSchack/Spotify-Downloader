@@ -5,7 +5,7 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
     if (filePath.empty() || !std::filesystem::exists(filePath))
         return;
 
-#ifdef WIN32
+#ifdef _WIN32
     TagLib::FileName taglibFilePath(filePath.wstring().c_str());
 #else
     TagLib::FileName taglibFilePath(filePath.c_str());
@@ -245,7 +245,7 @@ TrackData MetadataManager::GetAll() const
 
     TrackData data(EPlatform::LocalFile);
 
-#ifdef WIN32
+#ifdef _WIN32
     data.Url = _fileRef.file()->name().toString().to8Bit(true);
 #else
     data.Url = _fileRef.file()->name();

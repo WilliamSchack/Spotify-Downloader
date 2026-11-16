@@ -5,7 +5,7 @@ bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
     // Get the download details
     std::string url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
 
-#ifdef WIN32
+#ifdef _WIN32
     #ifdef IS_ARM_CPU
         url += "_arm64.exe";
     #else
@@ -28,7 +28,7 @@ bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
     if (!std::filesystem::exists(path))
         return false;
 
-#ifndef WIN32
+#ifndef _WIN32
     // Make it executable
     std::filesystem::permissions(
         path,

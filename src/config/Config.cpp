@@ -218,7 +218,7 @@ bool Config::Load(const std::filesystem::path& path)
     if (!file.is_open()) {
         Logger::Warning("Could not open config file at " + FileUtils::PathToUtf8(path));
 
-#ifdef WIN32
+#ifdef _WIN32
         LoadV1Config();
 #endif
         Save();
@@ -282,7 +282,7 @@ std::filesystem::path Config::GetFilePath()
     return _filePathCache;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 void Config::LoadV1Config()
 {
     QSettings settings("WilliamSchack", "Spotify Downloader");

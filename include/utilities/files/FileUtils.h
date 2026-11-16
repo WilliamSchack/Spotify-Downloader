@@ -10,7 +10,7 @@
 #include <filesystem>
 #include <regex>
 
-#ifdef WIN32
+#ifdef _WIN32
     #include <windows.h>
 #elif __APPLE__
     #include <mach-o/dyld.h>

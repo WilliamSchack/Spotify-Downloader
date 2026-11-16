@@ -7,7 +7,7 @@ bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
     std::string archiveName = "";
     std::string pathInArchive = "";
 
-#ifdef WIN32
+#ifdef _WIN32
     url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/";
     archiveName = "ffmpeg-master-latest-win";
     

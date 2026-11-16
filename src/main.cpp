@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     versionSs << "x64 ";
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
     versionSs << "Windows";
 #elif __APPLE__
     versionSs << "Mac";
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
     app.setFont(appFont);
 
     // TODO: Decide this better, TEST ME
-#if !defined(__APPLE__) && defined(UNIX)
+#if !defined(__APPLE__) && defined(__unix__)
     //app.setAttribute(Qt::AA_DontUseNativeDialogs);
 #endif
 

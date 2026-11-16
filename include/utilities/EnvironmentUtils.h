@@ -7,14 +7,14 @@
 #include <filesystem>
 #include <iostream>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
 class EnvironmentUtils
 {
     public:
-#ifdef WIN32
+#ifdef _WIN32
         static EnvironmentVariable<std::wstring> GetVariableW(const std::string& key);
 #endif
         static EnvironmentVariable<std::string> GetVariable(const std::string& key);

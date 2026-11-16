@@ -1,6 +1,6 @@
 #include "EnvironmentUtils.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string& key)
 {
     EnvironmentVariable<std::string> output;
@@ -22,7 +22,7 @@ EnvironmentVariable<std::wstring> EnvironmentUtils::GetVariableW(const std::stri
 EnvironmentVariable<std::string> EnvironmentUtils::GetVariable(const std::string& key)
 #endif
 {
-#ifdef WIN32
+#ifdef _WIN32
     EnvironmentVariable<std::wstring> output;
 
     DWORD bufferSize = 65535;
@@ -61,7 +61,7 @@ EnvironmentVariable<std::filesystem::path> EnvironmentUtils::GetVariablePath(con
 {
     EnvironmentVariable<std::filesystem::path> output;
 
-#if WIN32
+#if _WIN32
     EnvironmentVariable<std::wstring> variable = GetVariableW(key);
     if (!variable.Exists) {
         output.Value = "";

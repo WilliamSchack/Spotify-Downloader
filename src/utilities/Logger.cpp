@@ -177,7 +177,7 @@ std::filesystem::path Logger::GetLogsDir()
     // Paths::GetConfigDir
     std::filesystem::path configDir = "";
 
-#ifdef WIN32
+#ifdef _WIN32
     EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("APPDATA");
     configDir = appdataPath.Value / APP_NAME;
 #elif __APPLE__

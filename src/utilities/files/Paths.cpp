@@ -4,7 +4,7 @@ std::filesystem::path Paths::GetConfigDir()
 {
     std::filesystem::path path = "";
 
-#ifdef WIN32
+#ifdef _WIN32
     EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("APPDATA");
     path = appdataPath.Value / APP_NAME;
 #elif __APPLE__

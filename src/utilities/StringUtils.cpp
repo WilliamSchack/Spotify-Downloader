@@ -112,7 +112,7 @@ std::vector<std::string> StringUtils::Split(const std::string& string, const std
     return tokens;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 std::vector<std::wstring> StringUtils::SplitW(const std::wstring& string, const std::wstring& delimiter)
 {
     std::vector<std::wstring> tokens;

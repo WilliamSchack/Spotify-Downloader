@@ -96,7 +96,7 @@ class Dependency
     protected:
         static std::string GetRelativePath()
         {
-#if WIN32
+#if _WIN32
             return GetFileName() + ".exe";
 #else
             return GetFileName();

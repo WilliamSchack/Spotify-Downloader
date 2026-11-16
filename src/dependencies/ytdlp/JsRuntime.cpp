@@ -13,7 +13,7 @@ bool JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
 
 #if defined(__APPLE__) || defined(IS_ARM_CPU)
     archiveName += "-cosmo-";
-#elif WIN32
+#elif _WIN32
     archiveName += "-win-x86_64-";
     pathInArchive += ".exe";
 #else

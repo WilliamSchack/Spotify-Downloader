@@ -21,7 +21,7 @@ std::string FileUtils::ValidateDirectory(const std::string& directoryName)
     copiedString = StringUtils::ReplaceAll(copiedString, "//", "/");
     copiedString = StringUtils::ReplaceAll(copiedString, "\\\\", "\\");
 
-#ifndef WIN32
+#ifndef _WIN32
     // Replace home dir
     if (StringUtils::StartsWith(copiedString, "~")) {
         EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
@@ -57,7 +57,7 @@ std::string FileUtils::ValidateDirectory(const std::string& directoryName)
 
 std::string FileUtils::PathToUtf8(const std::filesystem::path& path)
 {
-#ifdef WIN32
+#ifdef _WIN32
     return StringUtils::FromWString(path.wstring());
 #else
     return path.string();
@@ -66,7 +66,7 @@ std::string FileUtils::PathToUtf8(const std::filesystem::path& path)
 
 std::filesystem::path FileUtils::PathFromUtf8(const std::string& path)
 {
-#ifdef WIN32
+#ifdef _WIN32
     return std::filesystem::path(StringUtils::ToWString(path));
 #else
     return std::filesystem::path(path);
@@ -85,7 +85,7 @@ std::string FileUtils::EncodePath(const std::filesystem::path& path)
 
 FILE* FileUtils::OpenFile(const std::filesystem::path& path, const std::string& mode)
 {
-#ifdef WIN32
+#ifdef _WIN32
     return _wfopen(path.wstring().c_str(), StringUtils::ToWString(mode).c_str());
 #else
     return fopen(path.c_str(), mode.c_str());
@@ -113,7 +113,7 @@ bool FileUtils::MoveFile(const std::filesystem::path& fromPath, const std::files
 
 std::filesystem::path FileUtils::GetExecutablePath()
 {
-#ifdef WIN32
+#ifdef _WIN32
     char buffer[MAX_PATH];
     DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
     if (len == 0) {

@@ -11,7 +11,7 @@
 #include <chrono>
 #include <optional>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <atomic>
 #include <thread>
@@ -37,7 +37,7 @@ class ExternalProcess
 
         ExternalProcessResult Execute(const int& timeoutMs = 0, std::function<void(std::string)> lineAvailableCallback = nullptr);
     private:
-#ifdef WIN32
+#ifdef _WIN32
         std::wstring GetCommand();
         std::string QuoteArg(std::string arg);
 #endif

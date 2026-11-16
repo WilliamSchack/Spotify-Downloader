@@ -13,7 +13,7 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
     std::vector<std::filesystem::path> searchFolders;
     std::string fileName = fileNameNoExtension;
 
-#ifdef WIN32
+#ifdef _WIN32
     fileName += ".exe";
 
     EnvironmentVariable<std::wstring> path = EnvironmentUtils::GetVariableW("PATH");
@@ -43,7 +43,7 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
     for (const std::filesystem::path& searchFolder : searchFolders) {
         std::filesystem::path potentialPath = searchFolder / fileName;
         if (std::filesystem::exists(potentialPath) && std::filesystem::is_regular_file(potentialPath)) {
-#ifdef WIN32
+#ifdef _WIN32
             // Assume an exe is executable
             return potentialPath;
 #else
@@ -56,7 +56,7 @@ std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const st
     return std::nullopt;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 std::wstring ExternalProcess::GetCommand()
 {
     std::wstring command = L"\"" + _path.wstring() + L"\"";
@@ -108,7 +108,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
     std::chrono::milliseconds timeout(timeoutMs);
     bool usingTimeout = timeout.count() > 0;
 
-#ifdef WIN32
+#ifdef _WIN32
     SECURITY_ATTRIBUTES securityAttributes; 
     securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
     securityAttributes.bInheritHandle = TRUE; 
