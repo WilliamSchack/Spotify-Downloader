@@ -1,4 +1,5 @@
 <img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
+<img width="1280" height="640" alt="EcholiteBannerLarge" src="https://github.com/user-attachments/assets/76b1049c-9a10-4b8d-bd83-83c55247ed91" />
 
 # Echolite
 [![Latest Release](https://img.shields.io/github/v/release/WilliamSchack/Spotify-Downloader?label=Latest%20Release&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/releases)
@@ -7,13 +8,6 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/WilliamSchack/Spotify-Downloader?label=Issues)](https://github.com/ChazzBurger/Spotify-Downloader/issues?q=is%3Aissue+is%3Aclosed)
 [![Stars](https://img.shields.io/github/stars/WilliamSchack/Spotify-Downloader?label=Stars&color=007ec6)](https://github.com/ChazzBurger/Spotify-Downloader/stargazers)
 [![Ko-Fi](https://img.shields.io/badge/Support%20Development-FF5a16?style=flat&logo=Ko-fi&logoColor=FF5a16&label=ko-fi)](https://ko-fi.com/williamschack)
-
-> [!NOTE]
-> **This is the development branch for v2**<br />
-> This readme is partially from the main branch before v2 so most of the details here will not apply<br />
-> For instructions on compiling the program, view below
-
-## Building
 
 Notes:
 - I am mainly testing on arch linux, windows, and an an M1 mac less often (about every major change)
