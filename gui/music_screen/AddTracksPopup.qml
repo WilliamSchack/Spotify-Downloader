@@ -9,7 +9,6 @@ Popup {
     property int fadeDurationMs: 100
 
     anchors.centerIn: parent
-    visible: _manager.music.addTracksPopup.visible && (parent ? parent.visible : false)
 
     modal: false
     dim: false

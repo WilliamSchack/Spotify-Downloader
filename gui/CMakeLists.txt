@@ -28,8 +28,10 @@ qt6_add_qml_module(${PROJECT_NAME}_qml
         common/LoadingStatus.qml
         common/HoverTooltip.qml
         music_screen/MusicScreen.qml
-        music_screen/AddTracksPopup.qml
         music_screen/Track.qml
+        music_screen/AddTracksPopup.qml
+        music_screen/MissingDependenciesPopup.qml
+        music_screen/DependencyInstalledVisual.qml
         info_screen/InfoScreen.qml
         info_screen/InfoScreenUpdatesLeft.qml
         info_screen/InfoScreenUpdatesRight.qml

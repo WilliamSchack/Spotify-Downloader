@@ -52,7 +52,7 @@ class DependencyInfo : public QObject
         void CheckInstalled();
         void CheckForUpdate();
         void DownloadUpdate();
-        void Download();
+        Q_INVOKABLE void Download();
     private:
         void UpdateReleases(const int& resultsPerPage = 30, const int& page = 1, const bool& useCache = true);
         void UpdateVersion();
