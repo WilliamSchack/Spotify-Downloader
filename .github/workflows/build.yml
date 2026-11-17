@@ -1,151 +1,213 @@
-name: Test Build
+name: Release
 
-# Testing, runs when this file has changed
 on:
-  push:
-    branches: [v2]
-    paths:
-      - '.github/workflows/build.yml'
-
-# Testing to see if building works on all platforms
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (no leading "v")'
+        default: ''
+        required: true
+        type: string
 
 jobs:
-    build:
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                  #- os: ubuntu-24.04
-                  #  arch: x86_64
-                  #  qt_host: linux
-                  - os: ubuntu-24.04-arm
-                    arch: aarch64
-                    qt_host: linux_arm64
-                  #- os: windows-latest
-                  #  arch: x64
-                  #  qt_host: windows
-                  #- os: windows-11-arm
-                  #  arch: arm64
-                  #  qt_host: windows_arm64
-                  #- os: macos-15-intel
-                  #  arch: x86_64
-                  #  qt_host: mac
-                  #- os: macos-latest
-                  #  arch: arm64
-                  #  qt_host: mac
+  update_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      versionString: ${{ steps.version.outputs.versionString }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Get Version & Update Files
+        id: version
+        run: |
+          VERSION=${{ inputs.version }}
+          echo "versionString=v${VERSION}" >> "$GITHUB_OUTPUT"
+  
+          ./resources/github/update-version.sh $VERSION
+  
+          git config --global user.name ${{ secrets.GIT_ACTIONS_NAME }}
+          git config --global user.email '${{ secrets.GIT_ACTIONS_EMAIL }}'
+          git add .
+          git commit -m "[automated commit] Bumped version to v$VERSION"
+          git push
         
-        name: Building on ${{matrix.os}}
-        runs-on: ${{matrix.os}}
+  build:
+    needs: update_release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            arch: x86_64
+            qt_host: linux
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+            qt_host: linux_arm64
+          - os: windows-latest
+            arch: x64
+            qt_host: windows
+          # (Windows arm doesnt work, QWebEngine is unsupported)
+          #- os: windows-11-arm
+          #  arch: arm64
+          #  qt_host: windows_arm64
+          - os: macos-15-intel
+            arch: x86_64
+            qt_host: mac
+          - os: macos-latest
+            arch: arm64
+            qt_host: mac
+    
+    name: Building on ${{matrix.os}}
+    runs-on: ${{matrix.os}}
 
-        steps:
-            - uses: actions/checkout@v7
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }} # Specify so it gets the push from update_release
 
-            # Install Curl
-            # Linux also installs dependencies needed for qtwebengine on aarch64
-            - name: Install Dependencies (Linux)
-              if: runner.os == 'Linux'
-              run: |
-                sudo apt-get update
-                sudo apt-get install -y libcurl4-openssl-dev libevent-2.1-7 libminizip1t64
-            
-            - name: Install Curl (MacOS)
-              if: runner.os == 'macOS'
-              run: brew install curl
+      # Install Curl
+      # Linux also installs dependencies needed for qtwebengine on aarch64
+      - name: Install Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libevent-2.1-7t64 libminizip1t64
+      
+      - name: Install Curl (MacOS)
+        if: runner.os == 'macOS'
+        run: brew install curl
 
-            - name: Install Curl (Windows)
-              if: runner.os == 'Windows'
-              run: vcpkg install curl:${{ matrix.arch }}-windows
+      - name: Install Curl (Windows)
+        if: runner.os == 'Windows'
+        run: vcpkg install curl:${{ matrix.arch }}-windows
 
-            # Install Qt
-            - name: Install Qt (Linux)
-              if: runner.os == 'Linux'
-              uses: jurplel/install-qt-action@v4
-              with:
-                version: '6.9.3'
-                host: ${{ matrix.qt_host }}
-                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport qtwaylandcompositor'
-                cache: true
+      # Install Qt
+      - name: Install Qt (Linux)
+        if: runner.os == 'Linux'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.9.3'
+          host: ${{ matrix.qt_host }}
+          modules: 'qtwebengine qtwebchannel qtpositioning qtserialport qtwaylandcompositor'
+          cache: true
 
-            - name: Install Qt (Windows/MacOS)
-              if: runner.os != 'Linux'
-              uses: jurplel/install-qt-action@v4
-              with:
-                version: '6.9.3'
-                host: ${{ matrix.qt_host }}
-                modules: 'qtwebengine qtwebchannel qtpositioning qtserialport'
-                cache: true
+      - name: Install Qt (Windows/MacOS)
+        if: runner.os != 'Linux'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.9.3'
+          host: ${{ matrix.qt_host }}
+          modules: 'qtwebengine qtwebchannel qtpositioning qtserialport'
+          cache: true
 
-            # Configure & Build
-            - name: Configure (Linux, MacOS)
-              if: runner.os != 'Windows'
-              run: >
-                cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-                -DINCLUDE_DEPS=ON
-            
-            - name: Configure (Windows)
-              if: runner.os == 'Windows'
-              shell: pwsh
-              run: >
-                cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-                -DINCLUDE_DEPS=ON
-                "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+      # Configure & Build
+      - name: Configure (Linux, MacOS)
+        if: runner.os != 'Windows'
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DINCLUDE_DEPS=ON
+      
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: >
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DINCLUDE_DEPS=ON
+          "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 
-            - name: Build
-              run: cmake --build build --config Release
+      - name: Build
+        run: cmake --build build --config Release
 
-            # Download dependencies
-            - name: Download Dependencies (Windows)
-              if: runner.os == 'Windows'
-              run: ./build/out/Release/Echolite.exe download-deps
+      # Download dependencies
+      - name: Download Dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: ./build/out/Release/Echolite.exe download-deps
 
-            # Package (Also debugging for now)
-            - name: Package (Linux - AppImage, tar.gz)
-              if: runner.os == 'Linux'
-              run: |
-                wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.arch }}.AppImage"
-                chmod +x appimagetool-${{ matrix.arch }}.AppImage
-                APPIMAGE_EXTRACT_AND_RUN=1 ARCH=${{ matrix.arch }} \
-                    ./appimagetool-${{ matrix.arch }}.AppImage \
-                    build/out/Release \
-                    build/out/Echolite-2.0.0-Linux-${{ matrix.arch }}.AppImage
+      # Package (Also debugging for now)
+      - name: Package (Linux - AppImage, tar.gz)
+        if: runner.os == 'Linux'
+        run: |
+          wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.arch }}.AppImage"
+          chmod +x appimagetool-${{ matrix.arch }}.AppImage
+          APPIMAGE_EXTRACT_AND_RUN=1 ARCH=${{ matrix.arch }} \
+            ./appimagetool-${{ matrix.arch }}.AppImage \
+            build/out/Release \
+            build/out/Echolite-${{ inputs.version }}-Linux-${{ matrix.arch }}.AppImage
+  
+          tar -czf \
+            build/out/Echolite-${{ inputs.version }}-Linux-${{ matrix.arch }}.tar.gz \
+            -C build/out/Release .
+          
+          ls ./build/out
 
-                tar -czf \
-                    build/out/Echolite-2.0.0-Linux-${{ matrix.arch }}.tar.gz \
-                    -C build/out/Release .
-                
-                ls ./build/out
+      - name: Package (MacOS - dmg)
+        if: runner.os == 'macOS'
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Echolite" \
+            --volicon "resources/icons/Icon.icns" \
+            --window-pos 200 100 \
+            --window-size 600 300 \
+            --icon-size 100 \
+            --icon "Echolite.app" 150 120 \
+            --app-drop-link 450 120 \
+            --hide-extension "Echolite.app" \
+            "build/out/Echolite-${{ inputs.version }}-MacOS-${{ matrix.arch }}.dmg" \
+            "build/out/Release"
+  
+          ls ./build/out
 
-            - name: Package (MacOS - dmg)
-              if: runner.os == 'macOS'
-              run: |
-                brew install create-dmg
-                create-dmg \
-                    --volname "Echolite" \
-                    --volicon "resources/icons/Icon.icns" \
-                    --window-pos 200 100 \
-                    --window-size 600 300 \
-                    --icon-size 100 \
-                    --icon "Echolite.app" 150 120 \
-                    --app-drop-link 450 120 \
-                    --hide-extension "Echolite.app" \
-                    "build/out/Echolite-2.0.0-MacOS-${{ matrix.arch }}.dmg" \
-                    "build/out/Release"
+      - name: Package (Windows - Installer, zip)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install innosetup -y
+  
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc `
+            /DSystemArch=${{ matrix.arch }} `
+            ".\resources\windows\Installer.iss"
+  
+          Compress-Archive `
+            -Path ".\build\out\Release\*" `
+            -DestinationPath ".\build\out\Echolite-${{ inputs.version }}-Windows-${{ matrix.arch }}.zip"
+  
+          ls .\build\out
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: Echolite-${{ matrix.os }}-${{ matrix.arch }}
+          path: build/out/Echolite-*
+          if-no-files-found: error
+  
+  release:
+    needs: [update_release, build]
+    env:
+      VERSION_STRING: ${{ needs.update_release.outputs.versionString }}
+    runs-on: ubuntu-latest
+    permissions:
+        contents: write
+    steps:
+        - uses: actions/download-artifact@v7
+          with:
+            path: artifacts
+            merge-multiple: true
 
-                ls ./build/out
+        - name: Create Release
+          env:
+            GH_TOKEN: ${{ github.token }}
+            GH_REPO: ${{ github.repository }}
+            VERSION: ${{ env.VERSION_STRING }}
+          run: |
+            gh release create "$VERSION_STRING" artifacts/* \
+              --draft \
+              --title "$VERSION_STRING" \
+              --generate-notes
 
-            - name: Package (Windows - Installer, zip)
-              if: runner.os == 'Windows'
-              shell: pwsh
-              run: |
-                choco install innosetup -y
-
-                $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-                & $iscc `
-                    /DSystemArch=${{ matrix.arch }} `
-                    ".\resources\windows\Installer.iss"
-
-                Compress-Archive `
-                    -Path ".\build\out\Release\*" `
-                    -DestinationPath ".\build\out\Echolite-2.0.0-Windows-${{ matrix.arch }}.zip"
-
-                ls .\build\out
+        - name: Delete Artifacts
+          uses: geekyeggo/delete-artifact@v6
+          with:
+            name: Echolite-*

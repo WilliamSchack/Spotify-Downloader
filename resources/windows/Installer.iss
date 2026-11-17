@@ -30,11 +30,11 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 OutputDir=..\..\build\out
 OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Windows-{#SystemArch}-Installer
 #if SystemArch == "x64"
-ArchitecturesAllowed=arm64
-ArchitecturesInstallIn64BitMode=arm64
-#else
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+#else
+ArchitecturesAllowed=arm64
+ArchitecturesInstallIn64BitMode=arm64
 #endif
 ; Uncomment the following line to use a 64-bit installer.
 ;SetupArchitecture=x64
