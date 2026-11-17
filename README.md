@@ -16,25 +16,39 @@ Echolite is an app that allows you to easily download songs from multiple platfo
 
 ## Download
 
-**This will be updated when the first v2 release is out, for now just click the releases button on the right side of the page for v1 releases. If you are seeing this, v2 will be released in a few hours :)**
+| Platform              | Download Link                                                                                                                                                                                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows               | [`Echolite-Windows-x64-Installer.exe`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Windows-x64-Installer.exe)<br>[`Echolite-Windows-x64.zip`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Windows-x64.zip)   |
+| Linux (x86_64)        | [`Echolite-Linux-x86_64.AppImage`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Linux-x86_64.AppImage)<br>[`Echolite-Linux-x86_64.tar.gz`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Linux-x86_64.tar.gz)   |
+| Linux (aarch64)       | [`Echolite-Linux-x86_64.AppImage`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Linux-aarch64.AppImage)<br>[`Echolite-Linux-x86_64.tar.gz`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-Linux-aarch64.tar.gz) |
+| MacOS (Apple Silicon) | [`Echolite-MacOS-arm64.dmg`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-MacOS-arm64.dmg)                                                                                                                                                          |
+| MacOS (Intel)         | [`Echolite-MacOS-x86_64.dmg`](https://github.com/WilliamSchack/Echolite/releases/latest/download/Echolite-2.0.0-MacOS-x86_64.dmg)                                                                                                                                                        |
+
 
 > [!NOTE]
 > Linux & MacOS builds **do not come packaged with the dependencies**. The app will detect system installed dependencies and use those, but if you do not have any installed, you can go to the Info Screen, then the Updates tab and download any that are not installed
 
-**MacOS**
+<details>
+<summary><b> MacOS "Echolite is damaged and can't be opened" </b></summary>
 
-On mac trying to start the app will currently give the error: "Echolite is damaged and can't be opened"
+<br />
 
 Having a quick look into this, it looks like I need to sign the app with a paid apple developer account which at the moment I do not want to do. While I look into this further to use the app on MacOS after opening the dmg file and dragging Echolite to the applications folder, open a terminal and execute the following:
 
-`sudo xattr -d com.apple.quarantine /Applications/Echolite.app`
+```
+sudo xattr -rd com.apple.quarantine /Applications/Echolite.app
+```
 
-This will bypass the signing requirement and allow the app to start. If this is too sketchy for you I am in the process of trying to fix this
+Or you can try to open the app once, go to the System Settings > Privacy & Security > Open Anyway which will do the same thing
+
+This will remove the quarantine flag and allow the app to start. If this is too sketchy for you I am in the process of finding a workaround for this
+
+</details>
 
 <details>
 <summary><b> Windows protected your PC popup, Windows Defender false positive </b></summary>
 
----
+<br />
 
 Since I am not a known publisher to microsoft and the app is not signed, the "Windows protected your PC" popup will always happen on first open and on some machines Windows defender may block the app from running if you are using the portable version
 
@@ -58,8 +72,6 @@ This has been fixed and the app has been excluded from windows defender scans, i
 1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
 2. Run “MpCmdRun.exe -removedefinitions -dynamicsignatures”
 3. Run "MpCmdRun.exe -SignatureUpdate"
-
----
 
 </details>
 
@@ -120,7 +132,7 @@ View below for platform specific instructions
 > YouTube Cookies and PO Tokens are valid for a very short time usually being for at least 8 hours. It is recommended that you refresh both each time you use the program. They are stored in the temp folder for this reason
 
 <details>
-<summary><b>Retrieving & Inputting YouTube Cookies</b></summary>
+<summary><b> Retrieving & Inputting YouTube Cookies </b></summary>
 
 <br />
 
