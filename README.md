@@ -11,6 +11,14 @@
 
 Echolite is an app that allows you to easily download songs from multiple platforms via one easy to use GUI including many settings to customise the output however you like.
 
+- [Download](#download)
+- [Features](#features)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [FAQ](#faq)
+
+<br />
+
 > [!CAUTION]
 > Note that users are responsible for any potential legal consequenses that comes with downloading music. I do not condone unauthorized downloading of copyrighted material and do not take any responsibility for user actions. I highly encourage you to purchase the songs directly from the artists to support them and their work
 
