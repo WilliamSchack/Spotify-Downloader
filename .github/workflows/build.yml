@@ -17,10 +17,10 @@ jobs:
                 include:
                   - os: ubuntu-latest
                     qt_host: linux
-                  #- os: windows-latest
-                  #  qt_host: windows
-                  #- os: macos-latest
-                  #  qt_host: mac
+                  - os: windows-latest
+                    qt_host: windows
+                  - os: macos-latest
+                    qt_host: mac
         
         name: Building on ${{matrix.os}}
         runs-on: ${{matrix.os}}
@@ -63,15 +63,8 @@ jobs:
                 cache: true
 
             # Configure & Build
-            - name: Configure (Linux)
-              if: runner.os == 'Linux'
-              run: >
-                cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-                -DINCLUDE_DEPS=ON
-                -DCREATE_APPIMAGE=ON
-
-            - name: Configure (MacOS)
-              if: runner.os == 'macOS'
+            - name: Configure (Linux, MacOS)
+              if: runner.os != 'Windows'
               run: >
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
                 -DINCLUDE_DEPS=ON
@@ -93,7 +86,7 @@ jobs:
               run: ./build/out/Release/Echolite.exe download-deps
 
             # Package (Also debugging for now)
-            - name: Package (Linux)
+            - name: Package (Linux - AppImage, tar.gz)
               if: runner.os == 'Linux'
               run: |
                 wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
@@ -101,9 +94,15 @@ jobs:
                 APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 \
                     ./appimagetool-x86_64.AppImage \
                     build/out/Release \
-                    build/out/Echolite-x86_64.AppImage
+                    build/out/Echolite-2.0.0-Linux-x86_64.AppImage
 
-            - name: Package (MacOS)
+                tar -czvf \
+                    build/out/Echolite-2.0.0-Linux-x86_64.tar.gz \
+                    -C build/out/Release .
+
+                ls build/out
+
+            - name: Package (MacOS - dmg)
               if: runner.os == 'macOS'
               run: |
                 brew install create-dmg
@@ -116,11 +115,22 @@ jobs:
                     --icon "Echolite.app" 150 120 \
                     --app-drop-link 450 120 \
                     --hide-extension "Echolite.app" \
-                    "build/out/Release/Echolite.dmg" \
+                    "build/out/Echolite-2.0.0-mac-arm64.dmg" \
                     "build/out/Release"
-                find build/out/Release
+                ls build/out
 
-            - name: Package (Windows)
+            - name: Package (Windows - Installer, zip)
               if: runner.os == 'Windows'
               shell: pwsh
-              run: ls -R build/out/Release
+              run: |
+                choco install innosetup -y
+
+                "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" `
+                    "/DSystemArch=x64" `
+                    ".\resources\windows\Installer.iss"
+
+                Compress-Archive `
+                    -Path ".\build\out\Release\*" `
+                    -DestinationPath ".\build\out\Echolite-2.0.0-Windows-x64.zip"
+
+                ls build/out/Release
