@@ -15,12 +15,24 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  #- os: ubuntu-latest
+                  #- os: ubuntu-24.04
+                  #  arch: x86_64
                   #  qt_host: linux
-                  - os: windows-latest
-                    qt_host: windows
-                  #- os: macos-latest
+                  - os: ubuntu-24.04-arm
+                    arch: aarch64
+                    qt_host: linux_arm64
+                  #- os: windows-latest
+                  #  arch: x64
+                  #  qt_host: windows
+                  - os: windows-11-arm
+                    arch: arm64
+                    qt_host: windows_arm64
+                  #- os: macos-15-intel
+                  #  arch: x86_64
                   #  qt_host: mac
+                  - os: macos-latest
+                    arch: arm64
+                    qt_host: mac
         
         name: Building on ${{matrix.os}}
         runs-on: ${{matrix.os}}
@@ -41,7 +53,7 @@ jobs:
 
             - name: Install Curl (Windows)
               if: runner.os == 'Windows'
-              run: vcpkg install curl
+              run: vcpkg install curl:${{ matrix.arch }}-windows
 
             # Install Qt
             - name: Install Qt (Linux)
@@ -89,18 +101,18 @@ jobs:
             - name: Package (Linux - AppImage, tar.gz)
               if: runner.os == 'Linux'
               run: |
-                wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-                chmod +x appimagetool-x86_64.AppImage
-                APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 \
-                    ./appimagetool-x86_64.AppImage \
+                wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${{ matrix.arch }}.AppImage"
+                chmod +x appimagetool-${{ matrix.arch }}.AppImage
+                APPIMAGE_EXTRACT_AND_RUN=1 ARCH=${{ matrix.arch }} \
+                    ./appimagetool-${{ matrix.arch }}.AppImage \
                     build/out/Release \
-                    build/out/Echolite-2.0.0-Linux-x86_64.AppImage
+                    build/out/Echolite-2.0.0-Linux-${{ matrix.arch }}.AppImage
 
-                tar -czvf \
-                    build/out/Echolite-2.0.0-Linux-x86_64.tar.gz \
+                tar -czf \
+                    build/out/Echolite-2.0.0-Linux-${{ matrix.arch }}.tar.gz \
                     -C build/out/Release .
-
-                ls build/out
+                
+                ls ./build/out
 
             - name: Package (MacOS - dmg)
               if: runner.os == 'macOS'
@@ -115,9 +127,10 @@ jobs:
                     --icon "Echolite.app" 150 120 \
                     --app-drop-link 450 120 \
                     --hide-extension "Echolite.app" \
-                    "build/out/Echolite-2.0.0-mac-arm64.dmg" \
+                    "build/out/Echolite-2.0.0-MacOS-${{ matrix.arch }}.dmg" \
                     "build/out/Release"
-                ls build/out
+
+                ls ./build/out
 
             - name: Package (Windows - Installer, zip)
               if: runner.os == 'Windows'
@@ -127,11 +140,11 @@ jobs:
 
                 $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
                 & $iscc `
-                    /DSystemArch=x64 `
+                    /DSystemArch=${{ matrix.arch }} `
                     ".\resources\windows\Installer.iss"
 
                 Compress-Archive `
                     -Path ".\build\out\Release\*" `
-                    -DestinationPath ".\build\out\Echolite-2.0.0-Windows-x64.zip"
+                    -DestinationPath ".\build\out\Echolite-2.0.0-Windows-${{ matrix.arch }}.zip"
 
-                ls build/out/Release
+                ls .\build\out
