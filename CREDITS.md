@@ -16,6 +16,8 @@
 - [QWindowKit](https://github.com/stdware/qwindowkit/tree/main) - [Apache 2.0](https://github.com/stdware/qwindowkit/blob/main/LICENSE)
 
 **Building**
+- Windows:
+	- [Inno Setup](https://jrsoftware.org/inno-setup) - [License](https://jrsoftware.org/files/is/license.txt)
 - Linux:
 	- [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy) - [MIT](https://github.com/linuxdeploy/linuxdeploy/blob/master/LICENSE.txt)
 	- [linuxdeploy-plugin-qt](https://github.com/linuxdeploy/linuxdeploy-plugin-qt) - [MIT](https://github.com/linuxdeploy/linuxdeploy-plugin-qt)
