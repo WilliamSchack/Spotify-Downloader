@@ -203,9 +203,8 @@ jobs:
 
         - name: Create Release
           env:
-            GH_TOKEN: ${{ github.token }}
+            GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
             GH_REPO: ${{ github.repository }}
-            VERSION: ${{ env.VERSION_STRING }}
           run: |
             gh release create "$VERSION_STRING" artifacts/* \
               --draft \
