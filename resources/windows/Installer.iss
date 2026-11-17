@@ -28,7 +28,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 OutputDir=..\..\build\out
-OutputBaseFilename={#MyAppName}-{#MyAppVersion}-windows-{#SystemArch}-Installer
+OutputBaseFilename={#MyAppName}-{#MyAppVersion}-Windows-{#SystemArch}-Installer
 #if SystemArch == "x64"
 ArchitecturesAllowed=arm64
 ArchitecturesInstallIn64BitMode=arm64
