@@ -4,7 +4,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 
 qt_add_resources(QT_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/icons.qrc)
 
-if (_WIN32)
+if (WIN32)
     target_sources(${PROJECT_NAME} PRIVATE
 	    ${CMAKE_CURRENT_SOURCE_DIR}/Icon.rc
     )
