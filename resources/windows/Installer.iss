@@ -4,7 +4,7 @@
 
 #define MyAppName "Echolite"
 #define MyAppVersion "2.0.0"
-#define MyAppPublisher "WilliamSchack"
+#define MyAppPublisher "William Schack"
 #define MyAppURL "https://echolite.app"
 #define MyAppExeName "Echolite.exe"
 #define DoubleAmp(Value) StringChange(Value, "&", "&&")
@@ -55,5 +55,84 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#DoubleAmp(MyAppName)}}"; Flags: nowait postinstall skipifsilent
 
 ; Uninstall v1
-;[Code]
+[Code]
+const
+  UninstallKeysPath = 'Software\Microsoft\Windows\CurrentVersion\Uninstall';
+var
+  V1Root: Integer;
+  V1Key: String;
+  V1UninstallExe: String;
+  
+function FindV1(): Boolean;
+var
+  Roots: array of Integer;
+  Names: TArrayOfString;
+  R, I: Integer;
+  Key, DisplayName, Publisher, UninstallExe: String;
+begin
+  Result := False;
 
+  SetArrayLength(Roots, 2);
+  Roots[0] := HKCU;
+  Roots[1] := HKLM;
+  
+  for R := 0 to GetArrayLength(Roots) - 1 do
+  begin
+    if not RegGetSubkeyNames(Roots[R], UninstallKeysPath, Names) then
+      continue;
+      
+    for I := 0 to GetArrayLength(Names) - 1 do
+    begin
+      Key := UninstallKeysPath + '\' + Names[I];
+      if RegQueryStringValue(Roots[R], Key, 'DisplayName', DisplayName) and
+         (DisplayName = 'Spotify Downloader') and
+         RegQueryStringValue(Roots[R], Key, 'Publisher', Publisher) and
+         (Publisher = 'William Schack') and
+         RegQueryStringValue(Roots[R], Key, 'UninstallString', UninstallExe) then
+      begin
+        V1Root := Roots[R];
+        V1Key := Key;
+        V1UninstallExe := RemoveQuotes(UninstallExe);
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+end;
+  
+procedure RemoveV1Keys;
+var
+  ResultCode: Integer;
+begin
+  if not RegKeyExists(V1Root, V1Key) then Exit;
+  
+  if V1Root = HKCU then
+    RegDeleteKeyIncludingSubkeys(V1Root, V1Key)
+  else
+    ShellExec('runas', 'reg.exe', 'delete "HKLM\' + V1Key + '" /f /reg:64', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+  
+procedure RemoveV1;
+var
+  ResultCode: Integer;
+begin
+  if not FindV1 then Exit;
+
+  if SuppressibleMsgBox('An older version of Echolite (Spotify Downloader) was found. Would you like to remove it?', mbConfirmation, MB_YESNO, IDYES) <> IDYES then Exit;
+  
+  // Uninstall
+  if FileExists(V1UninstallExe) then
+  begin
+    // Let uninstaller run in the background
+    if not ShellExec('runas', V1UninstallExe, 'purge -c', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then Exit;
+  end;
+  
+  // Remove keys
+  RemoveV1Keys;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then
+    RemoveV1;
+end;
