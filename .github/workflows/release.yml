@@ -24,13 +24,18 @@ jobs:
           VERSION=${{ inputs.version }}
           echo "versionString=v${VERSION}" >> "$GITHUB_OUTPUT"
   
-          ./resources/github/update-version.sh $VERSION
+          ./resources/github/update-version.sh "$VERSION"
   
           git config --global user.name ${{ secrets.GIT_ACTIONS_NAME }}
           git config --global user.email '${{ secrets.GIT_ACTIONS_EMAIL }}'
           git add .
-          git commit -m "[automated commit] Bumped version to v$VERSION"
-          git push
+
+          if git diff --cached --quiet; then
+            echo "Version is already $VERSION and was not changed"
+          else
+            git commit -m "[automated commit] Bumped version to v$VERSION"
+            git push
+          fi
         
   build:
     needs: update_release
