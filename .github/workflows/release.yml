@@ -138,10 +138,10 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN=1 ARCH=${{ matrix.arch }} \
             ./appimagetool-${{ matrix.arch }}.AppImage \
             build/out/Release \
-            build/out/Echolite-${{ inputs.version }}-Linux-${{ matrix.arch }}.AppImage
+            build/out/Echolite-Linux-${{ matrix.arch }}.AppImage
   
           tar -czf \
-            build/out/Echolite-${{ inputs.version }}-Linux-${{ matrix.arch }}.tar.gz \
+            build/out/Echolite-Linux-${{ matrix.arch }}.tar.gz \
             -C build/out/Release .
           
           ls ./build/out
@@ -159,7 +159,7 @@ jobs:
             --icon "Echolite.app" 150 120 \
             --app-drop-link 450 120 \
             --hide-extension "Echolite.app" \
-            "build/out/Echolite-${{ inputs.version }}-MacOS-${{ matrix.arch }}.dmg" \
+            "build/out/Echolite-MacOS-${{ matrix.arch }}.dmg" \
             "build/out/Release"
   
           ls ./build/out
@@ -177,7 +177,7 @@ jobs:
   
           Compress-Archive `
             -Path ".\build\out\Release\*" `
-            -DestinationPath ".\build\out\Echolite-${{ inputs.version }}-Windows-${{ matrix.arch }}.zip"
+            -DestinationPath ".\build\out\Echolite-Windows-${{ matrix.arch }}.zip"
   
           ls .\build\out
       
