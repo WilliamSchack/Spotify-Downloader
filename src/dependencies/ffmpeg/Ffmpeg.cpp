@@ -69,7 +69,7 @@ bool Ffmpeg::UpdateExecutableImpl()
         return false;
 
     // Replace the current executable with the updated one
-    std::filesystem::path targetPath = Paths::GetRelativePath(GetRelativePath());
+    std::filesystem::path targetPath = Paths::GetDependencyPath(GetExecutableName());
     if (std::filesystem::exists(targetPath))
         std::filesystem::remove(targetPath);
 
@@ -91,7 +91,7 @@ std::string Ffmpeg::GetVersionImpl()
 
     std::string output = process.Execute().Output;
 
-    if (!IsInstalledRelative()) {
+    if (!IsManaged()) {
         // Dont check for specific version string if installed on the system
         std::smatch matches;
         if (!std::regex_search(output, matches, std::regex(R"(version\s(.*?\d)\s)")))

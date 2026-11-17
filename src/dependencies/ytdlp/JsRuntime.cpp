@@ -48,7 +48,7 @@ bool JsRuntime::UpdateExecutableImpl()
         return false;
 
     // Replace the current executable with the updated one
-    std::filesystem::path targetPath = Paths::GetRelativePath(GetRelativePath());
+    std::filesystem::path targetPath = Paths::GetDependencyPath(GetExecutableName());
     if (std::filesystem::exists(targetPath))
         std::filesystem::remove(targetPath);
 

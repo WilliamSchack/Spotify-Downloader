@@ -11,7 +11,7 @@ bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
     if (command == "download-deps" && argc == 2) {
         Logger::Info("Downloading ffmpeg...");
         if (!Ffmpeg::DownloadExecutable()) {
-            if (Ffmpeg::IsInstalledRelative())
+            if (Ffmpeg::IsManaged())
                 Logger::Info("ffmpeg is already downloaded");
             else
                 Logger::Warning("Failed to download ffmpeg");
@@ -21,7 +21,7 @@ bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
 
         Logger::Info("Downloading yt-dlp...");
         if (!Ytdlp::DownloadExecutable()) {
-            if (Ytdlp::IsInstalledRelative())
+            if (Ytdlp::IsManaged())
                 Logger::Info("yt-dlp is already downloaded");
             else
                 Logger::Warning("Failed to download yt-dlp");
@@ -31,7 +31,7 @@ bool ArgumentParser::ParseBeforeGUI(int argc, char** argv)
 
         Logger::Info("Downloading quickjs...");
         if (!JsRuntime::DownloadExecutable()) {
-            if (JsRuntime::IsInstalledRelative())
+            if (JsRuntime::IsManaged())
                 Logger::Info("quickjs is already downloaded");
             else
                 Logger::Warning("Failed to download quickjs");

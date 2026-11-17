@@ -28,6 +28,34 @@ std::filesystem::path Paths::GetConfigDir()
     return path;
 }
 
+std::filesystem::path Paths::GetDataDir()
+{
+    std::filesystem::path path = "";
+
+#ifdef _WIN32
+    EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("LOCALAPPDATA");
+    path = appdataPath.Value / APP_NAME;
+#elif __APPLE__
+    EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
+    std::filesystem::path applicationSupportPath = homePath.Value / "Library" / "Application Support";
+    path = applicationSupportPath / APP_NAME;
+#else
+    EnvironmentVariable<std::filesystem::path> xgdDataPath = EnvironmentUtils::GetVariablePath("XDG_DATA_HOME");
+    std::filesystem::path dataPath = xgdDataPath.Value;
+    if (!xgdDataPath.Exists) {
+        EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
+        dataPath = homePath.Value / ".local" / "share";
+    }
+
+    path = dataPath / APP_NAME;
+#endif
+
+    if (!std::filesystem::exists(path))
+        std::filesystem::create_directories(path);
+
+    return path;
+}
+
 std::filesystem::path Paths::GetCacheDir()
 {
     std::filesystem::path cacheFolder = GetConfigDir() / CACHE_FOLDER_NAME;
@@ -62,34 +90,6 @@ std::filesystem::path Paths::GetImagesDir()
         std::filesystem::create_directory(imagesFolder);
 
     return imagesFolder;
-}
-
-std::filesystem::path Paths::GetDataDir()
-{
-    std::filesystem::path path = "";
-
-#ifdef _WIN32
-    EnvironmentVariable<std::filesystem::path> appdataPath = EnvironmentUtils::GetVariablePath("LOCALAPPDATA");
-    path = appdataPath.Value / APP_NAME;
-#elif __APPLE__
-    EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
-    std::filesystem::path applicationSupportPath = homePath.Value / "Library" / "Application Support";
-    path = applicationSupportPath / APP_NAME;
-#else
-    EnvironmentVariable<std::filesystem::path> xgdDataPath = EnvironmentUtils::GetVariablePath("XDG_DATA_HOME");
-    std::filesystem::path dataPath = xgdDataPath.Value;
-    if (!xgdDataPath.Exists) {
-        EnvironmentVariable<std::filesystem::path> homePath = EnvironmentUtils::GetVariablePath("HOME");
-        dataPath = homePath.Value / ".local" / "share";
-    }
-
-    path = dataPath / APP_NAME;
-#endif
-
-    if (!std::filesystem::exists(path))
-        std::filesystem::create_directories(path);
-
-    return path;
 }
 
 std::filesystem::path Paths::GetTrackDownloadPathNoExtension(const TrackData& track)
@@ -156,7 +156,7 @@ std::filesystem::path Paths::GetExecutablePath()
 #endif
 }
 
-std::filesystem::path Paths::GetRelativePath(const std::filesystem::path& relativePath)
+std::filesystem::path Paths::GetDependencyPath(const std::filesystem::path& relativePath)
 {
 #ifdef _WIN32
     return GetExecutablePath().parent_path() / relativePath;

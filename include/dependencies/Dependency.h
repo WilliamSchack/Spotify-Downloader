@@ -26,16 +26,16 @@ class Dependency
             return !GetPath().empty();
         }
 
-        static bool IsInstalledRelative()
+        static bool IsManaged()
         {
-            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetDependencyPath(GetExecutableName());
             return std::filesystem::exists(relativePath);
         }
 
         static bool DownloadExecutable()
         {
             // If its downloaded already, dont downloading again
-            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetDependencyPath(GetExecutableName());
             if (std::filesystem::exists(relativePath))
                 return false;
 
@@ -45,7 +45,7 @@ class Dependency
         static bool UpdateExecutable()
         {
             // Dont update if installed on the system
-            if (!IsInstalledRelative())
+            if (!IsManaged())
                 return false;
 
             return Derived::UpdateExecutableImpl();
@@ -54,7 +54,7 @@ class Dependency
         static std::filesystem::path GetPath()
         {
             // Check relative path
-            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetDependencyPath(GetExecutableName());
             if (std::filesystem::exists(relativePath))
                 return relativePath;
             
@@ -94,7 +94,7 @@ class Dependency
             return Derived::GetReleasesImpl(resultsPerPage, page);
         }
     protected:
-        static std::string GetRelativePath()
+        static std::string GetExecutableName()
         {
 #if _WIN32
             return GetFileName() + ".exe";

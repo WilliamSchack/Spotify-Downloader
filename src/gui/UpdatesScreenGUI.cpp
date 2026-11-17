@@ -51,7 +51,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ffmpeg::IsInstalled();
         },
         []() -> bool {
-            return !Ffmpeg::IsInstalledRelative();
+            return !Ffmpeg::IsManaged();
         },
         []() -> std::string {
             return Ffmpeg::GetVersion();
@@ -89,7 +89,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return Ytdlp::IsInstalled();
         },
         []() -> bool {
-            return !Ytdlp::IsInstalledRelative();
+            return !Ytdlp::IsManaged();
         },
         []() -> std::string {
             return Ytdlp::GetVersion();
@@ -127,7 +127,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return JsRuntime::IsInstalled();
         },
         []() -> bool {
-            return !JsRuntime::IsInstalledRelative();
+            return !JsRuntime::IsManaged();
         },
         []() -> std::string {
             return JsRuntime::GetVersion();

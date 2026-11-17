@@ -5,7 +5,7 @@ ExternalProcess::ExternalProcess(const std::filesystem::path& path)
 
 ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path& relativePath)
 {
-    return ExternalProcess(Paths::GetRelativePath(relativePath));
+    return ExternalProcess(Paths::GetDependencyPath(relativePath));
 }
 
 std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileNameNoExtension)
@@ -249,7 +249,7 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
 
         if (errno == ENOEXEC) {
             // If it cant be executed, assume its a cosmo binary and open it via the shell
-            argv.insert(argv.begin(), "sh");
+            argv.insert(argv.begin(), const_cast<char*>("sh"));
             execv("/bin/sh", argv.data());
         }
 
