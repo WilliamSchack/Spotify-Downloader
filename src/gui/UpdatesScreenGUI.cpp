@@ -232,7 +232,7 @@ void UpdatesScreenGUI::SourceButtonClicked()
 {
     switch (_selectedDependencyType) {
         case DependencyInfo::EDependency::Echolite:
-            QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite"));
+            QDesktopServices::openUrl(QUrl("https://echolite.app/"));
             break;
         case DependencyInfo::EDependency::Ffmpeg:
             QDesktopServices::openUrl(QUrl("https://ffmpeg.org"));
