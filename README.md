@@ -21,6 +21,16 @@ Echolite is an app that allows you to easily download songs from multiple platfo
 > [!NOTE]
 > Linux & MacOS builds **do not come packaged with the dependencies**. The app will detect system installed dependencies and use those, but if you do not have any installed, you can go to the Info Screen, then the Updates tab and download any that are not installed
 
+**MacOS**
+
+On mac trying to start the app will currently give the error: "Echolite is damaged and can't be opened"
+
+Having a quick look into this, it looks like I need to sign the app with a paid apple developer account which at the moment I do not want to do. While I look into this further to use the app on MacOS after opening the dmg file and dragging Echolite to the applications folder, open a terminal and execute the following:
+
+`sudo xattr -d com.apple.quarantine /Applications/Echolite.app`
+
+This will bypass the signing requirement and allow the app to start. If this is too sketchy for you I am in the process of trying to fix this
+
 <details>
 <summary><b> Windows protected your PC popup, Windows Defender false positive </b></summary>
 
