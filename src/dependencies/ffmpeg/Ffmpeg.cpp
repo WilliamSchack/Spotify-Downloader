@@ -264,7 +264,8 @@ std::filesystem::path Ffmpeg::Convert(const std::filesystem::path& filePath, con
         "-i", FileUtils::PathToUtf8(filePath),
         "-y",
         "-progress", "-",
-        "-nostats"
+        "-nostats",
+        "-nostdin"
     };
 
     for (const std::string& param : targetCodec->GetFfmpegConversionParams()) {
@@ -306,6 +307,7 @@ bool Ffmpeg::Normalise(const std::filesystem::path& filePath, const float& targe
         "-y",
         "-progress", "-",
         "-nostats",
+        "-nostdin",
         "-af", "volume=" + std::to_string(dbDifference) + "dB"
     };
 
@@ -344,6 +346,7 @@ bool Ffmpeg::SetBitrate(const std::filesystem::path& filePath, const unsigned in
         "-y",
         "-progress", "-",
         "-nostats",
+        "-nostdin",
         "-b:a", std::to_string(bitrate) + "k",
         FileUtils::PathToUtf8(tempPath)
     }, progressCallback);

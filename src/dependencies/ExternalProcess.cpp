@@ -240,6 +240,11 @@ ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::functi
 
     if (pid == 0) {
         setpgid(0, 0);
+
+        int devNull = open("/dev/null", O_RDONLY);
+        dup2(devNull, STDIN_FILENO);
+        close(devNull);
+
         dup2(pipeFd[1], STDOUT_FILENO);
         dup2(pipeFd[1], STDERR_FILENO);
         close(pipeFd[0]);
