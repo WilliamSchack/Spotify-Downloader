@@ -1,0 +1,1455 @@
+#include "YTMusicAPI.h"
+
+bool YTMusicAPI::CheckConnection()
+{
+    NetworkRequest request;
+    request.Url = API_BASE_URL;
+    NetworkResponse response = request.Get();
+	
+	// If anything is returned, connection is ok
+	return response.CurlCode == CURLcode::CURLE_OK;
+}
+
+NetworkRequest YTMusicAPI::GetRequestURL(const std::string& url)
+{
+	NetworkRequest request;
+	request.Url = url;
+	request.SetHeader("User-Agent", "Mozilla/5.0 (Linux x86_64; rv:149.0) Firefox/149.0");
+	request.SetHeader("Accept", "*/*");
+	request.SetHeader("Accept-Encoding", "gzip, deflate");
+	request.SetHeader("Accept-Language", "en-US,en;q=0.5");
+
+	return request;
+}
+
+NetworkRequest YTMusicAPI::GetRequestAPI(const std::string& endpoint)
+{
+    NetworkRequest request = GetRequestURL(API_BASE_URL + "/" + endpoint + "/?alt=json");
+	request.SetHeader("Origin", API_BASE_URL + "/");
+    request.SetHeader("Content-Type", "application/json");
+	request.SetHeader("Content-Encoding", "gzip");
+
+	return request;
+}
+
+nlohmann::json YTMusicAPI::GetContext()
+{
+	std::time_t rawTime;
+	struct tm* timeInfo;
+	char buffer[80];
+	std::time(&rawTime);
+	timeInfo = std::localtime(&rawTime);
+	std::strftime(buffer, sizeof(buffer), "%Y%m%d", timeInfo);
+	std::string clientVersion = "1." + std::string(buffer) + ".01.00";
+
+    return nlohmann::json {
+        {"client", {
+            {"clientName", "WEB_REMIX"},
+            {"clientVersion", clientVersion}
+        }},
+        {"user", nlohmann::json::object()}
+    };
+}
+
+TrackData YTMusicAPI::ParseTrackJson(const nlohmann::json& json)
+{
+	if (json.is_null() || json.empty())
+		return TrackData(EPlatform::Unknown);
+
+	TrackData track(EPlatform::YouTube);
+	track.Id = json["videoId"].is_null() ? "" : json["videoId"];
+	track.Url = track.Id.empty() ? "" : VIDEO_BASE_URL + track.Id;
+	track.Name = json["title"];
+	track.ReleaseYear = json.value("year", "");
+	track.Explicit = json.value("isExplicit", false);
+	track.DiscNumber = 0; // Not a thing on ytmusic
+	track.TrackNumber = json.value("trackNumber", 0);
+	track.PlaylistTrackNumber = 0;
+	if (json.contains("durationSeconds") && !json["durationSeconds"].empty())
+		track.SetDuration(json["durationSeconds"].get<int>() * 1000);
+
+	// Store the video type in the description
+	if (json.contains("videoType") && !json["videoType"].is_null())
+		track.Description = json["videoType"];
+
+	// Artists
+	std::vector<ArtistData> artists;
+	for (const nlohmann::json& artistJson : json["artists"]) {
+		artists.push_back(ParseArtistJson(artistJson));
+	}
+
+	// Album
+	AlbumData album(EPlatform::YouTube);
+	if (json.contains("album")) {
+		album = ParseAlbumJson(json["album"]).Data;
+
+		if (album.ReleaseYear.empty())
+			album.ReleaseYear = track.ReleaseYear;
+
+		if (album.Artists.size() == 0 && artists.size() > 0)
+			album.SetMainArtist(artists[0]);
+	}
+
+    if (album.Url == "") {
+        // Sometimes youtube just doesnt provide an album at all
+        // In most cases this is a single so just fill out the details assuming that
+        // Here it also doesnt provide a release date so thats a bit unfortunate
+
+        track.TrackNumber = 1;
+
+        album.Artists = artists;
+        album.Id = track.Id;
+        album.Url = track.Url;
+        album.Name = track.Name;
+        album.TotalTracks = 1;
+    }
+
+    if (album.ImageUrl.empty() && json.contains("thumbnails"))
+        album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
+
+	track.Album = album;
+	track.Artists = artists;
+
+	return track;
+}
+
+ArtistData YTMusicAPI::ParseArtistJson(const nlohmann::json& json)
+{
+	ArtistData artist(EPlatform::YouTube);
+	artist.Id = json["id"].is_null() ? "" : json["id"];
+	artist.Url = CHANNEL_BASE_URL + artist.Id;
+	artist.Name = json["name"];
+
+	return artist;
+}
+
+AlbumTracks YTMusicAPI::ParseAlbumJson(const nlohmann::json& json)
+{
+	AlbumTracks albumTracks;
+	if (json.empty() || json.is_null() || !json.is_object())
+		return albumTracks;
+
+	AlbumData album(EPlatform::YouTube);
+
+	if (json.contains("audioPlaylistId")) {
+		album.Id = json["audioPlaylistId"];
+		album.Url = PLAYLIST_BASE_URL + album.Id;
+	} else {
+		// Use browse id as a fallback
+		if (json.contains("id"))
+			album.Id = json["id"];
+		else if (json.contains("videoId") && !json["videoId"].is_null())
+			album.Id = json["videoId"];
+
+		album.Url = BROWSE_BASE_URL + album.Id;
+	}
+
+	album.Name = json.contains("name") ? json["name"] : json["title"];
+	album.TotalTracks = json.value("trackCount", 0);
+	album.ReleaseYear = json.value("year", "");
+
+	// Type
+	album.Type = EAlbumType::Album;
+	if (json.contains("type")) {
+		std::string albumType = json["type"];
+		if      (albumType == "Album")  album.Type = EAlbumType::Album;
+		else if (albumType == "Single") album.Type = EAlbumType::Single;
+        else if (albumType == "EP")     album.Type = EAlbumType::ExtendedPlay;
+		else Logger::Warning("Found an unknown album type: " + json.dump());
+	}
+
+	// Cover Art
+	if (json.contains("thumbnails"))
+		album.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
+
+	// Artists
+	if (json.contains("artists")) {
+		std::vector<ArtistData> artists;
+		for (const nlohmann::json& artistJson : json["artists"]) {
+			artists.push_back(ParseArtistJson(artistJson));
+		}
+
+		album.Artists = artists;
+	}
+
+	albumTracks.Data = album;
+
+	// Tracks
+	if (json.contains("tracks")) {
+		std::vector<TrackData> tracks;
+		for (const nlohmann::json& trackJson : json["tracks"]) {
+			TrackData track = ParseTrackJson(trackJson);
+
+			// Add album & release year
+			track.Album = album;
+			if (track.ReleaseYear.empty())
+				track.ReleaseYear = album.ReleaseYear;
+
+			tracks.push_back(track);
+		}
+
+		albumTracks.Tracks = tracks;
+	}
+
+	return albumTracks;
+}
+
+PlaylistTracks YTMusicAPI::ParsePlaylistJson(const nlohmann::json& json)
+{
+	PlaylistTracks playlistTracks;
+	if (json.empty() || json.is_null() || !json.is_object())
+		return playlistTracks;
+
+	PlaylistData playlist(EPlatform::YouTube);
+
+	playlist.Id = json["id"];
+	playlist.Url = PLAYLIST_BASE_URL + playlist.Id;
+	playlist.Name = json["title"];
+	//playlist.Description = json["description"] // NOT IMPLEMENTED
+	playlist.TotalTracks = json["trackCount"];
+
+	// Image
+	if (json.contains("thumbnails"))
+		playlist.ImageUrl = GetLargestImageUrl(json["thumbnails"]);
+
+	// Owner
+	ArtistData owner(EPlatform::YouTube);
+	if (json.contains("collaborators"))
+		owner.Name = json["collaborators"]["text"];
+	else
+		owner = ParseArtistJson(json["author"]);
+
+	playlist.Owner = owner;
+	
+	playlistTracks.Data = playlist;
+
+	// Tracks
+	if (json.contains("tracks")) {
+		std::vector<TrackData> tracks;
+		for (int i = 0; i < json["tracks"].size(); i++) {
+            const nlohmann::json& trackJson = json["tracks"][i];
+			TrackData track = ParseTrackJson(trackJson);
+            // TODO: Check if this playlist track number is correct
+            track.PlaylistTrackNumber = i;
+
+			tracks.push_back(track);
+		}
+
+		playlistTracks.Tracks = tracks;
+	}
+
+	return playlistTracks;
+}
+
+std::vector<YoutubeSearchResult> YTMusicAPI::Search(const std::string& query, const EYoutubeCategory& filter, int limit)
+{
+	// Get web page
+	std::string searchParams = "EgWKAQ"; // Param 1
+	switch (filter) {
+		case EYoutubeCategory::Songs:
+			searchParams += "II";
+			break;
+		case EYoutubeCategory::Videos:
+			searchParams += "IQ";
+			break;
+		case EYoutubeCategory::Albums:
+			searchParams += "IY";
+			break;
+	}
+
+	searchParams += "AUICCAFqDBAOEAoQAxAEEAkQBQ%3D%3D"; // Ignore Spelling
+
+	nlohmann::json postData {
+		{"query", query},
+		{"params", searchParams},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("search");
+	NetworkResponse response = request.Post(postData);
+
+	nlohmann::json responseJson = nlohmann::json::parse(response.Body);
+	if (!responseJson.contains("contents"))
+		return std::vector<YoutubeSearchResult>();
+	
+	nlohmann::json contents = responseJson["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+
+	nlohmann::json searchResults;
+	for (nlohmann::json result : contents) {
+		nlohmann::json shelfContents;
+
+		std::string type;
+		std::string category;
+
+		if (result.contains("musicCardShelfRenderer")) {
+			nlohmann::json data = result["musicCardShelfRenderer"];
+
+			std::string resultTypes[] { "artist", "playlist", "song", "video", "station", "profile" };
+			std::string resultType = data["subtitle"]["runs"][0]["text"];
+			resultType = StringUtils::ToLower(resultType);
+
+			if (!ArrayUtils::Contains(resultTypes, resultType))
+				resultType = "album";
+			
+			nlohmann::json topResult;
+			topResult["resultType"] = resultType;
+
+			category = JsonUtils::SafelyNavigate<std::string>(data, { "header", "musicCardShelfHeaderBasicRenderer", "title", "runs", 0, "text" });
+			topResult["category"] = category;
+
+			if (resultType == "song" || resultType == "video") {
+				nlohmann::json onTap = data["onTap"];
+				if (!onTap.empty()) {
+					topResult["videoId"] = onTap["watchEndpoint"]["videoId"];
+					topResult["videoType"] = onTap["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+				}
+			}
+
+			if (resultType == "song" || resultType == "video" || resultType == "album") {
+				topResult["title"] = data["title"]["runs"][0]["text"];
+				nlohmann::json runs = data["subtitle"]["runs"];
+				nlohmann::json songInfo = ParseSongRuns(runs, 2);
+				topResult.merge_patch(songInfo);
+			}
+
+			searchResults.push_back(topResult);
+
+			if (!data.contains("contents"))
+				continue;
+
+			shelfContents = result["musicCardShelfRenderer"]["contents"];
+			category = "";
+			if (shelfContents[0].contains("messageRenderer")) {
+				shelfContents.erase(0);
+				category = shelfContents[0]["messageRenderer"]["text"]["runs"][0]["text"];
+			}
+
+		} else if (result.contains("musicShelfRenderer")) {
+			shelfContents = result["musicShelfRenderer"]["contents"];
+			category = JsonUtils::SafelyNavigate<std::string>(result, { "musicShelfRenderer", "title", "runs", 0, "text" });
+
+			type = "";
+			switch (filter) {
+				case EYoutubeCategory::Songs:
+					type = "song";
+					break;
+				case EYoutubeCategory::Videos:
+					type = "video";
+					break;
+				case EYoutubeCategory::Albums:
+					type = "album";
+					break;
+			}
+		} else {
+			continue;
+		}
+
+		// Limit search results
+		if (shelfContents.size() > limit) {
+			while (shelfContents.size() > limit) {
+				shelfContents.erase(shelfContents.size() - 1);
+			}
+		}
+
+		nlohmann::json currentSearchResults = ParseSearchResults(shelfContents, type, category);
+		JsonUtils::ExtendArray(searchResults, currentSearchResults);
+
+		if (filter != EYoutubeCategory::None) {
+			nlohmann::json continuationResults = result["musicShelfRenderer"];
+			int currentLimit = limit - searchResults.size();
+
+			nlohmann::json items = nlohmann::json::array();
+			while (continuationResults.contains("continuations") && items.size() < currentLimit) {
+				std::string ctoken = continuationResults["continuations"][0]["nextContinuationData"]["continuation"];
+				std::string additionalParams = "&ctoken=" + ctoken + "&continuation=" + ctoken;
+
+				NetworkRequest continuationRequest = GetRequestAPI("search");
+				continuationRequest.Url += additionalParams;
+				NetworkResponse continuationResponse = continuationRequest.Post(postData);
+				nlohmann::json continuationJson = nlohmann::json::parse(continuationResponse.Body);
+
+				if (continuationJson.contains("continuationContents"))
+					continuationResults = continuationJson["continuationContents"]["musicShelfContinuation"];
+				else
+					break;
+
+				nlohmann::json continuationContents = nlohmann::json::array();
+				if (continuationResults.contains("contents"))
+					continuationContents = ParseSearchResults(continuationResults["contents"], type, category);
+				else if (continuationResults.contains("items"))
+					continuationContents = ParseSearchResults(continuationResults["items"], type, category);
+
+				if (continuationContents.size() == 0) break;
+
+				JsonUtils::ExtendArray(items, continuationContents);
+			}
+
+			JsonUtils::ExtendArray(searchResults, items);
+		}
+	}
+
+	// Parse search results to SearchResult type
+	std::vector<YoutubeSearchResult> finalSearchResults;
+	for (const nlohmann::json& result : searchResults) {
+		YoutubeSearchResult resultOut;
+
+		resultOut.VideoType = result.value("videoType", "");
+		resultOut.BrowseId = result.value("browseId", "");
+		resultOut.Views = result.value("views", "");
+
+		// Category
+		if      (result["category"] == "Songs")  resultOut.Category = EYoutubeCategory::Songs;
+		else if (result["category"] == "Videos") resultOut.Category = EYoutubeCategory::Videos;
+		else if (result["category"] == "Albums") resultOut.Category = EYoutubeCategory::Albums;
+		else {
+			// Use result type
+			if      (result["resultType"] == "song")  resultOut.Category = EYoutubeCategory::Songs;
+			else if (result["resultType"] == "video") resultOut.Category = EYoutubeCategory::Videos;
+			else if (result["resultType"] == "album") resultOut.Category = EYoutubeCategory::Albums;
+			else                                      resultOut.Category = EYoutubeCategory::Unknown;
+		}
+
+		// Video/Song
+		if (resultOut.Category == EYoutubeCategory::Songs || resultOut.Category == EYoutubeCategory::Videos) {
+			TrackData track = ParseTrackJson(result);
+			track.Description = ""; // Video type already stored
+			
+			resultOut.Data = track;
+		}
+
+		// Album
+		if (resultOut.Category == EYoutubeCategory::Albums) {
+			resultOut.Data = ParseAlbumJson(result).Data;
+		}
+
+		finalSearchResults.push_back(resultOut);
+	}
+
+	return finalSearchResults;
+}
+
+TrackData YTMusicAPI::GetTrack(const std::string& videoId)
+{
+	nlohmann::json trackWatchDetails = GetWatchPlaylist(videoId, false);
+	return ParseTrackJson(trackWatchDetails[0]);
+}
+
+std::string YTMusicAPI::GetAlbumBrowseId(const std::string& playlistId)
+{
+	if (!StringUtils::StartsWith(playlistId, "OLAK"))
+		return "";
+
+	NetworkRequest request = GetRequestURL(YOUTUBE_URL + "/playlist?list=" + playlistId);
+	NetworkResponse response = request.Get();
+
+	std::smatch matches;
+	if (!std::regex_search(response.Body, matches, std::regex("\"(MPRE.+?)\"")))
+		return "";
+
+	std::string browseId = matches[1];
+	if (StringUtils::Contains(browseId, "\\"))
+		browseId = StringUtils::RemoveChar(browseId, '\\');
+
+	return browseId;
+}
+
+AlbumTracks YTMusicAPI::GetAlbum(const std::string& browseId)
+{
+	if (!StringUtils::StartsWith(browseId, "MPRE"))
+		return AlbumTracks();
+
+	nlohmann::json postData {
+		{"browseId", browseId},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("browse");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	if (!json.contains("contents"))
+		return AlbumTracks();
+
+	nlohmann::json album = ParseAlbumHeader(json);
+
+	nlohmann::json results = json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicShelfRenderer"];
+	nlohmann::json tracks = ParsePlaylistItems(results["contents"], true);
+
+	for (int i = 0; i < tracks.size(); i++) {
+		nlohmann::json track = tracks[i];
+		track["album"] = nlohmann::json {
+			{"id", browseId},
+			{"name", album["title"]}
+		};
+		track["artists"] = track["artists"].empty() ? album["artists"] : track["artists"];
+		track["resultType"] = StringUtils::Contains(track["videoType"], "MUSIC_VIDEO") ? "video" : ""; // It is a video 99% of the time, just in case it isnt
+		tracks[i] = track;
+	}
+
+	album["tracks"] = tracks;
+
+	return ParseAlbumJson(album);
+}
+
+PlaylistTracks YTMusicAPI::GetPlaylist(const std::string& playlistId)
+{
+	std::string browseId = playlistId;
+	if (!StringUtils::StartsWith(browseId, "VL"))
+		browseId = "VL" + browseId;
+
+	nlohmann::json postData {
+		{"browseId", browseId},
+		{"context", GetContext()}
+	};
+
+	std::function<nlohmann::json(nlohmann::json)> requestFunc = [&](nlohmann::json body) { 
+		NetworkRequest request = GetRequestAPI("browse");
+		NetworkResponse response = request.Post(body);
+		return nlohmann::json::parse(response.Body);
+	};
+
+	nlohmann::json json = requestFunc(postData);
+
+	bool isOla = StringUtils::StartsWith(playlistId, "OLA") || StringUtils::StartsWith(playlistId, "VLOLA");
+	nlohmann::json twoColumnRenderer = json["contents"]["twoColumnBrowseResultsRenderer"];
+	nlohmann::json headerData = JsonUtils::SafelyNavigate(twoColumnRenderer, { "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0 });
+
+	if (isOla && headerData.empty()) {
+		nlohmann::json playlist = ParseAudioPlaylist(json, requestFunc);
+		return ParsePlaylistJson(playlist);
+	}
+
+	nlohmann::json sectionList = twoColumnRenderer["secondaryContents"]["sectionListRenderer"];
+	nlohmann::json playlist;
+	playlist["owned"] = headerData.contains("musicEditablePlaylistDetailHeaderRenderer");
+
+	nlohmann::json header;
+	if (!playlist["owned"]) {
+		header = headerData["musicResponsiveHeaderRenderer"];
+		playlist["id"] = JsonUtils::SafelyNavigate<std::string>(header, { "buttons", 1, "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "playlistId" });
+		playlist["privacy"] = "PUBLIC";
+	} else {
+		nlohmann::json editablePlaylistDetailHeader = headerData["musicEditablePlaylistDetailHeaderRenderer"];
+		header = editablePlaylistDetailHeader["header"]["musicResponsiveHeaderRenderer"];
+		playlist["id"] = editablePlaylistDetailHeader["playlistId"];
+		playlist["privacy"] = editablePlaylistDetailHeader["editHeader"]["musicPlaylistEditHeaderRenderer"]["privacy"];
+	}
+	
+	playlist.merge_patch(ParsePlaylistHeaderMeta(header));
+	bool isCollaborative = playlist.contains("collaborators");
+
+	int parseRunsStartIndex = 2 + (playlist["owned"] ? 1 : 0) * 2;
+	playlist.merge_patch(ParseSongRuns(header["subtitle"]["runs"], parseRunsStartIndex));
+
+	playlist["tracks"] = nlohmann::json::array();
+	nlohmann::json contentData = sectionList["contents"][0]["musicPlaylistShelfRenderer"];
+	if (contentData.contains("contents")) {
+		playlist["tracks"] = ParsePlaylistItems(contentData["contents"], isCollaborative=isCollaborative);
+
+		std::function<nlohmann::json(nlohmann::json)> parseFunc = [&](nlohmann::json contents) {
+			return ParsePlaylistItems(contents, isCollaborative=isCollaborative);
+		};
+
+		JsonUtils::ExtendArray(playlist["tracks"], GetContinuations(contentData, requestFunc, parseFunc));
+	}
+	
+	return ParsePlaylistJson(playlist);
+}
+
+nlohmann::json YTMusicAPI::ParsePlaylistHeaderMeta(const nlohmann::json& header)
+{
+	nlohmann::json playlistMeta = {
+		{"views", ""},
+		{"duration", ""},
+		{"trackCount", ""},
+		{"thumbnails", header["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]}
+	};
+
+	std::string title = "";
+	nlohmann::json titleRuns = JsonUtils::SafelyNavigate(header, { "title", "runs" });
+	if (!titleRuns.empty()) {
+		for (nlohmann::json run : titleRuns) {
+			title += run["text"];
+		}
+	}
+
+	playlistMeta["title"] = title;
+
+	if (header.contains("facepile")) {
+		nlohmann::json avatarRenderer = header["facepile"]["avatarStackViewModel"]["rendererContext"];
+		nlohmann::json avatarCommand = JsonUtils::SafelyNavigate(avatarRenderer, { "commandContext", "onTap", "innertubeCommand" });
+
+		if (JsonUtils::SafelyNavigate<std::string>(avatarCommand, { "showEngagementPanelEndpoint", "identifier", "tag" }) == "PAplaylist_collaborate") {
+			playlistMeta["collaborators"] = {
+				{"text", avatarRenderer["accessibilityContext"]["label"]}
+			};
+		} else {
+			playlistMeta["author"] = {
+				{"name", header["facepile"]["avatarStackViewModel"]["text"]["content"]},
+				{"id", JsonUtils::SafelyNavigate<std::string>(avatarCommand, { "browseEndpoint", "browseId" })}
+			};
+		}
+	}
+
+	nlohmann::json secondSubtitleRuns = JsonUtils::SafelyNavigate(header, {"secondSubtitle", "runs" });
+	if (!secondSubtitleRuns.empty()) {
+		int hasViews = (secondSubtitleRuns.size() > 3 ? 1 : 0) * 2;\
+		std::string songCountText = secondSubtitleRuns[hasViews]["text"];
+
+		std::smatch matches;
+		std::regex_search(songCountText, matches, std::regex(R"(\d+)"));
+
+		std::string trackCount = "";
+		for (std::string match : matches) {
+			trackCount += match;
+		}
+
+		playlistMeta["trackCount"] = std::stoi(trackCount);
+	}
+
+	return playlistMeta;
+}
+
+nlohmann::json YTMusicAPI::ParseAudioPlaylist(const nlohmann::json& response, std::function<nlohmann::json(nlohmann::json)> requestFunc)
+{
+	nlohmann::json playlist = {
+		{"owned", false},
+		{"privacy", "PUBLIC"},
+		{"description", ""},
+		{"views", 0},
+		{"duration", ""},
+		{"tracks", nlohmann::json::array()},
+		{"thumbnails", nlohmann::json::array()}
+	};
+	
+	nlohmann::json sectionList = response["contents"]["twoColumnBrowseResultsRenderer"];
+	nlohmann::json contentData = sectionList["contents"][0]["musicPlaylistShelfRenderer"];
+
+	playlist["id"] = contentData["targetId"];
+
+	if (contentData.contains("contents")) {
+		playlist["tracks"] = ParsePlaylistItems(contentData["contents"]);
+
+		std::function<nlohmann::json(nlohmann::json)> parseFunc = [&](nlohmann::json contents) {
+			return ParsePlaylistItems(contents);
+		};
+
+		JsonUtils::ExtendArray(playlist["tracks"], GetContinuations(contentData, requestFunc, parseFunc));
+	}
+
+	playlist["trackCount"] = playlist["tracks"].size();
+	playlist["title"] = playlist["tracks"][0]["album"]["name"];
+
+	return playlist;
+}
+
+nlohmann::json YTMusicAPI::GetContinuations(const nlohmann::json& json, std::function<nlohmann::json(nlohmann::json)> requestFunc, std::function<nlohmann::json(nlohmann::json)> parseFunc)
+{
+	nlohmann::json items = nlohmann::json::array();
+	std::string continuationToken = GetContinuationToken(json["contents"]);
+
+	while (!continuationToken.empty()) {
+		nlohmann::json requestBody = {
+			{"continuation", continuationToken},
+			{"context", GetContext()}
+		};
+		nlohmann::json response = requestFunc(requestBody);
+
+		nlohmann::json continuationItems = JsonUtils::SafelyNavigate(response, { "onResponseReceivedActions", 0, "appendContinuationItemsAction", "continuationItems" });
+		if (continuationItems.empty()) break;
+
+		nlohmann::json contents = parseFunc(continuationItems);
+		if (contents.size() == 0) break;
+
+		JsonUtils::ExtendArray(items, contents);
+		continuationToken = GetContinuationToken(continuationItems);
+	}
+
+	return items;
+}
+
+std::string YTMusicAPI::GetContinuationToken(const nlohmann::json& json)
+{
+	return JsonUtils::SafelyNavigate<std::string>(json.back(), { "continuationItemRenderer", "continuationEndpoint", "continuationCommand", "token" });
+}
+
+nlohmann::json YTMusicAPI::GetWatchPlaylist(std::string id, bool isPlaylist)
+{
+	nlohmann::json postData {
+		{"enablePersistentPlaylistPanel", true},
+		{"isAudioOnly", true},
+		{"tunerSettingValue", "AUTOMIX_SETTING_NORMAL"},
+		{"context", GetContext()}
+	};
+
+	if (isPlaylist) {
+		if (StringUtils::StartsWith(id, "VL"))
+		id = StringUtils::RemoveFirst(id, 2);
+		
+		isPlaylist = StringUtils::StartsWith(id, "PL") || StringUtils::StartsWith(id, "OLA");
+		postData["playlistId"] = id;
+	} else {
+		postData["videoId"] = id;
+        postData["playlistId"] = "RDAMVM" + id;
+		postData["watchEndpointMusicSupportedConfigs"] = {
+			{"watchEndpointMusicConfig", {
+				{"hasPersistentPlaylistPanel", true},
+				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
+			}}
+		};
+	}
+
+	NetworkRequest request = GetRequestAPI("next");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	nlohmann::json results = JsonUtils::SafelyNavigate(json, { "contents", "singleColumnMusicWatchNextResultsRenderer", "tabbedRenderer", "watchNextTabbedResultsRenderer", "tabs", 0, "tabRenderer", "content", "musicQueueRenderer", "content", "playlistPanelRenderer" });
+	if (results.empty()) return nlohmann::json::object();
+
+	nlohmann::json tracks = ParseWatchPlaylist(results["contents"]);
+
+	// Need to check for continuations here
+	// Only used for single tracks atm so its not currently required
+
+	return tracks;
+}
+
+nlohmann::json YTMusicAPI::ParseWatchPlaylist(const nlohmann::json& json)
+{
+	std::string ppvwr = "playlistPanelVideoWrapperRenderer";
+	std::string ppvr = "playlistPanelVideoRenderer";
+
+	nlohmann::json tracks = nlohmann::json::array();
+	for (nlohmann::json result : json) {
+		nlohmann::json counterpart = nlohmann::json::object();
+
+		if (result.contains(ppvwr)) {
+			counterpart = result[ppvwr]["counterpart"][0]["counterpartRenderer"][ppvr];
+			result = result[ppvwr]["primaryRenderer"];
+		}
+
+		if (!result.contains(ppvr))
+			continue;
+		
+		nlohmann::json data = result[ppvr];
+		if (data.contains("unplayableText"))
+			continue;
+
+		nlohmann::json track = ParseWatchTrack(data);
+		if (!counterpart.empty())
+			track["counterpart"] = ParseWatchTrack(counterpart);
+		
+		tracks.push_back(track);
+	}
+
+	return tracks;
+}
+
+nlohmann::json YTMusicAPI::ParseWatchTrack(const nlohmann::json& json)
+{
+	nlohmann::json track = {
+		{"videoId", json["videoId"]},
+		{"title", json["title"]["runs"][0]["text"]},
+		{"duration", JsonUtils::SafelyNavigate(json, { "lengthText", "runs", 0, "text" })},
+		{"thumbnails", json["thumbnail"]["thumbnails"]},
+		{"videoType", JsonUtils::SafelyNavigate(json, { "navigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" })},
+		{"isExplicit", json.contains("badges")}
+	};
+
+	if (!track["duration"].empty())
+		track["durationSeconds"] = StringUtils::TimeToSeconds(track["duration"]);
+
+	nlohmann::json longByLineText = JsonUtils::SafelyNavigate(json, { "longBylineText" });
+	if (!longByLineText.empty()) {
+		nlohmann::json songInfo = ParseSongRuns(longByLineText["runs"]);
+		track.merge_patch(songInfo);
+	}
+
+	return track;
+}
+
+nlohmann::json YTMusicAPI::ParseAlbumHeader(const nlohmann::json& response)
+{
+	nlohmann::json header = JsonUtils::SafelyNavigate(response, { "contents", "twoColumnBrowseResultsRenderer", "tabs", 0, "tabRenderer", "content", "sectionListRenderer", "contents", 0, "musicResponsiveHeaderRenderer" });
+	if (header.empty())
+		return nlohmann::json::object();
+
+	nlohmann::json album {
+		{"title", header["title"]["runs"][0]["text"]},
+		{"type", header["subtitle"]["runs"][0]["text"]},
+		{"thumbnails", header["thumbnail"]["musicThumbnailRenderer"]["thumbnail"]["thumbnails"]}
+	};
+
+	if (header.contains("description"))
+		album["description"] = header["description"]["musicDescriptionShelfRenderer"]["description"]["runs"][0]["text"];
+	
+	nlohmann::json albumInfo = ParseSongRuns(header["subtitle"]["runs"]);
+	if (!header["straplineTextOne"].empty()) // If this does not pass, artists will be found for tracks individually, only happens for very few albums
+		albumInfo["artists"] = ParseSongRuns(header["straplineTextOne"]["runs"])["artists"];
+	
+	album.merge_patch(albumInfo);
+
+	if (header["secondSubtitle"]["runs"].size() > 1) {
+		album["trackCount"] =  std::stoi(StringUtils::Split(header["secondSubtitle"]["runs"][0]["text"], " ")[0]); // Output is -- Songs, remove " songs" and convert to int
+		album["duration"] = header["secondSubtitle"]["runs"][2]["text"];
+	} else {
+		album["duration"] = header["secondSubtitle"]["runs"][0]["text"];
+	}
+
+	nlohmann::json buttons = header["buttons"];
+	for (nlohmann::json button : buttons) {
+		if (!button.contains("musicPlayButtonRenderer"))
+			continue;
+
+		nlohmann::json playNavigationEndpoint = button["musicPlayButtonRenderer"]["playNavigationEndpoint"];
+		std::string id = JsonUtils::SafelyNavigate(playNavigationEndpoint, { "watchPlaylistEndpoint", "playlistId" });
+		if (id.empty()) id = JsonUtils::SafelyNavigate(playNavigationEndpoint, { "watchEndpoint", "playlistId" });
+
+		album["audioPlaylistId"] = id;
+
+		break;
+	}
+
+	bool isExplicit = false;
+	if (header.contains("description"))
+		isExplicit = header["description"]["musicDescriptionShelfRenderer"].contains("straplineBadge");
+
+	album["isExplicit"] = isExplicit;
+
+	return album;
+}
+
+nlohmann::json YTMusicAPI::ParsePlaylistItems(const nlohmann::json& results, const bool& isAlbum, const bool& isCollaborative)
+{
+	nlohmann::json songs = nlohmann::json::array();
+
+	for (nlohmann::json result : results) {
+		if (!result.contains("musicResponsiveListItemRenderer"))
+			continue;
+
+		nlohmann::json data = result["musicResponsiveListItemRenderer"];
+		nlohmann::json song = nlohmann::json::object();
+
+		if (data.contains("menu")) {
+			nlohmann::json menuItems = data["menu"]["menuRenderer"]["items"];
+			for(nlohmann::json item : menuItems) {
+				if (item.contains("menuServiceItemRenderer")) {
+					nlohmann::json menuService = item["menuServiceItemRenderer"]["menuServiceItemRenderer"];
+					if (menuService.contains("playlistEditEndpoint")) {
+						song["setVideoId"] = menuService["playlistEditEndpoint"]["actions"][0]["setVideoId"];
+						song["videoId"] = menuService["playlistEditEndpoint"]["actions"][0]["removedVideoId"];
+					}
+				}
+			}
+		}
+
+		nlohmann::json musicPlayButton = JsonUtils::SafelyNavigate(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer" });
+		if (!musicPlayButton.empty())
+			song["videoId"] = musicPlayButton["playNavigationEndpoint"]["watchEndpoint"]["videoId"];
+
+		bool isAvailable = true;
+		if (data.contains("musicItemRendererDisplayPolicy")) {
+			isAvailable = data["musicItemRendererDisplayPolicy"] != "MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT";
+		}
+
+		bool usePresetColumns = isAvailable == false || isAlbum == true;
+
+		int titleIndex = usePresetColumns ? 0 : -1;
+		int artistIndex = usePresetColumns ? 1 : -1;
+		int albumIndex = usePresetColumns ? (isCollaborative ? 3 : 2) : -1;
+		
+		std::vector<int> userChannelIndexes;
+		int unrecognisedIndex = -1;
+
+		for (int i = 0; i < data["flexColumns"].size(); i++) {
+			nlohmann::json flexColumnItem = GetFlexColumnItem(data, i);
+
+			if (JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "navigationEndpoint" }).empty()) {
+				if (!JsonUtils::SafelyNavigate(flexColumnItem, { "text", "runs", 0, "text" }).empty())
+					unrecognisedIndex = unrecognisedIndex == -1 ? i : unrecognisedIndex;
+
+				continue;
+			}
+
+			nlohmann::json navigationEndpoint = flexColumnItem["text"]["runs"][0]["navigationEndpoint"];
+
+			if (navigationEndpoint.contains("watchEndpoint")) {
+				titleIndex = i;
+			} else if (navigationEndpoint.contains("browseEndpoint")) {
+				std::string pageType = JsonUtils::SafelyNavigate<std::string>(navigationEndpoint, { "browseEndpoint", "browseEndpointContextSupportedConfigs", "browseEndpointContextMusicConfig", "pageType" });
+				
+				if (pageType == "MUSIC_PAGE_TYPE_ARTIST" || pageType == "MUSIC_PAGE_TYPE_UNKNOWN")
+					artistIndex = i;
+				else if (pageType == "MUSIC_PAGE_TYPE_ALBUM" || pageType == "MUSIC_PAGE_TYPE_AUDIOBOOK")
+					albumIndex = i;
+				else if (pageType == "MUSIC_PAGE_TYPE_USER_CHANNEL")
+					userChannelIndexes.push_back(i);
+				else if (pageType == "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE")
+					titleIndex = i;
+			}
+		}
+
+		if (artistIndex == -1 && unrecognisedIndex != -1)
+			artistIndex = unrecognisedIndex;
+
+		if (artistIndex == -1 && !userChannelIndexes.empty())
+			artistIndex = userChannelIndexes.back();
+
+		std::string title = titleIndex != -1 ? GetItemText(data, titleIndex) : "";
+		if (title == "Song deleted")
+			return nlohmann::json::array();
+		song["title"] = title;
+
+		song["artists"] = artistIndex != -1 ? ParseSongArtists(data, artistIndex) : nlohmann::json::array();
+
+		song["album"] = albumIndex != -1 ? ParseSongAlbum(data, albumIndex) : nlohmann::json::object();
+
+		song["views"] = isAlbum ? StringUtils::Split(GetItemText(data, 2), " ")[0] : "";
+
+		song["thumbnails"] = JsonUtils::SafelyNavigate(data, { "thumbnail", "musicThumbnailRenderer", "thumbnail", "thumbnails" });
+
+		song["isExplicit"] = data.contains("badges");
+
+		if (isAlbum && isAvailable)
+			song["trackNumber"] = std::stoi(data["index"]["runs"][0]["text"].get<std::string>());
+
+		if (data.contains("fixedColumns")) {
+			std::string duration = "";
+			nlohmann::json fixedColumnItemText = GetFixedColumnItem(data, 0)["text"];
+			if (fixedColumnItemText.contains("simpleText"))
+				duration = fixedColumnItemText["simpleText"];
+			else
+				duration = fixedColumnItemText["runs"][0]["text"];
+
+			song["duration"] = duration;
+			song["durationSeconds"] = StringUtils::TimeToSeconds(duration);
+		}
+
+		song["videoType"] = "";
+		if (data.contains("menu"))
+			song["videoType"] = data["menu"]["menuRenderer"]["items"][0]["menuNavigationItemRenderer"]["navigationEndpoint"]["watchEndpoint"]["watchEndpointMusicSupportedConfigs"]["watchEndpointMusicConfig"]["musicVideoType"];
+
+		songs.push_back(song);
+	}
+
+	return songs;
+}
+
+
+nlohmann::json YTMusicAPI::ParseSongRuns(const nlohmann::json& runs, const int& offset)
+{
+	nlohmann::json parsed = nlohmann::json::object();
+	nlohmann::json artists = nlohmann::json::array();
+	for (int i = offset; i < runs.size(); i++) {
+		if (i % 2) continue;
+
+		nlohmann::json run = runs[i];
+		std::string text = run["text"];
+
+		// Artists
+		if (run.contains("navigationEndpoint")) {
+			nlohmann::json item {
+				{"name", text},
+				{"id", run["navigationEndpoint"]["browseEndpoint"]["browseId"]}
+			};
+
+			if (item["id"] != "" && StringUtils::StartsWith(item["id"], "MPRE") || StringUtils::Contains(item["id"], "release_detail")) {
+				parsed["album"] = item;
+			}
+			else {
+				artists.push_back(item);
+			}
+
+			continue;
+		}
+
+		std::smatch matches;
+		if (std::regex_match(text.c_str(), std::regex(R"(^\d([^ ])* [^ ]*$)")) && i > 2) {
+			parsed["views"] = StringUtils::Split(text, " ")[0];
+		}
+		else if (std::regex_match(text.c_str(), std::regex(R"(^(\d+:)*\d+:\d+$)"))) {
+			parsed["duration"] = text;
+			parsed["durationSeconds"] = StringUtils::TimeToSeconds(text);
+		}
+		else if (std::regex_match(text.c_str(), std::regex(R"(^\d{4}$)"))) {
+			parsed["year"] = text;
+		}
+		else if (std::regex_search(text, matches, std::regex(R"((.+)\sviews)"))) {
+			// Sometimes views are passed here, check for that and if so set the views
+			parsed["views"] = matches[1];
+		} else {
+			// Artist without id (If multiple, seperated with " & ")
+			std::vector<std::string> artistNames = StringUtils::Split(text, " & ");
+
+			for (std::string name : artistNames) {
+				artists.push_back({
+					{"id", ""},
+					{"name", name}
+				});
+			}
+		}
+	}
+	parsed["artists"] = artists;
+	return parsed;
+}
+
+std::string YTMusicAPI::GetItemText(const nlohmann::json& item, const int& index, const int& runIndex)
+{
+	nlohmann::json column = GetFlexColumnItem(item, index);
+	if (column.empty()) return "";
+
+	return column["text"]["runs"][runIndex]["text"];
+}
+
+nlohmann::json YTMusicAPI::GetFlexColumnItem(const nlohmann::json& item, const int& index)
+{
+	nlohmann::json flexColumns = item["flexColumns"];
+	if (flexColumns.size() <= index ||
+		!flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"].contains("text") ||
+		!flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"]["text"].contains("runs")) {
+		return nlohmann::json::object();
+	}
+
+	return flexColumns[index]["musicResponsiveListItemFlexColumnRenderer"];
+}
+
+nlohmann::json YTMusicAPI::GetFixedColumnItem(const nlohmann::json& item, const int& index)
+{
+	nlohmann::json columnItem = item["fixedColumns"][index]["musicResponsiveListItemFixedColumnRenderer"];
+	if (!columnItem.contains("text") ||
+		!columnItem["text"].contains("runs")) {
+		return nlohmann::json::object();
+	}
+
+	return columnItem;
+}
+
+nlohmann::json YTMusicAPI::ParseSongArtists(const nlohmann::json& data, const int& index)
+{
+	nlohmann::json flexItem = GetFlexColumnItem(data, index);
+
+	if (flexItem.empty())
+		return nlohmann::json::array();
+	
+	nlohmann::json runs = flexItem["text"]["runs"];
+
+	nlohmann::json artists = nlohmann::json::array();
+	for (int i = 0; i < int(runs.size() / 2 + 1); i++) {
+		std::string name = runs[i * 2]["text"];
+		std::string id = JsonUtils::SafelyNavigate<std::string>(runs, { i * 2, "navigationEndpoint", "browseEndpoint", "browseId" });
+
+		nlohmann::json artist {
+			{ "name", name },
+			{ "id", id }
+		};
+
+		artists.push_back(artist);
+	}
+
+	return artists;
+}
+
+nlohmann::json YTMusicAPI::ParseSongAlbum(const nlohmann::json& data, const int& index)
+{
+	nlohmann::json flexItem = GetFlexColumnItem(data, index);
+
+	if (flexItem.empty())
+		return nlohmann::json::object();
+
+	std::string browseId = JsonUtils::SafelyNavigate<std::string>(flexItem, { "text", "runs", 0, "navigationEndpoint", "browseEndpoint", "browseId" });
+	return nlohmann::json {
+		{ "name", GetItemText(data, index) },
+		{ "id", browseId }
+	};
+}
+
+nlohmann::json YTMusicAPI::ParseSearchResults(const nlohmann::json& results, std::string resultType, const std::string& category)
+{
+	nlohmann::json finalResults = nlohmann::json::array();
+
+	int defaultOffset = resultType.empty() ? 2 : 0;
+
+	for (nlohmann::json val : results) {
+		nlohmann::json data = val["musicResponsiveListItemRenderer"];
+
+		nlohmann::json searchResult {
+			{"category", category}
+		};
+
+		std::string videoType = JsonUtils::SafelyNavigate<std::string>(data, { "overlay", "musicItemThumbnailOverlayRenderer", "content", "musicPlayButtonRenderer", "playNavigationEndpoint", "watchEndpoint", "watchEndpointMusicSupportedConfigs", "watchEndpointMusicConfig", "musicVideoType" });
+		if (resultType == "" && videoType != "") {
+			if (videoType == "MUSIC_VIDEO_TYPE_ATV") resultType = "song";
+			else resultType = "video";
+		}
+
+		if (resultType == "") {
+			std::string resultTypes[] { "artist", "playlist", "song", "video", "station", "profile" };
+			std::string resultTypeLocal = GetItemText(data, 1);
+			resultTypeLocal = StringUtils::ToLower(resultTypeLocal);
+
+			if (!ArrayUtils::Contains(resultTypes, resultTypeLocal)) {
+				resultType = "album";
+			} else {
+				resultType = resultTypeLocal;
+			}
+		}
+		searchResult["resultType"] = resultType;
+
+		if (resultType != "artist") {
+			searchResult["title"] = GetItemText(data, 0);
+		}
+
+		if (resultType == "artist")
+			searchResult["artist"] = GetItemText(data, 0);
+		else if (resultType == "album") {
+			searchResult["type"] = GetItemText(data, 1);
+			searchResult["playlistId"] = data["overlay"]["musicItemThumbnailOverlayRenderer"]["content"]["musicPlayButtonRenderer"]["playNavigationEndpoint"]["watchPlaylistEndpoint"]["playlistId"];
+		}
+		else if (resultType == "playlist") {
+			nlohmann::json flexItem = GetFlexColumnItem(data, 1)["text"]["runs"];
+			bool hasAuthor = flexItem.size() == defaultOffset + 3;
+			searchResult["itemCount"] = StringUtils::Split(GetItemText(data, 1, defaultOffset + hasAuthor * 2), " ")[0];
+
+			if (hasAuthor) searchResult["author"] = GetItemText(data, 1, defaultOffset);
+			else searchResult["author"] = "";
+		}
+		else if (resultType == "station") {
+			searchResult["videoId"] = data["navigationEndpoint"]["watchEndpoint"]["videoId"];
+			searchResult["playlistId"] = data["navigationEndpoint"]["watchEndpoint"]["playlistId"];
+		}
+		else if (resultType == "profile") searchResult["name"] = GetItemText(data, 1, 2);
+		else if (resultType == "song") searchResult["album"] = "";
+		else if (resultType == "upload") {
+			std::string browseId = data["navigationEndpoint"]["browseEndpoint"]["browseId"];
+			if (browseId != "") {
+				nlohmann::json flexItems = nlohmann::json::array();
+				for (int i = 0; i < 2; i++) {
+					nlohmann::json flexColumnItem = GetFlexColumnItem(data, i);
+					flexItems.push_back(flexColumnItem["text"]["runs"]);
+				}
+				if (!flexItems[0].is_null()) {
+					searchResult["videoId"] = flexItems[0][0]["navigationEndpoint"]["watchEndpoint"]["videoId"];
+					searchResult["playlistId"] = flexItems[0][0]["navigationEndpoint"]["watchEndpoint"]["playlistId"];
+				}
+				if (!flexItems[1].is_null()) {
+					nlohmann::json songRuns = ParseSongRuns(flexItems[1]);
+					searchResult.merge_patch(songRuns);
+				}
+			} else {
+				searchResult["browseId"] = browseId;
+				if (StringUtils::Contains(browseId, "artist")) {
+					searchResult["resultType"] = "artist";
+				} else {
+					nlohmann::json flexItem2 = GetFlexColumnItem(data, 1);
+					nlohmann::json  flexItem2Runs = flexItem2["text"]["runs"];
+					std::vector<std::string> runs;
+					for (int i = 0; i < flexItem2Runs.size(); i++) {
+						nlohmann::json run = flexItem2Runs[i];
+						if(i % 2 == 0) runs.push_back(run["text"]);
+					}
+
+					if (runs.size() > 1) searchResult["artist"] = runs[1];
+					if (runs.size() > 2) searchResult["releaseData"] = runs[2];
+					searchResult["resultType"] = "album";
+				}
+			}
+		}
+
+		if (resultType == "song" || resultType == "video") {
+			searchResult["videoId"] = data["overlay"]["musicItemThumbnailOverlayRenderer"]["content"]["musicPlayButtonRenderer"]["playNavigationEndpoint"]["watchEndpoint"]["videoId"];
+			searchResult["videoType"] = videoType;
+		}
+
+		if (resultType == "song" || resultType == "video" || resultType == "album") {
+			searchResult["duration"] = "";
+			searchResult["year"] = "";
+			nlohmann::json flexItem = GetFlexColumnItem(data, 1);
+			nlohmann::json runs = flexItem["text"]["runs"];
+			nlohmann::json songInfo = ParseSongRuns(runs, defaultOffset);
+			searchResult.merge_patch(songInfo);
+		}
+
+		if (resultType == "album" || resultType == "playlist") {
+			searchResult["browseId"] = data["navigationEndpoint"]["browseEndpoint"]["browseId"];
+		}
+
+		if (resultType == "song" || resultType == "album")
+			searchResult["isExplicit"] = data.contains("badges");
+
+		finalResults.push_back(searchResult);
+	}
+	
+	return finalResults;
+}
+
+Lyrics YTMusicAPI::GetLyrics(const std::string& videoId, const bool& timestamps)
+{
+    Lyrics lyrics(ELyricsSource::YouTube);
+
+	std::string lyricsBrowseId = GetLyricsBrowseId(videoId);
+
+	if (lyricsBrowseId.empty())
+		return lyrics;
+
+	nlohmann::json context = GetContext();
+
+	// Modify context to act as android to get timestamps
+	if (timestamps) {
+		nlohmann::json& clientContext = context["client"];
+		clientContext["clientName"] = "ANDROID_MUSIC";
+		clientContext["clientVersion"] = "7.21.50";
+	}
+
+	nlohmann::json postData {
+		{"browseId", lyricsBrowseId},
+		{"context", context}
+	};
+
+	NetworkRequest request = GetRequestAPI("browse");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	if (!StringUtils::Contains(response.Body, "contents"))
+		return lyrics;
+
+	// Look for synced lyrics
+	nlohmann::json data = json["contents"]["elementRenderer"]["newElement"]["type"]["componentType"]["model"]["timedLyricsModel"]["lyricsData"];
+	if (timestamps && !data.empty()) {
+		if (!data.contains("timedLyricsData"))
+			return lyrics;
+
+		// Setup lyrics source message
+		lyrics.SourceMessage = "Youtube: " + StringUtils::Split(data["sourceMessage"], "Source: ")[1];
+
+		// Get lyrics
+		nlohmann::json timedLyricsData = data["timedLyricsData"];
+		std::vector<SynchronisedLyric> lyricsList;
+
+		bool unsyncedTimedLyrics = false;
+
+		for (nlohmann::json lyricsObject : timedLyricsData) {
+			int startMs = 0;
+			int endMs = 0;
+			
+			nlohmann::json cueRange = lyricsObject["cueRange"];
+			if (!cueRange.empty() && !cueRange.is_null()) {
+				// Cant do QJsonValue.toInt(), times are stored as strings convert to them first
+				startMs = std::stoi(cueRange["startTimeMilliseconds"].get<std::string>());
+				endMs = std::stoi(cueRange["endTimeMilliseconds"].get<std::string>());
+			} else {
+				unsyncedTimedLyrics = true;
+			}
+
+			std::string sentence = lyricsObject["lyricLine"];
+
+			SynchronisedLyric lyric(startMs, endMs, sentence);
+			lyricsList.push_back(lyric);
+		}
+
+		// If cue range is empty for any timed lyric, it will be for all of them
+		// in this case loop through the timed lyrics and return as an unsynced 
+		if (unsyncedTimedLyrics) {
+			std::string unsyncedTimedLyricsString = "";
+			for (SynchronisedLyric syncedLyric : lyricsList) {
+				unsyncedTimedLyricsString += syncedLyric.Lyric + "\n";
+			}
+
+			lyrics.Type = ELyricsType::Unsynced;
+			lyrics.UnsyncedLyrics = unsyncedTimedLyricsString;
+
+			return lyrics;
+		}
+
+		lyrics.Type = ELyricsType::Synced;
+		lyrics.SyncedLyrics = lyricsList;
+
+		return lyrics;
+	}
+
+	// If no synced lyrics found, look for regular lyrics
+	std::string lyricsString = JsonUtils::SafelyNavigate(json, { "contents", "sectionListRenderer", "contents", 0, "musicDescriptionShelfRenderer", "description", "runs", 0 }).value("text", "");
+	if (lyricsString.empty())
+		return lyrics;
+
+	lyrics.Type = ELyricsType::Unsynced;
+	lyrics.SourceMessage = "YouTube";
+	lyrics.UnsyncedLyrics = lyricsString;
+
+	return lyrics;
+}
+
+std::string YTMusicAPI::GetLyricsBrowseId(const std::string& videoId)
+{
+	nlohmann::json postData {
+		{"enablePersistentPlaylistPanel", true},
+		{"isAudioOnly", true},
+		{"tunerSettingValue", "AUTOMIX_SETTING_NORMAL"},
+		{"videoId", videoId},
+		{"playlistId", "RDAMVM" + videoId},
+		{"watchEndpointMusicSupportedConfigs", {
+			{"watchEndpointMusicConfig", {
+				{"hasPersistentPlaylistPanel", true},
+				{"musicVideoType", "MUSIC_VIDEO_TYPE_ATV"}
+			}}
+		}},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("next");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+	if (!StringUtils::Contains(response.Body, "contents"))
+		return "";
+
+	nlohmann::json watchNextRenderer = json["contents"]["singleColumnMusicWatchNextResultsRenderer"]["tabbedRenderer"]["watchNextTabbedResultsRenderer"];
+	std::string lyricsBrowseId = GetTabBrowseId(watchNextRenderer, 1);
+	
+	return lyricsBrowseId;
+}
+
+std::string YTMusicAPI::GetTabBrowseId(const nlohmann::json& watchNextRenderer, const int& tabId)
+{
+	nlohmann::json tabRenderer = watchNextRenderer["tabs"][tabId]["tabRenderer"];
+	
+	if (tabRenderer.contains("unselectable"))
+		return "";
+
+	return tabRenderer["endpoint"]["browseEndpoint"]["browseId"];
+}
+
+std::string YTMusicAPI::GetLargestImageUrl(const nlohmann::json& json)
+{
+    std::string imageUrl = "";
+    unsigned int highestResolution = 0;
+    for (nlohmann::json coverArtDetails : json) {
+        if (coverArtDetails.empty() || coverArtDetails.is_null())
+            continue;
+
+        int resolution = 0;
+        nlohmann::json widthJsonObject = coverArtDetails["width"];
+        if (!widthJsonObject.is_null())
+            resolution = widthJsonObject.get<int>();
+
+        if (resolution < highestResolution)
+            continue;
+        
+        highestResolution = resolution;
+        imageUrl = coverArtDetails["url"];
+    }
+
+    return imageUrl;
+}
+
+long YTMusicAPI::GetSignatureTimestamp()
+{
+	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+	long secondsSinceEpoch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+
+	return secondsSinceEpoch - 1;
+}
+
+bool YTMusicAPI::HasPremium()
+{
+    CookieFile& cookieFile = YouTubeCookieFile::Get();
+
+    if (cookieFile.Read().empty())
+        return false;
+
+    NetworkRequest request = GetRequestURL("https://www.youtube.com/paid_memberships");
+    request.SetHeader("Origin", "https://www.youtube.com");
+    request.SetCookiePath(FileUtils::PathToUtf8(cookieFile.GetPath()));
+	NetworkResponse response = request.Get();
+
+    if (response.Body.empty())
+        return false;
+
+    std::vector<std::string> responseLines = StringUtils::Split(response.Body, "\n");
+
+    // Used to be at line 21, now its at 20 most of the time? But it also is later sometimes?
+    // I dunno just check from 20-22 it will be found
+    std::smatch matches;
+    bool matchesFound = false;
+    for (int i = 20; i <= 22; i++) {
+        std::string jsonLine = responseLines[i];
+        std::regex_search(jsonLine, matches, std::regex(R"(ytInitialData\s=\s(.*}}}}}}});)"));
+
+        if (matches.size() < 2)
+            continue;
+        
+        matchesFound = true;
+        break;
+    }
+
+    if (!matchesFound)
+        return false;
+
+    std::string jsonString = matches[1];
+    nlohmann::json json = nlohmann::json::parse(jsonString);
+    nlohmann::json pageSections = json["contents"]["twoColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"];
+
+    nlohmann::json membershipContents = nlohmann::json::array();
+    for (nlohmann::json sectionJson : pageSections) {
+        nlohmann::json contents = sectionJson["itemSectionRenderer"]["contents"];
+        std::string sectionText = JsonUtils::SafelyNavigate<std::string>(contents, { 0, "cardItemRenderer", "headingRenderer", "cardItemTextCollectionRenderer", "textRenderers", 0, "cardItemTextRenderer", "text", "runs", 0, "text"});
+
+        if (sectionText == "Memberships") {
+            membershipContents = contents;
+            break;
+        }
+    }
+
+    if (membershipContents.empty())
+        return false;
+
+    // Look for any memberships in VALID_PREMIUM_IMAGE_ALT_TEXT
+    for (nlohmann::json membership : membershipContents) {
+        std::string imageAltText = JsonUtils::SafelyNavigate<std::string>(membership, { "cardItemContainerRenderer", "baseRenderer", "cardItemRenderer", "headingRenderer", "cardItemTextWithImageRenderer", "imageRenderer", "themedImageRenderer", "imageLight", "accessibility", "accessibilityData", "label" });
+
+        if (VectorUtils::Contains(VALID_PREMIUM_IMAGE_ALT_TEXT, imageAltText))
+            return true;
+    }
+
+    return false;
+}
+
+bool YTMusicAPI::IsAgeRestricted(const std::string& videoId)
+{
+    nlohmann::json postData {
+		{"playbackContext", {
+            {"contentPlaybackContext", {
+                {"signatureTimestamp", GetSignatureTimestamp()}
+            }}
+        }},
+        {"video_id", videoId},
+		{"context", GetContext()}
+	};
+
+	NetworkRequest request = GetRequestAPI("player");
+	NetworkResponse response = request.Post(postData);
+	nlohmann::json json = nlohmann::json::parse(response.Body);
+
+    // Get the playability status, if not returned cannot check
+    if (!json.contains("playabilityStatus"))
+        return false;
+
+    nlohmann::json playabilityStatus = json["playabilityStatus"];
+    
+    std::string status = playabilityStatus["status"].get<std::string>();
+    if (status == "OK")
+        return false;
+    
+    if (!playabilityStatus.contains("reason"))
+        return false;
+
+    std::string reason = playabilityStatus["reason"].get<std::string>();
+
+    // Age restricted
+	if (status == "LOGIN_REQUIRED" && reason == "Sign in to confirm your age")
+		return true;
+    
+    if (status == "UNPLAYABLE" && reason == "Video unavailable")
+        return true;
+
+    return false;
+}

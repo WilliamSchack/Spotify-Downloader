@@ -1,0 +1,51 @@
+#ifndef NETWORKREQUEST_H
+#define NETWORKREQUEST_H
+
+#include "NetworkResponse.h"
+#include "FileUtils.h"
+
+#include <string>
+#include <vector>
+#include <memory>
+#include <fstream>
+
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
+class NetworkRequest
+{
+    public:
+        ~NetworkRequest();
+        
+        void SetHeader(const std::string& header);
+        void SetHeader(const std::string& header, const std::string& value);
+        void SetCookiePath(const std::string& path);
+        
+        NetworkResponse Get();
+        NetworkResponse Post(const std::string& postData);
+        NetworkResponse Post(nlohmann::json postData);
+        NetworkResponse DownloadToFile(const std::filesystem::path& filePath);
+    public:
+        std::string Url = "";
+    private:
+        struct CurlGlobalHandler
+        {
+            CurlGlobalHandler()  { GlobalInit = curl_global_init(CURL_GLOBAL_DEFAULT); }
+            ~CurlGlobalHandler() { curl_global_cleanup(); }
+            CURLcode GlobalInit;
+        };
+    private:
+        CURL* InitCurl();
+        NetworkResponse SendRequest(CURL* curl);
+        void CleanupCurl(CURL* curl);
+
+        static size_t CurlWriteFunction(void* data, size_t size, size_t nmemb, void* clientp);
+        static size_t CurlWriteFileFunction(void* data, size_t size, size_t nmemb, void* clientp);
+    private:
+        static inline const CurlGlobalHandler _globalHandler;
+        
+        struct curl_slist* _headers = NULL;
+        std::string _cookiePath;
+};
+
+#endif

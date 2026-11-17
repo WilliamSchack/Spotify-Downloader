@@ -1,0 +1,230 @@
+#include "StringUtils.h"
+
+std::wstring StringUtils::ToWString(const std::string& string)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(string);
+}
+
+std::string StringUtils::FromWString(const std::wstring& string)
+{
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(string);
+}
+
+bool StringUtils::StartsWith(const std::string& string, const std::string& value)
+{
+    if (string.length() < value.length())
+        return false;
+
+    return string.rfind(value, 0) == 0;
+}
+
+bool StringUtils::EndsWith(const std::string& string, const std::string& value)
+{
+    if (string.length() < value.length())
+        return false;
+
+    return string.compare(string.length() - value.length(), value.length(), value) == 0;
+}
+
+// Returns npos if none of the chars are found
+size_t StringUtils::GetLastIndexOfAny(const std::string& string, const std::vector<char>& chars)
+{
+    size_t index = std::string::npos;
+    for (char c : chars) {
+        int charIndex = string.find_last_of(c);
+        if (charIndex == std::string::npos)
+            continue;
+
+        if (index == std::string::npos || index < charIndex)
+            index = charIndex;
+    }
+
+    return index;
+}
+
+bool StringUtils::Contains(const std::string& string, const std::string& value)
+{
+    return string.find(value) != std::string::npos;
+}
+
+bool StringUtils::Contains(const std::wstring& string, const std::wstring& value)
+{
+    return string.find(value) != std::string::npos;
+}
+
+std::string StringUtils::ToLower(const std::string& string)
+{
+    std::string stringLower = string;
+    std::transform(stringLower.begin(), stringLower.end(), stringLower.begin(),
+        [](unsigned char c){ return std::tolower(c); });
+
+    return stringLower;
+}
+
+std::string StringUtils::ReplaceAll(std::string string, const std::string& from, const std::string& to)
+{
+    size_t start_pos = 0;
+    while((start_pos = string.find(from, start_pos)) != std::string::npos) {
+        string.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+
+    return string;
+}
+
+std::string StringUtils::RemoveChar(std::string string, const char& c)
+{
+    string.erase(std::remove(string.begin(), string.end(), c), string.end());
+    return string;
+}
+
+std::wstring StringUtils::RemoveChar(std::wstring string, const char& c)
+{
+    string.erase(std::remove(string.begin(), string.end(), c), string.end());
+    return string;
+}
+
+std::string StringUtils::RemoveFirst(const std::string& string, const int& charAmount)
+{
+    return string.substr(charAmount, string.size() - charAmount);
+}
+
+std::string StringUtils::RemoveLast(const std::string& string, const int& charAmount)
+{
+    return string.substr(0, string.size() - charAmount);
+}
+
+std::vector<std::string> StringUtils::Split(const std::string& string, const std::string& delimiter)
+{
+    std::vector<std::string> tokens;
+    size_t start = 0;
+    size_t end = string.find(delimiter);
+    
+    while (end != std::string::npos) {
+        tokens.push_back(string.substr(start, end - start));
+        start = end + delimiter.size();
+        end = string.find(delimiter, start);
+    }
+    
+    tokens.push_back(string.substr(start));
+    return tokens;
+}
+
+#ifdef _WIN32
+std::vector<std::wstring> StringUtils::SplitW(const std::wstring& string, const std::wstring& delimiter)
+{
+    std::vector<std::wstring> tokens;
+    size_t start = 0;
+    size_t end = string.find(delimiter);
+    
+    while (end != std::wstring::npos) {
+        tokens.push_back(string.substr(start, end - start));
+        start = end + delimiter.size();
+        end = string.find(delimiter, start);
+    }
+    
+    tokens.push_back(string.substr(start));
+    return tokens;
+}
+#endif
+
+// Levenshtein Distance Algorithm From Geeks For Geeks
+// https://www.geeksforgeeks.org/introduction-to-levenshtein-distance/
+double StringUtils::LevenshteinDistanceSimilarity(const std::string& s1, const std::string& s2)
+{
+    int m = s1.length();
+    int n = s2.length();
+
+    std::vector<int> prevRow(n + 1, 0);
+    std::vector<int> currRow(n + 1, 0);
+
+    for (int j = 0; j <= n; j++) {
+        prevRow[j] = j;
+    }
+
+    for (int i = 1; i <= m; i++) {
+        currRow[0] = i;
+
+        for (int j = 1; j <= n; j++) {
+            if (s1[i - 1] == s2[j - 1]) {
+                currRow[j] = prevRow[j - 1];
+            }
+            else {
+                currRow[j] = 1
+                    + std::min(
+                        // Insert
+                        currRow[j - 1],
+                        std::min(
+                            // Remove
+                            prevRow[j],
+
+                            // Replace
+                            prevRow[j - 1]
+                        )
+                    );
+            }
+        }
+
+        prevRow = currRow;
+    }
+
+    // Normalize distance to similarity
+    double maxLength = std::max(m, n);
+    double dist = (maxLength - currRow[n]) / maxLength;
+
+    return dist;
+}
+
+// Changes time formatted like x:x:... to seconds
+unsigned int StringUtils::TimeToSeconds(const std::string& string)
+{
+    std::vector<std::string> seperated = Split(string, ":");
+	int seconds = 0;
+
+    // Make sure the strings are numbers
+    for(std::string string : seperated) {
+        bool hasOnlyDigits = string.find_first_not_of("0123456789") == std::string::npos;
+        if (!hasOnlyDigits)
+            return 0;
+    }
+
+	switch (seperated.size()) {
+		case 1:
+			seconds = std::stoi(seperated[0]);
+			break;
+		case 2:
+			seconds = std::stoi(seperated[0]) * 60 + std::stoi(seperated[1]);
+			break;
+		case 3:
+			seconds = std::stoi(seperated[0]) * 3600 + std::stoi(seperated[1]) * 60 + std::stoi(seperated[2]);
+			break;
+		case 4:
+			seconds = std::stoi(seperated[0]) * 86400 + std::stoi(seperated[1]) * 3600 + std::stoi(seperated[2]) * 60 + std::stoi(seperated[3]);
+			break;
+        default:
+            return 0;
+	}
+
+	return seconds;
+}
+
+unsigned int StringUtils::TimeToMilliseconds(const std::string& string)
+{
+    std::vector<std::string> seperated = Split(string, ".");
+    if (seperated.size() != 2) return 0;
+    
+    unsigned int seconds = TimeToSeconds(seperated[0]);
+    unsigned int milliseconds = seconds * 1000;
+    milliseconds += std::stoi(seperated[1]) * 10;
+
+    return milliseconds;
+};
+
+std::string StringUtils::PadInteger(const int& value, const int& digits)
+{
+    std::ostringstream ss;
+    ss << std::setw(digits) << std::setfill('0') << value;
+    return ss.str();
+}

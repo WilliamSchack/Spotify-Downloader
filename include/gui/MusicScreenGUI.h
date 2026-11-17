@@ -1,0 +1,88 @@
+#ifndef MUSICSCREENGUI_H
+#define MUSICSCREENGUI_H
+
+#include "EasyQProperties.h"
+#include "VariantUtils.h"
+#include "DownloadManager.h"
+#include "DownloadEvents.h"
+#include "AddTracksPopup.h"
+#include "TrackUI.h"
+#include "Paths.h"
+
+#include <iostream>
+#include <map>
+#include <thread>
+#include <random>
+
+#include <QObject>
+#include <QList>
+
+class MusicScreenGUI : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QObject* addTracksPopup READ GetAddTracksPopup CONSTANT)
+    Q_PROPERTY(QList<QObject*> tracks READ GetTracks NOTIFY TracksChanged)
+    Q_PROPERTY(int downloadsCompleted READ GetDownloadsCompleted NOTIFY TracksDownloadsCompletedChanged)
+    Q_PROPERTY(int downloadErrors READ GetDownloadErrors NOTIFY DownloadErrorsChanged)
+    Q_PROPERTY(QString downloadButtonText READ GetDownloadButtonText NOTIFY DownloadButtonTextChanged);
+    Q_PROPERTY(QString downloadButtonIcon READ GetDownloadButtonIcon NOTIFY DownloadButtonIconChanged);
+    Q_PROPERTY(bool downloadButtonEnabled READ GetDownloadButtonEnabled NOTIFY DownloadButtonEnabledChanged);
+    Q_PROPERTY(bool downloadButtonCancels READ GetDownloadButtonCancels NOTIFY DownloadButtonCancelsChanged);
+    Q_PROPERTY(QString playPauseButtonText READ GetPlayPauseButtonText NOTIFY PlayPauseButtonTextChanged);
+    Q_PROPERTY(QString playPauseButtonIcon READ GetPlayPauseButtonIcon NOTIFY PlayPauseButtonIconChanged);
+    SIMPLE_QPROPERTY(QString, backgroundImagePath, BackgroundImagePath, _backgroundImagePath)
+    SIMPLE_QPROPERTY(bool, loadingBackgroundImage, LoadingBackgroundImage, _loadingBackgroundImage)
+
+    public:
+        explicit MusicScreenGUI(QObject* parent = 0);
+
+        AddTracksPopup* GetAddTracksPopup() const;
+        QList<QObject*> GetTracks() const;
+        int GetDownloadsCompleted() const;
+        int GetDownloadErrors() const;
+
+        QString GetDownloadButtonText() const;
+        QString GetDownloadButtonIcon() const;
+        bool GetDownloadButtonEnabled() const;
+        bool GetDownloadButtonCancels() const;
+        QString GetPlayPauseButtonText() const;
+        QString GetPlayPauseButtonIcon() const;
+    public slots:
+        void DownloadButtonClicked();
+        void PlayPauseButtonClicked();
+        void BackgroundApplyButtonClicked();
+    private:
+        void OnDownloadRequested(const std::string& link, const std::string& destinationFolder);
+        void CheckDownloadEvents();
+
+        void UpdateBackgroundImage(const PlaylistData& playlistData);
+        void UpdateBackgroundImage(const std::string& url);
+        void UpdateBackgroundImage();
+
+        void DisableBackgroundImageLoadingSafely();
+    private:
+        inline static const int DOWNLOAD_EVENTS_POLL_INTERVAL_MS = 100;
+
+        AddTracksPopup* _addTracksPopup;
+
+        DownloadManager _downloader;
+
+        QList<QObject*> _tracks;
+        std::map<std::string, TrackUI*> _tracksFromId;
+
+        QString _backgroundImagePath;
+        bool _loadingBackgroundImage = false;
+    signals:
+        void TracksChanged();
+        void TracksDownloadsCompletedChanged();
+        void DownloadErrorsChanged();
+        void DownloadButtonTextChanged();
+        void DownloadButtonIconChanged();
+        void DownloadButtonEnabledChanged();
+        void DownloadButtonCancelsChanged();
+        void PlayPauseButtonTextChanged();
+        void PlayPauseButtonIconChanged();
+        void RequestNotification(const std::string& message);
+};
+
+#endif

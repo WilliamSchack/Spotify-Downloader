@@ -1,0 +1,343 @@
+#include "ExternalProcess.h"
+
+ExternalProcess::ExternalProcess(const std::filesystem::path& path)
+    : _path(path) {}
+
+ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path& relativePath)
+{
+    return ExternalProcess(Paths::GetDependencyPath(relativePath));
+}
+
+std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileNameNoExtension)
+{
+    std::vector<std::filesystem::path> searchFolders;
+    std::string fileName = fileNameNoExtension;
+
+#ifdef _WIN32
+    fileName += ".exe";
+
+    EnvironmentVariable<std::wstring> path = EnvironmentUtils::GetVariableW("PATH");
+    if (!path.Exists)
+        return std::nullopt;
+
+    std::vector<std::wstring> searchFolderStrings = StringUtils::SplitW(path.Value, L";");
+    for (std::wstring searchFolderString : searchFolderStrings) {
+        searchFolders.push_back(std::filesystem::path(searchFolderString));
+    }
+#else
+    EnvironmentVariable<std::string> path = EnvironmentUtils::GetVariable("PATH");
+    if (path.Exists) {
+        std::vector<std::string> searchFolderStrings = StringUtils::Split(path.Value, ":");
+        for (std::string searchFolderString : searchFolderStrings) {
+            searchFolders.push_back(FileUtils::PathFromUtf8(searchFolderString));
+        }
+    } else {
+        // Backup folders
+        searchFolders = {
+            "/usr/bin",
+            "/usr/local/bin"
+        };
+    }
+#endif
+
+    for (const std::filesystem::path& searchFolder : searchFolders) {
+        std::filesystem::path potentialPath = searchFolder / fileName;
+        if (std::filesystem::exists(potentialPath) && std::filesystem::is_regular_file(potentialPath)) {
+#ifdef _WIN32
+            // Assume an exe is executable
+            return potentialPath;
+#else
+            if (access(potentialPath.c_str(), X_OK) == 0)
+                return potentialPath;
+#endif
+        }
+    }
+
+    return std::nullopt;
+}
+
+#ifdef _WIN32
+std::wstring ExternalProcess::GetCommand()
+{
+    std::wstring command = L"\"" + _path.wstring() + L"\"";
+
+    int argsSize = _args.size();
+    for (const std::string& arg : _args) {
+        command += L" ";
+        command += StringUtils::ToWString(QuoteArg(arg));
+    }
+
+    return command;
+}
+
+std::string ExternalProcess::QuoteArg(std::string arg)
+{
+    // Properly escape quotes
+    arg = StringUtils::ReplaceAll(arg, "\"", "\\\"");
+
+    // Remove ending back slashes
+    int argSize = arg.size();
+    for (int i = argSize; i > 0 && arg[i - 1] == '\\'; i--) {
+        arg += '\\';
+    }
+
+    return "\"" + arg + "\"";
+}
+#endif
+
+void ExternalProcess::AddArgument(const std::string& arg)
+{
+    _args.push_back(arg);
+}
+
+void ExternalProcess::AddArgument(const std::string& arg, const std::string& value)
+{
+    AddArgument(arg);
+    AddArgument(value);
+}
+
+std::vector<std::string> ExternalProcess::GetArgs()
+{
+    return _args;
+}
+
+ExternalProcessResult ExternalProcess::Execute(const int& timeoutMs, std::function<void(std::string)> lineAvailableCallback)
+{
+    ExternalProcessResult result;
+
+    std::chrono::milliseconds timeout(timeoutMs);
+    bool usingTimeout = timeout.count() > 0;
+
+#ifdef _WIN32
+    SECURITY_ATTRIBUTES securityAttributes; 
+    securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+    securityAttributes.bInheritHandle = TRUE; 
+    securityAttributes.lpSecurityDescriptor = NULL; 
+
+    HANDLE hReadPipe;
+    HANDLE hWritePipe;
+    if (!CreatePipe(&hReadPipe, &hWritePipe, &securityAttributes, 0)) {
+        Logger::Warning("Failed to create process pipe");
+        return result;
+    }
+
+    SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
+
+    STARTUPINFOW startupInfo;
+    ZeroMemory(&startupInfo, sizeof(STARTUPINFOW));
+    startupInfo.cb = sizeof(STARTUPINFOW);
+    startupInfo.hStdOutput = hWritePipe;
+    startupInfo.hStdError = hWritePipe;
+    startupInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    PROCESS_INFORMATION processInfo;
+    ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
+
+    std::wstring command = GetCommand();
+    bool processStarted = CreateProcessW(
+        NULL,
+        command.data(),
+        NULL,
+        NULL,
+        TRUE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &startupInfo,
+        &processInfo
+    );
+
+    CloseHandle(hWritePipe);
+
+    if (!processStarted) {
+        CloseHandle(hReadPipe);
+
+        Logger::Warning("Process not started");
+        return result;
+    }
+
+    std::atomic<bool> killed{false};
+    std::thread timeoutWatchdog;
+    if (usingTimeout) {
+        timeoutWatchdog = std::thread([&]() {
+            if (WaitForSingleObject(processInfo.hProcess, (DWORD)timeout.count()) == WAIT_TIMEOUT) {
+                killed = true;
+                TerminateProcess(processInfo.hProcess, 1);
+            }
+        });
+    }
+
+    std::string output = "";
+    std::string lineBuffer = "";
+    char buffer[256];
+    DWORD dwBytesRead;
+
+    while (ReadFile(hReadPipe, buffer, sizeof(buffer) - 1, &dwBytesRead, NULL) && dwBytesRead > 0) {
+        buffer[dwBytesRead] = '\0';
+        lineBuffer += buffer;
+
+        // Can return multiple lines, or not a complete line
+        size_t newLinePos;
+        while ((newLinePos = lineBuffer.find_first_of("\r\n")) != std::string::npos) {
+            std::string line = lineBuffer.substr(0, newLinePos);
+            lineBuffer.erase(0, newLinePos + 1);
+
+            if (!line.empty() && lineBuffer[0] == '\n')
+                lineBuffer = lineBuffer.substr(1);
+
+            if (line.empty())
+                continue;
+
+            output += line + '\n';
+            if (lineAvailableCallback != nullptr)
+                lineAvailableCallback(line);
+        }
+    }
+
+    // Handle any extra output after last newline
+    if (!lineBuffer.empty()) {
+        output += lineBuffer;
+        if (lineAvailableCallback != nullptr)
+            lineAvailableCallback(lineBuffer);
+    }
+
+    WaitForSingleObject(processInfo.hProcess, INFINITE);
+
+    if (timeoutWatchdog.joinable())
+        timeoutWatchdog.join();
+
+    CloseHandle(hReadPipe);
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
+
+    result.TimedOut = killed;
+    result.Output = output;
+    return result;
+#else
+    // Get command
+    std::string pathStr = _path.string();
+    std::vector<char*> argv;
+    argv.push_back(const_cast<char*>(pathStr.c_str()));
+    for (const std::string& arg : _args) {
+        argv.push_back(const_cast<char*>(arg.c_str()));
+    }
+
+    argv.push_back(nullptr);
+
+    int pipeFd[2];
+    if (pipe(pipeFd) != 0) {
+        perror("Failed to open process");
+        return result;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        perror("Fork failed");
+        close(pipeFd[0]);
+        close(pipeFd[1]);
+        return result;
+    }
+
+    if (pid == 0) {
+        setpgid(0, 0);
+        dup2(pipeFd[1], STDOUT_FILENO);
+        dup2(pipeFd[1], STDERR_FILENO);
+        close(pipeFd[0]);
+        close(pipeFd[1]);
+
+        execv(pathStr.c_str(), argv.data());
+
+        if (errno == ENOEXEC) {
+            // If it cant be executed, assume its a cosmo binary and open it via the shell
+            argv.insert(argv.begin(), const_cast<char*>("sh"));
+            execv("/bin/sh", argv.data());
+        }
+
+        _exit(127);
+    }
+    close(pipeFd[1]);
+
+    std::chrono::time_point timeoutDeadline = std::chrono::steady_clock::now() + timeout;
+    bool killed = false;
+
+    std::string output = "";
+    std::string lineBuffer = "";
+    char buffer[256];
+
+    while (true) {
+        // Kill if over deadline or process doesnt return anything in time
+        int waitMs = -1;
+        if (usingTimeout) {
+            long timeRemaining = std::chrono::duration_cast<std::chrono::milliseconds>(timeoutDeadline - std::chrono::steady_clock::now()).count();
+            if (timeRemaining <= 0) {
+                killed = true;
+                break;
+            }
+
+            waitMs = (int)timeRemaining;
+        }
+
+        pollfd pollFd{ pipeFd[0], POLLIN, 0 };
+        int ready = poll(&pollFd, 1, waitMs);
+        if (ready < 0) {
+            if (errno == EINTR)
+                continue;
+            
+            perror("Poll");
+            break;
+        }
+        if (ready == 0) {
+            killed = true;
+            break;
+        }
+
+        // Read the process
+        ssize_t n = read(pipeFd[0], buffer, sizeof(buffer));
+        if (n < 0) {
+            if (errno == EINTR)
+                continue;
+            
+            perror("Failed to read process");
+            break;
+        }
+        if (n == 0)
+            break;
+
+        lineBuffer.append(buffer, n);
+
+        size_t newLinePos;
+        while ((newLinePos = lineBuffer.find_first_of("\r\n")) != std::string::npos) {
+            std::string line = lineBuffer.substr(0, newLinePos);
+            lineBuffer.erase(0, newLinePos + 1);
+
+            if (!line.empty() && lineBuffer[0] == '\n')
+                lineBuffer = lineBuffer.substr(1);
+
+            if (line.empty())
+                continue;
+
+            output += line + '\n';
+            if (lineAvailableCallback != nullptr)
+                lineAvailableCallback(line);
+        }
+    }
+
+    if (killed) {
+        Logger::Info("Process timed out");
+        kill(-pid, SIGKILL);
+    }
+
+    if (!lineBuffer.empty()) {
+        output += lineBuffer;
+        if (lineAvailableCallback != nullptr)
+            lineAvailableCallback(lineBuffer);
+    }
+
+    close(pipeFd[0]);
+    waitpid(pid, nullptr, 0);
+
+    result.TimedOut = killed;
+    result.Output = output;
+    return result;
+#endif
+}

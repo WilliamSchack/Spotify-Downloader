@@ -1,0 +1,55 @@
+qt6_add_qml_module(${PROJECT_NAME}_qml
+    URI ${PROJECT_NAME}
+    STATIC
+    QML_FILES
+        Main.qml
+        common/CustomButton.qml
+        common/CustomSwitch.qml
+        common/ToggleButton.qml
+        common/ToggleButtonGroup.qml
+        common/SingleCharTextField.qml
+        common/CustomTextField.qml
+        common/IntTextField.qml
+        common/DoubleTextField.qml
+        common/CustomComboBox.qml
+        common/CustomContextMenu.qml
+        common/CustomMenuItem.qml
+        common/CustomMenuSeparator.qml
+        common/CustomScrollBar.qml
+        common/RoundedImage.qml
+        common/InnerShadow.qml
+        common/StyledBackground.qml
+        common/CrossfadeImage.qml
+        common/CustomMessageDialog.qml
+        common/Header.qml
+        common/MarkdownText.qml
+        common/MajorSection.qml
+        common/MinorSection.qml
+        common/LoadingStatus.qml
+        common/HoverTooltip.qml
+        music_screen/MusicScreen.qml
+        music_screen/Track.qml
+        music_screen/AddTracksPopup.qml
+        music_screen/MissingDependenciesPopup.qml
+        music_screen/DependencyInstalledVisual.qml
+        info_screen/InfoScreen.qml
+        info_screen/InfoScreenUpdatesLeft.qml
+        info_screen/InfoScreenUpdatesRight.qml
+        info_screen/InfoScreenNoticesLeft.qml
+        info_screen/InfoScreenNoticesRight.qml
+        info_screen/InfoScreenSupportersLeft.qml
+        info_screen/InfoScreenSupportersRight.qml
+        info_screen/DependencySelectionButton.qml
+        info_screen/NoticeSelectionButton.qml
+        info_screen/SupporterSection.qml
+        settings_screen/SettingsScreen.qml
+	    settings_screen/SettingsItem.qml
+	    settings_screen/SettingsSidebarTrack.qml
+	    settings_screen/SettingsSidebarLink.qml
+	    settings_screen/SettingsSidebarGroup.qml
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${PROJECT_NAME}_qml
+    ${PROJECT_NAME}_qmlplugin
+)

@@ -1,0 +1,49 @@
+#ifndef EXTERNALPROCESS_H
+#define EXTERNALPROCESS_H
+
+#include "Logger.h"
+#include "ExternalProcessResult.h"
+#include "Paths.h"
+#include "StringUtils.h"
+
+#include <vector>
+#include <functional>
+#include <chrono>
+#include <optional>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <atomic>
+#include <thread>
+#else
+#include <sys/wait.h>
+#include <cerrno>
+#include <poll.h>
+#include <unistd.h>
+#include <signal.h>
+#endif
+
+class ExternalProcess
+{
+    public:
+        ExternalProcess(const std::filesystem::path& path);
+        static ExternalProcess GetRelativeProcess(const std::filesystem::path& relativePath);
+        static std::optional<std::filesystem::path> FindInstalledPath(const std::string& fileNameNoExtension);
+
+        void AddArgument(const std::string& arg);
+        void AddArgument(const std::string& arg, const std::string& value);
+
+        std::vector<std::string> GetArgs();
+
+        ExternalProcessResult Execute(const int& timeoutMs = 0, std::function<void(std::string)> lineAvailableCallback = nullptr);
+    private:
+#ifdef _WIN32
+        std::wstring GetCommand();
+        std::string QuoteArg(std::string arg);
+#endif
+    private:
+        std::filesystem::path _path;
+        std::vector<std::string> _args;
+};
+
+#endif

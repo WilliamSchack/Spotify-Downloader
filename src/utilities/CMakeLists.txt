@@ -1,0 +1,11 @@
+target_sources(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Logger.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/StringUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/JsonUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MathUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Base64.cpp
+)
+
+add_subdirectory(files)
+add_subdirectory(tags)

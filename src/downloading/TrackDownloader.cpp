@@ -1,0 +1,300 @@
+#include "TrackDownloader.h"
+
+DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPlatform& searchPlatform, const std::string& directory, const std::function<void(DownloadEvent)>& eventCallback)
+{
+    DownloadResult result;
+    result.Success = false;
+
+    if (track.Platform == EPlatform::Unknown || track.Id.empty()) {
+        result.FailReason = "An invalid track was provided";
+        return result;
+    }
+
+    std::string directoryValidated = FileUtils::ValidateDirectory(directory);
+    if (!std::filesystem::exists(directoryValidated)) {
+        result.FailReason = "Target directory does not exist";
+        return result;
+    }
+
+    Logger::Info(track.GetUniqueId() + ": Starting download");
+
+    SetProgress(eventCallback, track, 0.0, "Setting Up...");
+
+    // TODO: Move below into seperate files and functions
+    //       Just getting it working at the moment
+
+    // == Get paths
+    std::unique_ptr<ICodec> targetCodec = CodecFactory::Create(Config::CodecExtension);
+    if (targetCodec == nullptr) {
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
+        return result;
+    }
+
+    TrackTagHandler tagHandler(track);
+    tagHandler.SetCodec(targetCodec.get());
+    TagHandlerResult fileNameTagResult = tagHandler.FormatString(Config::FileName, Config::FileNameTagsOpeningChar, Config::FileNameTagsClosingChar);
+    if (fileNameTagResult.Error != ETagError::None) {
+        result.FailReason = "Could not get the track file name with the error: " + fileNameTagResult.ErrorString;
+        return result;
+    }
+
+    TagHandlerResult subFolderTagResult = tagHandler.FormatString(Config::SubFolders, Config::SubFoldersTagsOpeningChar, Config::SubFoldersTagsClosingChar);
+    if (subFolderTagResult.Error != ETagError::None) {
+        result.FailReason = "Could not get the sub folders path with the error: " + subFolderTagResult.ErrorString;
+        return result;
+    }
+
+    std::string fileName = fileNameTagResult.FormattedString + "." + targetCodec->GetString();
+    fileName = FileUtils::ValidateFileName(fileName);
+    
+    // Validate subfolders after combining so ../ can account for the target directory
+    std::string targetFolderString = FileUtils::ValidateDirectory(directoryValidated + "/" + subFolderTagResult.FormattedString);
+    std::filesystem::path targetFolder = FileUtils::PathFromUtf8(targetFolderString);
+    std::filesystem::path targetDownloadPath = targetFolder / FileUtils::PathFromUtf8(fileName);
+    
+    FilePathReserver pathReserver;
+    targetDownloadPath = pathReserver.FindAvailableTrackPath(track, targetDownloadPath);
+
+    std::filesystem::path tempDownloadPath = Paths::GetTrackDownloadPathNoExtension(track);
+
+    result.FilePath = targetDownloadPath;
+
+    if (!Config::Overwrite && std::filesystem::exists(targetDownloadPath)) {
+        Logger::Info(track.GetUniqueId() + ": Not downloading as it already exists");
+
+        TrackSourceFoundEvent sourceFoundEvent;
+        sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
+        sourceFoundEvent.Platform = EPlatform::LocalFile;
+        sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
+        eventCallback(sourceFoundEvent);
+
+        // Showing as a success since its already downloaded
+        result.Success = true;
+        return result;
+    }
+
+    // == Get cover art
+    Logger::Info(track.GetUniqueId() + ": Getting Cover Art");
+    SetProgress(eventCallback, track, 0.1, "Getting Cover Art...");
+
+    std::filesystem::path imageFilePath = Paths::GetTrackImagePathNoExtension(track);
+    Image image;
+
+    std::filesystem::path existingImageFilePath = FileUtils::FindPathWithAnyExtension(imageFilePath.parent_path(), imageFilePath.filename());
+
+    if (!existingImageFilePath.empty()) {
+        image = ImageHandler::LoadImage(existingImageFilePath);
+    } else {
+        image = ImageHandler::DownloadImage(track.Album.ImageUrl);
+        if (image.Data != nullptr) {
+            std::filesystem::path imagePath = ImageHandler::SaveImage(imageFilePath, image);
+
+            if (!imagePath.empty() && eventCallback != nullptr) {
+                TrackCoverArtDownloadedEvent coverArtDownloadedEvent;
+                coverArtDownloadedEvent.TrackUniqueId = track.GetUniqueId();
+                coverArtDownloadedEvent.FilePath = imagePath;
+                eventCallback(coverArtDownloadedEvent);
+            }
+        }
+    }
+
+    // == Get the song on the target platform
+    SetProgress(eventCallback, track, 0.1, "Searching...");
+
+    PlatformSearcherResult searchResult;
+    
+    if (track.Platform == searchPlatform) {
+        // No need to search if its on the same platform
+        searchResult.Confidence = 1;
+        searchResult.Data = track;
+    } else {
+        Logger::Info(track.GetUniqueId() + ": Searching on a different platform (" + std::to_string((int)searchPlatform) + ")");
+
+        std::unique_ptr<IPlatformSearcher> searcher = PlatformFactory::CreateSearcher(searchPlatform);
+        if (searcher == nullptr) {
+            Logger::Warning(track.GetUniqueId() + ": Searcher not implemented for the platform (" + std::to_string((int)searchPlatform) + ")");
+            result.FailReason = "Searcher not implemented for the platform: " + std::to_string((int)searchPlatform);
+            return result;
+        }
+
+        searchResult = searcher->FindTrack(track, [&](float progress) {
+            SetProgress(eventCallback, track, MathUtils::Lerp(0.1, 0.3, progress), "Searching...");
+        });
+
+        if (searchResult.Data.Platform == EPlatform::Unknown) {
+            Logger::Info(track.GetUniqueId() + ": Could not find the track");
+
+            // TODO: let the user input a platform url to download in this case
+
+            result.FailReason = "Track cannot be found on the search platform (" + std::to_string((int)searchPlatform) + ")";
+            return result;
+        }
+
+        if (eventCallback != nullptr) {
+            TrackSourceFoundEvent sourceFoundEvent;
+            sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
+            sourceFoundEvent.Platform = searchPlatform;
+            sourceFoundEvent.Link = searchResult.Data.Url;
+            eventCallback(sourceFoundEvent);
+        }
+    }
+
+    // == Download
+    
+    // Get extra download data
+    std::string downloadUrl = searchResult.Data.Url;
+    std::vector<std::string> extraDownloadArgs;
+    std::unique_ptr<IPlatformData> platformData = PlatformFactory::CreateData(searchPlatform);
+    if (platformData != nullptr) {
+        std::string downloadError = platformData->GetTrackDownloadError(searchResult.Data);
+        if (!downloadError.empty()) {
+            result.FailReason = downloadError;
+            return result;
+        }
+
+        extraDownloadArgs = platformData->GetExtraDownloadArgs(searchResult.Data);
+        downloadUrl = platformData->UpdateUrl(searchResult.Data);
+    }
+
+    // Download
+    Logger::Info(track.GetUniqueId() + ": Downloading");
+    SetProgress(eventCallback, track, 0.3, "Downloading Track...");
+
+    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, extraDownloadArgs, [&](float progress) {
+        SetProgress(eventCallback, track, MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track...");
+    });
+
+    tempDownloadPath = downloadResult.Path;
+
+    if (downloadResult.Error.Error != EYtdlpError::None) {
+        Logger::Info(track.GetUniqueId() + ": " + downloadResult.Error.Details);
+        result.FailReason = downloadResult.Error.Details;
+        return result;
+    }
+
+    // Check if downloaded codec is different to the target, if so, convert it
+    Logger::Info(track.GetUniqueId() + ": Converting");
+
+    std::unique_ptr<ICodec> downloadedCodec = CodecFactory::Create(tempDownloadPath.extension().string());
+    if (downloadedCodec == nullptr) {
+        result.FailReason = "Could not create the codec (" + std::to_string((int)Config::CodecExtension) + "), please inform me of this error";
+        return result;
+    }
+
+    if (targetCodec->GetExtension() != downloadedCodec->GetExtension())
+        tempDownloadPath = Ffmpeg::Convert(tempDownloadPath, targetCodec->GetExtension());
+
+    // == Normalise
+    float progressStartPercentage = 0.7;
+    float progressEndPercentage = Config::GetLyrics ? 0.9 : 1.0;
+
+    if (Config::Normalise) {
+        Logger::Info(track.GetUniqueId() + ": Normalising");
+        SetProgress(eventCallback, track, progressStartPercentage, "Normalising Audio...");
+
+        bool normalised = Ffmpeg::Normalise(tempDownloadPath, Config::NormaliseDb, [&](float progress) {
+            SetProgress(eventCallback, track, MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Normalising Audio...");
+        });
+    }
+    
+    // == Set bitrate
+    else if (Config::ManualBitrate) {
+        Logger::Info(track.GetUniqueId() + ": Setting bitrate");
+        SetProgress(eventCallback, track, progressStartPercentage, "Setting Bitrate...");
+
+        bool bitrateSet = Ffmpeg::SetBitrate(tempDownloadPath, Config::BitrateKbps[targetCodec->GetExtension()], [&](float progress) {
+            SetProgress(eventCallback, track, MathUtils::Lerp(progressStartPercentage, progressEndPercentage, progress), "Setting Bitrate...");
+        });
+    }
+
+    // == Get lyrics
+    Lyrics lyrics(ELyricsSource::Unknown);
+    if (Config::GetLyrics) {
+        Logger::Info(track.GetUniqueId() + ": Getting lyrics");
+        SetProgress(eventCallback, track, progressEndPercentage, "Getting Lyrics...");
+
+        // Try source platform
+        lyrics = LyricsFinder::GetSourceLyrics(track);
+
+        // Try searched platform
+        if (lyrics.Type == ELyricsType::None)
+            lyrics = LyricsFinder::GetSourceLyrics(searchResult.Data);
+
+        // Try external platforms
+        if (lyrics.Type == ELyricsType::None)
+            lyrics = LyricsFinder::GetBestLyrics(track);
+
+        // Create lyrics file
+        if (Config::CreateLyricsFile && lyrics.Type != ELyricsType::None) {
+            SavableTrackTagHandler lyricsFileTagHandler(track);
+            lyricsFileTagHandler.SetCodec(targetCodec.get());
+            lyricsFileTagHandler.SetSaveLocation(directoryValidated);
+            TagHandlerResult lyricsFileTagResult = lyricsFileTagHandler.FormatString(Config::LyricsFileName, Config::LyricsFileNameTagsOpeningChar, Config::LyricsFileNameTagsClosingChar);
+            if (lyricsFileTagResult.Error == ETagError::None)
+                LyricsFile::Create(lyricsFileTagResult.FormattedString, track, lyrics);
+        }
+    }
+
+    // == Assign metadata
+    SetProgress(eventCallback, track, 1.0, "Assigning Metadata...");
+
+    int trackNumber = MetadataManager::GetTrackNumber(track);
+
+    std::string publisherText = "Downloaded with " + std::string(APP_NAME) + " by William Schack";
+    std::string copyrightText = "";
+    copyrightText += "Source: " + PlatformUtils::GetPlatformString(track.Platform) + " (" + track.Id + ")";
+    copyrightText += ", Downloaded: " + PlatformUtils::GetPlatformString(searchResult.Data.Platform) + " (" + searchResult.Data.Id + ")";
+    if (lyrics.Type != ELyricsType::None) copyrightText += ", Lyrics: (" + lyrics.SourceMessage + ")";
+    std::string commentText = "Thanks for using my program! :) - William S";
+
+    MetadataManager metadata(tempDownloadPath);
+    metadata.SetCoverImage(image);
+    metadata.SetTitle(track.Name);
+    metadata.SetArtists(track.Artists);
+    metadata.SetAlbumName(track.Album.Name);
+    metadata.SetAlbumArtists(track.Album.Artists);
+    metadata.SetPublisher(publisherText);
+    metadata.SetCopyright(copyrightText);
+    metadata.SetComment(commentText);
+    metadata.SetReleaseDate(track.ReleaseDate);
+    metadata.SetTrackNumber(trackNumber); // Use playlist number if a playlist (might actually store playlist number in the regular track number from DownloadManager if a playlist)
+    metadata.SetDiscNumber(track.DiscNumber);
+    if (lyrics.Type != ELyricsType::None) metadata.SetLyrics(lyrics.GetString());
+    metadata.Close();
+
+    // == Move to target path
+    if (Config::Overwrite && std::filesystem::exists(targetDownloadPath))
+        std::filesystem::remove(targetDownloadPath);
+    
+    if (!std::filesystem::is_directory(targetFolder))
+        std::filesystem::create_directories(targetFolder);
+
+    bool fileMoved = FileUtils::MoveFile(tempDownloadPath, targetDownloadPath);
+    if (!fileMoved) {
+        result.FailReason = "Could not move the file from the temporary folder";
+        return result;
+    }
+
+    if (eventCallback != nullptr) {
+        TrackSourceFoundEvent sourceFoundEvent;
+        sourceFoundEvent.TrackUniqueId = track.GetUniqueId();
+        sourceFoundEvent.Platform = EPlatform::LocalFile;
+        sourceFoundEvent.Link = FileUtils::PathToUtf8(targetDownloadPath);
+        eventCallback(sourceFoundEvent);
+    }
+
+    result.Success = true;
+    return result;
+}
+
+void TrackDownloader::SetProgress(const std::function<void(DownloadEvent)>& eventCallback, const TrackData& track, const float& progress, const std::string& message)
+{
+    if (eventCallback == nullptr)
+        return;
+
+    TrackProgressEvent event;
+    event.TrackUniqueId = track.GetUniqueId();
+    event.Progress = progress;
+    event.Message = message;
+    eventCallback(event);
+}

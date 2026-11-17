@@ -1,0 +1,18 @@
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+)
+
+add_subdirectory(cli)
+add_subdirectory(downloading)
+add_subdirectory(gui)
+add_subdirectory(platforms)
+add_subdirectory(network)
+add_subdirectory(audio_data)
+add_subdirectory(dependencies)
+add_subdirectory(utilities)
+add_subdirectory(images)
+add_subdirectory(html)
+add_subdirectory(config)
+add_subdirectory(lyrics)
+add_subdirectory(metadata)
+add_subdirectory(playlist)

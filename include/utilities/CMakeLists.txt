@@ -1,0 +1,17 @@
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/Logger.h
+	${CMAKE_CURRENT_SOURCE_DIR}/StringUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/VectorUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ArrayUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/JsonUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MathUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/VariantUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentUtils.h
+	${CMAKE_CURRENT_SOURCE_DIR}/EnvironmentVariable.h
+	${CMAKE_CURRENT_SOURCE_DIR}/Base64.h
+)
+
+add_subdirectory(files)
+add_subdirectory(tags)

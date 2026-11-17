@@ -1,0 +1,54 @@
+include (FetchContent)
+
+# Get ZLIB first, required for most zip files
+set(ZLIB_INSTALL OFF CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(ZLIB_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+    zlib
+    GIT_REPOSITORY https://github.com/madler/zlib.git
+    GIT_TAG v1.4
+    GIT_SHALLOW TRUE
+    EXCLUDE_FROM_ALL
+)
+
+FetchContent_MakeAvailable(zlib)
+
+#set(ZLIB_INCLUDE_DIR ${zlib_SOURCE_DIR} CACHE PATH "" FORCE)
+#set(ZLIB_LIBRARY zlibstatic CACHE STRING "" FORCE)
+#set(ZLIB_ROOT ${zlib_SOURCE_DIR} CACHE PATH "" FORCE)
+
+# Get libarchive
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ENABLE_TEST OFF CACHE BOOL "" FORCE)
+set(ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+
+# Only keep needed formats
+set(ENABLE_LIBB2 OFF CACHE BOOL "" FORCE)
+set(ENABLE_LZ4 OFF CACHE BOOL "" FORCE)
+set(ENABLE_ZSTD OFF CACHE BOOL "" FORCE)
+set(ENABLE_BZip2 OFF CACHE BOOL "" FORCE)
+set(ENABLE_LIBXML2 OFF CACHE BOOL "" FORCE)
+set(ENABLE_BSDXML OFF CACHE BOOL "" FORCE)
+set(ENABLE_EXPAT OFF CACHE BOOL "" FORCE)
+set(ENABLE_WIN32_XMLLITE OFF CACHE BOOL "" FORCE)
+set(ENABLE_TAR OFF CACHE BOOL "" FORCE)
+set(ENABLE_CPIO OFF CACHE BOOL "" FORCE)
+set(ENABLE_CAT OFF CACHE BOOL "" FORCE)
+set(ENABLE_UNZIP OFF CACHE BOOL "" FORCE)
+set(ENABLE_XATTR OFF CACHE BOOL "" FORCE)
+set(ENABLE_ACL OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+    libarchive
+    GIT_REPOSITORY https://github.com/libarchive/libarchive.git
+    GIT_TAG v3.8.11
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(libarchive)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE archive_static)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE LIBARCHIVE_STATIC)

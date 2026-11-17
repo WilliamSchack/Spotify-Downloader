@@ -1,0 +1,13 @@
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/GUIManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MusicScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/InfoScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/UpdatesScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/NoticesScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/SupportersScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/SettingsScreenGUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AddTracksPopup.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/TrackUI.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/FileDialogUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/DependencyInfo.cpp
+)

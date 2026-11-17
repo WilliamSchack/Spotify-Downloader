@@ -1,0 +1,11 @@
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_sources(${PROJECT_NAME} PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/NetworkRequest.h
+	${CMAKE_CURRENT_SOURCE_DIR}/NetworkResponse.h
+	${CMAKE_CURRENT_SOURCE_DIR}/CookieFile.h
+)
+
+add_subdirectory(github)
+add_subdirectory(spotify)
+add_subdirectory(youtube)

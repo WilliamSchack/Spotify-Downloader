@@ -1,0 +1,45 @@
+#ifndef FILEUTILS_H
+#define FILEUTILS_H
+
+#include "Logger.h"
+#include "StringUtils.h"
+#include "EnvironmentUtils.h"
+
+#include <iostream>
+#include <string>
+#include <filesystem>
+#include <regex>
+
+#ifdef _WIN32
+    #include <windows.h>
+#elif __APPLE__
+    #include <mach-o/dyld.h>
+#else
+    #include <unistd.h>
+    #include <limits.h>
+#endif
+
+class FileUtils
+{
+    public:
+        static std::string ValidateFileName(const std::string& fileName);
+        static std::string ValidateDirectory(const std::string& fileName);
+
+        static int GetLastIndexOfDirectorySlash(const std::string& path);
+
+        static std::string PathToUtf8(const std::filesystem::path& path);
+        static std::filesystem::path PathFromUtf8(const std::string& path);
+
+        static std::string EncodePath(const std::filesystem::path& path);
+
+        static bool MoveFile(const std::filesystem::path& fromPath, const std::filesystem::path& toPath);
+
+        static FILE* OpenFile(const std::filesystem::path& path, const std::string& mode);
+
+        static std::filesystem::path FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName);
+    private:
+        inline static const std::string INVALID_FILE_CHARS = R"(<>:"/\|?*)";
+        inline static const std::string INVALID_DIR_CHARS  = R"(<>"|?*)";
+};
+
+#endif

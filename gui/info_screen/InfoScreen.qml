@@ -1,0 +1,162 @@
+import QtQuick
+import QtQuick.Layouts
+
+RowLayout {
+    id: root
+    spacing: 10
+
+    enum EInfoScreen
+    {
+        Updates,
+        Notices,
+        Supporters
+    }
+
+    property int currentInfoScreen: InfoScreen.EInfoScreen.Updates;
+    property bool loadedNotices: _manager.settings.autoCheckForNotices
+    property bool firstNoticesOpen: true
+    property bool loadedSupporters: false
+
+    function switchInfoScreen(screen: int) {
+        if (!loadedNotices && screen == InfoScreen.EInfoScreen.Notices) {
+            _manager.info.notices.UpdateNotices()
+            loadedNotices = true
+        }
+
+        if (!loadedSupporters && screen == InfoScreen.EInfoScreen.Supporters) {
+            _manager.info.supporters.UpdateSupporters()
+            loadedSupporters = true
+        }
+
+        if (firstNoticesOpen && currentInfoScreen != InfoScreen.EInfoScreen.Notices && screen == InfoScreen.EInfoScreen.Notices && !_manager.info.notices.loadingNotices) {
+            // If the first notice is new, disable it when first clicking onto the screen as it will be selected
+            if (_manager.info.notices.notices.length > 0) {
+                let firstNotice = _manager.info.notices.notices[0]
+                if (firstNotice.isNew)
+                    firstNotice.isNew = false
+            }
+
+            firstNoticesOpen = false;
+        }
+
+        currentInfoScreen = screen;
+    }
+
+    // Left Area
+    Rectangle {
+        Layout.fillHeight: true
+        Layout.preferredWidth: 260
+
+        radius: 10
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
+            GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
+        }
+
+        Item {
+            anchors.fill: parent
+            anchors.margins: 10
+
+            ColumnLayout {
+                anchors.fill: parent
+
+                spacing: 15
+
+                ToggleButtonGroup {
+                    Layout.fillWidth: true
+
+                    spacing: 5
+                    horizontal: false
+
+                    ToggleButton {
+                        implicitWidth: parent.width
+                        implicitHeight: 30
+
+                        text: "Updates"
+                        horizontalAlignment: Text.AlignLeft
+                        font.pixelSize: 20
+                        radius: 8
+
+                        unselectedBackgroundColour: (!_manager.info.updates.allInstalled || _manager.info.updates.anyUpdateAvailable) ? Qt.alpha('#b32222', 0.6) : Qt.alpha("#707070", 0.6)
+
+                        checked: true
+
+                        onClicked: root.switchInfoScreen(InfoScreen.EInfoScreen.Updates)
+                    }
+
+                    ToggleButton {
+                        implicitWidth: parent.width
+                        implicitHeight: 30
+
+                        text: "Notices"
+                        horizontalAlignment: Text.AlignLeft
+                        font.pixelSize: 20
+                        radius: 8
+
+                        unselectedBackgroundColour: _manager.info.notices.newNoticeAvailable ? Qt.alpha('#b32222', 0.6) : Qt.alpha("#707070", 0.6)
+
+                        onClicked: root.switchInfoScreen(InfoScreen.EInfoScreen.Notices)
+                    }
+
+                    ToggleButton {
+                        implicitWidth: parent.width
+                        implicitHeight: 30
+
+                        text: "Supporters"
+                        horizontalAlignment: Text.AlignLeft
+                        font.pixelSize: 20
+                        radius: 8
+
+                        unselectedBackgroundColour: Qt.alpha("#707070", 0.6)
+
+                        onClicked: root.switchInfoScreen(InfoScreen.EInfoScreen.Supporters)
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: "#E2A5C4"
+                }
+
+                StackLayout {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    
+                    currentIndex: root.currentInfoScreen
+
+                    InfoScreenUpdatesLeft {}
+                    InfoScreenNoticesLeft {}
+                    InfoScreenSupportersLeft {}
+                }
+            }
+        }
+    }
+
+    // Right Area
+    Rectangle {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+
+        radius: 10
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Qt.alpha("#373737", 0.8) }
+            GradientStop { position: 1.0; color: Qt.alpha("#3D2B3F", 0.8) }
+        }
+
+        Item {
+            anchors.fill: parent
+            anchors.margins: 20
+
+            StackLayout {
+                anchors.fill: parent
+
+                currentIndex: root.currentInfoScreen
+
+                InfoScreenUpdatesRight {}
+                InfoScreenNoticesRight {}
+                InfoScreenSupportersRight {}
+            }
+        }
+    }
+}

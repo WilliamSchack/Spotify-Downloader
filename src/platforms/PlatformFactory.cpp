@@ -1,0 +1,29 @@
+#include "PlatformFactory.h"
+
+std::unique_ptr<IPlatformDownloader> PlatformFactory::CreateDownloader(const EPlatform& platform)
+{
+    switch (platform) {
+        case EPlatform::Spotify: return std::make_unique<SpotifyDownloader>();
+        case EPlatform::YouTube: return std::make_unique<YoutubeDownloader>();
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<IPlatformSearcher> PlatformFactory::CreateSearcher(const EPlatform& platform)
+{
+    switch (platform) {
+        case EPlatform::YouTube: return std::make_unique<YoutubeSearcher>();
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<IPlatformData> PlatformFactory::CreateData(const EPlatform& platform)
+{
+    switch (platform) {
+        case EPlatform::YouTube: return std::make_unique<YoutubeData>();
+    }
+
+    return nullptr;
+}
