@@ -1,4 +1,3 @@
-<img src="https://github.com/ChazzBurger/Spotify-Downloader/assets/54973797/0998c0ca-bc59-4cb4-a9f5-76956d3bbe27" align="right" style="height: 6%; width: 6%;">
 <img width="1280" height="640" alt="EcholiteBannerLarge" src="https://github.com/user-attachments/assets/76b1049c-9a10-4b8d-bd83-83c55247ed91" />
 
 # Echolite
