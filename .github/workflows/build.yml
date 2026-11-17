@@ -18,21 +18,21 @@ jobs:
                   #- os: ubuntu-24.04
                   #  arch: x86_64
                   #  qt_host: linux
-                  - os: ubuntu-24.04-arm
-                    arch: aarch64
-                    qt_host: linux_arm64
+                  #- os: ubuntu-24.04-arm
+                  #  arch: aarch64
+                  #  qt_host: linux_arm64
                   #- os: windows-latest
                   #  arch: x64
                   #  qt_host: windows
-                  - os: windows-11-arm
-                    arch: arm64
-                    qt_host: windows_arm64
-                  #- os: macos-15-intel
-                  #  arch: x86_64
-                  #  qt_host: mac
-                  - os: macos-latest
-                    arch: arm64
+                  #- os: windows-11-arm
+                  #  arch: arm64
+                  #  qt_host: windows_arm64
+                  - os: macos-15-intel
+                    arch: x86_64
                     qt_host: mac
+                  #- os: macos-latest
+                  #  arch: arm64
+                  #  qt_host: mac
         
         name: Building on ${{matrix.os}}
         runs-on: ${{matrix.os}}
