@@ -15,12 +15,12 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  #- os: ubuntu-latest
-                  #  qt_host: linux
+                  - os: ubuntu-latest
+                    qt_host: linux
                   #- os: windows-latest
                   #  qt_host: windows
-                  - os: macos-latest
-                    qt_host: mac
+                  #- os: macos-latest
+                  #  qt_host: mac
         
         name: Building on ${{matrix.os}}
         runs-on: ${{matrix.os}}
@@ -88,15 +88,6 @@ jobs:
               run: cmake --build build --config Release
 
             # Download dependencies
-            - name: Download Dependencies (Linux)
-              if: runner.os == 'Linux'
-              # Only install on the appimage
-              run: ./build/out/Echolite-x86_64.AppImage download-deps
-
-            - name: Download Dependencies (MacOS)
-              if: runner.os == 'macOS'
-              run: ./build/out/Release/Echolite.app/Contents/MacOS/Echolite download-deps
-
             - name: Download Dependencies (Windows)
               if: runner.os == 'Windows'
               run: ./build/out/Release/Echolite.exe download-deps
@@ -104,7 +95,13 @@ jobs:
             # Package (Also debugging for now)
             - name: Package (Linux)
               if: runner.os == 'Linux'
-              run: find build/out
+              run: |
+                wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+                chmod +x appimagetool-x86_64.AppImage
+                APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 \
+                    ./appimagetool-x86_64.AppImage \
+                    build/out/Release
+                    build/out/Echolite-x86_64.AppImaeg
 
             - name: Package (MacOS)
               if: runner.os == 'macOS'
