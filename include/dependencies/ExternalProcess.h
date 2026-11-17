@@ -21,6 +21,7 @@
 #include <poll.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 #endif
 
 class ExternalProcess
