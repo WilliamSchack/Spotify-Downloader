@@ -1,7 +1,7 @@
 #ifndef DEPENDENCY_H
 #define DEPENDENCY_H
 
-#include "FileUtils.h"
+#include "Paths.h"
 #include "ExternalProcess.h"
 #include "GitHubAPI.h"
 
@@ -28,14 +28,14 @@ class Dependency
 
         static bool IsInstalledRelative()
         {
-            std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
             return std::filesystem::exists(relativePath);
         }
 
         static bool DownloadExecutable()
         {
             // If its downloaded already, dont downloading again
-            std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
             if (std::filesystem::exists(relativePath))
                 return false;
 
@@ -54,7 +54,7 @@ class Dependency
         static std::filesystem::path GetPath()
         {
             // Check relative path
-            std::filesystem::path relativePath = FileUtils::GetRelativePath(GetRelativePath());
+            std::filesystem::path relativePath = Paths::GetRelativePath(GetRelativePath());
             if (std::filesystem::exists(relativePath))
                 return relativePath;
             

@@ -3,7 +3,7 @@
 
 #include "Logger.h"
 #include "ExternalProcessResult.h"
-#include "FileUtils.h"
+#include "Paths.h"
 #include "StringUtils.h"
 
 #include <vector>

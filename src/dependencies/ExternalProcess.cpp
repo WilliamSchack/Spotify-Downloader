@@ -5,7 +5,7 @@ ExternalProcess::ExternalProcess(const std::filesystem::path& path)
 
 ExternalProcess ExternalProcess::GetRelativeProcess(const std::filesystem::path& relativePath)
 {
-    return ExternalProcess(FileUtils::GetRelativePath(relativePath));
+    return ExternalProcess(Paths::GetRelativePath(relativePath));
 }
 
 std::optional<std::filesystem::path> ExternalProcess::FindInstalledPath(const std::string& fileNameNoExtension)

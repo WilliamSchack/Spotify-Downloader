@@ -111,49 +111,6 @@ bool FileUtils::MoveFile(const std::filesystem::path& fromPath, const std::files
     return true;
 }
 
-std::filesystem::path FileUtils::GetExecutablePath()
-{
-#ifdef _WIN32
-    char buffer[MAX_PATH];
-    DWORD len = GetModuleFileNameA(NULL, buffer, MAX_PATH);
-    if (len == 0) {
-        std::ostringstream errorSs;
-        errorSs << "Could not get executable path. Error: " << GetLastError();
-        Logger::Warning(errorSs.str());
-        return {};
-    } else if (len == MAX_PATH) {
-        Logger::Warning("Path truncated, file path is too long.");
-        return {};
-    }
-
-    return std::filesystem::path(buffer);
-#elif __APPLE__
-    char buffer[PATH_MAX];
-    uint32_t size = sizeof(buffer);
-    if (_NSGetExecutablePath(buffer, &size) != 0) {
-        Logger::Warning("Could not get executable path");
-        return {};
-    }
-
-    return std::filesystem::path(buffer);
-#else
-    char buffer[PATH_MAX];
-    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
-    if (len == -1) {
-        Logger::Warning("Could not get executable path");
-        return {};
-    }
-
-    buffer[len] = '\0';
-    return std::filesystem::path(buffer);
-#endif
-}
-
-std::filesystem::path FileUtils::GetRelativePath(const std::filesystem::path& relativePath)
-{
-    return GetExecutablePath().parent_path() / relativePath;
-}
-
 // TODO: Might be a good idea to cache this, just check it with many files in the target directory
 std::filesystem::path FileUtils::FindPathWithAnyExtension(const std::filesystem::path& directory, const std::filesystem::path& fileName)
 {

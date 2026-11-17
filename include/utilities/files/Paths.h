@@ -9,6 +9,9 @@
 class Paths
 {
     public:
+        static std::filesystem::path GetExecutablePath();
+        static std::filesystem::path GetRelativePath(const std::filesystem::path& relativePath);
+
         static std::filesystem::path GetConfigDir();
         static std::filesystem::path GetCacheDir();
         static std::filesystem::path GetTempDir();
