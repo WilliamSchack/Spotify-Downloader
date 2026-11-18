@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Echolite.Info.Updates
 
@@ -44,6 +45,11 @@ ToggleButton {
             return "#ff7e80"
         
         return "#9EFFA5"
+    }
+
+    Component {
+        id: messageDialogComponent
+        CustomMessageDialog {}
     }
 
     RowLayout {
@@ -98,6 +104,28 @@ ToggleButton {
                     font.italic: true
                 }
             }
+        }
+    }
+
+    Connections {
+        target: root.info
+
+        function onUpdateError(error) {
+            const dialog = messageDialogComponent.createObject(root, {
+                title: "Failed To Update " + root.info.name,
+                text: error,
+                standardButtons: Dialog.Ok
+            })
+            dialog.open()
+        }
+
+        function onDownloadError(error) {
+            const dialog = messageDialogComponent.createObject(root, {
+                title: "Failed To Download " + root.info.name,
+                text: error,
+                standardButtons: Dialog.Ok
+            })
+            dialog.open()
         }
     }
 }

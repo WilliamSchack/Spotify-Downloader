@@ -89,6 +89,10 @@ class DependencyInfo : public QObject
         bool _failedToGetReleases = false;
     signals:
         void ReleasesChanged();
+
+        // For qml
+        void updateError(const QString& error);
+        void downloadError(const QString& error);
 };
 
 #endif

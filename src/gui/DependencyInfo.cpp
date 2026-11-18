@@ -181,21 +181,21 @@ void DependencyInfo::DownloadUpdate()
     SetUpdating(true);
 
     std::thread([this]() {
-        std::string updateError = _updateFunction();
+        std::string updateErrorString = _updateFunction();
 
         // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this, updateError]() {
-            // TODO: Popup when update failed
-
+        QMetaObject::invokeMethod(this, [this, updateErrorString]() {
             SetUpdating(false);
 
-            if (updateError.empty()) {
+            if (updateErrorString.empty()) {
                 Logger::Info("Successfully updated " + _name.toStdString());
                 SetUpdateAvailable(false);
                 UpdateVersion();
             } else {
                 Logger::Warning("Failed to update " + _name.toStdString());
                 SetUpdateAvailable(true);
+
+                emit updateError(QString::fromStdString(updateErrorString));
             }
         }, Qt::QueuedConnection);
     }).detach();
@@ -210,21 +210,21 @@ void DependencyInfo::Download()
     SetDownloading(true);
 
     std::thread([this]() {
-        std::string downloadError = _downloadFunction();
+        std::string downloadErrorString = _downloadFunction();
 
         // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this, downloadError]() {
-            // TODO: Popup when download failed
-
+        QMetaObject::invokeMethod(this, [this, downloadErrorString]() {
             SetDownloading(false);
 
-            if (downloadError.empty()) {
+            if (downloadErrorString.empty()) {
                 Logger::Info("Successfully downloaded " + _name.toStdString());
                 CheckInstalled();
                 UpdateVersion();
                 SetUpdateAvailable(false);
             } else {
                 Logger::Warning("Failed to download " + _name.toStdString());
+
+                emit downloadError(QString::fromStdString(downloadErrorString));
             }
         }, Qt::QueuedConnection);
     }).detach();
