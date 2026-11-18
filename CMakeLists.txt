@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18)
 # Setup project
 set(PROJECT_NAME Echolite CACHE INTERNAL "")
 set(DISPLAY_NAME "Echolite" CACHE INTERNAL "")
-set(APP_VERSION "2.0.0" CACHE INTERNAL "")
+set(APP_VERSION "2.0.1" CACHE INTERNAL "")
 set(APP_DESCRIPTION "Can download songs & lyrics, modify metadata, and probably other stuff im forgetting atm" CACHE INTERNAL "")
 set(ORGANISATION_NAME "WilliamSchack" CACHE INTERNAL "")
 set(APP_ID "com.williamschack.echolite" CACHE INTERNAL "")
