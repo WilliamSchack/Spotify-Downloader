@@ -26,14 +26,19 @@ std::filesystem::path FilePathReserver::FindAvailableTrackPath(const TrackData& 
         // If the file doesnt exist assume another thread is working on a different track
         
         // Check the metadata and see it its the same
-        MetadataManager existingMetadata(originalPath);
-        sameTrack = existingMetadata.GetTitle() == track.Name &&
-            existingMetadata.GetAlbumName() == track.Album.Name &&
-            existingMetadata.GetTrackNumber() == MetadataManager::GetTrackNumber(track) &&
-            (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists, Config::ArtistSeparator)) &&
-            (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists, Config::ArtistSeparator));
+        MetadataManager existingMetadata(originalPath, true);
+        if (existingMetadata.IsValid()) {
+            sameTrack = existingMetadata.GetTitle() == track.Name &&
+                existingMetadata.GetAlbumName() == track.Album.Name &&
+                existingMetadata.GetTrackNumber() == MetadataManager::GetTrackNumber(track) &&
+                (track.Artists.size() == 0 ? true : existingMetadata.GetArtist() == MetadataManager::CombineArtistNames(track.Artists, Config::ArtistSeparator)) &&
+                (track.Album.Artists.size() == 0 ? true : existingMetadata.GetAlbumArtist() == MetadataManager::CombineArtistNames(track.Album.Artists, Config::ArtistSeparator));
 
-        existingMetadata.Close();
+            existingMetadata.Close();
+        } else {
+            // If we couldnt load the metadata just assume its the same file so its not overwritten
+            sameTrack = true;
+        }
     }
 
     if (sameTrack) {
