@@ -10,45 +10,45 @@ on:
         type: string
 
 jobs:
-  update_release:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      versionString: ${{ steps.version.outputs.versionString }}
-    steps:
-      - uses: actions/checkout@v7
-      - name: Get Version & Update Files
-        id: version
-        run: |
-          VERSION=${{ inputs.version }}
-          echo "versionString=v${VERSION}" >> "$GITHUB_OUTPUT"
-  
-          ./resources/github/update-version.sh "$VERSION"
-  
-          git config --global user.name ${{ secrets.GIT_ACTIONS_NAME }}
-          git config --global user.email '${{ secrets.GIT_ACTIONS_EMAIL }}'
-          git add .
-
-          if git diff --cached --quiet; then
-            echo "Version is already $VERSION and was not changed"
-          else
-            git commit -m "[automated commit] Bumped version to v$VERSION"
-            git push
-          fi
+#  update_release:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    outputs:
+#      versionString: ${{ steps.version.outputs.versionString }}
+#    steps:
+#      - uses: actions/checkout@v7
+#      - name: Get Version & Update Files
+#        id: version
+#        run: |
+#          VERSION=${{ inputs.version }}
+#          echo "versionString=v${VERSION}" >> "$GITHUB_OUTPUT"
+#  
+#          ./resources/github/update-version.sh "$VERSION"
+#  
+#          git config --global user.name ${{ secrets.GIT_ACTIONS_NAME }}
+#          git config --global user.email '${{ secrets.GIT_ACTIONS_EMAIL }}'
+#          git add .
+#
+#          if git diff --cached --quiet; then
+#            echo "Version is already $VERSION and was not changed"
+#          else
+#            git commit -m "[automated commit] Bumped version to v$VERSION"
+#            git push
+#          fi
         
   build:
-    needs: update_release
+    #needs: update_release
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
-            arch: x86_64
-            qt_host: linux
-          - os: ubuntu-24.04-arm
-            arch: aarch64
-            qt_host: linux_arm64
+          #- os: ubuntu-24.04
+          #  arch: x86_64
+          #  qt_host: linux
+          #- os: ubuntu-24.04-arm
+          #  arch: aarch64
+          #  qt_host: linux_arm64
           - os: windows-latest
             arch: x64
             qt_host: windows
@@ -56,12 +56,12 @@ jobs:
           #- os: windows-11-arm
           #  arch: arm64
           #  qt_host: windows_arm64
-          - os: macos-15-intel
-            arch: x86_64
-            qt_host: mac
-          - os: macos-latest
-            arch: arm64
-            qt_host: mac
+          #- os: macos-15-intel
+          #  arch: x86_64
+          #  qt_host: mac
+          #- os: macos-latest
+          #  arch: arm64
+          #  qt_host: mac
     
     name: Building on ${{matrix.os}}
     runs-on: ${{matrix.os}}
@@ -181,37 +181,37 @@ jobs:
   
           ls .\build\out
       
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: Echolite-${{ matrix.os }}-${{ matrix.arch }}
-          path: build/out/Echolite-*
-          if-no-files-found: error
-  
-  release:
-    needs: [update_release, build]
-    env:
-      VERSION_STRING: ${{ needs.update_release.outputs.versionString }}
-    runs-on: ubuntu-latest
-    permissions:
-        contents: write
-    steps:
-        - uses: actions/download-artifact@v7
-          with:
-            path: artifacts
-            merge-multiple: true
-
-        - name: Create Release
-          env:
-            GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-            GH_REPO: ${{ github.repository }}
-          run: |
-            gh release create "$VERSION_STRING" artifacts/* \
-              --draft \
-              --title "$VERSION_STRING" \
-              --generate-notes
-
-        - name: Delete Artifacts
-          uses: geekyeggo/delete-artifact@v6
-          with:
-            name: Echolite-*
+#      - name: Upload Artifacts
+#        uses: actions/upload-artifact@v7
+#        with:
+#          name: Echolite-${{ matrix.os }}-${{ matrix.arch }}
+#          path: build/out/Echolite-*
+#          if-no-files-found: error
+#  
+#  release:
+#    needs: [update_release, build]
+#    env:
+#      VERSION_STRING: ${{ needs.update_release.outputs.versionString }}
+#    runs-on: ubuntu-latest
+#    permissions:
+#        contents: write
+#    steps:
+#        - uses: actions/download-artifact@v7
+#          with:
+#            path: artifacts
+#            merge-multiple: true
+#
+#        - name: Create Release
+#          env:
+#            GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+#            GH_REPO: ${{ github.repository }}
+#          run: |
+#            gh release create "$VERSION_STRING" artifacts/* \
+#              --draft \
+#              --title "$VERSION_STRING" \
+#              --generate-notes
+#
+#        - name: Delete Artifacts
+#          uses: geekyeggo/delete-artifact@v6
+#          with:
+#            name: Echolite-*
