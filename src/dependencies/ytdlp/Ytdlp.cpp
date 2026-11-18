@@ -23,10 +23,12 @@ bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
 
     NetworkRequest request;
     request.Url = url;
-    request.DownloadToFile(path);
+    NetworkResponse response = request.DownloadToFile(path);
 
-    if (!std::filesystem::exists(path))
+    if (response.CurlCode != CURLE_OK || !std::filesystem::exists(path)) {
+        Logger::Warning("Failed to download yt-dlp: " + std::string(curl_easy_strerror(response.CurlCode)));
         return false;
+    }
 
 #ifndef _WIN32
     // Make it executable

@@ -27,9 +27,17 @@ bool JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
 
     NetworkRequest request;
     request.Url = url;
-    request.DownloadToFile(archivePath);
+    NetworkResponse response = request.DownloadToFile(archivePath);
 
-    ArchiveHandler::ExtractFile(archivePath, pathInArchive, path);
+    if (response.CurlCode != CURLE_OK || !std::filesystem::exists(archivePath)) {
+        Logger::Warning("Failed to download QuickJS: " + std::string(curl_easy_strerror(response.CurlCode)));
+        return false;
+    }
+
+    if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
+        Logger::Warning("Failed to download QuickJS: Failed to extract");
+        return false;
+    }
 
     std::filesystem::remove(archivePath);
 
@@ -89,8 +97,10 @@ std::string JsRuntime::GetLatestVersionImpl()
     }
 
     nlohmann::json json = nlohmann::json::parse(response.Body);
-    if (json.empty())
+    if (json.empty()) {
+        Logger::Warning("Failed to get the latest version for QuickJs: Json failed to parse (" + response.Body + ")");
         return "";
+    }
 
     return json["version"];
 }

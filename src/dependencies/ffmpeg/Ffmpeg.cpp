@@ -48,9 +48,17 @@ bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
 
     NetworkRequest request;
     request.Url = url;
-    request.DownloadToFile(archivePath);
+    NetworkResponse response = request.DownloadToFile(archivePath);
 
-    ArchiveHandler::ExtractFile(archivePath, pathInArchive, path);
+    if (response.CurlCode != CURLE_OK || !std::filesystem::exists(archivePath)) {
+        Logger::Warning("Failed to download FFmpeg: " + std::string(curl_easy_strerror(response.CurlCode)));
+        return false;
+    }
+
+    if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
+        Logger::Warning("Failed to download FFmpeg: Failed to extract");
+        return false;
+    }
 
     std::filesystem::remove(archivePath);
 

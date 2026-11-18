@@ -34,7 +34,7 @@ class Dependency
 
         static bool DownloadExecutable()
         {
-            // If its downloaded already, dont downloading again
+            // If its downloaded already, dont download again
             std::filesystem::path relativePath = Paths::GetDependencyPath(GetExecutableName());
             if (std::filesystem::exists(relativePath))
                 return false;
