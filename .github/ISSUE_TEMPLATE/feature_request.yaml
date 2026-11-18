@@ -12,7 +12,7 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I am using the latest version as listed [here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest)
+        - label: I am using the latest version as listed [here](https://github.com/WilliamSchack/Echolite/releases/latest)
           required: true
         - label: I have verified that this feature does not already exist
           required: true

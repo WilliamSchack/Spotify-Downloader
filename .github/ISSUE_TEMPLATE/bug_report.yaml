@@ -1,5 +1,5 @@
 name: Bug report
-description: Create a report to help improve Spotify Downloader
+description: Create a report to help improve Echolite
 labels: [bug]
 body:
   - type: markdown
@@ -12,7 +12,7 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I am using the latest version as listed [here](https://github.com/WilliamSchack/Spotify-Downloader/releases/latest)
+        - label: I am using the latest version as listed [here](https://github.com/WilliamSchack/Echolite/releases/latest)
           required: true
   - type: textarea
     id: description
@@ -37,8 +37,8 @@ body:
     attributes:
       label: Complete Log
       description: |
-        You can find your most recent log by going into the app, then the Settings screen, and at the bottom there is a Open Logs Folder button
-        Please drag and drop Log.log and PreviousLog.log (If it exists) into the below text box. If thats not possible, copy the contents instead. The logs should start like the following:
+        You can find your most recent log by going into the app, then the Settings screen, and at the bottom there is a Open Logs Folder button.
+        Press that then drag and drop Log.log and PreviousLog.log (If it exists) into the below text box. If thats not possible, copy the contents instead. The logs should start like the following:
       placeholder: |
         Please drag and drop the log files as described above, or copy the log contents which should start like the following:
 
