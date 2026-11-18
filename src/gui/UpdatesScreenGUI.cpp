@@ -21,7 +21,7 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
             return VersionManager::IsUpdateAvailable(true);
         },
         []() -> std::string {
-            QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite"));
+            QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite/releases/latest"));
             return "";
         },
         []() -> std::string {
