@@ -38,6 +38,9 @@ std::string JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
 
     if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
         Logger::Warning("Failed to download QuickJS: Failed to extract");
+
+        std::filesystem::remove(archivePath);
+
         return "Failed to extract from the archive";
     }
 
@@ -45,6 +48,9 @@ std::string JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
     std::filesystem::path dllPath = path.parent_path() / REQUIRED_DLL_NAME;
     if (!ArchiveHandler::ExtractFile(archivePath, REQUIRED_DLL_NAME, dllPath)) {
         Logger::Warning("Failed to download QuickJS: Failed to extract the required dll");
+
+        std::filesystem::remove(archivePath);
+
         return "Failed to extract the required dll";
     }
 #endif

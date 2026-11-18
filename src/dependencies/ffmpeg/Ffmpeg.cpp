@@ -58,6 +58,9 @@ std::string Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
 
     if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
         Logger::Warning("Failed to download FFmpeg: Failed to extract the archive");
+        
+        std::filesystem::remove(archivePath);
+        
         return "Failed to extract from the archive";
     }
 
