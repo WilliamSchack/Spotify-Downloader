@@ -1,6 +1,6 @@
 #include "MetadataManager.h"
 
-MetadataManager::MetadataManager(const std::filesystem::path& filePath)
+MetadataManager::MetadataManager(const std::filesystem::path& filePath, const bool& readOnly)
 {
     if (filePath.empty() || !std::filesystem::exists(filePath))
         return;
@@ -13,12 +13,19 @@ MetadataManager::MetadataManager(const std::filesystem::path& filePath)
 
     _fileRef = TagLib::FileRef(taglibFilePath, true, TagLib::AudioProperties::Accurate);
     _codec = CodecFactory::Create(filePath.extension().string());
+
+    _readOnly = readOnly;
 }
 
 MetadataManager::~MetadataManager()
 {
     // Cleanup the file if it wasnt closed
-    if (!_fileRef.isNull()) Close();
+    if (IsValid()) Close();
+}
+
+bool MetadataManager::IsValid() const
+{
+    return _codec != nullptr && !_fileRef.isNull() && _fileRef.file() != nullptr && _fileRef.file()->isValid();
 }
 
 void MetadataManager::SetTitle(const std::string& value)
@@ -78,7 +85,7 @@ void MetadataManager::SetTrackNumber(const unsigned int& value)
 
 void MetadataManager::SetDiscNumber(const unsigned int& value)
 {
-    if (_codec->GetMetadataType() == EMetadataType::Matroska) {
+    if (!_readOnly && IsValid() && _codec->GetMetadataType() == EMetadataType::Matroska) {
         TagLib::String taglibString(std::to_string(value).c_str(), TagLib::String::UTF8);
         TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
 
@@ -90,7 +97,7 @@ void MetadataManager::SetDiscNumber(const unsigned int& value)
 
 void MetadataManager::SetLyrics(const std::string& value)
 {
-    if (_codec->GetMetadataType() == EMetadataType::ID3V2) {
+    if (!_readOnly && IsValid() && _codec->GetMetadataType() == EMetadataType::ID3V2) {
         TagLib::String taglibString(value.c_str(), TagLib::String::UTF8);
         TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
 
@@ -107,13 +114,17 @@ void MetadataManager::SetLyrics(const std::string& value)
 
 void MetadataManager::SetCoverImage(const Image& image)
 {
-    if (image.Data == nullptr)
+    if (_readOnly || !IsValid() || image.Data == nullptr)
         return;
+
+    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    if (fileTag == nullptr) return;
+
+    const char* tagId = GetTagId(EMetadataTag::CoverImage);
+    if (tagId == NULL) return;
 
     std::vector<unsigned char> imageEncodedBytes = ImageHandler::EncodeImage(image);
     TagLib::ByteVector taglibImage(reinterpret_cast<const char*>(imageEncodedBytes.data()), imageEncodedBytes.size());
-    TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
-    const char* tagId = GetTagId(EMetadataTag::CoverImage);
 
     TagLib::String mimeType = "";
     switch (image.Format) {
@@ -230,17 +241,29 @@ std::string MetadataManager::GetLyrics() const
 
 unsigned int MetadataManager::GetMilliseconds() const
 {
-    return _fileRef.audioProperties()->lengthInMilliseconds();
+    if (!IsValid())
+        return 0;
+
+    TagLib::AudioProperties* properties = _fileRef.audioProperties();
+    if (properties == nullptr) return 0;
+
+    return properties->lengthInMilliseconds();
 }
 
 unsigned int MetadataManager::GetSeconds() const
 {
-    return _fileRef.audioProperties()->lengthInSeconds();
+    if (!IsValid())
+        return 0;
+
+    TagLib::AudioProperties* properties = _fileRef.audioProperties();
+    if (properties == nullptr) return 0;
+
+    return properties->lengthInSeconds();
 }
 
 TrackData MetadataManager::GetAll() const
 {
-    if (_fileRef.file() == nullptr)
+    if (!IsValid())
         return TrackData(EPlatform::Unknown);
 
     TrackData data(EPlatform::LocalFile);
@@ -431,9 +454,12 @@ TagLib::Matroska::SimpleTag::TargetTypeValue MetadataManager::GetMatroskaTargetT
 
 void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string& value) const
 {
-    if (tag == EMetadataTag::CoverImage) return;
-
+    if (_readOnly || !IsValid() || tag == EMetadataTag::CoverImage)
+        return;
+    
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    if (fileTag == nullptr) return;
+
     const char* tagId = GetTagId(tag);
     if (tagId == NULL) return;
 
@@ -464,7 +490,12 @@ void MetadataManager::SetStringField(const EMetadataTag& tag, const std::string&
 
 std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
 {
+    if (!IsValid())
+        return "";
+
     TagLib::Tag* fileTag = _codec->GetFileTag(_fileRef);
+    if (fileTag == nullptr) return "";
+
     const char* tagId = GetTagId(tag);
     if (tagId == NULL) return "";
 
@@ -505,7 +536,8 @@ std::string MetadataManager::GetStringField(const EMetadataTag& tag) const
 
 void MetadataManager::Close()
 {
-    _fileRef.save();
+    if (!_readOnly)
+        _fileRef.save();
 
     // Bit hacky, but it assigns a new file ref so the old one is destroyed and the file can be used
     _fileRef = TagLib::FileRef();

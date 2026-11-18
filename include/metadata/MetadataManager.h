@@ -41,8 +41,10 @@
 class MetadataManager
 {
     public:
-        MetadataManager(const std::filesystem::path& filePath);
+        MetadataManager(const std::filesystem::path& filePath, const bool& readOnly = false);
         ~MetadataManager();
+
+        bool IsValid() const;
 
         void SetTitle       (const std::string& value);
         void SetArtist      (const std::string& value);
@@ -93,6 +95,8 @@ class MetadataManager
     private:
         TagLib::FileRef _fileRef;
         std::unique_ptr<ICodec> _codec;
+
+        bool _readOnly = false;
 };
 
 #endif
