@@ -37,15 +37,13 @@ body:
     attributes:
       label: Complete Log
       description: |
-        You can find your most recent log at the file location (%temp%/SpotifyDownloader/Log.log).
-        Please copy all the text and input it below. It should start like the following:
+        You can find your most recent log by going into the app, then the Settings screen, and at the bottom there is a Open Logs Folder button
+        Please drag and drop Log.log and PreviousLog.log (If it exists) into the below text box. If thats not possible, copy the contents instead. The logs should start like the following:
       placeholder: |
-        10-08-2025 00:44:04 |   Info   | 10 | SpotifyDownloader.cpp | SpotifyDownloader | RUNNING VERSION "1.10.0"
-        10-08-2025 00:44:05 |   Info   | 185 | Config.cpp | LoadSettings | Settings Successfully Loaded QJsonObject({})
-        10-08-2025 00:44:05 |   Info   | 66 | SpotifyDownloader.cpp | SetupDownloaderThread | Successfully Setup Playlist Worker Thread
-        10-08-2025 00:44:05 |   Info   | 157 | SpotifyDownloader.cpp | CheckForUpdate | Latest Version: "v1.10.0" | Update Available: false
-        10-08-2025 00:44:05 |   Info   | 37 | SpotifyDownloader.cpp | SpotifyDownloader | Successfully Initialised
+        Please drag and drop the log files as described above, or copy the log contents which should start like the following:
+
+        [2026-11-18 11:14:38 | INFO] Running version 2.0.0 on <arch> <os>
+        [2026-11-18 11:14:38 | INFO] Loaded the config from (<path>/Config.json): { <settings> }
         <continues from here>
-      render: shell
     validations:
       required: true
