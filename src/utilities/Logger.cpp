@@ -46,7 +46,7 @@ void Logger::Flush()
 void Logger::Debug(const std::string& message)
 {
     Log(ELogLevel::Debug, message);
-    std::cerr << message << "\n";
+    std::cerr << "[DEBUG] " << message << "\n";
 }
 
 void Logger::Info(const std::string& message)
