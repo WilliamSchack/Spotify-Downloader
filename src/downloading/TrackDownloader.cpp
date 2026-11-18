@@ -11,7 +11,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     }
 
     std::string directoryValidated = FileUtils::ValidateDirectory(directory);
-    if (!std::filesystem::exists(directoryValidated)) {
+    if (!std::filesystem::exists(FileUtils::PathFromUtf8(directoryValidated))) {
         result.FailReason = "Target directory does not exist";
         return result;
     }
@@ -160,7 +160,7 @@ DownloadResult TrackDownloader::DownloadTrack(const TrackData& track, const EPla
     Logger::Info(track.GetUniqueId() + ": Downloading");
     SetProgress(eventCallback, track, 0.3, "Downloading Track...");
 
-    YtdlpResult downloadResult = Ytdlp::Download(searchResult.Data.Url, tempDownloadPath, extraDownloadArgs, [&](float progress) {
+    YtdlpResult downloadResult = Ytdlp::Download(downloadUrl, tempDownloadPath, extraDownloadArgs, [&](float progress) {
         SetProgress(eventCallback, track, MathUtils::Lerp(0.3, 0.7, progress), "Downloading Track...");
     });
 
