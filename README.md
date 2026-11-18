@@ -120,7 +120,7 @@ This has been fixed and the app has been excluded from windows defender scans, i
 - **CLI**
 	- Only includes basic commands at the moment, but will be documented and expanded with a dedicated cli update later
 	- Provides the same json output for every platform
-	- Currently includes: `download-track`, `get-info`, `search`, `get-metadata`
+	- Currently includes: download-track, get-info, search, get-metadata
 	- You can view the details on these at [ArgumentParser.cpp](https://github.com/WilliamSchack/Echolite/blob/main/src/cli/ArgumentParser.cpp) with proper documentation coming in the later cli update
 
 ## Usage
