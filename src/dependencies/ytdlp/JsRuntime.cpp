@@ -41,6 +41,14 @@ std::string JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
         return "Failed to extract from the archive";
     }
 
+#if _WIN32
+    std::filesystem::path dllPath = path.parent_path() / REQUIRED_DLL_NAME;
+    if (!ArchiveHandler::ExtractFile(archivePath, REQUIRED_DLL_NAME, dllPath)) {
+        Logger::Warning("Failed to download QuickJS: Failed to extract the required dll");
+        return "Failed to extract the required dll";
+    }
+#endif
+
     std::filesystem::remove(archivePath);
     if (!std::filesystem::exists(path)) {
         return "Failed to download for an unknown reason";
@@ -72,8 +80,22 @@ std::string JsRuntime::UpdateExecutableImpl()
     bool fileMoved = FileUtils::MoveFile(tempPath, targetPath);
     if (!fileMoved) {
         Logger::Warning("Failed to update QuickJS: Could not move from (" + FileUtils::PathToUtf8(tempPath) + ") to (" + FileUtils::PathToUtf8(targetPath) + ")");
-        return "Failed to move to the target path";
+        return "Failed to move the executable to the target path";
     }
+
+#if _WIN32
+    // Replace the dll
+    std::filesystem::path dllTempPath = tempPath.parent_path() / REQUIRED_DLL_NAME;
+    std::filesystem::path dllTargetPath = targetPath.parent_path() / REQUIRED_DLL_NAME;
+    if (std::filesystem::exists(dllTargetPath))
+        std::filesystem::remove(dllTargetPath);
+
+    bool dllMoved = FileUtils::MoveFile(dllTempPath, dllTargetPath);
+    if (!dllMoved) {
+        Logger::Warning("Failed to update QuickJS: Could not move dll from (" + FileUtils::PathToUtf8(dllTempPath) + ") to (" + FileUtils::PathToUtf8(dllTargetPath) + ")");
+        return "Failed to move the dll to the target path";
+    }
+#endif
 
     return "";
 }

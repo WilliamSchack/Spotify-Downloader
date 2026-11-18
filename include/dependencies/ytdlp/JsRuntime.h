@@ -26,6 +26,10 @@ class JsRuntime : public Dependency<JsRuntime>
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();
         static std::vector<GitHubRelease> GetReleasesImpl(const int& resultsPerPage, const int& page);
+#if _WIN32
+    private:
+        static inline std::string REQUIRED_DLL_NAME = "libwinpthread-1.dll";
+#endif
 };
 
 #endif
