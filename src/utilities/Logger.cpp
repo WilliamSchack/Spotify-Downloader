@@ -90,7 +90,7 @@ void Logger::Log(const ELogLevel& logLevel, const std::string& message)
         _file << entry.str();
 
         // Make sure the log file is up to date with errors
-        if (logLevel >= ELogLevel::Error)
+        if (logLevel >= ELogLevel::Warning)
             _file.flush();
     }
 }
