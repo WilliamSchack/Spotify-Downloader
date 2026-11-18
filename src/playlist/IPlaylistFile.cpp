@@ -20,7 +20,7 @@ void IPlaylistFile::CreatePlaylistFileFromTracks(const std::vector<std::filesyst
         track.Path = path;
         track.EncodedPath = FileUtils::EncodePath(path);
 
-        MetadataManager metadata(path);
+        MetadataManager metadata(path, true);
         track.Data = metadata.GetAll();
 
         tracks.push_back(track);

@@ -15,7 +15,7 @@ std::string XSPFFile::WriteHeader()
 
 std::string XSPFFile::WriteFile(const PlaylistFileTrack& track)
 {
-    MetadataManager metadata(track.Path);
+    MetadataManager metadata(track.Path, true);
 
     // Start tags
     std::string output = "\t\t<track>\n";

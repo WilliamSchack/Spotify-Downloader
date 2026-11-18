@@ -134,7 +134,7 @@ bool ArgumentParser::ParseAfterGUI(int argc, char** argv)
     if (command == "get-metadata" && argc == 3) {
         std::string filePath = argv[2];
 
-        MetadataManager metadata(filePath);
+        MetadataManager metadata(filePath, true);
         TrackData trackData = metadata.GetAll();
 
         Logger::Out(trackData.ToJson().dump(4));
