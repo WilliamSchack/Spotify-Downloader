@@ -271,9 +271,18 @@ void DownloadManager::ThreadDownload(const EPlatform& searchPlatform, const std:
             continue;
         }
 
-        DownloadResult result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadEvent event) {
-            _events.Send(event);
-        });
+        DownloadResult result;
+        try {
+            result = TrackDownloader::DownloadTrack(*track, searchPlatform, directory, [&](DownloadEvent event) {
+                _events.Send(event);
+            });
+        } catch (const std::exception& e) {
+            result.Success = false;
+            result.FailReason = "Unexpected error: " + std::string(e.what());
+        } catch (...) {
+            result.Success = false;
+            result.FailReason = "Unexpected error: Unknown";
+        }
 
         if (result.Success) {
             {
