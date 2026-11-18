@@ -20,8 +20,8 @@ class JsRuntime : public Dependency<JsRuntime>
     friend class Dependency<JsRuntime>;
 
     private:
-        static bool DownloadExecutableImpl(std::filesystem::path path);
-        static bool UpdateExecutableImpl();
+        static std::string DownloadExecutableImpl(std::filesystem::path path);
+        static std::string UpdateExecutableImpl();
         static std::string GetVersionImpl();
         static std::string GetLatestVersionImpl();
         static std::string GetFileNameImpl();

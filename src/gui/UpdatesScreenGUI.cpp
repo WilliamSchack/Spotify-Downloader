@@ -20,12 +20,12 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         []() -> bool {
             return VersionManager::IsUpdateAvailable(true);
         },
-        []() -> bool {
+        []() -> std::string {
             QDesktopServices::openUrl(QUrl("https://github.com/WilliamSchack/Echolite"));
-            return false;
+            return "";
         },
-        []() -> bool {
-            return false;
+        []() -> std::string {
+            return "";
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
             std::vector<GitHubRelease> releases = VersionManager::GetReleases(resultsPerPage, page);
@@ -59,10 +59,10 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         []() -> bool {
             return Ffmpeg::IsUpdateAvailable(true);
         },
-        []() -> bool {
+        []() -> std::string {
             return Ffmpeg::UpdateExecutable();
         },
-        []() -> bool {
+        []() -> std::string {
             return Ffmpeg::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
@@ -97,10 +97,10 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         []() -> bool {
             return Ytdlp::IsUpdateAvailable(true);
         },
-        []() -> bool {
+        []() -> std::string {
             return Ytdlp::UpdateExecutable();
         },
-        []() -> bool {
+        []() -> std::string {
             return Ytdlp::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
@@ -135,10 +135,10 @@ UpdatesScreenGUI::UpdatesScreenGUI(QObject* parent) : QObject(parent)
         []() -> bool {
             return JsRuntime::IsUpdateAvailable(true);
         },
-        []() -> bool {
+        []() -> std::string {
             return JsRuntime::UpdateExecutable();
         },
-        []() -> bool {
+        []() -> std::string {
             return JsRuntime::DownloadExecutable();
         },
         [](int resultsPerPage, int page) -> QList<GUIReleaseInfo> {
@@ -179,7 +179,7 @@ DependencyInfo* UpdatesScreenGUI::GetSelectedDependency() const
     return GetDependency(_selectedDependencyType);
 }
 
-void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction)
+void UpdatesScreenGUI::CreateDependency(const DependencyInfo::EDependency& type, const QString& name, const QString& iconSource, std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<std::string()> updateFunction, std::function<std::string()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction)
 {
     DependencyInfo* dependencyInfo = new DependencyInfo(installedFunction, installedOnSystemFunction, getVersionFunction, updateAvailableFunction, updateFunction, downloadFunction, getReleasesFunction, this);
     dependencyInfo->SetType(type);

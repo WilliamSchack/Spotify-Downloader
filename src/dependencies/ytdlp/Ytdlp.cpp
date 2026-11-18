@@ -1,6 +1,6 @@
 #include "Ytdlp.h"
 
-bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
+std::string Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
 {
     // Get the download details
     std::string url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp";
@@ -26,8 +26,9 @@ bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
     NetworkResponse response = request.DownloadToFile(path);
 
     if (response.CurlCode != CURLE_OK || !std::filesystem::exists(path)) {
-        Logger::Warning("Failed to download yt-dlp: " + std::string(curl_easy_strerror(response.CurlCode)));
-        return false;
+        std::string curlError = curl_easy_strerror(response.CurlCode);
+        Logger::Warning("Failed to download yt-dlp: " + curlError);
+        return "Failed to download with the network error: " + curlError;
     }
 
 #ifndef _WIN32
@@ -39,14 +40,16 @@ bool Ytdlp::DownloadExecutableImpl(std::filesystem::path path)
     );
 #endif
 
-    return true;
+    return "";
 }
 
-bool Ytdlp::UpdateExecutableImpl()
+std::string Ytdlp::UpdateExecutableImpl()
 {
     std::filesystem::path path = GetPath();
-    if (path.empty())
-        return false;
+    if (path.empty()) {
+        Logger::Warning("Failed to update yt-dlp: Could not get the executable path");
+        return "Could not get the executable path";
+    }
 
     ExternalProcess process(path);
     process.AddArgument("-U");
@@ -54,10 +57,10 @@ bool Ytdlp::UpdateExecutableImpl()
     std::string output = process.Execute().Output;
     if (StringUtils::StartsWith(output, "ERROR:")) {
         Logger::Warning("Failed to update yt-dlp with the output: " + output);
-        return false;
+        return "Failed to update with the output: " + output;
     }
 
-    return true;
+    return "";
 }
 
 std::string Ytdlp::GetVersionImpl()

@@ -1,6 +1,6 @@
 #include "DependencyInfo.h"
 
-DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction, QObject* parent)
+DependencyInfo::DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<std::string()> updateFunction, std::function<std::string()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction, QObject* parent)
     : QObject(parent), _installedFunction(installedFunction), _installedOnSystemFunction(installedOnSystemFunction), _getVersionFunction(getVersionFunction), _updateAvailableFunction(updateAvailableFunction), _updateFunction(updateFunction), _downloadFunction(downloadFunction), _getReleasesFunction(getReleasesFunction)
 {
     CheckInstalled();
@@ -181,15 +181,15 @@ void DependencyInfo::DownloadUpdate()
     SetUpdating(true);
 
     std::thread([this]() {
-        bool updated = _updateFunction();
+        std::string updateError = _updateFunction();
 
         // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this, updated]() {
+        QMetaObject::invokeMethod(this, [this, updateError]() {
             // TODO: Popup when update failed
 
             SetUpdating(false);
 
-            if (updated) {
+            if (updateError.empty()) {
                 Logger::Info("Successfully updated " + _name.toStdString());
                 SetUpdateAvailable(false);
                 UpdateVersion();
@@ -210,15 +210,15 @@ void DependencyInfo::Download()
     SetDownloading(true);
 
     std::thread([this]() {
-        bool downloaded = _downloadFunction();
+        std::string downloadError = _downloadFunction();
 
         // Call gui stuff on the main thread
-        QMetaObject::invokeMethod(this, [this, downloaded]() {
+        QMetaObject::invokeMethod(this, [this, downloadError]() {
             // TODO: Popup when download failed
 
             SetDownloading(false);
 
-            if (downloaded) {
+            if (downloadError.empty()) {
                 Logger::Info("Successfully downloaded " + _name.toStdString());
                 CheckInstalled();
                 UpdateVersion();

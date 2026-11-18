@@ -1,6 +1,6 @@
 #include "Ffmpeg.h"
 
-bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
+std::string Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
 {
     // Get the download details
     std::string url = "";
@@ -51,30 +51,38 @@ bool Ffmpeg::DownloadExecutableImpl(std::filesystem::path path)
     NetworkResponse response = request.DownloadToFile(archivePath);
 
     if (response.CurlCode != CURLE_OK || !std::filesystem::exists(archivePath)) {
-        Logger::Warning("Failed to download FFmpeg: " + std::string(curl_easy_strerror(response.CurlCode)));
-        return false;
+        std::string curlError = curl_easy_strerror(response.CurlCode);
+        Logger::Warning("Failed to download FFmpeg: " + curlError);
+        return "Failed to download with the network error: " + curlError;
     }
 
     if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
-        Logger::Warning("Failed to download FFmpeg: Failed to extract");
-        return false;
+        Logger::Warning("Failed to download FFmpeg: Failed to extract the archive");
+        return "Failed to extract from the archive";
     }
 
     std::filesystem::remove(archivePath);
+    if (!std::filesystem::exists(path)) {
+        return "Failed to download for an unknown reason";
+    }
 
-    return std::filesystem::exists(path);
+    return "";
 }
 
-bool Ffmpeg::UpdateExecutableImpl()
+std::string Ffmpeg::UpdateExecutableImpl()
 {
     std::filesystem::path path = GetPath();
-    if (path.empty())
-        return false;
+    if (path.empty()) {
+        Logger::Warning("Failed to update FFmpeg: Could not get the executable path");
+        return "Could not get the executable path";
+    }
 
     std::filesystem::path tempPath = Paths::GetTempDir() / "ffmpeg-temp";
-    bool downloaded = DownloadExecutableImpl(tempPath);
-    if (!downloaded)
-        return false;
+    std::string downloadError = DownloadExecutableImpl(tempPath);
+    if (!downloadError.empty()) {
+        Logger::Warning("Failed to update FFmpeg: Download error (" + downloadError + ")");
+        return "Failed to download: " + downloadError;
+    }
 
     // Replace the current executable with the updated one
     std::filesystem::path targetPath = Paths::GetDependencyPath(GetExecutableName());
@@ -82,10 +90,12 @@ bool Ffmpeg::UpdateExecutableImpl()
         std::filesystem::remove(targetPath);
 
     bool fileMoved = FileUtils::MoveFile(tempPath, targetPath);
-    if (!fileMoved)
-        return false;
+    if (!fileMoved) {
+        Logger::Warning("Failed to update FFmpeg: Could not move from (" + FileUtils::PathToUtf8(tempPath) + ") to (" + FileUtils::PathToUtf8(targetPath) + ")");
+        return "Failed to move to the target path";
+    }
 
-    return true;
+    return "";
 }
 
 std::string Ffmpeg::GetVersionImpl()

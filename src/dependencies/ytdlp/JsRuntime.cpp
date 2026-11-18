@@ -1,6 +1,6 @@
 #include "JsRuntime.h"
 
-bool JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
+std::string JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
 {
     // Get the download details
     std::string url = "https://bellard.org/quickjs/binary_releases/";
@@ -8,8 +8,9 @@ bool JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
     std::string pathInArchive = "qjs";
     std::string latestVersion = GetLatestVersion();
 
-    if (latestVersion.empty())
-        return false;
+    if (latestVersion.empty()) {
+        return "Could not retrieve the latest version";
+    }
 
 #if defined(__APPLE__) || defined(IS_ARM_CPU)
     archiveName += "-cosmo-";
@@ -30,30 +31,38 @@ bool JsRuntime::DownloadExecutableImpl(std::filesystem::path path)
     NetworkResponse response = request.DownloadToFile(archivePath);
 
     if (response.CurlCode != CURLE_OK || !std::filesystem::exists(archivePath)) {
-        Logger::Warning("Failed to download QuickJS: " + std::string(curl_easy_strerror(response.CurlCode)));
-        return false;
+        std::string curlError = curl_easy_strerror(response.CurlCode);
+        Logger::Warning("Failed to download QuickJS: " + curlError);
+        return "Failed to download with the network error: " + curlError;
     }
 
     if (!ArchiveHandler::ExtractFile(archivePath, pathInArchive, path)) {
         Logger::Warning("Failed to download QuickJS: Failed to extract");
-        return false;
+        return "Failed to extract from the archive";
     }
 
     std::filesystem::remove(archivePath);
+    if (!std::filesystem::exists(path)) {
+        return "Failed to download for an unknown reason";
+    }
 
-    return std::filesystem::exists(path);
+    return "";
 }
 
-bool JsRuntime::UpdateExecutableImpl()
+std::string JsRuntime::UpdateExecutableImpl()
 {
     std::filesystem::path path = GetPath();
-    if (path.empty())
-        return false;
+    if (path.empty()) {
+        Logger::Warning("Failed to update QuickJS: Could not get the executable path");
+        return "Could not get the executable path";
+    }
 
     std::filesystem::path tempPath = Paths::GetTempDir() / "qjs-temp";
-    bool downloaded = DownloadExecutableImpl(tempPath);
-    if (!downloaded)
-        return false;
+    std::string downloadError = DownloadExecutableImpl(tempPath);
+    if (!downloadError.empty()) {
+        Logger::Warning("Failed to update QuickJs: Download error (" + downloadError + ")");
+        return "Failed to download: " + downloadError;
+    }
 
     // Replace the current executable with the updated one
     std::filesystem::path targetPath = Paths::GetDependencyPath(GetExecutableName());
@@ -61,10 +70,12 @@ bool JsRuntime::UpdateExecutableImpl()
         std::filesystem::remove(targetPath);
 
     bool fileMoved = FileUtils::MoveFile(tempPath, targetPath);
-    if (!fileMoved)
-        return false;
+    if (!fileMoved) {
+        Logger::Warning("Failed to update QuickJS: Could not move from (" + FileUtils::PathToUtf8(tempPath) + ") to (" + FileUtils::PathToUtf8(targetPath) + ")");
+        return "Failed to move to the target path";
+    }
 
-    return true;
+    return "";
 }
 
 std::string JsRuntime::GetVersionImpl()

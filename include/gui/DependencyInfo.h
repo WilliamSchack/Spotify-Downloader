@@ -45,7 +45,7 @@ class DependencyInfo : public QObject
     SIMPLE_QPROPERTY(bool, failedToGetReleases, FailedToGetReleases, _failedToGetReleases)
 
     public:
-        explicit DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<bool()> updateFunction, std::function<bool()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction, QObject* parent);
+        explicit DependencyInfo(std::function<bool()> installedFunction, std::function<bool()> installedOnSystemFunction, std::function<std::string()> getVersionFunction, std::function<bool()> updateAvailableFunction, std::function<std::string()> updateFunction, std::function<std::string()> downloadFunction, std::function<QList<GUIReleaseInfo>(int, int)> getReleasesFunction, QObject* parent);
 
         QList<GUIReleaseInfo> GetReleases();
 
@@ -65,8 +65,8 @@ class DependencyInfo : public QObject
         std::function<bool()> _installedOnSystemFunction;
         std::function<std::string()> _getVersionFunction;
         std::function<bool()> _updateAvailableFunction;
-        std::function<bool()> _updateFunction;
-        std::function<bool()> _downloadFunction;
+        std::function<std::string()> _updateFunction;
+        std::function<std::string()> _downloadFunction;
 
         // params: resultsPerPage, page
         std::function<QList<GUIReleaseInfo>(int, int)> _getReleasesFunction;

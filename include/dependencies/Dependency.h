@@ -10,8 +10,8 @@
 
 // Required by inheritors:
 // friend class Dependency<Derived>
-// static bool DownloadExecutableImpl(std::filesystem::path path);
-// static bool UpdateExecutableImpl();
+// static std::string DownloadExecutableImpl(std::filesystem::path path); // Returns the error if any, returns an empty string otherwise
+// static std::string UpdateExecutableImpl();                             // Returns the error if any, returns an empty string otherwise
 // static std::string GetVersionImpl();
 // static std::string GetLatestVersionImpl();
 // static std::string GetFileNameImpl();
@@ -32,21 +32,23 @@ class Dependency
             return std::filesystem::exists(relativePath);
         }
 
-        static bool DownloadExecutable()
+        // Returns the error if any, returns an empty string otherwise
+        static std::string DownloadExecutable()
         {
             // If its downloaded already, dont download again
             std::filesystem::path relativePath = Paths::GetDependencyPath(GetExecutableName());
             if (std::filesystem::exists(relativePath))
-                return false;
+                return "Dependency already exists";
 
             return Derived::DownloadExecutableImpl(relativePath);
         }
 
-        static bool UpdateExecutable()
+        // Returns the error if any, returns an empty string otherwise
+        static std::string UpdateExecutable()
         {
             // Dont update if installed on the system
             if (!IsManaged())
-                return false;
+                return "This dependency is managed by the system";
 
             return Derived::UpdateExecutableImpl();
         }
