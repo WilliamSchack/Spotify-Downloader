@@ -121,7 +121,6 @@ void MetadataManager::SetCoverImage(const Image& image)
     if (fileTag == nullptr) return;
 
     const char* tagId = GetTagId(EMetadataTag::CoverImage);
-    if (tagId == NULL) return;
 
     std::vector<unsigned char> imageEncodedBytes = ImageHandler::EncodeImage(image);
     TagLib::ByteVector taglibImage(reinterpret_cast<const char*>(imageEncodedBytes.data()), imageEncodedBytes.size());
